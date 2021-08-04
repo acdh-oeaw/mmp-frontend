@@ -11,7 +11,7 @@ export default {
 <i18n>
 {
   "en": {
-    "hello": "Hello i18n in SFC!"
+    "hello": "This is a test Component"
   }
 }
 </i18n>
