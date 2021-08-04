@@ -1,5 +1,5 @@
 module.exports = {
-  publicPath: '/mmp/',
+  publicPath: '/mmp-frontend/',
 
   transpileDependencies: [
     'vuetify',
