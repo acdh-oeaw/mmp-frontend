@@ -1,4 +1,8 @@
-# mmp-frontend
+# MMP Frontend
+
+> A frontend component for [MMP](https://github.com/acdh-oeaw/mmp) written in VueJS
+
+This Repo is live at [acdh-oeaw.github.io/mmp-frontend/](https://acdh-oeaw.github.io/mmp-frontend/)
 
 ## Project setup
 ```
