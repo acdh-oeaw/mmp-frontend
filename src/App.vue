@@ -1,29 +1,43 @@
 <template>
-  <v-app>
+  <v-app class="app-class">
     <v-app-bar
       flat
       elevate-on-scroll
+      shrink-on-scroll
       fixed
       dark
-      color="rgba(0, 0, 0, 0)"
-      max-height="64px"
+      prominent
+      color="#0f1226"
+      class="app-bar"
+      min-height="84px"
     >
-      <v-app-bar-nav-icon />
-      <v-toolbar-title class="fancy-font thick">
-        MMP
-      </v-toolbar-title>
-      <v-spacer />
-      <router-link color="white" :to="{ name: '', params: {} }">
-        About the Project
-      </router-link>
-      &nbsp;&nbsp;•&nbsp;&nbsp;
-      <router-link :to="{ name: '', params: {} }">
-        Case Studies
-      </router-link>
-      &nbsp;&nbsp;•&nbsp;&nbsp;
-      <router-link :to="{ name: '', params: {} }">
-        Explore the Data
-      </router-link>•
+      <v-row justify="center">
+        <v-col cols="12" md="2" class="title-wrapper">
+          <v-app-bar-nav-icon class="d-inline d-md-none" />
+          <v-toolbar-title class="d-inline fancy-font thick">
+            MMP
+          </v-toolbar-title>
+        </v-col>
+        <v-col cols="8" class="text-right d-none d-md-inline">
+          <div>
+            <router-link color="white" :to="{ name: '', params: {} }">
+              About the Project
+            </router-link>
+            <span class="non-selectable">
+              &nbsp;&nbsp;&bull;&nbsp;&nbsp;
+            </span>
+            <router-link :to="{ name: '', params: {} }">
+              Case Studies
+            </router-link>
+            <span class="non-selectable">
+              &nbsp;&nbsp;&bull;&nbsp;&nbsp;
+            </span>
+            <router-link :to="{ name: '', params: {} }">
+              Explore the Data
+            </router-link>
+          </div>
+        </v-col>
+      </v-row>
     </v-app-bar>
     <v-main>
       <router-view />
@@ -42,14 +56,30 @@ export default {
 };
 </script>
 <style lang="css">
+  a {
+    color: white !important;
+    text-decoration: none;
+  }
+  .app-class {
+    background-color: #f1f5fa !important;
+  }
+  .app-bar {
+    padding-top: 30px;
+  }
   .fancy-font {
     font-family: "Times New Roman", Times, serif;
+    font-size: 2em !important;
+  }
+  .non-selectable {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
   }
   .thick {
     font-weight: bold;
   }
-  a {
-    color: white !important;
-    text-decoration: none;
+  .title-wrapper {
+    padding: 0px !important;
   }
 </style>
