@@ -1,6 +1,7 @@
 <template>
   <v-app class="app-class">
     <app-bar />
+    <div class="buffer" :class="{ light: $route.name !== 'Home'}" />
     <v-main>
       <router-view />
     </v-main>
@@ -12,7 +13,6 @@ import AppBar from './components/AppBar';
 
 export default {
   name: 'App',
-
   data: () => ({
 
   }),
@@ -21,8 +21,15 @@ export default {
   },
 };
 </script>
-<style lang="css">
+<style lang="css" scoped>
   .app-class {
     background-color: #f1f5fa !important;
+  }
+  .buffer {
+    background-color: #0F1226;
+    height: 140px;
+  }
+  .buffer.light {
+    background: unset;
   }
 </style>

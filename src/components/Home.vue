@@ -4,17 +4,17 @@
     <v-parallax
       src="@/assets/europa.jpg"
       class="home-parallax text-center home-head"
-      height="700"
+      height="600"
     >
-    <div class="gradient-bg parallax-wrapper">
+    <div class="parallax-wrapper">
       <v-row align="center" justify="center">
         <v-col cols="12">
-          <span class="home-title">Mapping Medieval Peoples</span>
+          <span class="home-title text-h3 text-lg-h1">Mapping Medieval Peoples</span>
         </v-col>
       </v-row>
       <v-row justify="center">
         <v-col cols="12" md="6">
-          <p class="text-subtitle-1">
+          <p class="text-subtitle-1 font-weight-bold">
             {{ $t('subhead') }}
           </p>
           <p class="text-subtitle-1">
@@ -66,26 +66,19 @@ export default {
     font-size: 1rem;
     vertical-align: top;
   }
-  .gradient-bg {
-    background: rgb(15, 18, 38);
-    background: linear-gradient(180deg, rgba(15, 18, 38, 1) 25%, rgba(15, 18, 38, 0.3) 100%);
-  }
   .home-content {
     margin-top: 50px;
   }
   .home-head div.v-parallax__content {
+    background: linear-gradient(180deg, rgba(15, 18, 38, 1) 25%, rgba(15, 18, 38, 0.3) 100%);
     padding: 0;
   }
-  .home-title {
-    font-family: "Times New Roman";
+  span.home-title {
+    font-family: "Times New Roman" !important;
     text-decoration-line: underline;
     text-underline-offset: 3px;
     text-decoration-thickness: 3px;
-  }
-  .parallax-wrapper {
-    padding-top: 200px;
-    padding-bottom: 100px;
-    font-size: 4em;
+    z-index: 100;
   }
   .study-surtitle {
     color: grey;
