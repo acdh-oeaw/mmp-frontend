@@ -12,7 +12,7 @@
         <v-row justify="center">
           <v-col cols="12" md="2" class="title-wrapper">
             <v-app-bar-nav-icon @click.stop="$store.commit('toggleDrawer')" class="d-inline d-md-none" />
-            <v-toolbar-title class="d-inline fancy-font thick">
+            <v-toolbar-title class="d-inline fancy-font font-weight-bold">
               <router-link
                 :to="{ name: 'Home' }"
                 class="nav-link"
@@ -91,9 +91,6 @@ export default {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
-  }
-  .thick {
-    font-weight: bold;
   }
   .title-wrapper {
     padding: 0px !important;

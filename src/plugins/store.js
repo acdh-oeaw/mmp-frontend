@@ -9,6 +9,7 @@ export default new Vuex.Store({
       sidebarDrawer: false,
       currentView: 'Graph',
     },
+    results: {},
   },
   mutations: {
     toggleDrawer: (state) => { state.interface.sidebarDrawer = !state.interface.sidebarDrawer; },

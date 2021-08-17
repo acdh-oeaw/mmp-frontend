@@ -10,7 +10,7 @@
         <v-icon @click="$store.commit('toggleDrawer')">mdi-close</v-icon>
       </v-list-item-icon>
       <v-list-item-content>
-        <v-list-item-title class="text-h6 sidebar-title">
+        <v-list-item-title class="text-h6 sidebar-title font-weight-bold">
           <router-link :to="{ name: 'Home' }" class="sidebar-link">
             MMP
           </router-link>
@@ -58,9 +58,8 @@ export default {
 </script>
 
 <style scoped>
-  div.sidebar-title {
-    font-family: "Times New Roman", Times, serif !important;
-    font-weight: bold;
+  .sidebar-title a {
+    text-decoration: none;
   }
   .sidebar-link {
     color: rgba(0, 0, 0, 0.87) !important;

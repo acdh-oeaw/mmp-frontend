@@ -18,15 +18,15 @@ const routes = [
     component: Interface,
     children: [
       {
-        path: 'graph/:query?',
+        path: 'graph',
         name: 'Graph',
       },
       {
-        path: 'map/:query?',
+        path: 'map',
         name: 'Map',
       },
       {
-        path: 'list/:query?',
+        path: 'list',
         name: 'List',
       },
     ],

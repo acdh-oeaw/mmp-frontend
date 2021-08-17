@@ -24,7 +24,7 @@
       </v-row>
       <v-row justify="center">
         <v-col cols="5" md="3" sm="5">
-          <v-btn large block color="secondary">{{ $t('search') }}</v-btn>
+          <v-btn large block color="secondary" :to="{ name: $store.state.interface.currentView }">{{ $t('search') }}</v-btn>
           <span class="button-subtitle">
             {{ $t('analyses') }}
           </span>
@@ -74,7 +74,6 @@ export default {
     padding: 0;
   }
   span.home-title {
-    font-family: "Times New Roman" !important;
     text-decoration-line: underline;
     text-underline-offset: 3px;
     text-decoration-thickness: 3px;
