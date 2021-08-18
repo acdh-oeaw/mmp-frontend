@@ -1,147 +1,151 @@
 <template>
   <div>
     <v-container>
-      <v-row justify="center" class="grey-bg">
-        <v-col>
-          <v-btn text small @dblclick="ee">
-            View as
-          </v-btn>
-        </v-col>
-        <v-col>
-          <v-btn
-            text
-            block
-            small
-            elevation="0"
-            class="view-picker"
-            :disabled="currentView === 'Graph'"
-            :to="{ name: 'Graph' }"
-          >
-            Network Graph
-          </v-btn>
-        </v-col>
-        <v-col>
-          <v-btn
-            text
-            block
-            small
-            elevation="0"
-            class="view-picker"
-            :disabled="currentView === 'Map'"
-            :to="{ name: 'Map' }"
-          >
-            Map
-          </v-btn>
-        </v-col>
-        <v-col>
-          <v-btn
-            text
-            block
-            small
-            elevation="0"
-            class="view-picker"
-            :disabled="currentView === 'List'"
-            :to="{ name: 'List' }"
-          >
-            List
-          </v-btn>
-        </v-col>
-        <v-spacer />
-      </v-row>
-      <v-row class="grey-bg">
-        <v-col>
-          <v-autocomplete
-            v-model="input"
-            multiple
-            item-text="selected_text"
-            return-object
-            :items="items"
-            :search-input.sync="textInput"
-            @keyup.enter="pushQuery"
-            :loading="loading.autocomplete > 0"
-          >
-            <template v-slot:item="data">
-              <v-list-item-content>
-                <v-list-item-title v-html="data.item.selected_text"></v-list-item-title>
-                <v-list-item-subtitle v-html="data.item.group"></v-list-item-subtitle>
-              </v-list-item-content>
-            </template>
-            <template v-slot:selection="data">
-              <v-chip
-                  v-bind="data.attrs"
-                  :input-value="data.selected"
-                  close
-                  :color="getChipColorFromGroup(data.item.group)"
-                  @click="data.select"
-                  @click:close="remove(data.item)"
-                >
-                  {{ data.item.selected_text }}
-                </v-chip>
-            </template>
-            <template v-slot:prepend>
+      <v-row justify="center">
+        <v-col cols="12" xl="8">
+          <v-row class="grey-bg">
+            <v-col>
+              <v-btn text small @dblclick="ee">
+                View as
+              </v-btn>
+            </v-col>
+            <v-col>
               <v-btn
                 text
+                block
                 small
-                @click="pushQuery"
+                elevation="0"
+                class="view-picker"
+                :disabled="currentView === 'Graph'"
+                :to="{ name: 'Graph' }"
               >
-                Search
+                Network Graph
               </v-btn>
-            </template>
-          </v-autocomplete>
-        </v-col>
-      </v-row>
-      <v-row align="center" justify="center" v-if="!Object.keys(query).length">
-        <v-col cols="12" md="8">
-          <div
-            class="text-center no-query"
-          >
-            <p>
-              Search our database for medieval <b>authors</b>, <b>passages</b>, <b>keywords</b> (such as names of peoples) or <b>case studies</b>.
-            </p>
-            <p>
-              For instance, try
-              <v-chip @click="pushToInputAndItems(defaultChips.baudovinia)" color="red lighten-3">Baudonivia von Poitiers</v-chip>
-              &#32;
-              <v-chip @click="pushToInputAndItems(defaultChips.barbari)" color="blue lighten-4">barbari</v-chip>
-              or
-              <v-chip @click="pushToInputAndItems(defaultChips.spain)" color="amber lighten-3">Spain and the Bible</v-chip>
-            </p>
-            <p>
-              Use the <b>slider</b> below to adjust and narrow down the <b>historical</b> scope of your query.
-            </p>
-          </div>
-        </v-col>
-      </v-row>
-      <v-row v-else>
-        <router-view />
-      </v-row>
-      <v-row>
-        <v-col>
-          <component
-            disabled
-            :is="sliderComponent"
-            v-model="range"
-            class="slider"
-            thumb-label="always"
-            light
-            thumb-size="50"
-            track-color="#d5d5d5"
-            :track-fill-color="range.length ? '#0f1226' : '#d5d5d5'"
-            max="120"
-            min="40"
-          >
-            <template v-slot:thumb-label="{ value }">
-              {{ (value * 10) }} AD
-            </template>
-            <template v-slot:append>
-              <v-btn icon>
-                <img class="icon" @click="toggleSliderComponent('v-range-slider')" :src="$vuetify.icons.values.range" alt="Range Icon" />
+            </v-col>
+            <v-col>
+              <v-btn
+                text
+                block
+                small
+                elevation="0"
+                class="view-picker"
+                :disabled="currentView === 'Map'"
+                :to="{ name: 'Map' }"
+              >
+                Map
               </v-btn>
-              <v-btn icon>
-                <img class="icon" @click="toggleSliderComponent('v-slider')" :src="$vuetify.icons.values.slider" alt="Slider Icon" />
+            </v-col>
+            <v-col>
+              <v-btn
+                text
+                block
+                small
+                elevation="0"
+                class="view-picker"
+                :disabled="currentView === 'List'"
+                :to="{ name: 'List' }"
+              >
+                List
               </v-btn>
-            </template>
-          </component>
+            </v-col>
+            <v-spacer />
+          </v-row>
+          <v-row class="grey-bg">
+            <v-col>
+              <v-autocomplete
+                v-model="input"
+                multiple
+                item-text="selected_text"
+                return-object
+                :items="items"
+                :search-input.sync="textInput"
+                @keyup.enter="pushQuery"
+                :loading="loading.autocomplete > 0"
+              >
+                <template v-slot:item="data">
+                  <v-list-item-content>
+                    <v-list-item-title v-html="data.item.selected_text"></v-list-item-title>
+                    <v-list-item-subtitle v-html="data.item.group"></v-list-item-subtitle>
+                  </v-list-item-content>
+                </template>
+                <template v-slot:selection="data">
+                  <v-chip
+                      v-bind="data.attrs"
+                      :input-value="data.selected"
+                      close
+                      :color="getChipColorFromGroup(data.item.group)"
+                      @click="data.select"
+                      @click:close="remove(data.item)"
+                    >
+                      {{ data.item.selected_text }}
+                    </v-chip>
+                </template>
+                <template v-slot:prepend>
+                  <v-btn
+                    text
+                    small
+                    @click="pushQuery"
+                  >
+                    Search
+                  </v-btn>
+                </template>
+              </v-autocomplete>
+            </v-col>
+          </v-row>
+          <v-row align="center" justify="center" v-if="!Object.keys(query).length">
+            <v-col cols="12" md="8">
+              <div
+                class="text-center no-query"
+              >
+                <p>
+                  Search our database for medieval <b>authors</b>, <b>passages</b>, <b>keywords</b> (such as names of peoples) or <b>case studies</b>.
+                </p>
+                <p>
+                  For instance, try
+                  <v-chip @click="pushToInputAndItems(defaultChips.baudovinia)" color="red lighten-3">Baudonivia von Poitiers</v-chip>
+                  &#32;
+                  <v-chip @click="pushToInputAndItems(defaultChips.barbari)" color="blue lighten-4">barbari</v-chip>
+                  or
+                  <v-chip @click="pushToInputAndItems(defaultChips.spain)" color="amber lighten-3">Spain and the Bible</v-chip>
+                </p>
+                <p>
+                  Use the <b>slider</b> below to adjust and narrow down the <b>historical</b> scope of your query.
+                </p>
+              </div>
+            </v-col>
+          </v-row>
+          <v-row v-else>
+            <router-view />
+          </v-row>
+          <v-row>
+            <v-col>
+              <component
+                disabled
+                :is="sliderComponent"
+                v-model="range"
+                class="slider"
+                thumb-label="always"
+                light
+                thumb-size="50"
+                track-color="#d5d5d5"
+                :track-fill-color="range.length ? '#0f1226' : '#d5d5d5'"
+                max="120"
+                min="40"
+              >
+                <template v-slot:thumb-label="{ value }">
+                  {{ (value * 10) }} AD
+                </template>
+                <template v-slot:append>
+                  <v-btn icon>
+                    <img class="icon" @click="toggleSliderComponent('v-range-slider')" :src="$vuetify.icons.values.range" alt="Range Icon" />
+                  </v-btn>
+                  <v-btn icon>
+                    <img class="icon" @click="toggleSliderComponent('v-slider')" :src="$vuetify.icons.values.slider" alt="Slider Icon" />
+                  </v-btn>
+                </template>
+              </component>
+            </v-col>
+          </v-row>
         </v-col>
       </v-row>
     </v-container>

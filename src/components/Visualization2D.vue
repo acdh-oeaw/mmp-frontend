@@ -17,10 +17,9 @@ export default {
       type: String,
       default: null,
     },
-    graph: {
-      type: Object,
-    },
+    graph: Object,
     highlightedNodeIds: Set, // TODO
+    linkWidth: String,
     onNodeClick: Function,
     onSimulationEnd: Function,
     onSimulationTick: Function,
@@ -66,6 +65,7 @@ export default {
         .onEngineStop(this.onSimulationEnd)
         .onEngineTick(this.onEngineEnd)
         .onZoom(this.onZoom)
+        .linkWidth(this.linkWidth || 1)
         .graphData(this.transformedData(this.graph || {
           nodes: [],
           edges: [],

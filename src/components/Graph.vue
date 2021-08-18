@@ -17,6 +17,7 @@
     <visualization
     :graph="graph"
     :onNodeClick="nodeClick"
+    linkWidth="2px"
     height="500" />
     <!-- <p>
       <node-details v-if="getDetails('keyword').id" />
