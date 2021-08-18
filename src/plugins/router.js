@@ -3,6 +3,7 @@ import VueRouter from 'vue-router';
 
 import Home from '@/components/Home';
 import Interface from '@/components/InterfaceWrapper';
+import Graph from '@/components/Graph';
 
 Vue.use(VueRouter);
 
@@ -20,6 +21,7 @@ const routes = [
       {
         path: 'graph',
         name: 'Graph',
+        component: Graph,
       },
       {
         path: 'map',

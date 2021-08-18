@@ -54,10 +54,11 @@
             v-model="input"
             multiple
             item-text="selected_text"
-            :item-value="(data) => ({ id: data.id, group: data.group })"
+            return-object
             :items="items"
             :search-input.sync="textInput"
             @keyup.enter="pushQuery"
+            :loading="loading.autocomplete > 0"
           >
             <template v-slot:item="data">
               <v-list-item-content>
@@ -87,18 +88,23 @@
               </v-btn>
             </template>
           </v-autocomplete>
-          {{ input }}
         </v-col>
       </v-row>
-      <v-row justify="center">
-        {{ query }}
+      <v-row align="center" justify="center" v-if="!Object.keys(query).length">
         <v-col cols="12" md="8">
-          <div v-if="!query" class="text-center no-query">
+          <div
+            class="text-center no-query"
+          >
             <p>
               Search our database for medieval <b>authors</b>, <b>passages</b>, <b>keywords</b> (such as names of peoples) or <b>case studies</b>.
             </p>
             <p>
-              For instance, try <v-chip  color="red lighten-3">Baudonivia von Poitiers</v-chip> <v-chip color="blue lighten-4">barbaricus</v-chip> or <v-chip color="amber lighten-3">Spain and the Bible</v-chip>
+              For instance, try
+              <v-chip @click="pushToInputAndItems(defaultChips.baudovinia)" color="red lighten-3">Baudonivia von Poitiers</v-chip>
+              &#32;
+              <v-chip @click="pushToInputAndItems(defaultChips.barbari)" color="blue lighten-4">barbari</v-chip>
+              or
+              <v-chip @click="pushToInputAndItems(defaultChips.spain)" color="amber lighten-3">Spain and the Bible</v-chip>
             </p>
             <p>
               Use the <b>slider</b> below to adjust and narrow down the <b>historical</b> scope of your query.
@@ -106,8 +112,7 @@
           </div>
         </v-col>
       </v-row>
-      <v-row v-if="query">
-        {{ query }}
+      <v-row v-else>
         <router-view />
       </v-row>
       <v-row>
@@ -149,11 +154,34 @@ import { VRangeSlider, VSlider } from 'vuetify/lib';
 export default {
   name: 'Interface',
   data: () => ({
-    input: '',
-    textInput: '',
+    defaultChips: {
+      baudovinia: {
+        id: 8,
+        text: 'Baudonivia von Poitiers',
+        selected_text: 'Baudonivia von Poitiers',
+        group: 'Author',
+      },
+      barbari: {
+        id: '33',
+        text: 'barbari, [wurzel: barbar]',
+        selected_text: 'barbari, [wurzel: barbar]',
+        group: 'Keyword',
+      },
+      spain: {
+        id: '6',
+        text: 'Spain and the Bible: Patrick Marschner',
+        selected_text: 'Spain and the Bible: Patrick Marschner',
+        group: 'Use Case',
+      },
+    },
+    input: [],
     items: [],
+    loading: {
+      autocomplete: 0,
+    },
     range: [47, 113],
     sliderComponent: 'v-range-slider',
+    textInput: '',
   }),
   components: {
     VSlider,
@@ -166,7 +194,7 @@ export default {
     },
     query() {
       console.log('query changed', this.$route.query);
-      return this.$route.query.s;
+      return this.$route.query;
     },
   },
   methods: {
@@ -181,20 +209,23 @@ export default {
       this.items = this.items.concat(res.map((x) => ({ ...x, group: label })));
     },
     getChipColorFromGroup(group) {
-      switch (group) {
-        case 'Author':
-          return 'red lighten-3';
-        case 'Passage':
-          return 'teal lighten-4';
-        case 'Keyword':
-          return 'blue lighten-4';
-        case 'Use Case':
-          return 'amber lighten-3';
-        default:
-          return 'grey lighten-4';
-      }
+      const colors = {
+        Author: 'red lighten-3',
+        Passage: 'teal lighten-4',
+        Keyword: 'blue lighten-4',
+        'Use Case': 'amber lighten-3',
+      };
+      return colors[group];
+    },
+    pushToInputAndItems(item) {
+      this.items.push(item);
+      this.input.push(item);
+      // Remove Duplicates
+      this.items = [...new Set(this.items)];
+      this.input = [...new Set(this.input)];
     },
     pushQuery() {
+      document.activeElement.blur(); // removes focus from autocomplete field
       const query = {
         Author: undefined,
         Passage: undefined,
@@ -226,6 +257,10 @@ export default {
   },
   watch: {
     textInput(val) {
+      if (!val || val.length <= 2) return; // start looking for autocompletes when there are 2 or more characters entered
+      this.items = [];
+      // TODO: replace this with Promise.all
+      this.loading.autocomplete = 4;
       fetch(`https://mmp.acdh-dev.oeaw.ac.at/archiv-ac/autor-autocomplete/?q=${val}`)
         .then((res) => res.json())
         .then((res) => {
@@ -234,6 +269,9 @@ export default {
         })
         .catch((err) => {
           console.log(err);
+        })
+        .finally(() => {
+          this.loading.autocomplete -= 1;
         });
 
       fetch(`https://mmp.acdh-dev.oeaw.ac.at/archiv-ac/stelle-autocomplete/?q=${val}`)
@@ -244,6 +282,9 @@ export default {
         })
         .catch((err) => {
           console.log(err);
+        })
+        .finally(() => {
+          this.loading.autocomplete -= 1;
         });
 
       fetch(`https://mmp.acdh-dev.oeaw.ac.at/archiv-ac/keyword-autocomplete/?q=${val}`)
@@ -254,6 +295,9 @@ export default {
         })
         .catch((err) => {
           console.log(err);
+        })
+        .finally(() => {
+          this.loading.autocomplete -= 1;
         });
 
       fetch(`https://mmp.acdh-dev.oeaw.ac.at/archiv-ac/usecase-autocomplete/?q=${val}`)
@@ -264,6 +308,9 @@ export default {
         })
         .catch((err) => {
           console.log(err);
+        })
+        .finally(() => {
+          this.loading.autocomplete -= 1;
         });
     },
   },
@@ -293,6 +340,7 @@ export default {
     margin-bottom: 10px;;
   }
   .no-query {
+    height: 500px;
     font-size: 1.4em;
     color: #666 !important;
   }

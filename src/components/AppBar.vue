@@ -3,7 +3,6 @@
       <v-app-bar
         fixed
         flat
-        :dark="isHome"
         shrink-on-scroll
         :color="backgroundColor"
         class="app-bar"
