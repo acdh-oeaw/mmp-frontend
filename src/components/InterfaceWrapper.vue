@@ -52,16 +52,31 @@
         <v-col>
           <v-autocomplete
             v-model="input"
-            small
-            chips
-            clearable
-            deletable-chips
             multiple
-            small-chips
+            item-text="selected_text"
+            :item-value="(data) => ({ id: data.id, group: data.group })"
             :items="items"
             :search-input.sync="textInput"
             @keyup.enter="pushQuery"
           >
+            <template v-slot:item="data">
+              <v-list-item-content>
+                <v-list-item-title v-html="data.item.selected_text"></v-list-item-title>
+                <v-list-item-subtitle v-html="data.item.group"></v-list-item-subtitle>
+              </v-list-item-content>
+            </template>
+            <template v-slot:selection="data">
+              <v-chip
+                  v-bind="data.attrs"
+                  :input-value="data.selected"
+                  close
+                  :color="getChipColorFromGroup(data.item.group)"
+                  @click="data.select"
+                  @click:close="remove(data.item)"
+                >
+                  {{ data.item.selected_text }}
+                </v-chip>
+            </template>
             <template v-slot:prepend>
               <v-btn
                 text
@@ -72,6 +87,7 @@
               </v-btn>
             </template>
           </v-autocomplete>
+          {{ input }}
         </v-col>
       </v-row>
       <v-row justify="center">
@@ -91,11 +107,13 @@
         </v-col>
       </v-row>
       <v-row v-if="query">
+        {{ query }}
         <router-view />
       </v-row>
       <v-row>
         <v-col>
           <component
+            disabled
             :is="sliderComponent"
             v-model="range"
             class="slider"
@@ -121,9 +139,6 @@
           </component>
         </v-col>
       </v-row>
-      <v-row>
-        {{ range }}
-      </v-row>
     </v-container>
   </div>
 </template>
@@ -137,7 +152,7 @@ export default {
     input: '',
     textInput: '',
     items: [],
-    range: [17, 83],
+    range: [47, 113],
     sliderComponent: 'v-range-slider',
   }),
   components: {
@@ -159,16 +174,46 @@ export default {
       // eslint-disable-next-line no-alert
       alert(':^)');
     },
+    log(data) {
+      console.log('log data', data);
+    },
     addResultsToItems(res, label) {
       this.items = this.items.concat(res.map((x) => ({ ...x, group: label })));
     },
+    getChipColorFromGroup(group) {
+      switch (group) {
+        case 'Author':
+          return 'red lighten-3';
+        case 'Passage':
+          return 'teal lighten-4';
+        case 'Keyword':
+          return 'blue lighten-4';
+        case 'Use Case':
+          return 'amber lighten-3';
+        default:
+          return 'grey lighten-4';
+      }
+    },
     pushQuery() {
+      const query = {
+        Author: undefined,
+        Passage: undefined,
+        Keyword: undefined,
+        'Use Case': undefined,
+      };
+      Object.keys(query).forEach((cat) => {
+        query[cat] = this.input
+          .filter((x) => x.group === cat)
+          .map((x) => x.id)
+          .join('+') || undefined;
+      });
       this.$router.push({
         name: this.$route.name,
-        query: {
-          s: this.input.length ? this.input.join('+') : undefined,
-        },
+        query,
       });
+    },
+    remove(item) {
+      this.input = this.input.filter((x) => !(x.id === item.id && x.group === item.group));
     },
     // This function changes the slider from range to point, and creates a new range value fittingly
     toggleSliderComponent(mode) {
