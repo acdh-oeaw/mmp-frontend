@@ -29,9 +29,7 @@ export default {
       type: Boolean,
       default: false,
     }, // TODO
-    width: {
-      type: String,
-    },
+    width: String,
     height: String,
 
   },

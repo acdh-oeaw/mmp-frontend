@@ -9,7 +9,7 @@
       class="overlay"
       opacity=".1"
       :value="!nodeCount"
-      >
+    >
       <h1 class="no-nodes">
         No nodes found!
       </h1>
@@ -63,11 +63,10 @@ export default {
           Author: 'rvn_stelle_key_word_keyword__text__autor',
           Passage: 'rvn_stelle_key_word_keyword',
           Keyword: 'id',
-          'Use Case': 'unused',
+          // 'Use Case': 'unused',
         };
         let adress = 'https://mmp.acdh-dev.oeaw.ac.at/archiv/keyword-data/?';
         Object.keys(query).forEach((cat) => {
-          console.log(cat);
           if (query[cat]) {
             const arr = query[cat].split('+');
             arr.forEach((val) => {
@@ -96,7 +95,7 @@ export default {
 };
 </script>
 
-<style lang="css" scoped>
+<style lang="css">
   .no-nodes {
     color: rgba(0, 0, 0, .87);
   }
