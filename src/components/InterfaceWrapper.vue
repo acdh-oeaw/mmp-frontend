@@ -57,6 +57,8 @@
                 multiple
                 item-text="selected_text"
                 return-object
+                autofocus
+                ref="autocomplete"
                 :items="items"
                 :search-input.sync="textInput"
                 @keyup.enter="pushQuery"
@@ -119,31 +121,36 @@
           </v-row>
           <v-row>
             <v-col>
-              <component
-                disabled
-                :is="sliderComponent"
-                v-model="range"
-                class="slider"
-                thumb-label="always"
-                light
-                thumb-size="50"
-                track-color="#d5d5d5"
-                :track-fill-color="range.length ? '#0f1226' : '#d5d5d5'"
-                max="120"
-                min="40"
-              >
-                <template v-slot:thumb-label="{ value }">
-                  {{ (value * 10) }} AD
+              <v-tooltip top>
+                <template v-slot:default="{}">
+                  <component
+                    disabled
+                    :is="sliderComponent"
+                    v-model="range"
+                    class="slider"
+                    thumb-label="always"
+                    light
+                    thumb-size="50"
+                    track-color="#d5d5d5"
+                    :track-fill-color="range.length ? '#0f1226' : '#d5d5d5'"
+                    max="120"
+                    min="40"
+                  >
+                    <template v-slot:thumb-label="{ value }">
+                      {{ (value * 10) }} AD
+                    </template>
+                    <template v-slot:append>
+                      <v-btn icon>
+                        <img class="icon" @click="toggleSliderComponent('v-range-slider')" :src="$vuetify.icons.values.range" alt="Range Icon" />
+                      </v-btn>
+                      <v-btn icon>
+                        <img class="icon" @click="toggleSliderComponent('v-slider')" :src="$vuetify.icons.values.slider" alt="Slider Icon" />
+                      </v-btn>
+                    </template>
+                  </component>
                 </template>
-                <template v-slot:append>
-                  <v-btn icon>
-                    <img class="icon" @click="toggleSliderComponent('v-range-slider')" :src="$vuetify.icons.values.range" alt="Range Icon" />
-                  </v-btn>
-                  <v-btn icon>
-                    <img class="icon" @click="toggleSliderComponent('v-slider')" :src="$vuetify.icons.values.slider" alt="Slider Icon" />
-                  </v-btn>
-                </template>
-              </component>
+                <span>coming soon!</span>
+              </v-tooltip>
             </v-col>
           </v-row>
         </v-col>
@@ -229,7 +236,7 @@ export default {
       this.input = [...new Set(this.input)];
     },
     pushQuery() {
-      document.activeElement.blur(); // removes focus from autocomplete field
+      this.$refs.autocomplete.blur(); // this is the only working solution I found to unfocus autocomplete
       const query = {
         Author: undefined,
         Passage: undefined,

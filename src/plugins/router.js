@@ -4,6 +4,7 @@ import VueRouter from 'vue-router';
 import Home from '@/components/Home';
 import Interface from '@/components/InterfaceWrapper';
 import Graph from '@/components/Graph';
+import Map from '@/components/Map';
 
 Vue.use(VueRouter);
 
@@ -26,6 +27,7 @@ const routes = [
       {
         path: 'map',
         name: 'Map',
+        component: Map,
       },
       {
         path: 'list',

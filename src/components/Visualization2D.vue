@@ -19,7 +19,7 @@ export default {
     },
     graph: Object,
     highlightedNodeIds: Set, // TODO
-    linkWidth: String,
+    linkWidth: Number,
     onNodeClick: Function,
     onSimulationEnd: Function,
     onSimulationTick: Function,
@@ -65,7 +65,7 @@ export default {
         .onEngineStop(this.onSimulationEnd)
         .onEngineTick(this.onEngineEnd)
         .onZoom(this.onZoom)
-        .linkWidth(this.linkWidth || 1)
+        .linkWidth(parseFloat(this.linkWidth) || 1)
         .graphData(this.transformedData(this.graph || {
           nodes: [],
           edges: [],
