@@ -8,12 +8,14 @@
       :items="items"
       :headers="headers"
       :loading="loading"
-      :key="renderKey"
+      :server-items-length="pagination.count"
+      @update:page="updateOffset"
+      @update:items-per-page="updateLimit"
       class="data-table"
     >
       <template v-slot:item.author="{ item }">
         <span v-for="(autor, i) in item.text.autor" :key="autor">
-          <a @click="addAuthorToInput($store.state.fetchedResults[autor])" v-if="$store.state.fetchedResults[autor]">
+          <a @click="addAuthorToInput($store.state.fetchedResults[autor])" v-if="$store.state.fetchedResults[autor]" :key="renderKey">
             {{ $store.state.fetchedResults[autor].name_en }}
             <span v-if="i != item.text.autor.length - 1"></span>
           </a>
@@ -64,6 +66,11 @@ export default {
     ],
     items: [],
     loading: false,
+    pagination: {
+      count: 0,
+      limit: 10,
+      offset: 0,
+    },
     renderKey: 0,
   }),
   methods: {
@@ -89,13 +96,13 @@ export default {
               console.log('promise all authors', authors);
               authors.forEach((author) => {
                 this.$store.commit('addToResults', { req: author.url, res: author });
+                this.renderKey += 1;
               });
             })
             .catch((err) => {
               console.log(err);
             })
             .finally(() => {
-              this.renderKey += 1;
             });
         })
         .catch((err) => {
@@ -105,50 +112,63 @@ export default {
           this.loading = false;
         });
     },
+    fetchList(query) {
+      const terms = {
+        Author: 'text__autor',
+        Passage: 'id',
+        Keyword: 'key_word',
+        'Use Case': 'use_case',
+      };
+      let adress = `https://mmp.acdh-dev.oeaw.ac.at/api/stelle/?format=json&limit=${this.pagination.limit}&offset=${this.pagination.offset}`;
+      Object.keys(query).forEach((cat) => {
+        if (query[cat]) {
+          const arr = query[cat].split('+');
+          arr.forEach((val) => {
+            adress += `&${terms[cat]}=${val}`;
+          });
+        }
+      });
+      console.log('adress', adress);
+
+      const prefetched = this.$store.state.fetchedResults[adress];
+      if (prefetched) {
+        this.items = prefetched.results;
+        this.pagination.count = prefetched.count;
+        const authors = [...new Set(this.items.map((x) => x.text.autor).flat())];
+        this.fetchAuthors(authors);
+      } else {
+        this.loading = true;
+        fetch(adress)
+          .then((res) => res.json())
+          .then((res) => {
+            console.log('list-data', res);
+            this.$store.commit('addToResults', { req: adress, res });
+            this.items = res.results;
+            this.pagination.count = res.count;
+            const authors = [...new Set(this.items.map((x) => x.text.autor).flat())];
+            this.fetchAuthors(authors);
+          })
+          .catch((err) => {
+            console.log(err);
+          })
+          .finally(() => {
+            this.loading = false;
+          });
+      }
+    },
+    updateLimit(limit) {
+      this.pagination.limit = limit === -1 ? this.pagination.count : limit;
+      this.fetchList(this.$route.query);
+    },
+    updateOffset(page) {
+      this.pagination.offset = (page - 1) * this.pagination.limit;
+      this.fetchList(this.$route.query);
+    },
   },
   watch: {
     '$route.query': {
       handler(query) {
-        const terms = {
-          Author: 'text__autor',
-          Passage: 'id',
-          Keyword: 'key_word',
-          'Use Case': 'use_case',
-        };
-        let adress = 'https://mmp.acdh-dev.oeaw.ac.at/api/stelle/?format=json';
-        Object.keys(query).forEach((cat) => {
-          if (query[cat]) {
-            const arr = query[cat].split('+');
-            arr.forEach((val) => {
-              adress += `&${terms[cat]}=${val}`;
-            });
-          }
-        });
-        console.log('adress', adress);
-
-        const prefetched = this.$store.state.fetchedResults[adress];
-        if (prefetched) {
-          this.items = prefetched.results;
-          const authors = [...new Set(this.items.map((x) => x.text.autor).flat())];
-          this.fetchAuthors(authors);
-        } else {
-          this.loading = true;
-          fetch(adress)
-            .then((res) => res.json())
-            .then((res) => {
-              console.log('list-data', res);
-              this.$store.commit('addToResults', { req: adress, res });
-              this.items = res.results;
-              const authors = [...new Set(this.items.map((x) => x.text.autor).flat())];
-              this.fetchAuthors(authors);
-            })
-            .catch((err) => {
-              console.log(err);
-            })
-            .finally(() => {
-              this.loading = false;
-            });
-        }
+        this.fetchList(query);
       },
       deep: true,
       immediate: true,
@@ -158,11 +178,14 @@ export default {
 </script>
 
 <style>
+  a:hover {
+    text-decoration: underline;
+  }
   div.v-data-table.data-table {
     background-color: transparent;
   }
   .keyword-chip {
     display: inline-block;
-    margin: 1.5px 1.5px 3px 0;
+    margin: 1.5px;
   }
 </style>
