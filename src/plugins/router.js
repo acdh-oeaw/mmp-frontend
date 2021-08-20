@@ -5,6 +5,7 @@ import Home from '@/components/Home';
 import Interface from '@/components/InterfaceWrapper';
 import Graph from '@/components/Graph';
 import Map from '@/components/Map';
+import List from '@/components/List';
 
 Vue.use(VueRouter);
 
@@ -32,6 +33,7 @@ const routes = [
       {
         path: 'list',
         name: 'List',
+        component: List,
       },
     ],
   },

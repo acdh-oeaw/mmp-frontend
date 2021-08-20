@@ -62,7 +62,7 @@
                 :items="items"
                 :search-input.sync="textInput"
                 @keyup.enter="pushQuery"
-                :loading="loading.autocomplete > 0"
+                :loading="loading.autocomplete"
               >
                 <template v-slot:item="data">
                   <v-list-item-content>
@@ -121,36 +121,31 @@
           </v-row>
           <v-row>
             <v-col>
-              <v-tooltip top>
-                <template v-slot:default="{}">
-                  <component
-                    disabled
-                    :is="sliderComponent"
-                    v-model="range"
-                    class="slider"
-                    thumb-label="always"
-                    light
-                    thumb-size="50"
-                    track-color="#d5d5d5"
-                    :track-fill-color="range.length ? '#0f1226' : '#d5d5d5'"
-                    max="120"
-                    min="40"
-                  >
-                    <template v-slot:thumb-label="{ value }">
-                      {{ (value * 10) }} AD
-                    </template>
-                    <template v-slot:append>
-                      <v-btn icon>
-                        <img class="icon" @click="toggleSliderComponent('v-range-slider')" :src="$vuetify.icons.values.range" alt="Range Icon" />
-                      </v-btn>
-                      <v-btn icon>
-                        <img class="icon" @click="toggleSliderComponent('v-slider')" :src="$vuetify.icons.values.slider" alt="Slider Icon" />
-                      </v-btn>
-                    </template>
-                  </component>
+              <component
+                disabled
+                :is="sliderComponent"
+                v-model="range"
+                class="slider"
+                thumb-label="always"
+                light
+                thumb-size="50"
+                track-color="#d5d5d5"
+                :track-fill-color="range.length ? '#0f1226' : '#d5d5d5'"
+                max="120"
+                min="40"
+              >
+                <template v-slot:thumb-label="{ value }">
+                  {{ (value * 10) }} AD
                 </template>
-                <span>coming soon!</span>
-              </v-tooltip>
+                <template v-slot:append>
+                  <v-btn icon>
+                    <img class="icon" @click="toggleSliderComponent('v-range-slider')" :src="$vuetify.icons.values.range" alt="Range Icon" />
+                  </v-btn>
+                  <v-btn icon>
+                    <img class="icon" @click="toggleSliderComponent('v-slider')" :src="$vuetify.icons.values.slider" alt="Slider Icon" />
+                  </v-btn>
+                </template>
+              </component>
             </v-col>
           </v-row>
         </v-col>
@@ -188,7 +183,7 @@ export default {
     input: [],
     items: [],
     loading: {
-      autocomplete: 0,
+      autocomplete: false,
     },
     range: [47, 113],
     sliderComponent: 'v-range-slider',
@@ -268,60 +263,32 @@ export default {
   },
   watch: {
     textInput(val) {
-      if (!val || val.length <= 2) return; // start looking for autocompletes when there are 2 or more characters entered
+      const urls = [
+        'https://mmp.acdh-dev.oeaw.ac.at/archiv-ac/autor-autocomplete/?q=',
+        'https://mmp.acdh-dev.oeaw.ac.at/archiv-ac/stelle-autocomplete/?q=',
+        'https://mmp.acdh-dev.oeaw.ac.at/archiv-ac/keyword-autocomplete/?q=',
+        'https://mmp.acdh-dev.oeaw.ac.at/archiv-ac/usecase-autocomplete/?q=',
+      ];
+      const labels = ['Author', 'Passage', 'Keyword', 'Use Case'];
+
       this.items = [];
-      // TODO: replace this with Promise.all
-      this.loading.autocomplete = 4;
-      fetch(`https://mmp.acdh-dev.oeaw.ac.at/archiv-ac/autor-autocomplete/?q=${val}`)
-        .then((res) => res.json())
-        .then((res) => {
-          // console.log('Autor results', res.results);
-          this.addResultsToItems(res.results, 'Author');
-        })
-        .catch((err) => {
-          console.log(err);
-        })
-        .finally(() => {
-          this.loading.autocomplete -= 1;
-        });
 
-      fetch(`https://mmp.acdh-dev.oeaw.ac.at/archiv-ac/stelle-autocomplete/?q=${val}`)
-        .then((res) => res.json())
+      this.loading.autocomplete = true;
+      Promise.all(urls.map((x) => fetch(x + val)))
         .then((res) => {
-          // console.log('Autor results', res.results);
-          this.addResultsToItems(res.results, 'Passage');
+          Promise.all(res.map((x) => x.json()))
+            .then((jsonRes) => {
+              console.log('promise all autocomplete', jsonRes);
+              jsonRes.forEach((x, i) => {
+                this.addResultsToItems(x.results, labels[i]);
+              });
+            });
         })
         .catch((err) => {
           console.log(err);
         })
         .finally(() => {
-          this.loading.autocomplete -= 1;
-        });
-
-      fetch(`https://mmp.acdh-dev.oeaw.ac.at/archiv-ac/keyword-autocomplete/?q=${val}`)
-        .then((res) => res.json())
-        .then((res) => {
-          // console.log('Autor results', res.results);
-          this.addResultsToItems(res.results, 'Keyword');
-        })
-        .catch((err) => {
-          console.log(err);
-        })
-        .finally(() => {
-          this.loading.autocomplete -= 1;
-        });
-
-      fetch(`https://mmp.acdh-dev.oeaw.ac.at/archiv-ac/usecase-autocomplete/?q=${val}`)
-        .then((res) => res.json())
-        .then((res) => {
-          // console.log('Autor results', res.results);
-          this.addResultsToItems(res.results, 'Use Case');
-        })
-        .catch((err) => {
-          console.log(err);
-        })
-        .finally(() => {
-          this.loading.autocomplete -= 1;
+          this.loading.autocomplete = false;
         });
     },
   },
