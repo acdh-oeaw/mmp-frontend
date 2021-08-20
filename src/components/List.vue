@@ -12,8 +12,17 @@
       class="data-table"
     >
       <template v-slot:item.author="{ item }">
-        <span v-for="autor in item.text.autor" :key="autor">
-          {{ fetchedAuthors[autor] }}
+        <span v-for="(autor, i) in item.text.autor" :key="autor">
+          <span v-if="$store.state.fetchedResults[autor]">
+            {{ $store.state.fetchedResults[autor].name_en }}
+            <span v-if="i != item.text.autor.length - 1"></span>
+          </span>
+          <v-progress-circular
+            size="16"
+            v-else
+            indeterminate
+            color="primary"
+          />
         </span>
       </template>
       <template v-slot:item.keywords="{ item }">
@@ -59,7 +68,11 @@ export default {
   }),
   methods: {
     addKeywordToInput(obj) {
-      console.log(obj);
+      this.$store.commit('addToItemsAndInput', {
+        id: parseInt(obj.url.replace(/[^0-9]/g, ''), 10),
+        selected_text: obj.stichwort,
+        group: 'Keyword',
+      });
     },
     fetchAuthors(arr) {
       Promise.all(arr.map((x) => fetch(x)))
@@ -68,18 +81,27 @@ export default {
             .then((authors) => {
               console.log('promise all authors', authors);
               authors.forEach((author) => {
-                this.fetchedAuthors[author.url] = author.name_en;
-                this.renderKey += 1;
+                this.$store.commit('addToResults', { req: author.url, res: author });
               });
+            })
+            .catch((err) => {
+              console.log(err);
+            })
+            .finally(() => {
+              this.renderKey += 1;
             });
+        })
+        .catch((err) => {
+          console.log(err);
+        })
+        .finally(() => {
+          this.loading = false;
         });
     },
   },
   watch: {
     '$route.query': {
       handler(query) {
-        this.loading = true;
-
         const terms = {
           Author: 'text__autor',
           Passage: 'id',
@@ -96,21 +118,30 @@ export default {
           }
         });
         console.log('adress', adress);
-        fetch(adress)
-          .then((res) => res.json())
-          .then((res) => {
-            console.log('list-data', res);
-            this.items = res.results;
 
-            const authors = [...new Set(this.items.map((x) => x.text.autor).flat())];
-            this.fetchAuthors(authors);
-          })
-          .catch((err) => {
-            console.log(err);
-          })
-          .finally(() => {
-            this.loading = false;
-          });
+        const prefetched = this.$store.state.fetchedResults[adress];
+        if (prefetched) {
+          this.items = prefetched.results;
+          const authors = [...new Set(this.items.map((x) => x.text.autor).flat())];
+          this.fetchAuthors(authors);
+        } else {
+          this.loading = true;
+          fetch(adress)
+            .then((res) => res.json())
+            .then((res) => {
+              console.log('list-data', res);
+              this.$store.commit('addToResults', { req: adress, res });
+              this.items = res.results;
+              const authors = [...new Set(this.items.map((x) => x.text.autor).flat())];
+              this.fetchAuthors(authors);
+            })
+            .catch((err) => {
+              console.log(err);
+            })
+            .finally(() => {
+              this.loading = false;
+            });
+        }
       },
       deep: true,
       immediate: true,

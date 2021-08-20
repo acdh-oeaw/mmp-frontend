@@ -80,8 +80,6 @@ export default {
   watch: {
     '$route.query': {
       handler(query) {
-        this.loading = true;
-
         const terms = {
           Author: 'stelle__text__autor',
           Passage: 'stelle',
@@ -98,19 +96,28 @@ export default {
           }
         });
         console.log('adress', adress);
-        fetch(adress)
-          .then((res) => res.json())
-          .then((res) => {
-            console.log('map-data', res, L);
-            this.entries = res;
-            this.bounds = this.getBounds(res.features);
-          })
-          .catch((err) => {
-            console.log(err);
-          })
-          .finally(() => {
-            this.loading = false;
-          });
+
+        const prefetched = this.$store.state.fetchedResults[adress];
+        if (prefetched) {
+          this.entries = prefetched;
+          this.bounds = this.getBounds(prefetched.features);
+        } else {
+          this.loading = true;
+          fetch(adress)
+            .then((res) => res.json())
+            .then((res) => {
+              console.log('map-data', res, L);
+              this.$store.commit('addToResults', { req: adress, res });
+              this.entries = res;
+              this.bounds = this.getBounds(res.features);
+            })
+            .catch((err) => {
+              console.log(err);
+            })
+            .finally(() => {
+              this.loading = false;
+            });
+        }
       },
       deep: true,
       immediate: true,

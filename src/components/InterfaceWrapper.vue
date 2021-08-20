@@ -53,16 +53,16 @@
           <v-row class="grey-bg">
             <v-col>
               <v-autocomplete
-                v-model="input"
+                v-model="$store.state.autocomplete.input"
                 multiple
                 item-text="selected_text"
                 return-object
                 autofocus
                 ref="autocomplete"
-                :items="items"
+                :items="$store.state.autocomplete.items"
                 :search-input.sync="textInput"
                 @keyup.enter="pushQuery"
-                :loading="loading.autocomplete"
+                :loading="loading"
               >
                 <template v-slot:item="data">
                   <v-list-item-content>
@@ -77,7 +77,7 @@
                       close
                       :color="getChipColorFromGroup(data.item.group)"
                       @click="data.select"
-                      @click:close="remove(data.item)"
+                      @click:close="$store.commit('removeItemFromInput', data.item)"
                     >
                       {{ data.item.selected_text }}
                     </v-chip>
@@ -104,11 +104,11 @@
                 </p>
                 <p>
                   For instance, try
-                  <v-chip @click="pushToInputAndItems(defaultChips.baudovinia)" color="red lighten-3">Baudonivia von Poitiers</v-chip>
+                  <v-chip @click="$store.commit('addToItemsAndInput', defaultChips.baudovinia)" color="red lighten-3">Baudonivia von Poitiers</v-chip>
                   &#32;
-                  <v-chip @click="pushToInputAndItems(defaultChips.barbari)" color="blue lighten-4">barbari</v-chip>
+                  <v-chip @click="$store.commit('addToItemsAndInput', defaultChips.barbari)" color="blue lighten-4">barbari</v-chip>
                   or
-                  <v-chip @click="pushToInputAndItems(defaultChips.spain)" color="amber lighten-3">Spain and the Bible</v-chip>
+                  <v-chip @click="$store.commit('addToItemsAndInput', defaultChips.spain)" color="amber lighten-3">Spain and the Bible</v-chip>
                 </p>
                 <p>
                   Use the <b>slider</b> below to adjust and narrow down the <b>historical</b> scope of your query.
@@ -180,11 +180,7 @@ export default {
         group: 'Use Case',
       },
     },
-    input: [],
-    items: [],
-    loading: {
-      autocomplete: false,
-    },
+    loading: false,
     range: [47, 113],
     sliderComponent: 'v-range-slider',
     textInput: '',
@@ -211,9 +207,6 @@ export default {
     log(data) {
       console.log('log data', data);
     },
-    addResultsToItems(res, label) {
-      this.items = this.items.concat(res.map((x) => ({ ...x, group: label })));
-    },
     getChipColorFromGroup(group) {
       const colors = {
         Author: 'red lighten-3',
@@ -222,13 +215,6 @@ export default {
         'Use Case': 'amber lighten-3',
       };
       return colors[group];
-    },
-    pushToInputAndItems(item) {
-      this.items.push(item);
-      this.input.push(item);
-      // Remove Duplicates
-      this.items = [...new Set(this.items)];
-      this.input = [...new Set(this.input)];
     },
     pushQuery() {
       this.$refs.autocomplete.blur(); // this is the only working solution I found to unfocus autocomplete
@@ -239,7 +225,7 @@ export default {
         'Use Case': undefined,
       };
       Object.keys(query).forEach((cat) => {
-        query[cat] = this.input
+        query[cat] = this.$store.state.autocomplete.input
           .filter((x) => x.group === cat)
           .map((x) => x.id)
           .join('+') || undefined;
@@ -248,9 +234,6 @@ export default {
         name: this.$route.name,
         query,
       });
-    },
-    remove(item) {
-      this.input = this.input.filter((x) => !(x.id === item.id && x.group === item.group));
     },
     // This function changes the slider from range to point, and creates a new range value fittingly
     toggleSliderComponent(mode) {
@@ -271,24 +254,30 @@ export default {
       ];
       const labels = ['Author', 'Passage', 'Keyword', 'Use Case'];
 
-      this.items = [];
+      this.$store.commit('clearItems');
 
-      this.loading.autocomplete = true;
+      this.loading = true;
       Promise.all(urls.map((x) => fetch(x + val)))
         .then((res) => {
           Promise.all(res.map((x) => x.json()))
             .then((jsonRes) => {
               console.log('promise all autocomplete', jsonRes);
               jsonRes.forEach((x, i) => {
-                this.addResultsToItems(x.results, labels[i]);
+                this.$store.commit('addItems', { items: x.results, label: labels[i] });
               });
+            })
+            .catch((err) => {
+              console.log(err);
+            })
+            .finally(() => {
+              this.loading = false;
             });
         })
         .catch((err) => {
           console.log(err);
         })
         .finally(() => {
-          this.loading.autocomplete = false;
+          this.loading = false;
         });
     },
   },

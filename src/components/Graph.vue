@@ -57,8 +57,6 @@ export default {
   watch: {
     '$route.query': {
       handler(query) {
-        this.loading = true;
-
         const terms = {
           Author: 'rvn_stelle_key_word_keyword__text__autor',
           Passage: 'rvn_stelle_key_word_keyword',
@@ -75,18 +73,26 @@ export default {
           }
         });
         console.log('adress', adress);
-        fetch(adress)
-          .then((res) => res.json())
-          .then((res) => {
-            console.log('keyword-data', res);
-            this.graph = res;
-          })
-          .catch((err) => {
-            console.log(err);
-          })
-          .finally(() => {
-            this.loading = false;
-          });
+
+        const prefetched = this.$store.state.fetchedResults[adress];
+        if (prefetched) {
+          this.graph = prefetched;
+        } else {
+          this.loading = true;
+          fetch(adress)
+            .then((res) => res.json())
+            .then((res) => {
+              console.log('keyword-data', res);
+              this.$store.commit('addToResults', { req: adress, res });
+              this.graph = res;
+            })
+            .catch((err) => {
+              console.log(err);
+            })
+            .finally(() => {
+              this.loading = false;
+            });
+        }
       },
       deep: true,
       immediate: true,

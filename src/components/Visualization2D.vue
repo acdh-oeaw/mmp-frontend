@@ -19,7 +19,7 @@ export default {
     },
     graph: Object,
     highlightedNodeIds: Set, // TODO
-    linkWidth: Number,
+    linkWidth: String,
     onNodeClick: Function,
     onSimulationEnd: Function,
     onSimulationTick: Function,
