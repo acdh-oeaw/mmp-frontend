@@ -13,10 +13,10 @@
     >
       <template v-slot:item.author="{ item }">
         <span v-for="(autor, i) in item.text.autor" :key="autor">
-          <span v-if="$store.state.fetchedResults[autor]">
+          <a @click="addAuthorToInput($store.state.fetchedResults[autor])" v-if="$store.state.fetchedResults[autor]">
             {{ $store.state.fetchedResults[autor].name_en }}
             <span v-if="i != item.text.autor.length - 1"></span>
-          </span>
+          </a>
           <v-progress-circular
             size="16"
             v-else
@@ -72,6 +72,13 @@ export default {
         id: parseInt(obj.url.replace(/[^0-9]/g, ''), 10),
         selected_text: obj.stichwort,
         group: 'Keyword',
+      });
+    },
+    addAuthorToInput(obj) {
+      this.$store.commit('addToItemsAndInput', {
+        id: parseInt(obj.url.replace(/[^0-9]/g, ''), 10),
+        selected_text: obj.name,
+        group: 'Author',
       });
     },
     fetchAuthors(arr) {
