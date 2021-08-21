@@ -8,7 +8,7 @@
       absolute
       class="overlay"
       opacity=".1"
-      :value="!nodeCount"
+      :value="!nodeCount && !loading"
     >
       <h1 class="no-nodes">
         No nodes found!

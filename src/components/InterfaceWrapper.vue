@@ -169,7 +169,7 @@ export default {
       },
       barbari: {
         id: '33',
-        text: 'barbari, [wurzel: barbar]',
+        text: 'barbari',
         selected_text: 'barbari, [wurzel: barbar]',
         group: 'Keyword',
       },

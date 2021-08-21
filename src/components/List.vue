@@ -13,19 +13,14 @@
       @update:items-per-page="updateLimit"
       class="data-table"
     >
-      <template v-slot:item.author="{ item }">
-        <span v-for="(autor, i) in item.text.autor" :key="autor">
-          <a @click="addAuthorToInput($store.state.fetchedResults[autor])" v-if="$store.state.fetchedResults[autor]" :key="renderKey">
-            {{ $store.state.fetchedResults[autor].name_en }}
-            <span v-if="i != item.text.autor.length - 1"></span>
-          </a>
-          <v-progress-circular
-            size="16"
-            v-else
-            indeterminate
-            color="primary"
-          />
-        </span>
+      <template v-slot:item.text.autor="{ item }">
+        <a
+          v-for="author in item.text.autor"
+          @click="addAuthorToInput(author)"
+          :key="author.id"
+        >
+          {{ author.name_en }}
+        </a>
       </template>
       <template v-slot:item.keywords="{ item }">
         <!-- displays unkown if neither start nor end date are defined -->
@@ -58,7 +53,7 @@ export default {
   data: () => ({
     fetchedAuthors: {},
     headers: [
-      { text: 'Author', value: 'author' },
+      { text: 'Author', value: 'text.autor' },
       { text: 'Title', value: 'text.title', class: 'font-weight-bold' },
       { text: 'Label', value: 'display_label' },
       { text: 'Keywords', value: 'keywords' },
@@ -82,35 +77,12 @@ export default {
       });
     },
     addAuthorToInput(obj) {
+      console.log(obj);
       this.$store.commit('addToItemsAndInput', {
         id: parseInt(obj.url.replace(/[^0-9]/g, ''), 10),
         selected_text: obj.name,
         group: 'Author',
       });
-    },
-    fetchAuthors(arr) {
-      Promise.all(arr.map((x) => fetch(x)))
-        .then((res) => {
-          Promise.all(res.map((x) => x.json()))
-            .then((authors) => {
-              console.log('promise all authors', authors);
-              authors.forEach((author) => {
-                this.$store.commit('addToResults', { req: author.url, res: author });
-                this.renderKey += 1;
-              });
-            })
-            .catch((err) => {
-              console.log(err);
-            })
-            .finally(() => {
-            });
-        })
-        .catch((err) => {
-          console.log(err);
-        })
-        .finally(() => {
-          this.loading = false;
-        });
     },
     fetchList(query) {
       const terms = {
@@ -134,8 +106,6 @@ export default {
       if (prefetched) {
         this.items = prefetched.results;
         this.pagination.count = prefetched.count;
-        const authors = [...new Set(this.items.map((x) => x.text.autor).flat())];
-        this.fetchAuthors(authors);
       } else {
         this.loading = true;
         fetch(adress)
@@ -145,8 +115,6 @@ export default {
             this.$store.commit('addToResults', { req: adress, res });
             this.items = res.results;
             this.pagination.count = res.count;
-            const authors = [...new Set(this.items.map((x) => x.text.autor).flat())];
-            this.fetchAuthors(authors);
           })
           .catch((err) => {
             console.log(err);
