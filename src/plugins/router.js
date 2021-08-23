@@ -7,6 +7,8 @@ import Graph from '@/components/Graph';
 import Map from '@/components/Map';
 import List from '@/components/List';
 
+import PassageDetail from '@/components/PassageDetail';
+
 Vue.use(VueRouter);
 
 const routes = [
@@ -24,6 +26,12 @@ const routes = [
         path: 'graph',
         name: 'Graph',
         component: Graph,
+        children: [
+          {
+            path: 'detail',
+            name: 'Keyword Detail',
+          },
+        ],
       },
       {
         path: 'map',
@@ -34,6 +42,13 @@ const routes = [
         path: 'list',
         name: 'List',
         component: List,
+        children: [
+          {
+            path: 'detail/:id',
+            name: 'Passage Detail',
+            component: PassageDetail,
+          },
+        ],
       },
     ],
   },

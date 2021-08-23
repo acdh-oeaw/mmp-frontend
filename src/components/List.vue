@@ -9,6 +9,8 @@
       :headers="headers"
       :loading="loading"
       :server-items-length="pagination.count"
+      disable-sort
+      disable-filtering
       @update:page="updateOffset"
       @update:items-per-page="updateLimit"
       class="data-table"
@@ -21,6 +23,11 @@
         >
           {{ author.name_en }}
         </a>
+      </template>
+      <template v-slot:item.text.title="{ item }">
+        <router-link :to="{ name: 'Passage Detail', params: { id: item.url.replace(/[^0-9]/g, '') }, query: $route.query }" class="text-decoration-none">
+          <b>{{ item.text.title }}</b>
+        </router-link>
       </template>
       <template v-slot:item.keywords="{ item }">
         <!-- displays unkown if neither start nor end date are defined -->
@@ -40,21 +47,20 @@
       </template>
       <template v-slot:item.written="{ item }">
         <!-- displays unkown if neither start nor end date are defined -->
-        {{ item.start_date || item.end_date ? `${item.start_date || 'unknown'} - ${item.end_date || 'unknown'}` : 'unknown' }}
+        {{ (item.start_date || item.end_date) ? `${item.start_date || 'unknown'} - ${item.end_date || 'unknown'}` : 'unknown' }}
       </template>
     </v-data-table>
+    <router-view />
   </v-card>
 </template>
 
 <script>
-
 export default {
   name: 'List',
   data: () => ({
-    fetchedAuthors: {},
     headers: [
       { text: 'Author', value: 'text.autor' },
-      { text: 'Title', value: 'text.title', class: 'font-weight-bold' },
+      { text: 'Title', value: 'text.title' },
       { text: 'Label', value: 'display_label' },
       { text: 'Keywords', value: 'keywords' },
       { text: 'Written', value: 'written' },

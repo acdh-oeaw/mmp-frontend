@@ -94,7 +94,7 @@
               </v-autocomplete>
             </v-col>
           </v-row>
-          <v-row align="center" justify="center" v-if="!Object.keys(query).length">
+          <v-row align="center" justify="center" v-if="!Object.keys(query).length && !Object.keys($route.params).length">
             <v-col cols="12" md="8">
               <div
                 class="text-center no-query"
