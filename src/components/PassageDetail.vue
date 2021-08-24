@@ -48,7 +48,7 @@
               <v-chip
                 color="blue lighten-4"
                 small
-                @click="$store.commit('addToItemsAndInput', { id: keyword.url.replace(/[^0-9]/g, ''), selected_text: keyword.stichwort, group: 'Keyword' })"
+                @click="$store.commit('addToItemsAndInput', { id: keyword.url.replace(/\D/g, ''), selected_text: keyword.stichwort, group: 'Keyword' })"
               >
                 {{ keyword.stichwort }}
               </v-chip>
@@ -63,7 +63,7 @@
               <v-chip
                 color="red lighten-3"
                 small
-                @click="$store.commit('addToItemsAndInput', { id: author.url.replace(/[^0-9]/g, ''), selected_text: author.name, group: 'Author' })"
+                @click="$store.commit('addToItemsAndInput', { id: author.url.replace(/\D/g, ''), selected_text: author.name, group: 'Author' })"
               >
                 {{ author.name_en }}
               </v-chip>
@@ -75,10 +75,11 @@
         </tr>
       </tbody>
     </v-simple-table>
-    <v-skeleton-loader
-      v-else
-      type="table-row-divider@11"
-    />
+    <v-container v-else>
+      <v-skeleton-loader
+        type="table-row-divider@11"
+      />
+    </v-container>
   </v-navigation-drawer>
 </template>
 

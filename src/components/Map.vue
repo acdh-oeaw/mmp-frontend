@@ -4,6 +4,17 @@
     width="100%"
     class="map-wrapper"
   >
+    <v-overlay
+      absolute
+      class="overlay"
+      opacity=".2"
+      :value="!entries.count"
+      z-index="1000"
+    >
+      <h1 class="no-nodes">
+        No Locations found!
+      </h1>
+    </v-overlay>
     <l-map
       :zoom="3"
       style="height: 500px; width: 100%"

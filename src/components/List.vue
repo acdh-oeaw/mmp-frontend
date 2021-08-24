@@ -25,7 +25,7 @@
         </a>
       </template>
       <template v-slot:item.text.title="{ item }">
-        <router-link :to="{ name: 'Passage Detail', params: { id: item.url.replace(/[^0-9]/g, '') }, query: $route.query }" class="text-decoration-none">
+        <router-link :to="{ name: 'Passage Detail', params: { id: item.url.replace(/\D/g, '') }, query: $route.query }" class="text-decoration-none">
           <b>{{ item.text.title }}</b>
         </router-link>
       </template>
@@ -77,7 +77,7 @@ export default {
   methods: {
     addKeywordToInput(obj) {
       this.$store.commit('addToItemsAndInput', {
-        id: parseInt(obj.url.replace(/[^0-9]/g, ''), 10),
+        id: parseInt(obj.url.replace(/\D/g, ''), 10),
         selected_text: obj.stichwort,
         group: 'Keyword',
       });
@@ -85,7 +85,7 @@ export default {
     addAuthorToInput(obj) {
       console.log(obj);
       this.$store.commit('addToItemsAndInput', {
-        id: parseInt(obj.url.replace(/[^0-9]/g, ''), 10),
+        id: parseInt(obj.url.replace(/\D/g, ''), 10),
         selected_text: obj.name,
         group: 'Author',
       });

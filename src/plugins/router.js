@@ -7,6 +7,7 @@ import Graph from '@/components/Graph';
 import Map from '@/components/Map';
 import List from '@/components/List';
 
+import KeywordDetail from '@/components/KeywordDetail';
 import PassageDetail from '@/components/PassageDetail';
 
 Vue.use(VueRouter);
@@ -28,8 +29,9 @@ const routes = [
         component: Graph,
         children: [
           {
-            path: 'detail',
-            name: 'Keyword Detail',
+            path: 'detail/:id',
+            name: 'KeywordDetail',
+            component: KeywordDetail,
           },
         ],
       },

@@ -22,6 +22,7 @@
     <!-- <p>
       <node-details v-if="getDetails('keyword').id" />
     </p> -->
+    <router-view />
   </v-card>
 </template>
 
@@ -40,6 +41,25 @@ export default {
   methods: {
     nodeClick(node) {
       console.log('node clicked', node);
+
+      const q = node.detail_view_url.replace(/\D/g, '');
+
+      // code for implementing multiple selected nodes
+      // let q = this.$route.params.id;
+      // const id = node.detail_view_url.replace(/[^0-9]/g, '');
+      // // add or remove specific node from query
+      // if (q) {
+      //   q = q.split('+');
+      //   if (q.includes(id)) q = q.filter((x) => x !== id);
+      //   else q.push(id);
+      //   q = q.join('+');
+      // } else q = id;
+
+      this.$router.push({
+        name: 'KeywordDetail',
+        params: { id: q },
+        query: this.$route.query,
+      });
     },
     debounce(func, time) {
       let timer;
