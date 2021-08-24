@@ -81,7 +81,7 @@ export default {
   .v-expansion-panel-content__wrap {
     padding-left: 0px;
   }
-  .v-list-item {
+  .v-list-item:not(.keyword-header) {
     display: block;
   }
 </style>
