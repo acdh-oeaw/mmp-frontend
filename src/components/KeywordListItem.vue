@@ -9,7 +9,7 @@
         class="list-loader"
         v-if="loading"
       />
-      <v-list-item v-for="text in data" :key="text.url">
+      <v-list-item v-for="text in data" :key="text.url" class="list-item">
         <v-list-item-title>
           {{ text.title }}
         </v-list-item-title>
@@ -83,5 +83,8 @@ export default {
   }
   .v-list-item:not(.keyword-header) {
     display: block;
+  }
+  .list-item {
+    margin-bottom: 10px;
   }
 </style>

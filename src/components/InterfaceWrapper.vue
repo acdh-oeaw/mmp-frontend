@@ -254,8 +254,6 @@ export default {
       ];
       const labels = ['Author', 'Passage', 'Keyword', 'Use Case'];
 
-      this.$store.commit('clearItems');
-
       this.loading = true;
       Promise.all(urls.map((x) => fetch(x + val)))
         .then((res) => {
