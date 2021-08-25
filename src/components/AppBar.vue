@@ -73,7 +73,6 @@ export default {
 <style>
   a.nav-link {
     color: white !important;
-    text-decoration: none;
   }
   div.light a, .light.nav-link {
     color: rgba(0, 0, 0, 0.87) !important;

@@ -9,7 +9,7 @@
     <div class="parallax-wrapper">
       <v-row align="center" justify="center">
         <v-col cols="12">
-          <span class="home-title text-h3 text-lg-h1">Mapping Medieval Peoples</span>
+          <span class="home-title text-h3 text-lg-h1 text-decoration-none">Mapping Medieval Peoples</span>
         </v-col>
       </v-row>
       <v-row justify="center">

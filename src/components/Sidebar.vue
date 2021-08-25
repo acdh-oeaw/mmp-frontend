@@ -58,9 +58,6 @@ export default {
 </script>
 
 <style scoped>
-  .sidebar-title a {
-    text-decoration: none;
-  }
   .sidebar-link {
     color: rgba(0, 0, 0, 0.87) !important;
   }

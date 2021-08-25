@@ -122,7 +122,7 @@
           <v-row>
             <v-col>
               <component
-                disabled
+                :disabled="disabledSlider"
                 :is="sliderComponent"
                 v-model="range"
                 class="slider"
@@ -139,10 +139,10 @@
                 </template>
                 <template v-slot:append>
                   <v-btn icon>
-                    <img class="icon" @click="toggleSliderComponent('v-range-slider')" :src="$vuetify.icons.values.range" alt="Range Icon" />
+                    <img class="icon" @click="toggleSliderComponent('v-range-slider')" :src="disabledSlider ? $vuetify.icons.values.rangeDisabled : $vuetify.icons.values.range" alt="Range Icon" />
                   </v-btn>
-                  <v-btn icon>
-                    <img class="icon" @click="toggleSliderComponent('v-slider')" :src="$vuetify.icons.values.slider" alt="Slider Icon" />
+                  <v-btn icon disabled>
+                    <img class="icon" @click="toggleSliderComponent('v-slider')" :src="disabledSlider ? $vuetify.icons.values.sliderDisabled : $vuetify.icons.values.slider" alt="Slider Icon" />
                   </v-btn>
                 </template>
               </component>
@@ -180,6 +180,7 @@ export default {
         group: 'Use Case',
       },
     },
+    disabledSlider: true,
     loading: false,
     range: [47, 113],
     sliderComponent: 'v-range-slider',
@@ -308,6 +309,9 @@ export default {
   }
   .slider {
     margin-top: 30px;
+  }
+  .v-slider {
+    height: 44px;
   }
   div.v-slider__thumb-label.primary {
     background-color: transparent !important;

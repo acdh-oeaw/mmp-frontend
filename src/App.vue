@@ -21,7 +21,10 @@ export default {
   },
 };
 </script>
-<style lang="css" scoped>
+<style lang="css">
+  a {
+    text-decoration: none !important;
+  }
   .app-class {
     background-color: #f1f5fa !important;
   }
