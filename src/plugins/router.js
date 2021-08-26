@@ -25,7 +25,7 @@ const routes = [
     children: [
       {
         path: 'graph',
-        name: 'Graph',
+        name: 'Network Graph',
         component: Graph,
         children: [
           {

@@ -8,7 +8,7 @@
   >
     <v-list-item class="keyword-header">
       <v-list-item-action>
-        <router-link :to="{ name: 'Graph', query: $route.query }">
+        <router-link :to="{ name: 'Network Graph', query: $route.query }">
           <v-icon>mdi-close</v-icon>
         </router-link>
       </v-list-item-action>

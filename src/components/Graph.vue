@@ -30,7 +30,7 @@
 import Visualization from './Visualization2D';
 
 export default {
-  name: 'Graph',
+  name: 'Network Graph',
   components: {
     Visualization,
   },

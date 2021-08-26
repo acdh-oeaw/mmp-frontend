@@ -5,53 +5,6 @@
         <v-col cols="12" xl="8">
           <v-row class="grey-bg">
             <v-col>
-              <v-btn text small @dblclick="ee">
-                View as
-              </v-btn>
-            </v-col>
-            <v-col>
-              <v-btn
-                text
-                block
-                small
-                elevation="0"
-                class="view-picker"
-                :disabled="currentView === 'Graph'"
-                :to="{ name: 'Graph' }"
-              >
-                Network Graph
-              </v-btn>
-            </v-col>
-            <v-col>
-              <v-btn
-                text
-                block
-                small
-                elevation="0"
-                class="view-picker"
-                :disabled="currentView === 'Map'"
-                :to="{ name: 'Map' }"
-              >
-                Map
-              </v-btn>
-            </v-col>
-            <v-col>
-              <v-btn
-                text
-                block
-                small
-                elevation="0"
-                class="view-picker"
-                :disabled="currentView === 'List'"
-                :to="{ name: 'List' }"
-              >
-                List
-              </v-btn>
-            </v-col>
-            <v-spacer />
-          </v-row>
-          <v-row class="grey-bg">
-            <v-col>
               <v-autocomplete
                 v-model="$store.state.autocomplete.input"
                 multiple
@@ -66,8 +19,8 @@
               >
                 <template v-slot:item="data">
                   <v-list-item-content>
-                    <v-list-item-title v-html="data.item.selected_text"></v-list-item-title>
-                    <v-list-item-subtitle v-html="data.item.group"></v-list-item-subtitle>
+                    <v-list-item-title>{{ data.item.selected_text }}</v-list-item-title>
+                    <v-list-item-subtitle>{{ data.item.group }}</v-list-item-subtitle>
                   </v-list-item-content>
                 </template>
                 <template v-slot:selection="data">
@@ -79,7 +32,7 @@
                       @click="data.select"
                       @click:close="$store.commit('removeItemFromInput', data.item)"
                     >
-                      {{ data.item.selected_text }}
+                      {{ shorten(data.item.selected_text, 30) }}
                     </v-chip>
                 </template>
                 <template v-slot:prepend>
@@ -93,6 +46,65 @@
                 </template>
               </v-autocomplete>
             </v-col>
+          </v-row>
+          <v-row class="grey-bg">
+            <template v-if="!$vuetify.breakpoint.mobile">
+              <v-col>
+                <v-btn text small @dblclick="ee">
+                  View as
+                </v-btn>
+              </v-col>
+              <v-col>
+                <v-btn
+                  text
+                  block
+                  small
+                  elevation="0"
+                  class="view-picker"
+                  :disabled="currentView === 'Graph'"
+                  :to="{ name: 'Network Graph' }"
+                >
+                  Network Graph
+                </v-btn>
+              </v-col>
+              <v-col>
+                <v-btn
+                  text
+                  block
+                  small
+                  elevation="0"
+                  class="view-picker"
+                  :disabled="currentView === 'Map'"
+                  :to="{ name: 'Map' }"
+                >
+                  Map
+                </v-btn>
+              </v-col>
+              <v-col>
+                <v-btn
+                  text
+                  block
+                  small
+                  elevation="0"
+                  class="view-picker"
+                  :disabled="currentView === 'List'"
+                  :to="{ name: 'List' }"
+                >
+                  List
+                </v-btn>
+              </v-col>
+              <v-spacer />
+            </template>
+            <template v-else>
+              <v-col>
+                <v-select
+                  v-model="mobileSelect"
+                  :items="['Network Graph', 'Map', 'List']"
+                  @change="$router.push({ name: 'mobileSelect' });"
+                  label="View as"
+                />
+              </v-col>
+            </template>
           </v-row>
           <v-row align="center" justify="center" v-if="!Object.keys(query).length && !Object.keys($route.params).length">
             <v-col cols="12" md="8">
@@ -182,6 +194,7 @@ export default {
     },
     disabledSlider: true,
     loading: false,
+    mobileSelect: 'Network Graph',
     range: [47, 113],
     sliderComponent: 'v-range-slider',
     textInput: '',
@@ -204,9 +217,6 @@ export default {
     ee() {
       // eslint-disable-next-line no-alert
       alert(':^)');
-    },
-    log(data) {
-      console.log('log data', data);
     },
     getChipColorFromGroup(group) {
       const colors = {
@@ -236,6 +246,7 @@ export default {
         query,
       });
     },
+    shorten: (str, n) => (str.length > n ? `${str.substring(0, n)}...` : str),
     // This function changes the slider from range to point, and creates a new range value fittingly
     toggleSliderComponent(mode) {
       if (mode !== this.sliderComponent) {
@@ -280,6 +291,17 @@ export default {
   mounted() {
     console.log('vuetify', this.$vuetify.icons.values.slider);
     console.log('route', this.$route);
+
+    if (this.$vuetify.breakpoint.mobile) {
+      switch (this.$route.name) {
+        case 'Graph':
+          this.mobileSelect = 'Network Graph';
+          break;
+        default:
+          this.mobileSelect = this.$route.name;
+          break;
+      }
+    }
   },
 };
 </script>
