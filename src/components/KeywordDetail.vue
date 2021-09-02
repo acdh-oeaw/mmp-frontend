@@ -31,6 +31,36 @@
     <v-container>
       <v-row>
         <v-col>
+          <v-tabs
+            v-model="tab"
+            grow
+            background-color="transparent"
+          >
+            <v-tab key="Geography" disabled>
+              Geography
+            </v-tab>
+            <v-tab key="Over Time">
+              Over Time
+            </v-tab>
+          </v-tabs>
+          <v-tabs-items v-model="tab" background-color="transparent">
+            <v-tab-item key="Geography">
+            </v-tab-item>
+            <v-tab-item key="Over Time">
+              <keyword-over-time
+                v-if="!loading"
+                :data="data.overtime"
+              />
+              <v-skeleton-loader
+                v-else
+                type="image@2"
+              />
+            </v-tab-item>
+          </v-tabs-items>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col>
           <v-expansion-panels
             v-if="!loading"
             accordion
@@ -56,9 +86,13 @@
               </v-expansion-panel-content>
             </v-expansion-panel>
           </v-expansion-panels>
+          <v-skeleton-loader
+            type="list-item@5"
+            v-else
+          />
         </v-col>
       </v-row>
-      <v-row  align="end">
+      <v-row align="end">
         <v-col>
           <v-btn
             dark
@@ -81,17 +115,21 @@
 
 <script>
 import KeywordListItem from './KeywordListItem';
+import KeywordOverTime from './KeywordOverTime';
 
 export default {
   name: 'KeywordDetail',
   data: () => ({
     loading: true,
     data: {
+      overtime: [],
       url: '',
     },
+    tab: null,
   }),
   components: {
     KeywordListItem,
+    KeywordOverTime,
   },
   methods: {
     removeRoot: (label) => label.split(',')[0],
@@ -119,6 +157,7 @@ export default {
           `https://mmp.acdh-dev.oeaw.ac.at/archiv/keyword-data/?id=${params.id}`,
           `https://mmp.acdh-dev.oeaw.ac.at/api/keyword/${params.id}`,
           `https://mmp.acdh-dev.oeaw.ac.at/api/stelle/?format=json&key_word=${params.id}`,
+          `https://mmp.acdh-dev.oeaw.ac.at/archiv/keyword/century/${params.id}`,
         ];
 
         // code for implementing multiple selected nodes
@@ -142,7 +181,12 @@ export default {
             Promise.all(res.map((x) => x.json()))
               .then((jsonRes) => {
                 console.log('promise all keyword', jsonRes);
-                this.data = { ...jsonRes[1], nodes: jsonRes[0], passages: jsonRes[2] };
+                this.data = {
+                  ...jsonRes[1],
+                  nodes: jsonRes[0],
+                  passages: jsonRes[2],
+                  overtime: jsonRes[3],
+                };
                 console.log('keyword data', this.data);
               })
               .catch((err) => {
@@ -170,6 +214,9 @@ button.v-expansion-panel-header {
   width: 100%;
 }
 .theme--light.v-expansion-panels .v-expansion-panel {
+  background-color: transparent;
+}
+.theme--light.v-tabs-items {
   background-color: transparent;
 }
 .icon {

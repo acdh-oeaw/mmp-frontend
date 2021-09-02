@@ -100,7 +100,7 @@
                 <v-select
                   v-model="mobileSelect"
                   :items="['Network Graph', 'Map', 'List']"
-                  @change="$router.push({ name: 'mobileSelect' });"
+                  @change="$router.push({ name: mobileSelect });"
                   label="View as"
                 />
               </v-col>
@@ -153,7 +153,7 @@
                   <v-btn icon>
                     <img class="icon" @click="toggleSliderComponent('v-range-slider')" :src="disabledSlider ? $vuetify.icons.values.rangeDisabled : $vuetify.icons.values.range" alt="Range Icon" />
                   </v-btn>
-                  <v-btn icon disabled>
+                  <v-btn icon>
                     <img class="icon" @click="toggleSliderComponent('v-slider')" :src="disabledSlider ? $vuetify.icons.values.sliderDisabled : $vuetify.icons.values.slider" alt="Slider Icon" />
                   </v-btn>
                 </template>
@@ -192,10 +192,10 @@ export default {
         group: 'Use Case',
       },
     },
-    disabledSlider: true,
+    disabledSlider: false,
     loading: false,
     mobileSelect: 'Network Graph',
-    range: [47, 113],
+    range: [40, 120],
     sliderComponent: 'v-range-slider',
     textInput: '',
   }),
@@ -241,6 +241,10 @@ export default {
           .map((x) => x.id)
           .join('+') || undefined;
       });
+
+      query.time = Array.isArray(this.range) ? this.range.map((x) => x * 10).join('+') : this.range * 10;
+      if (query.time === '400+1200') query.time = undefined;
+
       this.$router.push({
         name: this.$route.name,
         query,

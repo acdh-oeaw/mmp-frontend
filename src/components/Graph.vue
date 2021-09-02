@@ -8,10 +8,16 @@
       absolute
       class="overlay"
       opacity=".1"
-      :value="!nodeCount && !loading"
+      :value="!nodeCount || loading"
     >
-      <h1 class="no-nodes">
+      <h1 v-if="!loading" class="no-nodes">
         No nodes found!
+      </h1>
+      <h1 v-else class="no-nodes">
+        <v-progress-circular
+          indeterminate
+          color="#0F1226"
+        />
       </h1>
     </v-overlay>
     <visualization
@@ -30,7 +36,7 @@
 import Visualization from './Visualization2D';
 
 export default {
-  name: 'Network Graph',
+  name: 'NetworkGraph',
   components: {
     Visualization,
   },
@@ -83,8 +89,9 @@ export default {
           Keyword: 'id',
           // 'Use Case': 'unused',
         };
+
         let adress = 'https://mmp.acdh-dev.oeaw.ac.at/archiv/keyword-data/?';
-        Object.keys(query).forEach((cat) => {
+        Object.keys(terms).forEach((cat) => {
           if (query[cat]) {
             const arr = query[cat].split('+');
             arr.forEach((val) => {
@@ -92,6 +99,19 @@ export default {
             });
           }
         });
+
+        console.log('query.time', query.time);
+        if (query.time) {
+          if (query.time.toString().includes('+')) {
+            const times = query.time.split('+');
+            adress += `&rvn_stelle_key_word_keyword__start_date=${times[0]}&rvn_stelle_key_word_keyword__start_date_lookup=lt`;
+            adress += `&rvn_stelle_key_word_keyword__end_date=${times[1]}&rvn_stelle_key_word_keyword__end_date_lookup=gt`;
+          } else {
+            adress += `&rvn_stelle_key_word_keyword__start_date=${query.time - 5}&rvn_stelle_key_word_keyword__start_date_lookup=lt`;
+            adress += `&rvn_stelle_key_word_keyword__end_date=${query.time + 4}&rvn_stelle_key_word_keyword__end_date_lookup=gt`;
+          }
+        }
+
         console.log('adress', adress);
 
         const prefetched = this.$store.state.fetchedResults[adress];

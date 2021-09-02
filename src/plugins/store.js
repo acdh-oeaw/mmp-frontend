@@ -18,7 +18,7 @@ export default new Vuex.Store({
     fetchedResults: {},
     interface: {
       sidebarDrawer: false,
-      currentView: 'Graph',
+      currentView: 'Network Graph',
     },
   },
   mutations: {

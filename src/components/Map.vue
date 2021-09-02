@@ -106,6 +106,17 @@ export default {
             });
           }
         });
+
+        if (query.time) {
+          if (query.time.toString().includes('+')) {
+            const times = query.time.split('+');
+            adress += `&stelle__start_date=${times[0]}&stelle__start_date_lookup=lt`;
+            adress += `&stelle__end_date=${times[1]}&stelle__end_date_lookup=gt`;
+          } else {
+            adress += `&stelle__start_date=${query.time - 5}&stelle__start_date_lookup=lt`;
+            adress += `&stelle__end_date=${query.time + 4}&stelle__end_date_lookup=gt`;
+          }
+        }
         console.log('adress', adress);
 
         const prefetched = this.$store.state.fetchedResults[adress];
