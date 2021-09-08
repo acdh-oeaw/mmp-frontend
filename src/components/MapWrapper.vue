@@ -4,27 +4,7 @@
     width="100%"
     class="map-wrapper"
   >
-    <v-overlay
-      absolute
-      class="overlay"
-      opacity=".2"
-      :value="!entries.count"
-      z-index="1000"
-    >
-      <h1 class="no-nodes">
-        No Locations found!
-      </h1>
-    </v-overlay>
-    <l-map
-      :zoom="3"
-      style="height: 500px; width: 100%"
-      :bounds="bounds"
-    >
-      <l-tile-layer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
-      <l-geo-json :geojson="entries" />
-    </l-map>
+    <leaflet :data="entries" :loading="loading" />
     <!-- <div v-for="(feature, i) in featureList">
       <div
       class="card"
@@ -45,49 +25,17 @@
 </template>
 
 <script>
-import 'leaflet/dist/leaflet.css';
-import { latLngBounds, L } from 'leaflet';
-import { LMap, LGeoJson, LTileLayer } from 'vue2-leaflet';
+import Leaflet from './Leaflet';
 
 export default {
   name: 'Map',
+  components: {
+    Leaflet,
+  },
   data: () => ({
-    bounds: latLngBounds([
-      [34.016242, 5.488281],
-      [71.663663, 34.667969],
-    ]),
     entries: null,
     loading: false,
   }),
-  components: {
-    LMap,
-    LGeoJson,
-    LTileLayer,
-  },
-  methods: {
-    getBounds(arr) {
-      if (!arr.length) {
-        return latLngBounds([
-          [34.016242, 5.488281],
-          [71.663663, 34.667969],
-        ]);
-      }
-      const coords = arr
-        .map((x) => x.geometry.coordinates)
-        .flat(2);
-
-      const xCords = coords.map((x) => x[1]);
-      const yCords = coords.map((y) => y[0]);
-
-      return latLngBounds([
-        [Math.min(...xCords), Math.min(...yCords)],
-        [Math.max(...xCords), Math.max(...yCords)],
-      ]);
-    },
-    foundLocations() {
-      return this.entries.length && !this.entries.count && this.entries.features.length;
-    },
-  },
   watch: {
     '$route.query': {
       handler(query) {
@@ -122,16 +70,14 @@ export default {
         const prefetched = this.$store.state.fetchedResults[adress];
         if (prefetched) {
           this.entries = prefetched;
-          this.bounds = this.getBounds(prefetched.features);
         } else {
           this.loading = true;
           fetch(adress)
             .then((res) => res.json())
             .then((res) => {
-              console.log('map-data', res, L);
+              console.log('map-data', res);
               this.$store.commit('addToResults', { req: adress, res });
               this.entries = res;
-              this.bounds = this.getBounds(res.features);
             })
             .catch((err) => {
               console.log(err);

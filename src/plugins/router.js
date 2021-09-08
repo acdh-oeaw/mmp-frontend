@@ -4,7 +4,7 @@ import VueRouter from 'vue-router';
 import Home from '@/components/Home';
 import Interface from '@/components/InterfaceWrapper';
 import Graph from '@/components/Graph';
-import Map from '@/components/Map';
+import Map from '@/components/MapWrapper';
 import List from '@/components/List';
 
 import KeywordDetail from '@/components/KeywordDetail';
