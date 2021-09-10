@@ -21,13 +21,12 @@
       </h1>
     </v-overlay>
     <visualization
-    :graph="graph"
-    :onNodeClick="nodeClick"
-    linkWidth="3"
-    height="500" />
-    <!-- <p>
-      <node-details v-if="getDetails('keyword').id" />
-    </p> -->
+      :graph="styledNodes"
+      :onNodeClick="nodeClick"
+      :nodeCanvasObjectMode="() => 'after'"
+      :nodeCanvasObject="nodeObject"
+      height="500"
+    />
     <router-view />
   </v-card>
 </template>
@@ -45,6 +44,22 @@ export default {
     loading: false,
   }),
   methods: {
+    removeRoot: (label) => label.split(',')[0],
+    nodeObject(node, ctx, globalScale) {
+      const label = this.removeRoot(node.label);
+      const fontSize = 20 / globalScale;
+      ctx.font = `${fontSize}px Sans-Serif`;
+      const textWidth = ctx.measureText(label).width;
+      const bckgDimensions = [textWidth, fontSize].map((n) => n + fontSize * 0.2);
+
+      ctx.fillStyle = node.color;
+      ctx.fillRect(node.x - bckgDimensions[0] / 2, node.y - bckgDimensions[1] / 2, ...bckgDimensions);
+
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = 'white';
+      ctx.fillText(label, node.x, node.y);
+    },
     nodeClick(node) {
       console.log('node clicked', node);
 
@@ -78,6 +93,18 @@ export default {
   computed: {
     nodeCount() {
       return this.graph?.nodes?.length;
+    },
+    styledNodes() {
+      const ret = this.graph;
+      if (!ret) return ret;
+      console.log('graph', this.graph);
+      ret.edges.forEach((x) => {
+        const targetNode = ret.nodes.filter((node) => node.id === x.source.id)[0];
+
+        if (targetNode?.val) targetNode.val += 1;
+        else if (targetNode) targetNode.val = 2;
+      });
+      return ret;
     },
   },
   watch: {
@@ -122,7 +149,7 @@ export default {
           fetch(adress)
             .then((res) => res.json())
             .then((res) => {
-              console.log('keyword-data', res);
+              console.log('node-data', res);
               this.$store.commit('addToResults', { req: adress, res });
               this.graph = res;
             })

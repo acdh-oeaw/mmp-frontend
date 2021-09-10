@@ -13,6 +13,7 @@ module.exports = {
   rules: {
     'vue/valid-v-slot': 'off',
     'max-len': 'off',
+    'no-param-reassign': ["error", { "props": false }],
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'import/extensions': ['error', 'always', {

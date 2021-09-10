@@ -20,6 +20,8 @@ export default {
     graph: Object,
     highlightedNodeIds: Set, // TODO
     linkWidth: String,
+    nodeCanvasObject: Function,
+    nodeCanvasObjectMode: String,
     onNodeClick: Function,
     onSimulationEnd: Function,
     onSimulationTick: Function,
@@ -34,6 +36,7 @@ export default {
 
   },
   methods: {
+    getIdFromUrl: (url) => url?.replace(/\D/g, ''),
     transformedData(obj) {
       return {
         nodes: this.addColorAndType(obj.nodes, obj.types.nodes),
@@ -45,7 +48,9 @@ export default {
       const retArr = arr.map((node) => {
         const retNode = node;
         const nodeType = typeArr.filter((type) => type.id === node.type)[0];
-        if (nodeType) retNode.color = nodeType.color;
+        if (nodeType) {
+          retNode.color = nodeType.color;
+        }
         return retNode;
       });
       return retArr;
@@ -64,6 +69,7 @@ export default {
         .onEngineTick(this.onEngineEnd)
         .onZoom(this.onZoom)
         .linkWidth(parseFloat(this.linkWidth) || 1)
+        .linkDirectionalParticles(2)
         .graphData(this.transformedData(this.graph || {
           nodes: [],
           edges: [],
@@ -72,14 +78,8 @@ export default {
             edges: [],
           },
         }))
-        .nodeCanvasObjectMode(() => 'after')
-        /* .nodeCanvasObject((node, ctx) => {
-          ctx.font = '2px Sans-Serif';
-          ctx.textAlign = 'center';
-          ctx.fillStyle = "white";
-          ctx.textBaseline = 'middle';
-          ctx.fillText(node.label.split(',')[0], node.x, node.y);
-        }) */
+        .nodeCanvasObject(this.nodeCanvasObject)
+        .nodeCanvasObjectMode(this.nodeCanvasObjectMode)
         .cooldownTicks(100)
         .onEngineStop(() => graphDom.zoomToFit(400));
     },
