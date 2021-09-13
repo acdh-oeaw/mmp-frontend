@@ -44,6 +44,7 @@ export default {
     events: [],
     loading: true,
   }),
+  props: ['id'],
   methods: {
     removeDatesFromTitle(title) {
       const ret = title.split(' ');
@@ -74,9 +75,11 @@ export default {
     },
   },
   mounted() {
+    const id = this.id || this.$route.params.id;
+
     const urls = [
-      `https://mmp.acdh-dev.oeaw.ac.at/api/usecase/${this.$route.params.id}?format=json`,
-      `https://mmp.acdh-dev.oeaw.ac.at/archiv/usecase-timetable-data/${this.$route.params.id}`,
+      `https://mmp.acdh-dev.oeaw.ac.at/api/usecase/${id}?format=json`,
+      `https://mmp.acdh-dev.oeaw.ac.at/archiv/usecase-timetable-data/${id}`,
     ];
 
     Promise.all(urls.map((x) => fetch(x)))
