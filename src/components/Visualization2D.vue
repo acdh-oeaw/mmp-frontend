@@ -21,7 +21,8 @@ export default {
     highlightedNodeIds: Set, // TODO
     linkWidth: String,
     nodeCanvasObject: Function,
-    nodeCanvasObjectMode: String,
+    nodeCanvasObjectMode: Function,
+    nodePointerAreaPaint: Function,
     onNodeClick: Function,
     onSimulationEnd: Function,
     onSimulationTick: Function,
@@ -80,6 +81,7 @@ export default {
         }))
         .nodeCanvasObject(this.nodeCanvasObject)
         .nodeCanvasObjectMode(this.nodeCanvasObjectMode)
+        .nodePointerAreaPaint(this.nodePointerAreaPaint)
         .cooldownTicks(100)
         .onEngineStop(() => graphDom.zoomToFit(400));
     },

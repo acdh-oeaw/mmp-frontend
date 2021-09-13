@@ -3,6 +3,8 @@ import VueRouter from 'vue-router';
 
 import Home from '@/components/Home';
 import Interface from '@/components/InterfaceWrapper';
+import Studies from '@/components/Studies';
+import CaseStudy from '@/components/CaseStudy';
 import Graph from '@/components/Graph';
 import Map from '@/components/MapWrapper';
 import List from '@/components/List';
@@ -19,10 +21,25 @@ const routes = [
     component: Home,
   },
   {
+    path: '/studies/',
+    name: 'Studies',
+    component: Studies,
+  },
+  {
+    path: '/studies/:id',
+    name: 'Case Study',
+    component: CaseStudy,
+  },
+  {
     path: '/explore/',
     name: 'Interface',
     component: Interface,
     children: [
+      {
+        path: 'map',
+        name: 'Map',
+        component: Map,
+      },
       {
         path: 'graph',
         name: 'Network Graph',
@@ -34,11 +51,6 @@ const routes = [
             component: KeywordDetail,
           },
         ],
-      },
-      {
-        path: 'map',
-        name: 'Map',
-        component: Map,
       },
       {
         path: 'list',

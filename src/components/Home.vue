@@ -31,7 +31,7 @@
         </v-col>
         <v-col cols="5" md="3" sm="5">
           <p>
-            <v-btn large block color="primary" id="read" v-html="$t('read')" />
+            <v-btn large block color="primary" id="read" v-html="$t('read')" :to="{ name: 'Case Study', params: { id: 6 }}" />
             <span class="button-subtitle">
               {{ $t('casestudy') }}
             </span>

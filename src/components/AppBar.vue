@@ -29,7 +29,7 @@
               <span class="non-selectable">
                 &nbsp;&nbsp;&bull;&nbsp;&nbsp;
               </span>
-              <router-link :to="{ name: '', params: {} }" class="nav-link">
+              <router-link :to="{ name: 'Studies' }" class="nav-link">
                 Case Studies
               </router-link>
               <span class="non-selectable">

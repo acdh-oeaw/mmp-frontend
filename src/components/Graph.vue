@@ -104,6 +104,11 @@ export default {
         if (targetNode?.val) targetNode.val += 1;
         else if (targetNode) targetNode.val = 2;
       });
+      console.log('ret', ret);
+      ret.nodes = ret.nodes.map((x) => {
+        x.val = Math.log(x.val) * 3;
+        return x;
+      });
       return ret;
     },
   },
