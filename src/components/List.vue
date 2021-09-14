@@ -100,7 +100,8 @@ export default {
       let adress = `https://mmp.acdh-dev.oeaw.ac.at/api/stelle/?format=json&limit=${this.pagination.limit}&offset=${this.pagination.offset}`;
       Object.keys(query).forEach((cat) => {
         if (query[cat]) {
-          const arr = query[cat].split('+');
+          console.log(query[cat]);
+          const arr = query[cat].toString(10).split('+');
           arr.forEach((val) => {
             adress += `&${terms[cat]}=${val}`;
           });

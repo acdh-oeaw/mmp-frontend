@@ -18,14 +18,15 @@
           <p v-if="study.description">{{ study.description }}</p>
           <v-timeline>
             <v-timeline-item
-              v-for="event in events"
-              :key="event.id"
+              v-for="(event, i) in events"
+              :key="`${event.id}&${i}`"
               large
               :icon="getIconFromType(event.ent_type).icon"
               :color="getIconFromType(event.ent_type).color"
             >
-              <span slot="opposite">{{ renderDates(event.start_date, event.end_date) }}</span>
-              {{ event.ent_description }}
+              <span class="font-weight-medium" slot="opposite">{{ renderDates(event.start_date, event.end_date) }}</span>
+              <router-link v-if="event.ent_type === 'autor'" class="font-weight-medium" :to="{ name: 'List', query: { Author: event.id }}">{{ event.ent_description }} <v-icon>mdi-arrow-right</v-icon></router-link>
+              <span v-else :class="{ 'font-weight-medium': event.ent_type != 'event' }">{{ event.ent_description }}</span>
             </v-timeline-item>
           </v-timeline>
         </template>
