@@ -8,6 +8,7 @@
               <v-autocomplete
                 v-model="$store.state.autocomplete.input"
                 multiple
+                clearable
                 item-text="selected_text"
                 return-object
                 autofocus
