@@ -22,7 +22,10 @@ export default new Vuex.Store({
     },
   },
   mutations: {
-    addItems: (state, { items, label }) => { state.autocomplete.items = state.autocomplete.items.concat(items.map((x) => ({ ...x, group: label }))); },
+    addItems: (state, { items, label }) => {
+      state.autocomplete.items = state.autocomplete.items.concat(items.map((x) => ({ ...x, group: label })));
+      state.autocomplete.items = removeDuplicates(state.autocomplete.items);
+    },
     addToItemsAndInput: (state, item) => {
       state.autocomplete.input.push(item);
       state.autocomplete.items.push(item);
