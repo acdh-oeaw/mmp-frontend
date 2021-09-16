@@ -4,43 +4,44 @@
     <v-parallax
       src="@/assets/europa.jpg"
       class="home-parallax text-center home-head"
-      height="600"
     >
-    <div class="parallax-wrapper">
-      <v-row align="center" justify="center">
-        <v-col cols="12">
-          <span class="home-title text-h3 text-lg-h1 text-decoration-none">Mapping Medieval Peoples</span>
-        </v-col>
-      </v-row>
-      <v-row justify="center">
-        <v-col cols="12" md="6">
-          <p class="text-subtitle-1 font-weight-bold">
-            {{ $t('subhead') }}
-          </p>
-          <p class="text-subtitle-1">
-            {{ $t('subsubhead') }}
-          </p>
-        </v-col>
-      </v-row>
-      <v-row justify="center">
-        <v-col cols="5" md="3" sm="5">
-          <v-btn large block color="secondary" :to="{ name: $store.state.interface.currentView }">{{ $t('search') }}</v-btn>
-          <span class="button-subtitle">
-            {{ $t('analyses') }}
-          </span>
-        </v-col>
-        <v-col cols="5" md="3" sm="5">
-          <p>
-            <v-btn large block color="primary" id="read" v-html="$t('read')" :to="{ name: 'Case Study', params: { id: 6 }}" />
-            <span class="button-subtitle">
-              {{ $t('casestudy') }}
-            </span>
-          </p>
-        </v-col>
-      </v-row>
-    </div>
+      <div class="parallax-wrapper">
+        <v-container>
+          <v-row align="center" justify="center">
+            <v-col cols="12">
+              <span class="home-title text-h3 text-lg-h1 text-decoration-none">Mapping Medieval Peoples</span>
+            </v-col>
+          </v-row>
+          <v-row justify="center">
+            <v-col cols="12" md="8">
+              <p class="text-subtitle-1 font-weight-bold">
+                {{ $t('subhead') }}
+              </p>
+              <p class="text-subtitle-1">
+                {{ $t('subsubhead') }}
+              </p>
+            </v-col>
+          </v-row>
+          <v-row justify="center">
+            <v-col cols="12" md="3" sm="5">
+              <v-btn large block color="secondary" :to="{ name: $store.state.interface.currentView }">{{ $t('search') }}</v-btn>
+              <span class="button-subtitle">
+                {{ $t('analyses') }}
+              </span>
+            </v-col>
+            <v-col cols="12" md="3" sm="5">
+              <p>
+                <v-btn large block color="primary" id="read" v-html="$t('read')" :to="{ name: 'Case Study', params: { id: 6 }}" />
+                <span class="button-subtitle">
+                  {{ $t('casestudy') }}
+                </span>
+              </p>
+            </v-col>
+          </v-row>
+        </v-container>
+      </div>
     </v-parallax>
-    <case-study id="5"/>
+    <case-study :id="Math.floor(Math.random() * 8) + 2" />
   </div>
 </template>
 
@@ -64,9 +65,14 @@ export default {
   .home-content {
     margin-top: 50px;
   }
+  .home-head {
+    min-height: 600px;
+    height: unset !important;
+  }
   .home-head div.v-parallax__content {
     background: linear-gradient(180deg, rgba(15, 18, 38, 1) 25%, rgba(15, 18, 38, 0.3) 100%);
     padding: 0;
+    min-height: 600px;
   }
   span.home-title {
     text-decoration-line: underline;

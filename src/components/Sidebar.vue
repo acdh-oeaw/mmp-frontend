@@ -6,12 +6,10 @@
     temporary
   >
     <v-list-item>
-      <v-list-item-icon>
-        <v-icon @click="$store.commit('toggleDrawer')">mdi-close</v-icon>
-      </v-list-item-icon>
       <v-list-item-content>
-        <v-list-item-title class="text-h6 sidebar-title font-weight-bold">
-          <router-link :to="{ name: 'Home' }" class="sidebar-link">
+        <v-list-item-title class="text-h4 font-weight-bold">
+          <v-icon @click.prevent="$store.commit('toggleDrawer')">mdi-close</v-icon>
+          <router-link :to="{ name: 'Home' }">
             MMP
           </router-link>
         </v-list-item-title>
@@ -32,6 +30,7 @@
         </v-list-item-content>
       </v-list-item>
       <v-list-item
+        :to="{ name: 'Studies' }"
         link
       >
         <v-list-item-content>
@@ -40,7 +39,6 @@
       </v-list-item>
       <v-list-item
         :to="{ name: $store.state.interface.currentView }"
-        class="sidebar-link"
         link
       >
         <v-list-item-content>
@@ -56,9 +54,3 @@ export default {
   name: 'Sidebar',
 };
 </script>
-
-<style scoped>
-  .sidebar-link {
-    color: rgba(0, 0, 0, 0.87) !important;
-  }
-</style>

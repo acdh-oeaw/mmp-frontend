@@ -1,49 +1,49 @@
 <template>
-    <div>
-      <v-app-bar
-        fixed
-        flat
-        shrink-on-scroll
-        :color="backgroundColor"
-        class="app-bar"
-        min-height="84px"
-      >
-        <v-row justify="center">
-          <v-col cols="12" md="2" class="title-wrapper">
-            <v-app-bar-nav-icon @click.stop="$store.commit('toggleDrawer')" class="d-inline d-md-none" />
-            <v-toolbar-title class="d-inline fancy-font font-weight-bold text-decoration-none">
-              <router-link
-                :to="{ name: 'Home' }"
-                class="nav-link"
-                :class="{ light: !isHome }"
-              >
-                MMP
-              </router-link>
-            </v-toolbar-title>
-          </v-col>
-          <v-col cols="8" class="text-right d-none d-md-inline">
-            <div :class="{ light: !isHome }">
-              <router-link color="white" :to="{ name: '', params: {} }" class="nav-link">
-                About the Project
-              </router-link>
-              <span class="non-selectable">
-                &nbsp;&nbsp;&bull;&nbsp;&nbsp;
-              </span>
-              <router-link :to="{ name: 'Studies' }" class="nav-link">
-                Case Studies
-              </router-link>
-              <span class="non-selectable">
-                &nbsp;&nbsp;&bull;&nbsp;&nbsp;
-              </span>
-              <router-link :to="{ name: $store.state.interface.currentView }" class="nav-link">
-                Explore the Data
-              </router-link>
-            </div>
-          </v-col>
-        </v-row>
-      </v-app-bar>
-      <sidebar v-model="drawer" />
-    </div>
+  <div>
+    <v-app-bar
+      fixed
+      flat
+      shrink-on-scroll
+      :color="backgroundColor"
+      class="app-bar"
+      min-height="84px"
+    >
+      <v-row justify="center">
+        <v-col cols="12" md="2" class="title-wrapper">
+          <v-app-bar-nav-icon @click.stop="$store.commit('toggleDrawer')" class="d-inline d-md-none menu-button" :class="{ 'white-text': isHome }" />
+          <v-toolbar-title class="d-inline fancy-font font-weight-bold text-decoration-none">
+            <router-link
+              :to="{ name: 'Home' }"
+              class="nav-link"
+              :class="{ light: !isHome }"
+            >
+              MMP
+            </router-link>
+          </v-toolbar-title>
+        </v-col>
+        <v-col cols="8" class="text-right d-none d-md-inline">
+          <div :class="{ light: !isHome }">
+            <router-link color="white" :to="{ name: '', params: {} }" class="nav-link">
+              About the Project
+            </router-link>
+            <span class="non-selectable">
+              &nbsp;&nbsp;&bull;&nbsp;&nbsp;
+            </span>
+            <router-link :to="{ name: 'Studies' }" class="nav-link">
+              Case Studies
+            </router-link>
+            <span class="non-selectable">
+              &nbsp;&nbsp;&bull;&nbsp;&nbsp;
+            </span>
+            <router-link :to="{ name: $store.state.interface.currentView }" class="nav-link">
+              Explore the Data
+            </router-link>
+          </div>
+        </v-col>
+      </v-row>
+    </v-app-bar>
+    <sidebar v-model="drawer" />
+  </div>
 </template>
 
 <script>
@@ -92,5 +92,12 @@ export default {
   }
   .title-wrapper {
     padding: 0px !important;
+  }
+  .white-text {
+    color: white !important;
+  }
+  .menu-button {
+    height: 100% !important;
+    vertical-align: bottom !important;
   }
 </style>

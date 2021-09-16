@@ -47,7 +47,7 @@ export default {
     removeRoot: (label) => label.split(',')[0],
     nodeObject(node, ctx, globalScale) {
       const label = this.removeRoot(node.label);
-      const fontSize = 20 / globalScale;
+      const fontSize = 15 / globalScale;
       ctx.font = `${fontSize}px Sans-Serif`;
       const textWidth = ctx.measureText(label).width;
       const bckgDimensions = [textWidth, fontSize].map((n) => n + fontSize * 0.2);

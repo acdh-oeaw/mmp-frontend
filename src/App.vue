@@ -1,7 +1,7 @@
 <template>
   <v-app class="app-class">
     <app-bar />
-    <div class="buffer" :class="{ light: $route.name !== 'Home'}" />
+    <div class="buffer" :class="{ light: $route.name !== 'Home', smaller: $vuetify.breakpoint.mobile}" />
     <v-main>
       <router-view />
     </v-main>
@@ -25,12 +25,18 @@ export default {
   a {
     text-decoration: none !important;
   }
+  .v-card__title {
+    word-break: keep-all !important;
+  }
   .app-class {
     background-color: #f1f5fa !important;
   }
   .buffer {
     background-color: #0F1226;
     height: 140px;
+  }
+  .buffer.smaller {
+    height: 130px;
   }
   .buffer.light {
     background: unset;
