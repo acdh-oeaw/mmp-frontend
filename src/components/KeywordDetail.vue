@@ -110,7 +110,7 @@
             :to="{ name: 'List', query: { Keyword: data.keywords.map((x) => x.url.replace(/\D/g, '')).join('+') }}"
             v-if="!loading.keywords"
           >
-            {{ shorten(`Show all Passages for "${data.keywords.map((x) => x.stichwort).join(', ')}"`, 50) }}
+            {{ shorten(`Show all Passages for ${data.keywords.map((x) => x.stichwort).join(', ')}`, 40) }}
           </v-btn>
           <v-skeleton-loader
             type="button"
