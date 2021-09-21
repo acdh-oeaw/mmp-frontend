@@ -12,13 +12,13 @@
           <v-icon>mdi-close</v-icon>
         </router-link>
       </v-list-item-action>
-      <v-list-item-content v-if="true">
-        <div v-if="!loading">
+      <v-list-item-content>
+        <div v-if="!loading.keywords && !loading.passages">
           <v-list-item-title class="text-h5">
-            {{ data.stichwort }}
+            {{ data.keywords.map((x) => x.stichwort).join(', ') }}
           </v-list-item-title>
           <v-list-item-subtitle>
-            Mentioned in <router-link :to="{ name: 'List', query: { Keyword: data.url.replace(/d/g, '')}}">{{ data.passages.count }} passage{{ data.passages.count === 1 ? '' : 's' }}</router-link>
+            Mentioned in <router-link :to="{ name: 'List', query: { Keyword: $route.params.id }}">{{ data.passages.count }} passage{{ data.passages.count === 1 ? '' : 's' }}</router-link>
           </v-list-item-subtitle>
         </div>
         <v-skeleton-loader
@@ -46,7 +46,7 @@
           <v-tabs-items v-model="tab" background-color="transparent">
             <v-tab-item key="Over Time">
               <keyword-over-time
-                v-if="!loading"
+                v-if="!loading.overtime"
                 :data="data.overtime"
               />
               <v-skeleton-loader
@@ -57,7 +57,7 @@
             <v-tab-item key="Geography">
               <leaflet
                 :data="data.geography"
-                v-if="!loading"
+                v-if="!loading.geography"
                 height="400"
               />
               <v-skeleton-loader
@@ -71,7 +71,7 @@
       <v-row>
         <v-col>
           <v-expansion-panels
-            v-if="!loading"
+            v-if="!loading.else"
             accordion
             flat
           >
@@ -84,12 +84,12 @@
                   <v-icon class="icon">mdi-chevron-down</v-icon>
                 </template>
                 <span class="header">
-                  {{ data.stichwort }} <v-icon small>mdi-arrow-left-right</v-icon> {{ removeRoot(node.label) }}
+                  {{ data.keywords.map((x) => x.stichwort).join(', ') }} <v-icon small>mdi-arrow-left-right</v-icon> {{ removeRoot(node.label) }}
                 </span>
               </v-expansion-panel-header>
               <v-expansion-panel-content>
                 <keyword-list-item
-                  :parentNode="data.url.replace(/\D/g, '')"
+                  :parentNodes="data.keywords.map((x) => x.url.replace(/\D/g, ''))"
                   :siblingNode="node.id.replace(/\D/g, '')"
                 />
               </v-expansion-panel-content>
@@ -107,10 +107,10 @@
             dark
             color="#171d3b"
             block
-            :to="{ name: 'List', query: { Keyword: data.url.replace(/\D/g, '')}}"
-            v-if="!loading"
+            :to="{ name: 'List', query: { Keyword: data.keywords.map((x) => x.url.replace(/\D/g, '')).join('+') }}"
+            v-if="!loading.keywords"
           >
-            Show all Passages for "{{ data.stichwort }}"
+            {{ shorten(`Show all Passages for "${data.keywords.map((x) => x.stichwort).join(', ')}"`, 50) }}
           </v-btn>
           <v-skeleton-loader
             type="button"
@@ -130,11 +130,16 @@ import Leaflet from './Leaflet';
 export default {
   name: 'KeywordDetail',
   data: () => ({
-    loading: true,
+    loading: {
+      keywords: true,
+      overtime: true,
+      else: true,
+    },
     data: {
       overtime: [],
       geography: null,
       url: '',
+      passages: { count: 0 },
     },
     tab: null,
   }),
@@ -145,6 +150,7 @@ export default {
   },
   methods: {
     removeRoot: (label) => label.split(',')[0],
+    shorten: (str, n) => (str.length > n ? `${str.substring(0, n)}...` : str),
   },
   computed: {
     drawerWidth() {
@@ -163,43 +169,73 @@ export default {
     '$route.params': {
       handler(params) {
         console.log(params);
-        this.loading = true;
+
+        // set all keys to true
+        Object.keys(this.loading).forEach((x) => {
+          this.loading[x] = true;
+        });
+
+        const ids = params.id.toString(10).split('+');
+
+        // Keywords
+        Promise.all(ids.map((x) => fetch(`https://mmp.acdh-dev.oeaw.ac.at/api/keyword/${x}/?format=json`)))
+          .then((res) => {
+            Promise.all(res.map((x) => x.json()))
+              .then((jsonRes) => {
+                console.log('promise all keyword1', jsonRes);
+                this.data.keywords = jsonRes;
+              })
+              .catch((err) => {
+                console.log(err);
+              })
+              .finally(() => {
+                this.loading.keywords = false;
+              });
+          });
+
+        // Overtime
+        Promise.all(ids.map((x) => fetch(`https://mmp.acdh-dev.oeaw.ac.at/archiv/keyword/century/${x}`)))
+          .then((res) => {
+            Promise.all(res.map((x) => x.json()))
+              .then((jsonRes) => {
+                console.log('promise all overtimes', jsonRes);
+                this.data.overtime = jsonRes;
+              })
+              .catch((err) => {
+                console.log(err);
+              })
+              .finally(() => {
+                this.loading.overtime = false;
+              });
+          })
+          .catch((err) => {
+            console.log(err);
+          });
 
         const urls = [
-          `https://mmp.acdh-dev.oeaw.ac.at/archiv/keyword-data/?id=${params.id}`,
-          `https://mmp.acdh-dev.oeaw.ac.at/api/keyword/${params.id}`,
-          `https://mmp.acdh-dev.oeaw.ac.at/api/stelle/?format=json&key_word=${params.id}`,
-          `https://mmp.acdh-dev.oeaw.ac.at/archiv/keyword/century/${params.id}`,
-          `https://mmp.acdh-dev.oeaw.ac.at/api/spatialcoverage/?format=json&key_word=${params.id}`,
+          'https://mmp.acdh-dev.oeaw.ac.at/archiv/keyword-data/?',
+          'https://mmp.acdh-dev.oeaw.ac.at/api/stelle/?format=json',
+          'https://mmp.acdh-dev.oeaw.ac.at/api/spatialcoverage/?format=json',
         ];
 
-        // code for implementing multiple selected nodes
-        // const urls = [
-        //   'https://mmp.acdh-dev.oeaw.ac.at/archiv/keyword-data/?',
-        //   'https://mmp.acdh-dev.oeaw.ac.at/api/keyword/?format=json',
-        //   'https://mmp.acdh-dev.oeaw.ac.at/api/stelle/?format=json',
-        // ];
+        ids.forEach((x) => {
+          urls[0] += `&id=${x}`;
+          urls[1] += `&key_word=${x}`;
+          urls[2] += `&key_word=${x}`;
+        });
 
-        // const paramArr = params.id.split('+');
-        // paramArr.forEach((x) => {
-        //   urls[0] += `&id=${x}`;
-        //   urls[1] += `&id=${x}`;
-        //   urls[2] += `&key_word=${x}`;
-        // });
-
-        // console.log('urls', urls);
+        console.log('urls', urls);
 
         Promise.all(urls.map((x) => fetch(x)))
           .then((res) => {
             Promise.all(res.map((x) => x.json()))
               .then((jsonRes) => {
-                console.log('promise all keyword', jsonRes);
+                console.log('promise all keyword-', jsonRes);
                 this.data = {
-                  ...jsonRes[1],
+                  ...this.data,
                   nodes: jsonRes[0],
-                  passages: jsonRes[2],
-                  overtime: jsonRes[3],
-                  geography: jsonRes[4],
+                  passages: jsonRes[1],
+                  geography: jsonRes[3],
                 };
                 console.log('keyword data', this.data);
               })
@@ -207,7 +243,7 @@ export default {
                 console.log(err);
               })
               .finally(() => {
-                this.loading = false;
+                this.loading.else = false;
               });
           })
           .catch((err) => {

@@ -52,8 +52,26 @@ export default {
       const textWidth = ctx.measureText(label).width;
       const bckgDimensions = [textWidth, fontSize].map((n) => n + fontSize * 0.2);
 
+      ctx.strokeStyle = 'black';
+
+      const isSelected = this.$route.params.id?.toString(10).split('+').includes(node.id.replace(/\D/g, ''));
+
+      if (isSelected) {
+        ctx.lineWidth = 8 / globalScale;
+        ctx.arc(node.x, node.y, node.val, 0, 2 * Math.PI, false);
+        ctx.stroke();
+      }
+
       ctx.fillStyle = node.color;
-      ctx.fillRect(node.x - bckgDimensions[0] / 2, node.y - bckgDimensions[1] / 2, ...bckgDimensions);
+      const rectProps = [node.x - bckgDimensions[0] / 2, node.y - bckgDimensions[1] / 2, ...bckgDimensions];
+      ctx.fillRect(...rectProps);
+
+      if (isSelected) {
+        ctx.lineWidth = 2 / globalScale;
+        ctx.strokeRect(...rectProps);
+      }
+
+      ctx.fill();
 
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
@@ -63,24 +81,32 @@ export default {
     nodeClick(node) {
       console.log('node clicked', node);
 
-      const q = node.detail_view_url.replace(/\D/g, '');
+      // const q = node.detail_view_url.replace(/\D/g, '');
 
       // code for implementing multiple selected nodes
-      // let q = this.$route.params.id;
-      // const id = node.detail_view_url.replace(/[^0-9]/g, '');
-      // // add or remove specific node from query
-      // if (q) {
-      //   q = q.split('+');
-      //   if (q.includes(id)) q = q.filter((x) => x !== id);
-      //   else q.push(id);
-      //   q = q.join('+');
-      // } else q = id;
+      let q = this.$route.params.id;
+      const id = node.id.replace(/[^0-9]/g, '');
+      console.log('q', q, 'id', id);
+      // add or remove specific node from query
+      if (q) {
+        q = q.split('+');
+        if (q.includes(id)) q = q.filter((x) => x !== id);
+        else q.push(id);
+        q = q.join('+');
+      } else q = id;
 
-      this.$router.push({
-        name: 'KeywordDetail',
-        params: { id: q },
-        query: this.$route.query,
-      });
+      if (q) {
+        this.$router.push({
+          name: 'KeywordDetail',
+          params: { id: q },
+          query: this.$route.query,
+        });
+      } else {
+        this.$router.push({
+          name: 'Network Graph',
+          query: this.$route.query,
+        });
+      }
     },
     debounce(func, time) {
       let timer;

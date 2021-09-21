@@ -50,7 +50,6 @@ export default ({
                 ending = 'th';
                 break;
             }
-
             return `${this.point.x}${ending} century<br />${this.point.y} occurences`;
           },
         },
@@ -67,12 +66,10 @@ export default ({
             formatter: ({ value }) => value * 100,
           },
         },
-        series: [
-          {
-            name: this.data.title,
-            data: this.data.data,
-          },
-        ],
+        series: this.data.map((x) => ({
+          name: x.title,
+          data: x.data,
+        })),
       };
 
       return series;

@@ -9,7 +9,7 @@
         class="list-loader"
         v-if="loading"
       />
-      <v-list-item v-for="text in data" :key="text.url" class="list-item">
+      <v-list-item v-else-if="data.length" v-for="text in data" :key="text.url" class="list-item">
         <v-list-item-title>
           {{ text.title }}
         </v-list-item-title>
@@ -28,6 +28,7 @@
           </v-chip>
         </v-list-item-subtitle>
       </v-list-item>
+      <v-list-item v-else>No passages found!</v-list-item>
     </v-list>
   </v-card>
 </template>
@@ -38,7 +39,7 @@ export default {
     loading: true,
   }),
   props: [
-    'parentNode',
+    'parentNodes',
     'siblingNode',
   ],
   methods: {
@@ -49,7 +50,10 @@ export default {
     },
   },
   mounted() {
-    const url = `https://mmp.acdh-dev.oeaw.ac.at/api/stelle/?key_word=${this.parentNode}&key_word=${this.siblingNode}`;
+    let url = `https://mmp.acdh-dev.oeaw.ac.at/api/stelle/?key_word=${this.siblingNode}`;
+    this.parentNodes.forEach((x) => {
+      url += `&key_word=${x}`;
+    });
 
     const prefetched = this.$store.state.fetchedResults[url];
     if (prefetched) {
@@ -62,6 +66,7 @@ export default {
           this.$store.commit('addToResults', { req: url, jsonRes });
           const texts = jsonRes.results.map((x) => ({ ...x.text, keywords: x.key_word }));
           this.data = this.removeDuplicates(texts);
+          console.log('Keyword List Item data', this.data);
         })
         .catch((err) => {
           console.log(err);
