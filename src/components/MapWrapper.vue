@@ -45,12 +45,12 @@ export default {
           Keyword: 'key_word',
           // 'Use Case': 'unused',
         };
-        let adress = 'https://mmp.acdh-dev.oeaw.ac.at/api/spatialcoverage/?format=json';
+        let address = 'https://mmp.acdh-dev.oeaw.ac.at/api/spatialcoverage/?format=json';
         Object.keys(query).forEach((cat) => {
           if (query[cat]) {
             const arr = query[cat].split('+');
             arr.forEach((val) => {
-              adress += `&${terms[cat]}=${val}`;
+              address += `&${terms[cat]}=${val}`;
             });
           }
         });
@@ -58,25 +58,25 @@ export default {
         if (query.time) {
           if (query.time.toString().includes('+')) {
             const times = query.time.split('+');
-            adress += `&stelle__start_date=${times[0]}&stelle__start_date_lookup=lt`;
-            adress += `&stelle__end_date=${times[1]}&stelle__end_date_lookup=gt`;
+            address += `&stelle__start_date=${times[0]}&stelle__start_date_lookup=lt`;
+            address += `&stelle__end_date=${times[1]}&stelle__end_date_lookup=gt`;
           } else {
-            adress += `&stelle__start_date=${query.time - 5}&stelle__start_date_lookup=lt`;
-            adress += `&stelle__end_date=${query.time + 4}&stelle__end_date_lookup=gt`;
+            address += `&stelle__start_date=${query.time - 5}&stelle__start_date_lookup=lt`;
+            address += `&stelle__end_date=${query.time + 4}&stelle__end_date_lookup=gt`;
           }
         }
-        console.log('adress', adress);
+        console.log('address', address);
 
-        const prefetched = this.$store.state.fetchedResults[adress];
+        const prefetched = this.$store.state.fetchedResults[address];
         if (prefetched) {
           this.entries = prefetched;
         } else {
           this.loading = true;
-          fetch(adress)
+          fetch(address)
             .then((res) => res.json())
             .then((res) => {
               console.log('map-data', res);
-              this.$store.commit('addToResults', { req: adress, res });
+              this.$store.commit('addToResults', { req: address, res });
               this.entries = res;
             })
             .catch((err) => {

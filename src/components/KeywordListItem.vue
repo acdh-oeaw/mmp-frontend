@@ -5,7 +5,7 @@
   >
     <v-list two-line>
       <v-skeleton-loader
-        type="list-item-three-line@5"
+        type="list-item-three-line@3"
         class="list-loader"
         v-if="loading"
       />

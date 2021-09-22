@@ -93,45 +93,47 @@ export default {
     fetchList(query) {
       const terms = {
         Author: 'text__autor',
-        Passage: 'id',
+        // Passage: 'id', // not used anymore
         Keyword: 'key_word',
         'Use Case': 'use_case',
       };
-      let adress = `https://mmp.acdh-dev.oeaw.ac.at/api/stelle/?format=json&limit=${this.pagination.limit}&offset=${this.pagination.offset}`;
+      let address = `https://mmp.acdh-dev.oeaw.ac.at/api/stelle/?format=json&limit=${this.pagination.limit}&offset=${this.pagination.offset}`;
       Object.keys(query).forEach((cat) => {
         if (query[cat]) {
           console.log(query[cat]);
           const arr = query[cat].toString(10).split('+');
           arr.forEach((val) => {
-            adress += `&${terms[cat]}=${val}`;
+            address += `&${terms[cat]}=${val}`;
           });
         }
       });
 
+      if (query.Passage) address += `&ids=${query.Keyword.replaceAll('+', ',')}`;
+
       if (query.time) {
         if (query.time.toString().includes('+')) {
           const times = query.time.split('+');
-          adress += `&start_date=${times[0]}&start_date_lookup=lt`;
-          adress += `&end_date=${times[1]}&end_date_lookup=gt`;
+          address += `&start_date=${times[0]}&start_date_lookup=lt`;
+          address += `&end_date=${times[1]}&end_date_lookup=gt`;
         } else {
-          adress += `&start_date=${query.time - 5}&start_date_lookup=lt`;
-          adress += `&end_date=${query.time + 4}&end_date_lookup=gt`;
+          address += `&start_date=${query.time - 5}&start_date_lookup=lt`;
+          address += `&end_date=${query.time + 4}&end_date_lookup=gt`;
         }
       }
 
-      console.log('adress', adress);
+      console.log('address', address);
 
-      const prefetched = this.$store.state.fetchedResults[adress];
+      const prefetched = this.$store.state.fetchedResults[address];
       if (prefetched) {
         this.items = prefetched.results;
         this.pagination.count = prefetched.count;
       } else {
         this.loading = true;
-        fetch(adress)
+        fetch(address)
           .then((res) => res.json())
           .then((res) => {
             console.log('list-data', res);
-            this.$store.commit('addToResults', { req: adress, res });
+            this.$store.commit('addToResults', { req: address, res });
             this.items = res.results;
             this.pagination.count = res.count;
           })

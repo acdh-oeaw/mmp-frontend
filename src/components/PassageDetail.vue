@@ -118,13 +118,13 @@ export default {
         console.log(params);
         this.loading = true;
 
-        const adress = `https://mmp.acdh-dev.oeaw.ac.at/api/stelle/${params.id}/?format=json`;
-        const prefetched = this.$store.state.fetchedResults[adress];
+        const address = `https://mmp.acdh-dev.oeaw.ac.at/api/stelle/${params.id}/?format=json`;
+        const prefetched = this.$store.state.fetchedResults[address];
         if (prefetched) {
           this.items = prefetched.results;
           this.pagination.count = prefetched.count;
         } else {
-          fetch(adress)
+          fetch(address)
             .then((res) => res.json())
             .then((res) => {
               console.log(res);

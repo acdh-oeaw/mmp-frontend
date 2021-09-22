@@ -56,8 +56,8 @@
             </v-tab-item>
             <v-tab-item key="Geography">
               <leaflet
-                :data="data.geography"
                 v-if="!loading.geography"
+                :data="data.geography"
                 height="400"
               />
               <v-skeleton-loader
@@ -76,21 +76,21 @@
             flat
           >
             <v-expansion-panel
-              v-for="node in data.nodes.nodes"
-              :key="node.id"
+              v-for="conn in connections"
+              :key="conn.id"
             >
-              <v-expansion-panel-header v-if="data.stichwort !== removeRoot(node.label)">
+              <v-expansion-panel-header>
                 <template v-slot:actions>
                   <v-icon class="icon">mdi-chevron-down</v-icon>
                 </template>
                 <span class="header">
-                  {{ data.keywords.map((x) => x.stichwort).join(', ') }} <v-icon small>mdi-arrow-left-right</v-icon> {{ removeRoot(node.label) }}
+                  {{ data.keywords.map((x) => x.stichwort).join(', ') }} <v-icon small>mdi-arrow-left-right</v-icon> {{ conn.label }}
                 </span>
               </v-expansion-panel-header>
               <v-expansion-panel-content>
                 <keyword-list-item
-                  :parentNodes="data.keywords.map((x) => x.url.replace(/\D/g, ''))"
-                  :siblingNode="node.id.replace(/\D/g, '')"
+                  :parentNodes="data.keywords.map((x) => getIdFromUrl(x.url))"
+                  :siblingNode="conn.id"
                 />
               </v-expansion-panel-content>
             </v-expansion-panel>
@@ -149,10 +149,41 @@ export default {
     Leaflet,
   },
   methods: {
+    getIdFromUrl: (url) => url.replace(/\D/g, ''),
     removeRoot: (label) => label.split(',')[0],
     shorten: (str, n) => (str.length > n ? `${str.substring(0, n)}...` : str),
+    removeDuplicates(arr) {
+      return arr.filter((item, index, self) => index === self.findIndex((t) => (
+        t.source === item.source && t.target === item.target
+      )));
+    },
   },
   computed: {
+    connections() {
+      const retArr = [];
+      const keyIds = this.data.keywords.map((x) => this.getIdFromUrl(x.url));
+      let edges = this.data.nodes.edges.map((edge) => ({ source: this.getIdFromUrl(edge.source), target: this.getIdFromUrl(edge.target) }));
+      edges = this.removeDuplicates(edges);
+
+      const targets = edges.map((edge) => edge.target);
+      const count = {};
+      targets.forEach((target) => {
+        count[target] = count[target] ? count[target] + 1 : 1;
+      });
+
+      Object.entries(count).forEach((entry) => {
+        if (entry[1] === keyIds.length) {
+          retArr.push({
+            id: entry[0],
+            label: this.removeRoot(this.data.nodes.nodes.filter((node) => this.getIdFromUrl(node.id) === entry[0])[0].label),
+          });
+        }
+      });
+
+      console.log('keyIds, edges, count, retArr', keyIds, edges, count, retArr);
+
+      return retArr;
+    },
     drawerWidth() {
       switch (this.$vuetify.breakpoint.name) {
         case 'xs':
@@ -213,13 +244,12 @@ export default {
           });
 
         const urls = [
-          'https://mmp.acdh-dev.oeaw.ac.at/archiv/keyword-data/?',
+          `https://mmp.acdh-dev.oeaw.ac.at/archiv/keyword-data/?ids=${ids.join(',')}`,
           'https://mmp.acdh-dev.oeaw.ac.at/api/stelle/?format=json',
           'https://mmp.acdh-dev.oeaw.ac.at/api/spatialcoverage/?format=json',
         ];
 
         ids.forEach((x) => {
-          urls[0] += `&id=${x}`;
           urls[1] += `&key_word=${x}`;
           urls[2] += `&key_word=${x}`;
         });
@@ -238,6 +268,7 @@ export default {
                   geography: jsonRes[3],
                 };
                 console.log('keyword data', this.data);
+                console.log('connections', this.connections);
               })
               .catch((err) => {
                 console.log(err);
