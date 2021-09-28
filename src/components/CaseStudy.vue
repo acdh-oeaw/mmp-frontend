@@ -16,15 +16,17 @@
           </p>
           <p class="text-h4">{{ study.title }}</p>
           <p v-if="study.description">{{ study.description }}</p>
-          <v-timeline>
+          <v-timeline :dense="$vuetify.breakpoint.mobile">
             <v-timeline-item
               v-for="(event, i) in events"
               :key="`${event.id}&${i}`"
               large
               :icon="getIconFromType(event.ent_type).icon"
               :color="getIconFromType(event.ent_type).color"
+              :class="{ 'text-right': i%2 == 1 && !$vuetify.breakpoint.mobile }"
             >
               <span class="font-weight-medium" slot="opposite">{{ renderDates(event.start_date, event.end_date) }}</span>
+              <span class="font-weight-medium" v-if="$vuetify.breakpoint.mobile">{{ renderDates(event.start_date, event.end_date) }}: <br /></span>
               <router-link v-if="event.ent_type === 'autor'" class="font-weight-medium" :to="{ name: 'List', query: { Author: event.id }}">{{ event.ent_description }} <v-icon>mdi-arrow-right</v-icon></router-link>
               <span v-else :class="{ 'font-weight-medium': event.ent_type != 'event' }">{{ event.ent_description }}</span>
             </v-timeline-item>
@@ -109,9 +111,6 @@ export default {
 </script>
 
 <style>
-.v-timeline-item:nth-child(even) {
-  text-align: right;
-}
 .v-timeline-item__body {
   height: inherit;
   margin: auto;
