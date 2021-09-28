@@ -25,14 +25,14 @@
 </template>
 
 <script>
+import helpers from '@/helpers';
+
 export default {
   name: 'Studies',
   data: () => ({
     studies: [],
   }),
-  methods: {
-    getIdFromUrl: (url) => url.replace(/\D/g, ''),
-  },
+  mixins: [helpers],
   mounted() {
     fetch('https://mmp.acdh-dev.oeaw.ac.at/api/usecase/?format=json')
       .then((res) => res.json())

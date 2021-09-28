@@ -123,6 +123,8 @@
 </template>
 
 <script>
+import helpers from '@/helpers';
+
 import KeywordListItem from './KeywordListItem';
 import KeywordOverTime from './KeywordOverTime';
 import Leaflet from './Leaflet';
@@ -148,10 +150,8 @@ export default {
     KeywordOverTime,
     Leaflet,
   },
+  mixins: [helpers],
   methods: {
-    getIdFromUrl: (url) => url.replace(/\D/g, ''),
-    removeRoot: (label) => label.split(',')[0],
-    shorten: (str, n) => (str.length > n ? `${str.substring(0, n)}...` : str),
     removeDuplicates(arr) {
       return arr.filter((item, index, self) => index === self.findIndex((t) => (
         t.source === item.source && t.target === item.target
@@ -167,6 +167,7 @@ export default {
 
       const targets = edges.map((edge) => edge.target);
       const count = {};
+
       targets.forEach((target) => {
         count[target] = count[target] ? count[target] + 1 : 1;
       });
@@ -180,7 +181,7 @@ export default {
         }
       });
 
-      console.log('keyIds, edges, count, retArr', keyIds, edges, count, retArr);
+      // console.log('keyIds, edges, count, retArr', keyIds, edges, count, retArr);
 
       return retArr;
     },
@@ -222,6 +223,9 @@ export default {
               .finally(() => {
                 this.loading.keywords = false;
               });
+          })
+          .catch((err) => {
+            console.log(err);
           });
 
         // Overtime

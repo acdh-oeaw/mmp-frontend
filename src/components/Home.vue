@@ -15,25 +15,25 @@
           <v-row justify="center">
             <v-col cols="12" md="8">
               <p class="text-subtitle-1 font-weight-bold">
-                {{ $t('subhead') }}
+                In the turbulent world of the early Middle Ages, ethnicity became a key resource in the reorganization of the political landscape. Mapping Medieval Peoples (MMP) proposes an innovative technical solution to analyze and visualize the ‘mental maps’ and the semantic fields that emerge from the analysis of late antique and early medieval source material.
               </p>
               <p class="text-subtitle-1">
-                {{ $t('subsubhead') }}
+                We attempt to reconstruct ‘mental maps’ of a world of peoples, and will offer insights into the interplay between ethnonyms, religious terms, as well as attributes, traits and stereotypes, thus surveying the language employed to create ethnic entities and to distinguish them from each other.
               </p>
             </v-col>
           </v-row>
           <v-row justify="center">
             <v-col cols="12" md="3" sm="5">
-              <v-btn large block color="secondary" :to="{ name: $store.state.interface.currentView }">{{ $t('search') }}</v-btn>
+              <v-btn large block color="secondary" :to="{ name: $store.state.interface.currentView }">Search our Data</v-btn>
               <span class="button-subtitle">
-                {{ $t('analyses') }}
+                For Interactive Analyses
               </span>
             </v-col>
             <v-col cols="12" md="3" sm="5">
               <p>
-                <v-btn large block color="primary" id="read" v-html="$t('read')" :to="{ name: 'Case Study', params: { id: 6 }}" />
+                <v-btn large block color="primary" id="read" :to="{ name: 'Case Study', params: { id: 6 }}">Read &bdquo;Spain and the Bible&ldquo;</v-btn>
                 <span class="button-subtitle">
-                  {{ $t('casestudy') }}
+                  A Case Study
                 </span>
               </p>
             </v-col>
@@ -84,16 +84,3 @@ export default {
     color: grey;
   }
 </style>
-
-<i18n>
-{
-  "en": {
-    "subhead": "In the turbulent world of the early Middle Ages, ethnicity became a key resource in the reorganization of the political landscape. Mapping Medieval Peoples (MMP) proposes an innovative technical solution to analyze and visualize the ‘mental maps’ and the semantic fields that emerge from the analysis of late antique and early medieval source material.",
-    "subsubhead": "We attempt to reconstruct ‘mental maps’ of a world of peoples, and will offer insights into the interplay between ethnonyms, religious terms, as well as attributes, traits and stereotypes, thus surveying the language employed to create ethnic entities and to distinguish them from each other.",
-    "search": "Search our Data",
-    "read": "Read &bdquo;Spain and the Bible&ldquo;",
-    "analyses": "For Interactive Analyses",
-    "casestudy": "A Case Study"
-  }
-}
-</i18n>

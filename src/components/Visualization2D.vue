@@ -37,7 +37,6 @@ export default {
 
   },
   methods: {
-    getIdFromUrl: (url) => url?.replace(/\D/g, ''),
     transformedData(obj) {
       return {
         nodes: this.addColorAndType(obj.nodes, obj.types.nodes),

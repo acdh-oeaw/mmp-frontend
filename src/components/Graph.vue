@@ -32,6 +32,7 @@
 </template>
 
 <script>
+import helpers from '@/helpers';
 import Visualization from './Visualization2D';
 
 export default {
@@ -43,8 +44,8 @@ export default {
     graph: null,
     loading: false,
   }),
+  mixins: [helpers],
   methods: {
-    removeRoot: (label) => label.split(',')[0],
     nodeObject(node, ctx, globalScale) {
       const label = this.removeRoot(node.label);
       const fontSize = 15 / globalScale;

@@ -169,6 +169,7 @@
 
 <script>
 import { VRangeSlider, VSlider } from 'vuetify/lib';
+import helpers from '@/helpers';
 
 export default {
   name: 'Interface',
@@ -204,6 +205,7 @@ export default {
     VSlider,
     VRangeSlider,
   },
+  mixins: [helpers],
   computed: {
     currentView() {
       console.log('currentView', this.$route.name);
@@ -251,7 +253,6 @@ export default {
         query,
       });
     },
-    shorten: (str, n) => (str.length > n ? `${str.substring(0, n)}...` : str),
     // This function changes the slider from range to point, and creates a new range value fittingly
     toggleSliderComponent(mode) {
       if (mode !== this.sliderComponent) {
