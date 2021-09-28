@@ -1,13 +1,9 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 
-Vue.use(Vuex);
+import helpers from '@/helpers';
 
-function removeDuplicates(arr) {
-  return arr.filter((item, index, self) => index === self.findIndex((t) => (
-    t.id === item.id && t.group === item.group
-  )));
-}
+Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
@@ -24,14 +20,14 @@ export default new Vuex.Store({
   mutations: {
     addItems: (state, { items, label }) => {
       state.autocomplete.items = state.autocomplete.items.concat(items.map((x) => ({ ...x, group: label })));
-      state.autocomplete.items = removeDuplicates(state.autocomplete.items);
+      state.autocomplete.items = helpers.methods.removeDuplicates(state.autocomplete.items, ['id', 'group']);
     },
     addToItemsAndInput: (state, item) => {
       state.autocomplete.input.push(item);
       state.autocomplete.items.push(item);
       // remove duplicates
-      state.autocomplete.input = removeDuplicates(state.autocomplete.input);
-      state.autocomplete.items = removeDuplicates(state.autocomplete.items);
+      state.autocomplete.input = helpers.methods.removeDuplicates(state.autocomplete.input, ['id', 'group']);
+      state.autocomplete.items = helpers.methods.removeDuplicates(state.autocomplete.items, ['id', 'group']);
     },
     clearInput: (state) => { state.autocomplete.input = []; },
     clearItems: (state) => { state.autocomplete.items = []; },

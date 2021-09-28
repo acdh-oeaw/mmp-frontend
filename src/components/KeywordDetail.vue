@@ -151,19 +151,12 @@ export default {
     Leaflet,
   },
   mixins: [helpers],
-  methods: {
-    removeDuplicates(arr) {
-      return arr.filter((item, index, self) => index === self.findIndex((t) => (
-        t.source === item.source && t.target === item.target
-      )));
-    },
-  },
   computed: {
     connections() {
       const retArr = [];
       const keyIds = this.data.keywords.map((x) => this.getIdFromUrl(x.url));
       let edges = this.data.nodes.edges.map((edge) => ({ source: this.getIdFromUrl(edge.source), target: this.getIdFromUrl(edge.target) }));
-      edges = this.removeDuplicates(edges);
+      edges = this.removeDuplicates(edges, ['source', 'target']);
 
       const targets = edges.map((edge) => edge.target);
       const count = {};

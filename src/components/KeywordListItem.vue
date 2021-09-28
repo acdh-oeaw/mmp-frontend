@@ -42,13 +42,6 @@ export default {
     'parentNodes',
     'siblingNode',
   ],
-  methods: {
-    removeDuplicates(arr) {
-      return arr.filter((item, index, self) => index === self.findIndex((t) => (
-        t.url === item.url
-      )));
-    },
-  },
   mounted() {
     let url = `https://mmp.acdh-dev.oeaw.ac.at/api/stelle/?key_word=${this.siblingNode}`;
     this.parentNodes.forEach((x) => {
@@ -58,14 +51,14 @@ export default {
     const prefetched = this.$store.state.fetchedResults[url];
     if (prefetched) {
       const texts = prefetched.results.map((x) => ({ ...x.text, keywords: x.key_word }));
-      this.data = this.removeDuplicates(texts);
+      this.data = this.removeDuplicates(texts, ['url']);
     } else {
       fetch(url)
         .then((res) => res.json())
         .then((jsonRes) => {
           this.$store.commit('addToResults', { req: url, jsonRes });
           const texts = jsonRes.results.map((x) => ({ ...x.text, keywords: x.key_word }));
-          this.data = this.removeDuplicates(texts);
+          this.data = this.removeDuplicates(texts, ['url']);
           console.log('Keyword List Item data', this.data);
         })
         .catch((err) => {
