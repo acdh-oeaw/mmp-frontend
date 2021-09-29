@@ -10,7 +10,7 @@
     >
       <v-row justify="center">
         <v-col cols="12" md="2" class="title-wrapper">
-          <v-app-bar-nav-icon @click.stop="$store.commit('toggleDrawer')" class="d-inline d-md-none menu-button" :class="{ 'white-text': isHome }" />
+          <v-app-bar-nav-icon @click.stop="$store.commit('toggleDrawer')" class="d-inline d-md-none menu-button" :class="{ 'white--text': isHome }" />
           <v-toolbar-title class="d-inline fancy-font font-weight-bold text-decoration-none">
             <router-link
               :to="{ name: 'Home' }"
@@ -26,13 +26,17 @@
             <router-link color="white" :to="{ name: '', params: {} }" class="nav-link">
               About the Project
             </router-link>
-            <span class="non-selectable">
+            <span
+              class="non-selectable" :class="{ 'white--text': isHome }"
+            >
               &nbsp;&nbsp;&bull;&nbsp;&nbsp;
             </span>
             <router-link :to="{ name: 'Studies' }" class="nav-link">
               Case Studies
             </router-link>
-            <span class="non-selectable">
+            <span
+              class="non-selectable" :class="{ 'white--text': isHome }"
+            >
               &nbsp;&nbsp;&bull;&nbsp;&nbsp;
             </span>
             <router-link :to="{ name: $store.state.interface.currentView }" class="nav-link">
@@ -92,9 +96,6 @@ export default {
   }
   .title-wrapper {
     padding: 0px !important;
-  }
-  .white-text {
-    color: white !important;
   }
   .menu-button {
     height: 100% !important;

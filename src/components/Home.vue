@@ -13,7 +13,7 @@
             </v-col>
           </v-row>
           <v-row justify="center">
-            <v-col cols="12" md="8">
+            <v-col cols="12" lg="8">
               <p class="text-subtitle-1 font-weight-bold">
                 In the turbulent world of the early Middle Ages, ethnicity became a key resource in the reorganization of the political landscape. Mapping Medieval Peoples (MMP) proposes an innovative technical solution to analyze and visualize the ‘mental maps’ and the semantic fields that emerge from the analysis of late antique and early medieval source material.
               </p>
@@ -23,15 +23,15 @@
             </v-col>
           </v-row>
           <v-row justify="center">
-            <v-col cols="12" md="3" sm="5">
+            <v-col cols="12" lg="3" sm="5">
               <v-btn large block color="secondary" :to="{ name: $store.state.interface.currentView }">Search our Data</v-btn>
               <span class="button-subtitle">
                 For Interactive Analyses
               </span>
             </v-col>
-            <v-col cols="12" md="3" sm="5">
+            <v-col cols="12" lg="3" sm="5">
               <p>
-                <v-btn large block color="primary" id="read" :to="{ name: 'Case Study', params: { id: 6 }}">Read &bdquo;Spain and the Bible&ldquo;</v-btn>
+                <v-btn large block color="primary" :to="{ name: 'Case Study', params: { id: 6 }}">Read &bdquo;Spain and the Bible&ldquo;</v-btn>
                 <span class="button-subtitle">
                   A Case Study
                 </span>
@@ -79,8 +79,5 @@ export default {
     text-underline-offset: 3px;
     text-decoration-thickness: 3px;
     z-index: 100;
-  }
-  .study-surtitle {
-    color: grey;
   }
 </style>

@@ -3,8 +3,7 @@
     <v-row justify="center">
       <v-col cols="12" xl="8">
         <template v-if="!loading">
-          <p class="study-surtitle"></p>
-          <p class="text-h7 study-surtitle">
+          <p class="text-h7 grey--text">
             <v-btn
               icon
               plain
