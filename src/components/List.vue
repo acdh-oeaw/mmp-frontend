@@ -108,7 +108,7 @@ export default {
         }
       });
 
-      if (query.Passage) address += `&ids=${query.Keyword.replaceAll('+', ',')}`;
+      if (query.Passage) address += `&ids=${query.Passage.replaceAll('+', ',')}`;
 
       if (query.time) {
         if (query.time.toString().includes('+')) {
