@@ -1,8 +1,12 @@
 export default {
   methods: {
+    debug: (message, name) => {
+      console.log('debug', name, message);
+    },
     getIdFromUrl: (url) => url.replace(/\D/g, ''),
-    removeDuplicates: (arr, keys) => arr.filter((item, index, self) => index === self.findIndex((t) => {
-      const uneq = (key) => t[key] !== item[key];
+    // this worked first try please clap
+    removeDuplicates: (arr, keys) => arr.filter((x, i, self) => i === self.findIndex((t) => {
+      const uneq = (key) => t[key] !== x[key];
       return !keys.some(uneq);
     })),
     removeRoot: (label) => label.split(',')[0],

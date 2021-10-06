@@ -99,6 +99,60 @@ export default {
       author: null,
     },
   }),
+  methods: {
+    addRes(res) {
+      this.title.title = res.text.title;
+      this.title.written = (res.start_date || res.end_date) ? `${res.start_date || 'unknown'} - ${res.end_date || 'unknown'}` : 'unknown';
+      this.title.author = res.text.autor.map((x) => x.name_en).join(', ');
+
+      this.items = [
+        {
+          key: 'Keywords',
+          value: res.key_word,
+        },
+        {
+          key: 'Quote',
+          value: res.zitat,
+        },
+        {
+          key: 'Title',
+          value: this.title.title,
+        },
+        {
+          key: 'Cited',
+          value: res.zitat_stelle,
+        },
+        {
+          key: 'Summary',
+          value: res.summary,
+        },
+        {
+          key: 'Author',
+          value: res.text.autor,
+        },
+        {
+          key: 'Place',
+          value: res.text.ort.map((x) => x.name).join(', '),
+        },
+        {
+          key: 'Edition',
+          value: res.text.edition,
+        },
+        {
+          key: 'Written',
+          value: this.title.written,
+        },
+        {
+          key: 'Translation',
+          value: res.translation,
+        },
+        {
+          key: 'Comment',
+          value: res.kommentar,
+        },
+      ];
+    },
+  },
   computed: {
     drawerWidth() {
       switch (this.$vuetify.breakpoint.name) {
@@ -117,68 +171,20 @@ export default {
       handler(params) {
         console.log(params);
         this.loading = true;
-
         const address = `https://mmp.acdh-dev.oeaw.ac.at/api/stelle/${params.id}/?format=json`;
         const prefetched = this.$store.state.fetchedResults[address];
+
         if (prefetched) {
-          this.items = prefetched.results;
-          this.pagination.count = prefetched.count;
+          console.log('prefetched', prefetched);
+          this.addRes(prefetched);
+          this.loading = false;
         } else {
           fetch(address)
             .then((res) => res.json())
             .then((res) => {
               console.log(res);
-
-              this.title.title = res.text.title;
-              this.title.written = (res.start_date || res.end_date) ? `${res.start_date || 'unknown'} - ${res.end_date || 'unknown'}` : 'unknown';
-              this.title.author = res.text.autor.map((x) => x.name_en).join(', ');
-
-              this.items = [
-                {
-                  key: 'Keywords',
-                  value: res.key_word,
-                },
-                {
-                  key: 'Quote',
-                  value: res.zitat,
-                },
-                {
-                  key: 'Title',
-                  value: this.title.title,
-                },
-                {
-                  key: 'Cited',
-                  value: res.zitat_stelle,
-                },
-                {
-                  key: 'Summary',
-                  value: res.summary,
-                },
-                {
-                  key: 'Author',
-                  value: res.text.autor,
-                },
-                {
-                  key: 'Place',
-                  value: res.text.ort.map((x) => x.name).join(', '),
-                },
-                {
-                  key: 'Edition',
-                  value: res.text.edition,
-                },
-                {
-                  key: 'Written',
-                  value: this.title.written,
-                },
-                {
-                  key: 'Translation',
-                  value: res.translation,
-                },
-                {
-                  key: 'Comment',
-                  value: res.kommentar,
-                },
-              ];
+              this.$store.commit('addToResults', { req: address, res });
+              this.addRes(res);
             })
             .catch((err) => {
               console.log(err);

@@ -30,15 +30,16 @@ export default new Vuex.Store({
       state.autocomplete.items = helpers.methods.removeDuplicates(state.autocomplete.items, ['id', 'group']);
     },
     clearInput: (state) => { state.autocomplete.input = []; },
-    clearItems: (state) => { state.autocomplete.items = []; },
+    clearItems: (state) => {
+      state.autocomplete.items = [];
+      console.log('items cleared', state);
+    },
     toggleDrawer: (state) => { state.interface.sidebarDrawer = !state.interface.sidebarDrawer; },
     removeItemFromInput: (state, item) => { state.autocomplete.input = state.autocomplete.input.filter((x) => !(x.id === item.id && x.group === item.group)); },
     setDataView: (state, view) => { state.interface.currentView = view; },
     // setItems: (state, { items }) => { state.autocomplete.items = items; },
     addToResults: (state, { req, res }) => { state.fetchedResults[req] = res; },
   },
-  actions: {
-  },
-  modules: {
-  },
+  actions: {},
+  modules: {},
 });

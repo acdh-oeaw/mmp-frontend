@@ -44,6 +44,7 @@ export default {
           Passage: 'stelle',
           Keyword: 'key_word',
           // 'Use Case': 'unused',
+          // Place: 'unused',
         };
         let address = 'https://mmp.acdh-dev.oeaw.ac.at/api/spatialcoverage/?format=json';
         Object.keys(query).forEach((cat) => {

@@ -196,7 +196,6 @@ export default {
     },
     disabledSlider: false,
     loading: false,
-    mobileSelect: 'Network Graph',
     range: [40, 120],
     sliderComponent: 'v-range-slider',
     textInput: '',
@@ -210,6 +209,9 @@ export default {
     currentView() {
       console.log('currentView', this.$route.name);
       return this.$route.name;
+    },
+    mobileSelect() {
+      return this.$route.name === 'Graph' ? 'Network Graph' : this.$route.name;
     },
     query() {
       console.log('query changed', this.$route.query);
@@ -227,6 +229,7 @@ export default {
         Passage: 'teal lighten-4',
         Keyword: 'blue lighten-4',
         'Use Case': 'amber lighten-3',
+        Place: 'green lighten-3',
       };
       return colors[group];
     },
@@ -269,45 +272,44 @@ export default {
         'https://mmp.acdh-dev.oeaw.ac.at/archiv-ac/stelle-autocomplete/?q=',
         'https://mmp.acdh-dev.oeaw.ac.at/archiv-ac/keyword-autocomplete/?q=',
         'https://mmp.acdh-dev.oeaw.ac.at/archiv-ac/usecase-autocomplete/?q=',
-      ];
-      const labels = ['Author', 'Passage', 'Keyword', 'Use Case'];
+        'https://mmp.acdh-dev.oeaw.ac.at/archiv-ac/ort-autocomplete/?q=',
+      ].map((x) => (x + val));
 
-      this.loading = true;
-      Promise.all(urls.map((x) => fetch(x + val)))
-        .then((res) => {
-          Promise.all(res.map((x) => x.json()))
-            .then((jsonRes) => {
-              console.log('promise all autocomplete', jsonRes);
-              jsonRes.forEach((x, i) => {
-                this.$store.commit('addItems', { items: x.results, label: labels[i] });
-              });
-            })
-            .catch((err) => {
-              console.log(err);
-            });
-        })
-        .catch((err) => {
-          console.log(err);
-        })
-        .finally(() => {
-          this.loading = false;
+      const labels = ['Author', 'Passage', 'Keyword', 'Use Case', 'Place'];
+      const prefetched = this.$store.state.fetchedResults[urls.toString()];
+
+      if (prefetched) {
+        prefetched.forEach((x, i) => {
+          this.$store.commit('addItems', { items: x.results, label: labels[i] });
         });
+      } else {
+        this.loading = true;
+        Promise.all(urls.map((x) => fetch(x)))
+          .then((res) => {
+            Promise.all(res.map((x) => x.json()))
+              .then((jsonRes) => {
+                console.log('promise all autocomplete', jsonRes);
+                this.$store.commit('addToResults', { req: urls.toString(), res: jsonRes });
+                jsonRes.forEach((x, i) => {
+                  this.$store.commit('addItems', { items: x.results, label: labels[i] });
+                });
+              })
+              .catch((err) => {
+                console.log(err);
+              })
+              .finally(() => {
+                this.loading = false;
+              });
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
     },
   },
   mounted() {
     console.log('vuetify', this.$vuetify.icons.values.slider);
     console.log('route', this.$route);
-
-    if (this.$vuetify.breakpoint.mobile) {
-      switch (this.$route.name) {
-        case 'Graph':
-          this.mobileSelect = 'Network Graph';
-          break;
-        default:
-          this.mobileSelect = this.$route.name;
-          break;
-      }
-    }
   },
 };
 </script>

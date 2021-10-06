@@ -96,6 +96,7 @@ export default {
         // Passage: 'id', // not used anymore
         Keyword: 'key_word',
         'Use Case': 'use_case',
+        // Place: 'unused',
       };
       let address = `https://mmp.acdh-dev.oeaw.ac.at/api/stelle/?format=json&limit=${this.pagination.limit}&offset=${this.pagination.offset}`;
       Object.keys(query).forEach((cat) => {

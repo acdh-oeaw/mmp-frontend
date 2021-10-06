@@ -34,12 +34,20 @@ export default {
   }),
   mixins: [helpers],
   mounted() {
-    fetch('https://mmp.acdh-dev.oeaw.ac.at/api/usecase/?format=json')
-      .then((res) => res.json())
-      .then((res) => {
-        console.log('studies', res);
-        this.studies = res.results;
-      });
+    const address = 'https://mmp.acdh-dev.oeaw.ac.at/api/usecase/?format=json';
+    const prefetched = this.$store.state.fetchedResults[address];
+
+    if (prefetched) {
+      this.studies = prefetched.results;
+    } else {
+      fetch(address)
+        .then((res) => res.json())
+        .then((res) => {
+          console.log('studies', res);
+          this.$store.commit('addToResults', { req: address, res });
+          this.studies = res.results;
+        });
+    }
   },
 };
 </script>

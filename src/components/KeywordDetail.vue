@@ -140,6 +140,7 @@ export default {
     data: {
       overtime: [],
       geography: null,
+      keywords: [],
       url: '',
       passages: { count: 0 },
     },
@@ -153,7 +154,11 @@ export default {
   mixins: [helpers],
   computed: {
     connections() {
+      console.log('keyword connections called', this.data);
       const retArr = [];
+
+      if (!this.data.keywords || !this.data.nodes) return retArr;
+
       const keyIds = this.data.keywords.map((x) => this.getIdFromUrl(x.url));
       let edges = this.data.nodes.edges.map((edge) => ({ source: this.getIdFromUrl(edge.source), target: this.getIdFromUrl(edge.target) }));
       edges = this.removeDuplicates(edges, ['source', 'target']);
@@ -179,15 +184,12 @@ export default {
       return retArr;
     },
     drawerWidth() {
-      switch (this.$vuetify.breakpoint.name) {
-        case 'xs':
-        case 'sm':
-          return '100vw';
-        case 'md':
-          return '50vw';
-        default:
-          return '33vw';
-      }
+      const widths = {
+        xs: '100vw',
+        sm: '100vw',
+        md: '50vw',
+      };
+      return widths[this.$vuetify.breakpoint.name] || '33vw';
     },
   },
   watch: {
@@ -203,11 +205,14 @@ export default {
         const ids = params.id.toString(10).split('+');
 
         // Keywords
-        Promise.all(ids.map((x) => fetch(`https://mmp.acdh-dev.oeaw.ac.at/api/keyword/${x}/?format=json`)))
+        let urls = ids.map((x) => `https://mmp.acdh-dev.oeaw.ac.at/api/keyword/${x}/?format=json`);
+
+        Promise.all(urls.map((x) => fetch(x)))
           .then((res) => {
             Promise.all(res.map((x) => x.json()))
               .then((jsonRes) => {
                 console.log('promise all keyword1', jsonRes);
+                this.$store.commit('addToResults', { req: urls.toString(), res: jsonRes });
                 this.data.keywords = jsonRes;
               })
               .catch((err) => {
@@ -222,11 +227,14 @@ export default {
           });
 
         // Overtime
-        Promise.all(ids.map((x) => fetch(`https://mmp.acdh-dev.oeaw.ac.at/archiv/keyword/century/${x}`)))
+        urls = ids.map((x) => `https://mmp.acdh-dev.oeaw.ac.at/archiv/keyword/century/${x}`);
+
+        Promise.all(urls.map((x) => fetch(x)))
           .then((res) => {
             Promise.all(res.map((x) => x.json()))
               .then((jsonRes) => {
                 console.log('promise all overtimes', jsonRes);
+                this.$store.commit('addToResults', { req: urls.toString(), res: jsonRes });
                 this.data.overtime = jsonRes;
               })
               .catch((err) => {
@@ -240,7 +248,8 @@ export default {
             console.log(err);
           });
 
-        const urls = [
+        // Else
+        urls = [
           `https://mmp.acdh-dev.oeaw.ac.at/archiv/keyword-data/?ids=${ids.join(',')}`,
           'https://mmp.acdh-dev.oeaw.ac.at/api/stelle/?format=json',
           'https://mmp.acdh-dev.oeaw.ac.at/api/spatialcoverage/?format=json',
@@ -251,21 +260,21 @@ export default {
           urls[2] += `&key_word=${x}`;
         });
 
-        console.log('urls', urls);
-
         Promise.all(urls.map((x) => fetch(x)))
           .then((res) => {
             Promise.all(res.map((x) => x.json()))
               .then((jsonRes) => {
                 console.log('promise all keyword-', jsonRes);
+                this.$store.commit('addToResults', { req: urls.toString(), res: jsonRes });
                 this.data = {
-                  ...this.data,
+                  overtime: this.data.overtime,
+                  keywords: this.data.keywords,
                   nodes: jsonRes[0],
                   passages: jsonRes[1],
                   geography: jsonRes[3],
                 };
                 console.log('keyword data', this.data);
-                console.log('connections', this.connections);
+                // console.log('connections', this.connections);
               })
               .catch((err) => {
                 console.log(err);

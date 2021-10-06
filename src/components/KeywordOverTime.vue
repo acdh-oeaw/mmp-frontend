@@ -19,7 +19,7 @@ export default ({
   ],
   computed: {
     chartData() {
-      const series = {
+      return {
         chart: {
           backgroundColor: 'transparent',
         },
@@ -33,24 +33,9 @@ export default ({
           // split: true,
           // the only way the right 'this' object is passed to the formatter function
           // eslint-disable-next-line object-shorthand
-          formatter: function () {
-            let ending;
-
-            switch (this.point.x) {
-              case 1:
-                ending = 'st';
-                break;
-              case 2:
-                ending = 'nd';
-                break;
-              case 3:
-                ending = 'rd';
-                break;
-              default:
-                ending = 'th';
-                break;
-            }
-            return `${this.point.x}${ending} century<br />${this.point.y} occurences`;
+          formatter: function lel() {
+            const endings = ['st', 'nd', 'rd'];
+            return `${this.point.x}${endings[this.point.x - 1] || 'th'} century<br />${this.point.y} occurences`;
           },
         },
         legend: {
@@ -71,8 +56,6 @@ export default ({
           data: x.data,
         })),
       };
-
-      return series;
     },
   },
   mounted() {

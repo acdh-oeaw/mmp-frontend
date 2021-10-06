@@ -147,6 +147,7 @@ export default {
           Passage: 'rvn_stelle_key_word_keyword',
           // Keyword: 'id', // has been replaced with new multiple id functionality
           // 'Use Case': 'unused',
+          Place: 'rvn_stelle_key_word_keyword__text__autor__ort',
         };
 
         console.log('query', query);
