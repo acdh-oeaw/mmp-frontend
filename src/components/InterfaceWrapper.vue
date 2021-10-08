@@ -318,24 +318,34 @@ export default {
 
     console.log('query', this.query);
 
-    // Add query from url to Autocomplete, TODO: make this loop through all keys and get rid of these if statements
-    if (this.query.Author) {
-      console.log('Author found:', this.query.Author);
-      let ids = this.query.Author.split('+');
+    // Add query from url to Autocomplete
+    const apiParams = {
+      Author: { url: 'autor', text: 'name' },
+      Passage: { url: 'stelle', text: 'zitat' },
+      Keyword: { url: 'keyword', text: 'stichwort' },
+      'Use Case': { url: 'usecase', text: 'title' },
+      Place: { url: 'ort', text: 'name' },
+    };
+
+    Object.keys(this.query).forEach((cat) => {
+      console.log('cat', cat, apiParams[cat]);
+      console.log(cat, 'found:', this.query[cat]);
+
+      let ids = this.query[cat].split('+');
       const idCount = ids.length;
       this.skeletonChips += idCount;
       ids = ids.join(',');
 
-      fetch(`https://mmp.acdh-dev.oeaw.ac.at/api/autor/?ids=${ids}`)
+      fetch(`https://mmp.acdh-dev.oeaw.ac.at/api/${apiParams[cat].url}/?ids=${ids}`)
         .then((res) => res.json())
         .then((res) => {
-          console.log('Query Authors', res);
-          res.results.forEach((author) => {
+          console.log('Query', cat, res);
+          res.results.forEach((x) => {
             this.$store.commit('addToItemsAndInput', {
-              id: this.getIdFromUrl(author.url),
-              text: author.name,
-              selected_text: author.name,
-              group: 'Author',
+              id: this.getIdFromUrl(x.url),
+              text: x[apiParams[cat].text],
+              selected_text: x[apiParams[cat].text],
+              group: cat,
             });
           });
         })
@@ -345,115 +355,7 @@ export default {
         .finally(() => {
           this.skeletonChips -= idCount;
         });
-    }
-    if (this.query.Passage) {
-      console.log('Passage found:', this.query.Passage);
-      let ids = this.query.Passage.split('+');
-      const idCount = ids.length;
-      this.skeletonChips += idCount;
-      ids = ids.join(',');
-
-      fetch(`https://mmp.acdh-dev.oeaw.ac.at/api/stelle/?ids=${ids}`)
-        .then((res) => res.json())
-        .then((res) => {
-          console.log('Query Passage', res);
-          res.results.forEach((passage) => {
-            this.$store.commit('addToItemsAndInput', {
-              id: this.getIdFromUrl(passage.url),
-              text: passage.zitat,
-              selected_text: passage.zitat,
-              group: 'Passage',
-            });
-          });
-        })
-        .catch((err) => {
-          console.log(err);
-        })
-        .finally(() => {
-          this.skeletonChips -= idCount;
-        });
-    }
-    if (this.query.Keyword) {
-      console.log('Keyword found:', this.query.Keyword);
-      let ids = this.query.Keyword.split('+');
-      const idCount = ids.length;
-      this.skeletonChips += idCount;
-      ids = ids.join(',');
-
-      fetch(`https://mmp.acdh-dev.oeaw.ac.at/api/keyword/?ids=${ids}`)
-        .then((res) => res.json())
-        .then((res) => {
-          console.log('Query Keyword', res);
-          res.results.forEach((keyword) => {
-            this.$store.commit('addToItemsAndInput', {
-              id: this.getIdFromUrl(keyword.url),
-              text: keyword.stichwort,
-              selected_text: keyword.stichwort,
-              group: 'Keyword',
-            });
-          });
-        })
-        .catch((err) => {
-          console.log(err);
-        })
-        .finally(() => {
-          this.skeletonChips -= idCount;
-        });
-    }
-    if (this.query['Use Case']) {
-      console.log('Use Case found:', this.query['Use Case']);
-      let ids = this.query['Use Case'].split('+');
-      const idCount = ids.length;
-      this.skeletonChips += idCount;
-      ids = ids.join(',');
-
-      fetch(`https://mmp.acdh-dev.oeaw.ac.at/api/usecase/?ids=${ids}`)
-        .then((res) => res.json())
-        .then((res) => {
-          console.log('Query Use Case', res);
-          res.results.forEach((usecase) => {
-            this.$store.commit('addToItemsAndInput', {
-              id: this.getIdFromUrl(usecase.url),
-              text: usecase.title,
-              selected_text: usecase.title,
-              group: 'Use Case',
-            });
-          });
-        })
-        .catch((err) => {
-          console.log(err);
-        })
-        .finally(() => {
-          this.skeletonChips -= idCount;
-        });
-    }
-    if (this.query.Place) {
-      console.log('Place found:', this.query.Place);
-      let ids = this.query.Place.split('+');
-      const idCount = ids.length;
-      this.skeletonChips += idCount;
-      ids = ids.join(',');
-
-      fetch(`https://mmp.acdh-dev.oeaw.ac.at/api/ort/?ids=${ids}`)
-        .then((res) => res.json())
-        .then((res) => {
-          console.log('Query Place', res);
-          res.results.forEach((place) => {
-            this.$store.commit('addToItemsAndInput', {
-              id: this.getIdFromUrl(place.url),
-              text: place.name,
-              selected_text: place.name,
-              group: 'Place',
-            });
-          });
-        })
-        .catch((err) => {
-          console.log(err);
-        })
-        .finally(() => {
-          this.skeletonChips -= idCount;
-        });
-    }
+    });
   },
 };
 </script>
