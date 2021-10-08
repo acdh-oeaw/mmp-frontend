@@ -1,8 +1,8 @@
 <template>
   <div>
     <v-container>
-      <v-row justify="center">
-        <v-col cols="12" xl="8">
+      <v-row :justify="currentView.includes('Detail') ? 'left' : 'center'">
+        <v-col cols="12" :lg="currentView.includes('Detail') ? 8 : 12" xl="8">
           <v-row class="grey-bg">
             <v-col>
               <v-autocomplete
@@ -216,7 +216,7 @@ export default {
       return this.$route.name;
     },
     mobileSelect() {
-      return this.$route.name === 'Graph' ? 'Network Graph' : this.$route.name;
+      return this.currentView === 'Graph' ? 'Network Graph' : this.currentView;
     },
     query() {
       console.log('query changed', this.$route.query);
@@ -257,7 +257,7 @@ export default {
       if (query.time === '400+1200') query.time = undefined;
 
       this.$router.push({
-        name: this.$route.name,
+        name: this.currentView,
         query,
       });
     },
