@@ -13,6 +13,7 @@ export default new Vuex.Store({
     },
     fetchedResults: {},
     interface: {
+      searchOptions: false,
       sidebarDrawer: false,
       currentView: 'Network Graph',
     },
@@ -49,6 +50,7 @@ export default new Vuex.Store({
       console.log('items cleared', state);
     },
     toggleDrawer: (state) => { state.interface.sidebarDrawer = !state.interface.sidebarDrawer; },
+    toggleOptions: (state) => { state.interface.searchOptions = !state.interface.searchOptions; },
     removeItemFromInput: (state, item) => { state.autocomplete.input = state.autocomplete.input.filter((x) => !(x.id === item.id && x.group === item.group)); },
     setDataView: (state, view) => { state.interface.currentView = view; },
     // setItems: (state, { items }) => { state.autocomplete.items = items; },

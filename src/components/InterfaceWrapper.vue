@@ -110,12 +110,12 @@
               </v-col>
             </template>
             <v-col :class="{ 'text-right': !$vuetify.breakpoint.mobile, 'text-center': $vuetify.breakpoint.mobile }">
-              <v-btn small text @click="dialog = !dialog">
+              <v-btn small text @click="$store.commit('toggleOptions')">
                 <v-icon>mdi-cog</v-icon>
                 &nbsp;
                 Search Options
               </v-btn>
-              <search-option-dialog :active="dialog" />
+              <search-option-dialog />
             </v-col>
           </v-row>
           <v-row align="center" justify="center" v-if="!Object.keys(query).length && !Object.keys($route.params).length">
@@ -207,7 +207,6 @@ export default {
         group: 'Use Case',
       },
     },
-    dialog: false,
     disabledSlider: false,
     loading: false,
     range: [40, 120],
@@ -283,13 +282,16 @@ export default {
   },
   watch: {
     textInput(val) {
-      const urls = [
-        'https://mmp.acdh-dev.oeaw.ac.at/archiv-ac/autor-autocomplete/?q=',
-        'https://mmp.acdh-dev.oeaw.ac.at/archiv-ac/stelle-autocomplete/?q=',
-        'https://mmp.acdh-dev.oeaw.ac.at/archiv-ac/keyword-autocomplete/?q=',
-        'https://mmp.acdh-dev.oeaw.ac.at/archiv-ac/usecase-autocomplete/?q=',
-        'https://mmp.acdh-dev.oeaw.ac.at/archiv-ac/ort-autocomplete/?q=',
-      ].map((x) => (x + val));
+      if (val.length < 1) return;
+      let urls = [];
+      const filters = this.$store.state.searchFilters;
+      if (filters.author) urls.push('https://mmp.acdh-dev.oeaw.ac.at/archiv-ac/autor-autocomplete/?q=');
+      if (filters.passage) urls.push('https://mmp.acdh-dev.oeaw.ac.at/archiv-ac/stelle-autocomplete/?q=');
+      if (Object.values(filters.keyword).some((x) => x)) urls.push('https://mmp.acdh-dev.oeaw.ac.at/archiv-ac/keyword-autocomplete/?q=');
+      if (filters.usecase) urls.push('https://mmp.acdh-dev.oeaw.ac.at/archiv-ac/usecase-autocomplete/?q=');
+      if (Object.values(filters.place).some((x) => x)) urls.push('https://mmp.acdh-dev.oeaw.ac.at/archiv-ac/ort-autocomplete/?q=');
+
+      urls = urls.map((x) => (x + val));
 
       const labels = ['Author', 'Passage', 'Keyword', 'Use Case', 'Place'];
       const prefetched = this.$store.state.fetchedResults[urls.toString()];

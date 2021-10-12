@@ -86,6 +86,14 @@
           prepend-icon="mdi-chevron-right"
         />
       </v-card-text>
+      <v-card-actions class="justify-end">
+        <v-btn
+          text
+          @click="$store.commit('toggleOptions')"
+        >
+          Close
+        </v-btn>
+      </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
@@ -93,7 +101,6 @@
 <script>
 export default {
   name: 'SearchOptionDialog',
-  props: ['active'],
   data: () => ({
     all: {
       model: true,
@@ -111,6 +118,14 @@ export default {
   computed: {
     filters() {
       return this.$store.state.searchFilters;
+    },
+    active: {
+      get() {
+        return this.$store.state.interface.searchOptions;
+      },
+      set() {
+        this.$store.commit('toggleOptions');
+      },
     },
   },
   methods: {
