@@ -31,6 +31,7 @@ export default new Vuex.Store({
         author: true,
       },
     },
+    slider: 'passage',
   },
   mutations: {
     addItems: (state, { items, label }) => {
@@ -75,6 +76,9 @@ export default new Vuex.Store({
       Object.keys(state.searchFilters[cat]).forEach((key) => {
         state.searchFilters[cat][key] = val;
       });
+    },
+    changeSlider: (state, val) => {
+      state.slider = val;
     },
   },
   actions: {},

@@ -41,6 +41,7 @@
           @change="changeValue($event, 'keyword.name')"
           color="blue lighten-2"
           prepend-icon="mdi-chevron-right"
+          dense
         />
         <v-checkbox
           label="Keyword"
@@ -48,6 +49,7 @@
           @change="changeValue($event, 'keyword.phrase')"
           color="blue lighten-2"
           prepend-icon="mdi-chevron-right"
+          dense
         />
         <v-divider />
         <v-checkbox
@@ -70,6 +72,7 @@
           @change="changeValue($event, 'place.text')"
           color="green lighten-1"
           prepend-icon="mdi-chevron-right"
+          dense
         />
         <v-checkbox
           label="Related to Passage"
@@ -77,6 +80,7 @@
           @change="changeValue($event, 'place.passage')"
           color="green lighten-1"
           prepend-icon="mdi-chevron-right"
+          dense
         />
         <v-checkbox
           label="Related to Author related to Text"
@@ -84,7 +88,27 @@
           @change="changeValue($event, 'place.author')"
           color="green lighten-1"
           prepend-icon="mdi-chevron-right"
+          dense
         />
+        <v-divider />
+        <v-radio-group
+          v-model="slideOption"
+          @change="$store.commit('changeSlider', $event)"
+        >
+          <template v-slot:label>
+            Timeslider should filter for:
+          </template>
+          <v-radio
+            label="Passages"
+            color="teal lighten-2"
+            value="passage"
+          />
+          <v-radio
+            label="Texts"
+            color="red darken-4"
+            value="text"
+          />
+        </v-radio-group>
       </v-card-text>
       <v-card-actions class="justify-end">
         <v-btn
@@ -114,6 +138,7 @@ export default {
       model: true,
       indeterminate: false,
     },
+    slideOption: 'passage',
   }),
   computed: {
     filters() {

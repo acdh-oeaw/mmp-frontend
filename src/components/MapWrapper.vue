@@ -57,13 +57,16 @@ export default {
         });
 
         if (query.time) {
+          const startKey = this.$store.state.slider === 'passage' ? 'stelle__start_date' : 'stelle__text__not_before';
+          const endKey = this.$store.state.slider === 'passage' ? 'stelle__end_date' : 'stelle__text__not_after';
+
           if (query.time.toString().includes('+')) {
             const times = query.time.split('+');
-            address += `&stelle__start_date=${times[0]}&stelle__start_date_lookup=lt`;
-            address += `&stelle__end_date=${times[1]}&stelle__end_date_lookup=gt`;
+            address += `&${startKey}=${times[0]}&${startKey}_lookup=lt`;
+            address += `&${endKey}=${times[1]}&${endKey}_lookup=gt`;
           } else {
-            address += `&stelle__start_date=${query.time - 5}&stelle__start_date_lookup=lt`;
-            address += `&stelle__end_date=${query.time + 4}&stelle__end_date_lookup=gt`;
+            address += `&${startKey}=${query.time - 5}&${startKey}_lookup=lt`;
+            address += `&${endKey}=${query.time + 4}&${endKey}_lookup=gt`;
           }
         }
         console.log('address', address);

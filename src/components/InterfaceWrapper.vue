@@ -287,7 +287,7 @@ export default {
   },
   watch: {
     textInput(val) {
-      if (val.length < 1) return;
+      if (!val || val.length < 1) return;
       let urls = [];
       const filters = this.$store.state.searchFilters;
       if (filters.author) urls.push('https://mmp.acdh-dev.oeaw.ac.at/archiv-ac/autor-autocomplete/?q=');

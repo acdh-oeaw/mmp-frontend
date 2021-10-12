@@ -169,13 +169,14 @@ export default {
 
         console.log('query.time', query.time);
         if (query.time) {
+          const key = this.$store.state.slider === 'passage' ? 'rvn_stelle_key_word_keyword' : 'rvn_stelle_key_word_keyword__text';
           if (query.time.toString().includes('+')) {
             const times = query.time.split('+');
-            address += `&rvn_stelle_key_word_keyword__start_date=${times[0]}&rvn_stelle_key_word_keyword__start_date_lookup=lt`;
-            address += `&rvn_stelle_key_word_keyword__end_date=${times[1]}&rvn_stelle_key_word_keyword__end_date_lookup=gt`;
+            address += `&${key}__start_date=${times[0]}&${key}__start_date_lookup=lt`;
+            address += `&${key}__end_date=${times[1]}&${key}__end_date_lookup=gt`;
           } else {
-            address += `&rvn_stelle_key_word_keyword__start_date=${query.time - 5}&rvn_stelle_key_word_keyword__start_date_lookup=lt`;
-            address += `&rvn_stelle_key_word_keyword__end_date=${query.time + 4}&rvn_stelle_key_word_keyword__end_date_lookup=gt`;
+            address += `&${key}__start_date=${query.time - 5}&${key}__start_date_lookup=lt`;
+            address += `&${key}__end_date=${query.time + 4}&${key}__end_date_lookup=gt`;
           }
         }
 
