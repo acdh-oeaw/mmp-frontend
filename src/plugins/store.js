@@ -57,7 +57,9 @@ export default new Vuex.Store({
     setAllFilters: (state, val) => {
       Object.entries(state.searchFilters).forEach((entry) => {
         if (typeof entry[1] === 'object') {
-          this.commit('setSubFilters', { cat: entry[0], val });
+          Object.keys(state.searchFilters[entry[0]]).forEach((key) => {
+            state.searchFilters[entry[0]][key] = val;
+          });
         } else state.searchFilters[entry[0]] = val;
       });
     },

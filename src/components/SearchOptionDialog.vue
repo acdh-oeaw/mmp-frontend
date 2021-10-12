@@ -9,7 +9,9 @@
       <v-card-text>
         <v-checkbox
           label="All"
-          v-model="all"
+          v-model="all.model"
+          :indeterminate="all.indeterminate"
+          @change="$store.commit('setAllFilters', $event);"
         />
         <v-divider />
         <v-checkbox
@@ -93,6 +95,10 @@ export default {
   name: 'SearchOptionDialog',
   props: ['active'],
   data: () => ({
+    all: {
+      model: true,
+      indeterminate: false,
+    },
     place: {
       model: true,
       indeterminate: false,
@@ -103,14 +109,6 @@ export default {
     },
   }),
   computed: {
-    all: {
-      get() {
-        return true;
-      },
-      set(val) {
-        this.$store.commit('setAllFilters', val);
-      },
-    },
     filters() {
       return this.$store.state.searchFilters;
     },
@@ -123,9 +121,8 @@ export default {
       // console.log(val, cat);
       this.$store.commit('setFilter', { cat, val });
     },
-    handleCategories(cat) {
-      const vals = Object.values(this.filters[cat]);
-      console.log('filter vals', vals);
+    handleCategories(cat, vals) {
+      // console.log('filter vals', vals);
       this[cat].indeterminate = false;
       if (vals.every((x) => x)) {
         this[cat].model = true;
@@ -138,9 +135,16 @@ export default {
   },
   watch: {
     filters: {
-      handler() {
-        this.handleCategories('keyword');
-        this.handleCategories('place');
+      handler(val) {
+        this.handleCategories('keyword', Object.values(this.filters.keyword));
+        this.handleCategories('place', Object.values(this.filters.place));
+
+        let allArray = [];
+        Object.entries(val).forEach((entry) => {
+          if (typeof entry[1] === 'object') allArray = allArray.concat(Object.values(entry[1]));
+          else allArray.push(entry[1]);
+        });
+        this.handleCategories('all', allArray);
       },
       deep: true,
       // immediate: true,
