@@ -98,7 +98,7 @@ export default {
 
       if (q) {
         this.$router.push({
-          name: 'KeywordDetail',
+          name: 'Keyword Detail',
           params: { id: q },
           query: this.$route.query,
         });

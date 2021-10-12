@@ -98,7 +98,6 @@
                   List
                 </v-btn>
               </v-col>
-              <v-spacer />
             </template>
             <template v-else>
               <v-col>
@@ -110,6 +109,14 @@
                 />
               </v-col>
             </template>
+            <v-col :class="{ 'text-right': !$vuetify.breakpoint.mobile, 'text-center': $vuetify.breakpoint.mobile }">
+              <v-btn small text @click="dialog = !dialog">
+                <v-icon>mdi-cog</v-icon>
+                &nbsp;
+                Search Options
+              </v-btn>
+              <search-option-dialog :active="dialog" />
+            </v-col>
           </v-row>
           <v-row align="center" justify="center" v-if="!Object.keys(query).length && !Object.keys($route.params).length">
             <v-col cols="12" md="8">
@@ -173,7 +180,9 @@
 
 <script>
 import { VRangeSlider, VSlider } from 'vuetify/lib';
+
 import helpers from '@/helpers';
+import SearchOptionDialog from './SearchOptionDialog';
 
 export default {
   name: 'Interface',
@@ -198,6 +207,7 @@ export default {
         group: 'Use Case',
       },
     },
+    dialog: false,
     disabledSlider: false,
     loading: false,
     range: [40, 120],
@@ -208,6 +218,7 @@ export default {
   components: {
     VSlider,
     VRangeSlider,
+    SearchOptionDialog,
   },
   mixins: [helpers],
   computed: {

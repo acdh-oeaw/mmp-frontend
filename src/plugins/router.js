@@ -47,7 +47,7 @@ const routes = [
         children: [
           {
             path: 'detail/:id',
-            name: 'KeywordDetail',
+            name: 'Keyword Detail',
             component: KeywordDetail,
           },
         ],
