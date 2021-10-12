@@ -51,6 +51,11 @@
                 </template>
               </v-autocomplete>
             </v-col>
+            <!-- <v-col>
+              <v-btn height="100%" x-large block>
+                <v-icon>mdi-magnify</v-icon>
+              </v-btn>
+            </v-col> -->
           </v-row>
           <v-row class="grey-bg">
             <template v-if="!$vuetify.breakpoint.mobile">

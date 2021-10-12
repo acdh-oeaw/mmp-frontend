@@ -161,6 +161,10 @@ export default {
           }
         });
 
+        const filters = this.$store.state.searchFilters.keyword;
+        if (filters.name && !filters.phrase) address += '&art=Eigenname';
+        else if (!filters.name && filters.phrase) address += '&art=Schlagwort';
+
         if (query.Keyword) address += `&ids=${query.Keyword.replaceAll('+', ',')}`;
 
         console.log('query.time', query.time);
