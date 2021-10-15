@@ -4,7 +4,7 @@
       <v-row :justify="currentView.includes('Detail') ? 'left' : 'center'">
         <v-col cols="12" :lg="currentView.includes('Detail') ? 8 : 12" xl="8">
           <v-row class="grey-bg">
-            <v-col>
+            <v-col cols="11">
               <v-autocomplete
                 v-model="$store.state.autocomplete.input"
                 multiple
@@ -13,7 +13,7 @@
                 return-object
                 autofocus
                 ref="autocomplete"
-                :items="$store.state.autocomplete.items"
+                :items="filteredSearchedSorted"
                 :search-input.sync="textInput"
                 @change="textInput = ''"
                 @keyup.enter="pushQuery"
@@ -51,11 +51,18 @@
                 </template>
               </v-autocomplete>
             </v-col>
-            <!-- <v-col>
-              <v-btn height="100%" x-large block>
+            <v-col>
+              <v-btn
+                min-height="50px"
+                height="100%"
+                x-large
+                block
+                depressed
+                @click="pushQuery"
+              >
                 <v-icon>mdi-magnify</v-icon>
               </v-btn>
-            </v-col> -->
+            </v-col>
           </v-row>
           <v-row class="grey-bg">
             <template v-if="!$vuetify.breakpoint.mobile">
@@ -105,7 +112,7 @@
               </v-col>
             </template>
             <template v-else>
-              <v-col>
+              <v-col cols="12">
                 <v-select
                   v-model="mobileSelect"
                   :items="['Network Graph', 'Map', 'List']"
@@ -184,7 +191,9 @@
 </template>
 
 <script>
+/* eslint-disable vue/no-unused-vars */
 import { VRangeSlider, VSlider } from 'vuetify/lib';
+// import Fuse from 'fuse.js';
 
 import helpers from '@/helpers';
 import SearchOptionDialog from './SearchOptionDialog';
@@ -218,6 +227,7 @@ export default {
     skeletonChips: 0,
     sliderComponent: 'v-range-slider',
     textInput: '',
+    tooltip: true,
   }),
   components: {
     VSlider,
@@ -226,6 +236,30 @@ export default {
   },
   mixins: [helpers],
   computed: {
+    filteredSearchedSorted() {
+      const { items } = this.$store.state.autocomplete;
+      if (!this.textInput) return items;
+      // console.log('items', items);
+      const filterArr = items.filter((item) => {
+        const storeEq = this.$store.state.searchFilters[item.group.replace(' ', '').toLowerCase()];
+        if (typeof storeEq === 'object') {
+          return Object.values(storeEq).some((x) => x);
+        }
+        return storeEq;
+      });
+
+      // this wasnt working out, maybe some day...
+      // let fuse = new Fuse(filterArr, { keys: ['selected_text'] });
+      // fuse = fuse.search(this.textInput);
+      // console.log('searched, filtered', fuse);
+      // fuse = fuse.map((res) => res.item);
+      // console.log('searched, sorted, filtered', fuse);
+      // fuse.push(...items);
+
+      // return fuse;
+
+      return filterArr;
+    },
     currentView() {
       console.log('currentView', this.$route.name);
       return this.$route.name;
@@ -255,11 +289,13 @@ export default {
     },
     pushQuery() {
       this.$refs.autocomplete.blur(); // this is the only working solution I found to unfocus autocomplete
+      this.tooltip = false;
       const query = {
         Author: undefined,
         Passage: undefined,
         Keyword: undefined,
         'Use Case': undefined,
+        Place: undefined,
       };
       Object.keys(query).forEach((cat) => {
         query[cat] = this.$store.state.autocomplete.input

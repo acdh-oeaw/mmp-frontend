@@ -21,7 +21,7 @@
           @click="addAuthorToInput(author)"
           :key="author.id"
         >
-          {{ author.name_en }}
+          {{ author.name_en || author.name }}
         </a>
       </template>
       <template v-slot:item.text.title="{ item }">
@@ -96,7 +96,7 @@ export default {
         // Passage: 'id', // not used anymore
         Keyword: 'key_word',
         'Use Case': 'use_case',
-        // Place: 'unused',
+        // Place: unused,
       };
       let address = `https://mmp.acdh-dev.oeaw.ac.at/api/stelle/?format=json&limit=${this.pagination.limit}&offset=${this.pagination.offset}`;
       Object.keys(query).forEach((cat) => {

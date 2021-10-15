@@ -44,6 +44,7 @@ export default {
     graph: null,
     loading: false,
   }),
+  props: ['ids'],
   mixins: [helpers],
   methods: {
     nodeObject(node, ctx, globalScale) {
@@ -142,6 +143,8 @@ export default {
   watch: {
     '$route.query': {
       handler(query) {
+        // for use cases
+        // if (this.props) query = this.props;
         const terms = {
           Author: 'rvn_stelle_key_word_keyword__text__autor',
           Passage: 'rvn_stelle_key_word_keyword',

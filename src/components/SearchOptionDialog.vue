@@ -94,10 +94,8 @@
         <v-radio-group
           v-model="slideOption"
           @change="$store.commit('changeSlider', $event)"
+          label="Timeslider should filter for:"
         >
-          <template v-slot:label>
-            Timeslider should filter for:
-          </template>
           <v-radio
             label="Passages"
             color="teal lighten-2"

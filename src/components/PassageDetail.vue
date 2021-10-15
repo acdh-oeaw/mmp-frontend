@@ -54,18 +54,18 @@
               </v-chip>
             </div>
           </td>
-          <td v-else-if="item.key === 'Author'">
+          <td v-else-if="['Place', 'Author'].includes(item.key)">
             <div
               class="keyword-chip"
-              v-for="author in item.value"
-              :key="author.url"
+              v-for="val in item.value"
+              :key="val.url"
             >
               <v-chip
-                color="red lighten-3"
+                :color="item.key === 'Place' ? 'green lighten-3' : 'red lighten-3'"
                 small
-                @click="$store.commit('addToItemsAndInput', { id: author.url.replace(/\D/g, ''), selected_text: author.name, group: 'Author' })"
+                @click="$store.commit('addToItemsAndInput', { id: val.url.replace(/\D/g, ''), selected_text: val.name, group: item.key })"
               >
-                {{ author.name_en }}
+                {{ val.name_en || val.name }}
               </v-chip>
             </div>
           </td>
@@ -132,7 +132,7 @@ export default {
         },
         {
           key: 'Place',
-          value: res.text.ort.map((x) => x.name).join(', '),
+          value: res.text.ort,
         },
         {
           key: 'Edition',
