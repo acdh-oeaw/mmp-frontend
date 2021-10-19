@@ -32,6 +32,7 @@ export default {
   components: {
     Leaflet,
   },
+  props: ['usecase'],
   data: () => ({
     entries: null,
     loading: false,
@@ -39,34 +40,38 @@ export default {
   watch: {
     '$route.query': {
       handler(query) {
-        const terms = {
-          Author: 'stelle__text__autor',
-          Passage: 'stelle',
-          Keyword: 'key_word',
-          // 'Use Case': 'unused',
-          // Place: 'unused',
-        };
         let address = 'https://mmp.acdh-dev.oeaw.ac.at/api/spatialcoverage/?format=json';
-        Object.keys(query).forEach((cat) => {
-          if (query[cat]) {
-            const arr = query[cat].split('+');
-            arr.forEach((val) => {
-              address += `&${terms[cat]}=${val}`;
-            });
-          }
-        });
+        if (this.usecase) {
+          address += `&stelle__use_case=${this.usecase}`;
+        } else {
+          const terms = {
+            Author: 'stelle__text__autor',
+            Passage: 'stelle',
+            Keyword: 'key_word',
+            // 'Use Case': 'unused',
+            // Place: 'unused',
+          };
+          Object.keys(query).forEach((cat) => {
+            if (query[cat]) {
+              const arr = query[cat].split('+');
+              arr.forEach((val) => {
+                address += `&${terms[cat]}=${val}`;
+              });
+            }
+          });
 
-        if (query.time) {
-          const startKey = this.$store.state.slider === 'passage' ? 'stelle__start_date' : 'stelle__text__not_before';
-          const endKey = this.$store.state.slider === 'passage' ? 'stelle__end_date' : 'stelle__text__not_after';
+          if (query.time) {
+            const startKey = this.$store.state.slider === 'passage' ? 'stelle__start_date' : 'stelle__text__not_before';
+            const endKey = this.$store.state.slider === 'passage' ? 'stelle__end_date' : 'stelle__text__not_after';
 
-          if (query.time.toString().includes('+')) {
-            const times = query.time.split('+');
-            address += `&${startKey}=${times[0]}&${startKey}_lookup=lt`;
-            address += `&${endKey}=${times[1]}&${endKey}_lookup=gt`;
-          } else {
-            address += `&${startKey}=${query.time - 5}&${startKey}_lookup=lt`;
-            address += `&${endKey}=${query.time + 4}&${endKey}_lookup=gt`;
+            if (query.time.toString().includes('+')) {
+              const times = query.time.split('+');
+              address += `&${startKey}=${times[0]}&${startKey}_lookup=lt`;
+              address += `&${endKey}=${times[1]}&${endKey}_lookup=gt`;
+            } else {
+              address += `&${startKey}=${query.time - 5}&${startKey}_lookup=lt`;
+              address += `&${endKey}=${query.time + 4}&${endKey}_lookup=gt`;
+            }
           }
         }
         console.log('address', address);

@@ -51,10 +51,10 @@
                 </v-timeline>
               </v-tab-item>
               <v-tab-item key="graph">
-                <graph />
+                <graph :usecase="id || $route.params.id" />
               </v-tab-item>
               <v-tab-item key="map">
-                <map-wrapper />
+                <map-wrapper :usecase="id || $route.params.id" />
               </v-tab-item>
             </v-tabs-items>
           </v-card>

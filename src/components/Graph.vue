@@ -44,7 +44,7 @@ export default {
     graph: null,
     loading: false,
   }),
-  props: ['ids'],
+  props: ['usecase'],
   mixins: [helpers],
   methods: {
     nodeObject(node, ctx, globalScale) {
@@ -143,43 +143,46 @@ export default {
   watch: {
     '$route.query': {
       handler(query) {
-        // for use cases
-        // if (this.props) query = this.props;
-        const terms = {
-          Author: 'rvn_stelle_key_word_keyword__text__autor',
-          Passage: 'rvn_stelle_key_word_keyword',
-          // Keyword: 'id', // has been replaced with new multiple id functionality
-          // 'Use Case': 'unused',
-          Place: 'rvn_stelle_key_word_keyword__text__autor__ort',
-        };
-
-        console.log('query', query);
         let address = 'https://mmp.acdh-dev.oeaw.ac.at/archiv/keyword-data/?';
-        Object.keys(terms).forEach((cat) => {
-          if (query[cat]) {
-            const arr = query[cat].split('+');
-            arr.forEach((val) => {
-              address += `&${terms[cat]}=${val}`;
-            });
-          }
-        });
+        console.log('usecase', this.usecase);
+        if (this.usecase) {
+          address += `rvn_stelle_key_word_keyword__use_case=${this.usecase}`;
+        } else {
+          const terms = {
+            Author: 'rvn_stelle_key_word_keyword__text__autor',
+            Passage: 'rvn_stelle_key_word_keyword',
+            // Keyword: 'id', // has been replaced with new multiple id functionality
+            // 'Use Case': 'unused',
+            Place: 'rvn_stelle_key_word_keyword__text__autor__ort',
+          };
 
-        const filters = this.$store.state.searchFilters.keyword;
-        if (filters.name && !filters.phrase) address += '&art=Eigenname';
-        else if (!filters.name && filters.phrase) address += '&art=Schlagwort';
+          console.log('query', query);
+          Object.keys(terms).forEach((cat) => {
+            if (query[cat]) {
+              const arr = query[cat].split('+');
+              arr.forEach((val) => {
+                address += `&${terms[cat]}=${val}`;
+              });
+            }
+          });
 
-        if (query.Keyword) address += `&ids=${query.Keyword.replaceAll('+', ',')}`;
+          const filters = this.$store.state.searchFilters.keyword;
+          if (filters.name && !filters.phrase) address += '&art=Eigenname';
+          else if (!filters.name && filters.phrase) address += '&art=Schlagwort';
 
-        console.log('query.time', query.time);
-        if (query.time) {
-          const key = this.$store.state.slider === 'passage' ? 'rvn_stelle_key_word_keyword' : 'rvn_stelle_key_word_keyword__text';
-          if (query.time.toString().includes('+')) {
-            const times = query.time.split('+');
-            address += `&${key}__start_date=${times[0]}&${key}__start_date_lookup=lt`;
-            address += `&${key}__end_date=${times[1]}&${key}__end_date_lookup=gt`;
-          } else {
-            address += `&${key}__start_date=${query.time - 5}&${key}__start_date_lookup=lt`;
-            address += `&${key}__end_date=${query.time + 4}&${key}__end_date_lookup=gt`;
+          if (query.Keyword) address += `&ids=${query.Keyword.replaceAll('+', ',')}`;
+
+          console.log('query.time', query.time);
+          if (query.time) {
+            const key = this.$store.state.slider === 'passage' ? 'rvn_stelle_key_word_keyword' : 'rvn_stelle_key_word_keyword__text';
+            if (query.time.toString().includes('+')) {
+              const times = query.time.split('+');
+              address += `&${key}__start_date=${times[0]}&${key}__start_date_lookup=lt`;
+              address += `&${key}__end_date=${times[1]}&${key}__end_date_lookup=gt`;
+            } else {
+              address += `&${key}__start_date=${query.time - 5}&${key}__start_date_lookup=lt`;
+              address += `&${key}__end_date=${query.time + 4}&${key}__end_date_lookup=gt`;
+            }
           }
         }
 

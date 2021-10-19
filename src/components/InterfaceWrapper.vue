@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-container>
-      <v-row :justify="currentView.includes('Detail') ? 'left' : 'center'">
+      <v-row :justify="currentView.includes('Detail') ? 'start' : 'center'">
         <v-col cols="12" :lg="currentView.includes('Detail') ? 8 : 12" xl="8">
           <v-row class="grey-bg">
             <v-col cols="11">
