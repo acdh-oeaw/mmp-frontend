@@ -385,7 +385,7 @@ export default {
       console.log('cat', cat, apiParams[cat]);
       console.log(cat, 'found:', this.query[cat]);
 
-      let ids = this.query[cat].split('+');
+      let ids = this.query[cat].toString(10).split('+');
       const idCount = ids.length;
       this.skeletonChips += idCount;
       ids = ids.join(',');
