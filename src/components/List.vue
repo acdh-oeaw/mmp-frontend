@@ -139,7 +139,7 @@ export default {
             this.pagination.count = res.count;
           })
           .catch((err) => {
-            console.log(err);
+            console.error(err);
           })
           .finally(() => {
             this.loading = false;

@@ -89,7 +89,7 @@ export default {
               this.entries = res;
             })
             .catch((err) => {
-              console.log(err);
+              console.error(err);
             })
             .finally(() => {
               this.loading = false;

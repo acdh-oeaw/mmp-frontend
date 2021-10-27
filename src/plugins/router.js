@@ -8,6 +8,7 @@ import CaseStudy from '@/components/CaseStudy';
 import Graph from '@/components/Graph';
 import Map from '@/components/MapWrapper';
 import List from '@/components/List';
+import WordCloudWrapper from '@/components/WordCloudWrapper';
 
 import KeywordDetail from '@/components/KeywordDetail';
 import PassageDetail from '@/components/PassageDetail';
@@ -63,6 +64,11 @@ const routes = [
             component: PassageDetail,
           },
         ],
+      },
+      {
+        path: 'cloud',
+        name: 'Cloud',
+        component: WordCloudWrapper,
       },
     ],
   },

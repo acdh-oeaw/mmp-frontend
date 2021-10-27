@@ -29,35 +29,43 @@
             <v-tab key="map">
               Map
             </v-tab>
+            <v-tab key="cloud">
+              Word Cloud
+            </v-tab>
           </v-tabs>
           <br />
-          <v-card color="transparent">
-            <v-tabs-items v-model="tab">
-              <v-tab-item key="timeline">
-                <v-timeline :dense="$vuetify.breakpoint.mobile">
-                  <v-timeline-item
-                    v-for="(event, i) in events"
-                    :key="`${event.id}&${i}`"
-                    large
-                    :icon="getIconFromType(event.ent_type).icon"
-                    :color="getIconFromType(event.ent_type).color"
-                    :class="{ 'text-right': i%2 == 1 && !$vuetify.breakpoint.mobile }"
-                  >
-                    <span class="font-weight-medium" slot="opposite">{{ renderDates(event.start_date, event.end_date) }}</span>
-                    <span class="font-weight-medium" v-if="$vuetify.breakpoint.mobile">{{ renderDates(event.start_date, event.end_date) }}: <br /></span>
-                    <router-link class="font-weight-medium" v-if="event.ent_type === 'autor'" :to="{ name: 'List', query: { Author: event.id }}">{{ event.ent_description }} <v-icon>mdi-arrow-right</v-icon></router-link>
-                    <span v-else :class="{ 'font-weight-medium': event.ent_type != 'event' }">{{ event.ent_description }}</span>
-                  </v-timeline-item>
-                </v-timeline>
-              </v-tab-item>
-              <v-tab-item key="graph">
+          <v-tabs-items v-model="tab">
+            <v-tab-item key="timeline">
+              <v-timeline :dense="$vuetify.breakpoint.mobile">
+                <v-timeline-item
+                  v-for="(event, i) in events"
+                  :key="`${event.id}&${i}`"
+                  large
+                  :icon="getIconFromType(event.ent_type).icon"
+                  :color="getIconFromType(event.ent_type).color"
+                  :class="{ 'text-right': i%2 == 1 && !$vuetify.breakpoint.mobile }"
+                >
+                  <span class="font-weight-medium" slot="opposite">{{ renderDates(event.start_date, event.end_date) }}</span>
+                  <span class="font-weight-medium" v-if="$vuetify.breakpoint.mobile">{{ renderDates(event.start_date, event.end_date) }}: <br /></span>
+                  <router-link class="font-weight-medium" v-if="event.ent_type === 'autor'" :to="{ name: 'List', query: { Author: event.id }}">{{ event.ent_description }} <v-icon>mdi-arrow-right</v-icon></router-link>
+                  <span v-else :class="{ 'font-weight-medium': event.ent_type != 'event' }">{{ event.ent_description }}</span>
+                </v-timeline-item>
+              </v-timeline>
+            </v-tab-item>
+            <v-tab-item key="graph">
+              <v-card color="transparent">
                 <graph :usecase="id || $route.params.id" />
-              </v-tab-item>
-              <v-tab-item key="map">
+              </v-card>
+            </v-tab-item>
+            <v-tab-item key="map">
+              <v-card color="transparent">
                 <map-wrapper :usecase="id || $route.params.id" />
-              </v-tab-item>
-            </v-tabs-items>
-          </v-card>
+              </v-card>
+            </v-tab-item>
+            <v-tab-item key="cloud">
+              <word-cloud-wrapper :usecase="id || $route.params.id" />
+            </v-tab-item>
+          </v-tabs-items>
         </template>
         <v-skeleton-loader v-else type="text, heading, text@11" />
       </v-col>
@@ -69,6 +77,7 @@
 /* eslint-disable prefer-destructuring */
 import Graph from './Graph';
 import MapWrapper from './MapWrapper';
+import WordCloudWrapper from './WordCloudWrapper';
 
 export default {
   name: 'Studies',
@@ -82,6 +91,7 @@ export default {
   components: {
     Graph,
     MapWrapper,
+    WordCloudWrapper,
   },
   methods: {
     removeDatesFromTitle(title) {
@@ -129,14 +139,14 @@ export default {
             this.events = jsonRes[1];
           })
           .catch((err) => {
-            console.log(err);
+            console.error(err);
           })
           .finally(() => {
             this.loading = false;
           });
       })
       .catch((err) => {
-        console.log(err);
+        console.error(err);
       })
       .finally(() => {
         this.loading = false;

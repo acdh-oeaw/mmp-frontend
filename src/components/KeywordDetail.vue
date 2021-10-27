@@ -216,14 +216,14 @@ export default {
                 this.data.keywords = jsonRes;
               })
               .catch((err) => {
-                console.log(err);
+                console.error(err);
               })
               .finally(() => {
                 this.loading.keywords = false;
               });
           })
           .catch((err) => {
-            console.log(err);
+            console.error(err);
           });
 
         // Overtime
@@ -238,14 +238,14 @@ export default {
                 this.data.overtime = jsonRes;
               })
               .catch((err) => {
-                console.log(err);
+                console.error(err);
               })
               .finally(() => {
                 this.loading.overtime = false;
               });
           })
           .catch((err) => {
-            console.log(err);
+            console.error(err);
           });
 
         // Else
@@ -277,14 +277,14 @@ export default {
                 // console.log('connections', this.connections);
               })
               .catch((err) => {
-                console.log(err);
+                console.error(err);
               })
               .finally(() => {
                 this.loading.else = false;
               });
           })
           .catch((err) => {
-            console.log(err);
+            console.error(err);
           });
       },
       deep: true,

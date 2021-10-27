@@ -66,7 +66,7 @@ export default {
           console.log('Keyword List Item data', this.data);
         })
         .catch((err) => {
-          console.log(err);
+          console.error(err);
         })
         .finally(() => {
           this.loading = false;

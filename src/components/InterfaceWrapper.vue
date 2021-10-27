@@ -110,6 +110,19 @@
                   List
                 </v-btn>
               </v-col>
+              <v-col>
+                <v-btn
+                  text
+                  block
+                  small
+                  elevation="0"
+                  class="view-picker"
+                  :disabled="currentView === 'Cloud'"
+                  :to="{ name: 'Cloud', query }"
+                >
+                  Word Cloud
+                </v-btn>
+              </v-col>
             </template>
             <template v-else>
               <v-col cols="12">
@@ -354,22 +367,20 @@ export default {
                 });
               })
               .catch((err) => {
-                console.log(err);
+                console.error(err);
               })
               .finally(() => {
                 this.loading = false;
               });
           })
           .catch((err) => {
-            console.log(err);
+            console.error(err);
           });
       }
     },
   },
   mounted() {
-    console.log('vuetify', this.$vuetify.icons.values.slider);
     console.log('route', this.$route);
-
     console.log('query', this.query);
 
     // Add query from url to Autocomplete
@@ -404,7 +415,7 @@ export default {
           });
         })
         .catch((err) => {
-          console.log(err);
+          console.error(err);
         })
         .finally(() => {
           this.skeletonChips -= idCount;
