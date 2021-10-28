@@ -60,7 +60,7 @@
                 depressed
                 @click="pushQuery"
               >
-                <v-icon>mdi-magnify</v-icon>
+                <v-icon>mdi-magnify</v-icon>{{ !$vuetify.breakpoint.mobile ? '' : 'Search' }}
               </v-btn>
             </v-col>
           </v-row>

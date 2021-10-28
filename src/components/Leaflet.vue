@@ -8,7 +8,7 @@
       z-index="1000"
     >
       <h1 v-if="!loading" class="no-nodes">
-        No Locations found!
+        No locations found!
       </h1>
       <h1 v-else>
         <v-progress-circular

@@ -8,7 +8,7 @@
     <v-overlay
       absolute
       opacity=".2"
-      :value="loading || progress < 100 || !words.length"
+      :value="loading || progress < 100 || !filteredWords.length"
       z-index="99"
     >
     <h1 v-if="progress < 100 && words.length" class="no-nodes">
@@ -36,7 +36,7 @@
       </v-icon>
     </v-btn>
     <word-cloud
-      :words="words"
+      :words="filteredWords"
       :animation-duration="500"
       class="cloud"
       @update:progress="updateProgress"
@@ -93,6 +93,7 @@ export default {
   components: { WordCloud },
   props: ['usecase'],
   data: () => ({
+    filteredWords: [],
     drawer: false,
     loading: true,
     overlay: {
@@ -116,7 +117,7 @@ export default {
       if (!obj);
       else {
         this.progress = Math.floor((100 * obj.completedWords) / obj.totalWords);
-        console.log(this.progress, this.words.length, this.loading);
+        // console.log(this.progress, this.filteredWords.length, this.loading);
       }
     },
   },
@@ -164,16 +165,22 @@ export default {
         const prefetched = this.$store.state.fetchedResults[address];
 
         if (prefetched) {
-          this.words = Object.entries(prefetched.token_dict).sort(this.sortWords);
+          this.filteredWords = prefetched;
           this.loading = false;
         } else {
           fetch(address)
             .then((res) => res.json())
             .then((res) => {
               console.log('word cloud res', res);
-              this.$store.commit('addToResults', { req: address, res });
-              this.words = Object.entries(res.token_dict).sort(this.sortWords);
-              console.log('words', this.progress, this.words.length, this.loading);
+              let words = Object.entries(res.token_dict);
+              this.words = words.sort(this.sortWords);
+              for (let i = 1; words.length > 600; i += 1) { // improves performance by a lot
+                words = words.filter((entry) => entry[1] > i);
+              }
+              if (words.length > 500) words = words.filter((entry) => entry[1] > 1);
+              words = words.sort(this.sortWords);
+              this.filteredWords = words;
+              this.$store.commit('addToResults', { req: address, words });
             })
             .catch((err) => {
               console.error(err);
