@@ -67,7 +67,7 @@ const routes = [
       },
       {
         path: 'cloud',
-        name: 'Cloud',
+        name: 'Word Cloud',
         component: WordCloudWrapper,
       },
     ],

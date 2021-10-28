@@ -96,7 +96,7 @@ export default {
         // Passage: 'id', // not used anymore
         Keyword: 'key_word',
         'Use Case': 'use_case',
-        // Place: unused,
+        Place: 'ort',
       };
       let address = `https://mmp.acdh-dev.oeaw.ac.at/api/stelle/?format=json&limit=${this.pagination.limit}&offset=${this.pagination.offset}`;
       Object.keys(query).forEach((cat) => {
@@ -112,13 +112,14 @@ export default {
       if (query.Passage) address += `&ids=${query.Passage.replaceAll('+', ',')}`;
 
       if (query.time) {
+        const key = this.$store.state.slider === 'passage' ? '' : 'text__';
         if (query.time.toString().includes('+')) {
           const times = query.time.split('+');
-          address += `&start_date=${times[0]}&start_date_lookup=lt`;
-          address += `&end_date=${times[1]}&end_date_lookup=gt`;
+          address += `&${key}start_date=${times[0]}&${key}start_date_lookup=lt`;
+          address += `&${key}end_date=${times[1]}&${key}end_date_lookup=gt`;
         } else {
-          address += `&start_date=${query.time - 5}&start_date_lookup=lt`;
-          address += `&end_date=${query.time + 4}&end_date_lookup=gt`;
+          address += `&${key}start_date=${query.time - 5}&${key}start_date_lookup=lt`;
+          address += `&${key}end_date=${query.time + 4}&${key}end_date_lookup=gt`;
         }
       }
 

@@ -117,8 +117,8 @@
                   small
                   elevation="0"
                   class="view-picker"
-                  :disabled="currentView === 'Cloud'"
-                  :to="{ name: 'Cloud', query }"
+                  :disabled="currentView === 'Word Cloud'"
+                  :to="{ name: 'Word Cloud', query }"
                 >
                   Word Cloud
                 </v-btn>
@@ -127,9 +127,8 @@
             <template v-else>
               <v-col cols="12">
                 <v-select
-                  v-model="mobileSelect"
-                  :items="['Network Graph', 'Map', 'List']"
-                  @change="$router.push({ name: mobileSelect, query });"
+                  v-model="currentView"
+                  :items="['Network Graph', 'Map', 'List', 'Word Cloud']"
                   label="View as"
                 />
               </v-col>
@@ -273,12 +272,14 @@ export default {
 
       return filterArr;
     },
-    currentView() {
-      console.log('currentView', this.$route.name);
-      return this.$route.name;
-    },
-    mobileSelect() {
-      return this.currentView === 'Graph' ? 'Network Graph' : this.currentView;
+    currentView: {
+      get() {
+        console.log('currentView', this.$route.name);
+        return this.$route.name;
+      },
+      set(val) {
+        this.$router.push({ name: val, query: this.query });
+      },
     },
     query() {
       console.log('query changed', this.$route.query);

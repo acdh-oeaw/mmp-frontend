@@ -90,7 +90,7 @@ export default {
       const id = node.id.replace(/[^0-9]/g, '');
       console.log('q', q, 'id', id);
       // add or remove specific node from query
-      if (q) {
+      if (q && !this.usecase) {
         q = q.split('+');
         if (q.includes(id)) q = q.filter((x) => x !== id);
         else q.push(id);
@@ -101,7 +101,7 @@ export default {
         this.$router.push({
           name: 'Keyword Detail',
           params: { id: q },
-          query: this.$route.query,
+          query: this.usecase ? { 'Use Case': this.usecase } : this.$route.query,
         });
       } else {
         this.$router.push({
@@ -109,13 +109,6 @@ export default {
           query: this.$route.query,
         });
       }
-    },
-    debounce(func, time) {
-      let timer;
-      return (...args) => {
-        clearTimeout(timer);
-        timer = setTimeout(() => { func.apply(this, args); }, time);
-      };
     },
   },
   computed: {
@@ -152,7 +145,7 @@ export default {
             Author: 'rvn_stelle_key_word_keyword__text__autor',
             Passage: 'rvn_stelle_key_word_keyword',
             // Keyword: 'id', // has been replaced with new multiple id functionality
-            // 'Use Case': 'unused',
+            'Use Case': 'rvn_stelle_key_word_keyword__use_case',
             Place: 'rvn_stelle_key_word_keyword__text__autor__ort',
           };
 
