@@ -75,7 +75,7 @@
 
 <script>
 /* eslint-disable prefer-destructuring */
-import Graph from './Graph';
+import Graph from './GraphWrapper';
 import MapWrapper from './MapWrapper';
 import WordCloudWrapper from './WordCloudWrapper';
 

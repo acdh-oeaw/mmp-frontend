@@ -7,10 +7,9 @@ import ForceGraph from 'force-graph';
 
 export default {
   name: 'Visualization',
-  data() {
-    return {
-    };
-  },
+  data: () => ({
+    graphDom: null,
+  }),
   props: {
     backgroundColor: String,
     dagMode: {
@@ -19,6 +18,8 @@ export default {
     },
     graph: Object,
     highlightedNodeIds: Set, // TODO
+    linkDirectionalParticles: Number,
+    linkDirectionalParticleSpeed: Number,
     linkWidth: String,
     nodeCanvasObject: Function,
     nodeCanvasObjectMode: Function,
@@ -56,9 +57,7 @@ export default {
       return retArr;
     },
     setCanvas() {
-      const graphDom = ForceGraph()(this.$refs.visWrapper);
-
-      graphDom
+      this.graphDom
         .nodeLabel('label')
         .height(this.height || this.$refs.visWrapper.clientHeight)
         .width(this.width || this.$refs.visWrapper.clientWidth)
@@ -69,7 +68,8 @@ export default {
         .onEngineTick(this.onEngineEnd)
         .onZoom(this.onZoom)
         .linkWidth(parseFloat(this.linkWidth) || 1)
-        .linkDirectionalParticles(2)
+        .linkDirectionalParticles(this.linkDirectionalParticles || 0)
+        .linkDirectionalParticleSpeed(this.linkDirectionalParticleSpeed || 0.01)
         .graphData(this.transformedData(this.graph || {
           nodes: [],
           edges: [],
@@ -82,7 +82,7 @@ export default {
         .nodeCanvasObjectMode(this.nodeCanvasObjectMode)
         .nodePointerAreaPaint(this.nodePointerAreaPaint)
         .cooldownTicks(100)
-        .onEngineStop(() => graphDom.zoomToFit(400));
+        .onEngineStop(() => this.graphDom.zoomToFit(400));
     },
   },
   watch: {
@@ -93,6 +93,7 @@ export default {
   },
   mounted() {
     console.log('Graph mounted, data:', this.graph);
+    this.graphDom = ForceGraph()(this.$refs.visWrapper);
     this.setCanvas();
   },
 };

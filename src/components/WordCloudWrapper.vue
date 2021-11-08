@@ -114,8 +114,7 @@ export default {
       return 0;
     },
     updateProgress(obj) {
-      if (!obj);
-      else {
+      if (obj) {
         this.progress = Math.floor((100 * obj.completedWords) / obj.totalWords);
         // console.log(this.progress, this.filteredWords.length, this.loading);
       }
@@ -174,10 +173,7 @@ export default {
               console.log('word cloud res', res);
               let words = Object.entries(res.token_dict);
               this.words = words.sort(this.sortWords);
-              for (let i = 1; words.length > 600; i += 1) { // improves performance by a lot
-                words = words.filter((entry) => entry[1] > i);
-              }
-              if (words.length > 500) words = words.filter((entry) => entry[1] > 1);
+              for (let i = 1; words.length > 200; i += 1) words = words.filter((entry) => entry[1] > i); // improves performance by a lot
               words = words.sort(this.sortWords);
               this.filteredWords = words;
               this.$store.commit('addToResults', { req: address, words });

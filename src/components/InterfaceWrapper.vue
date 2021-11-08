@@ -49,6 +49,13 @@
                 <template v-slot:prepend-inner>
                   <v-skeleton-loader type="chip" v-for="n in skeletonChips" :key="n" />
                 </template>
+                <template v-slot:append-item>
+                  <v-list-item>
+                    <v-list-item-content>
+                      <v-list-item-title>Browse all items</v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
+                </template>
               </v-autocomplete>
             </v-col>
             <v-col>
