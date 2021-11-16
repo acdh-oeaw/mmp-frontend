@@ -20,24 +20,25 @@
             v-for="(tab, i) in tabs"
             :key="tab.name"
           >
-          <v-list>
-            <v-list-item v-for="item in tab.items" :key="item.url">
-              <v-list-item-content>
-                <v-list-item-title>
-                  {{ getIdFromUrl(item.url) }}: {{ item[tab.display] }}
-                </v-list-item-title>
-                <v-list-item-subtitle v-if="item[tab.sub]">
-                  {{ item[tab.sub] }}
-                </v-list-item-subtitle>
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item v-if="tab.loading || tab.next">
-              <v-btn>
-                <span v-if="tab.loading">loading...</span>
-                <span @click="loadMore(i, tab.next)" v-else-if="tab.next">load more</span>
-              </v-btn>
-            </v-list-item>
-          </v-list>
+            <v-card>
+              <v-data-table
+                :items="tab.items"
+                :headers="tab.header"
+                :loading="tab.loading"
+                :server-items-length="tab.pagination.count || 50"
+                disable-sort
+                disable-filtering
+                @update:page="updateOffset($event, i)"
+                @update:items-per-page="updateLimit($event, i)"
+                :footer-props="{
+                  'items-per-page-options': [10, 20, 50, 100, 1000, -1]
+                }"
+              >
+                <template v-slot:item.url="{ item }">
+                  {{ getIdFromUrl(item.url) }}
+                </template>
+              </v-data-table>
+            </v-card>
           </v-tab-item>
         </v-tabs-items>
       </v-col>
@@ -56,38 +57,66 @@ export default {
     tabs: [{
       name: 'Author',
       api: 'autor',
-      display: 'name',
-      sub: 'kommentar',
       items: [],
       loading: false,
-      next: null,
+      header: [
+        { text: 'ID', value: 'url' },
+        { text: 'Name', value: 'name' },
+        { text: 'Comment', value: 'kommentar' },
+      ],
+      pagination: {
+        offset: 0,
+        limit: 10,
+        count: 0,
+      },
     },
     {
       name: 'Passage',
       api: 'stelle',
-      display: 'zitat',
-      sub: 'kommentar',
       items: [],
       loading: false,
-      next: null,
+      header: [
+        { text: 'ID', value: 'url' },
+        { text: 'Quote', value: 'zitat' },
+        { text: 'Comment', value: 'kommentar' },
+      ],
+      pagination: {
+        offset: 0,
+        limit: 10,
+        count: 0,
+      },
     },
     {
       name: 'Keyword',
       api: 'keyword',
-      display: 'stichwort',
-      sub: 'art',
       items: [],
       loading: false,
-      next: null,
+      header: [
+        { text: 'ID', value: 'url' },
+        { text: 'Name', value: 'stichwort' },
+        { text: 'Type', value: 'art' },
+      ],
+      pagination: {
+        offset: 0,
+        limit: 10,
+        count: 0,
+      },
     },
     {
       name: 'Use Case',
       api: 'usecase',
-      display: 'title',
-      sub: 'description',
       items: [],
       loading: false,
-      next: null,
+      header: [
+        { text: 'ID', value: 'url' },
+        { text: 'Title', value: 'title' },
+        { text: 'Description', value: 'description' },
+      ],
+      pagination: {
+        offset: 0,
+        limit: 10,
+        count: 0,
+      },
     },
     {
       name: 'Place',
@@ -96,63 +125,56 @@ export default {
       sub: 'kommentar',
       items: [],
       loading: false,
-      next: null,
+      header: [
+        { text: 'ID', value: 'url' },
+        { text: 'Name', value: 'name' },
+        { text: 'Comment', value: 'kommentar' },
+      ],
+      pagination: {
+        offset: 0,
+        limit: 10,
+        count: 0,
+      },
     }],
   }),
   methods: {
-    loadMore(tab, url) {
-      this.tabs[tab].loading = true;
-      const prefetched = this.$store.state.fetchedResults[url];
+    fetchEntities(tabIndex) {
+      this.tabs[tabIndex].loading = true;
+      const address = `https://mmp.acdh-dev.oeaw.ac.at/api/${this.tabs[tabIndex].api}/?offset=${this.tabs[tabIndex].pagination.offset}&limit=${this.tabs[tabIndex].pagination.limit}&format=json`;
+      const prefetched = this.$store.state.fetchedResults[address];
       if (prefetched) {
-        this.tabs[tab].items = this.tabs[tab].items.concat(prefetched.results);
-        this.tabs[tab].next = prefetched.next;
-        this.tabs[tab].loading = false;
+        this.tabs[tabIndex].items = prefetched.results;
+        this.tabs[tabIndex].pagination.count = prefetched.count;
+        this.tabs[tabIndex].loading = false;
       } else {
-        fetch(url)
+        fetch(address)
           .then((res) => res.json())
           .then((res) => {
-            this.tabs[tab].items = this.tabs[tab].items.concat(res.results);
-            this.tabs[tab].next = res.next;
-            this.$store.commit('addToResults', { req: url, res });
-            console.log(res);
+            this.tabs[tabIndex].items = res.results;
+            this.tabs[tabIndex].pagination.count = res.count;
+            this.$store.commit('addToResults', { req: address, res });
           })
           .catch((err) => {
             console.log(err);
           })
           .finally(() => {
-            this.tabs[tab].loading = false;
+            this.tabs[tabIndex].loading = false;
           });
       }
+    },
+    updateLimit(limit, tabIndex) {
+      this.tabs[tabIndex].pagination.limit = limit === -1 ? this.tabs[tabIndex].pagination.count : limit;
+      this.fetchEntities(tabIndex);
+    },
+    updateOffset(page, tabIndex) {
+      this.tabs[tabIndex].pagination.offset = (page - 1) * this.tabs[tabIndex].pagination.limit;
+      this.fetchEntities(tabIndex);
     },
   },
   watch: {
     active: {
       handler(val) {
-        if (!this.tabs[val].items.length) {
-          this.tabs[val].loading = true;
-          const address = `https://mmp.acdh-dev.oeaw.ac.at/api/${this.tabs[val].api}/?format=json`;
-          const prefetched = this.$store.state.fetchedResults[address];
-          if (prefetched) {
-            this.tabs[val].items = prefetched.results;
-            this.tabs[val].next = prefetched.next;
-            this.tabs[val].loading = false;
-          } else {
-            fetch(address)
-              .then((res) => res.json())
-              .then((res) => {
-                this.tabs[val].items = res.results;
-                this.tabs[val].next = res.next;
-                this.$store.commit('addToResults', { req: address, res });
-                console.log(res);
-              })
-              .catch((err) => {
-                console.log(err);
-              })
-              .finally(() => {
-                this.tabs[val].loading = false;
-              });
-          }
-        }
+        this.fetchEntities(val);
       },
       immediate: true,
     },

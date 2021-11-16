@@ -141,12 +141,47 @@
               </v-col>
             </template>
             <v-col :class="{ 'text-right': !$vuetify.breakpoint.mobile, 'text-center': $vuetify.breakpoint.mobile }">
-              <v-btn small text @click="$store.commit('toggleOptions')">
-                <v-icon>mdi-cog</v-icon>
-                &nbsp;
-                Search Options
-              </v-btn>
-              <search-option-dialog />
+              <v-menu left z-index="100">
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                    small
+                    text
+                    v-bind="attrs"
+                    v-on="on"
+                  >
+                    More
+                    &nbsp;
+                    <v-icon>mdi-chevron-down</v-icon>
+                  </v-btn>
+                </template>
+                <v-list>
+                  <v-list-item dense>
+                    <v-btn
+                      text
+                      block
+                      class="justify-start"
+                      :to="{ name: 'List All'}"
+                    >
+                      <v-icon>mdi-format-list-bulleted</v-icon>
+                      &nbsp;
+                      List All Entities
+                    </v-btn>
+                  </v-list-item>
+                  <v-list-item dense>
+                    <v-btn
+                      text
+                      block
+                      class="justify-start"
+                      @click="$store.commit('toggleOptions')"
+                    >
+                      <v-icon>mdi-cog</v-icon>
+                      &nbsp;
+                      Search Options
+                    </v-btn>
+                  </v-list-item>
+                </v-list>
+              </v-menu>
+            <search-option-dialog />
             </v-col>
           </v-row>
           <v-row align="center" justify="center" v-if="!Object.keys(query).length && !Object.keys($route.params).length">
@@ -450,6 +485,9 @@ export default {
     background-color: #e8ebf0;
     border-radius: 5px;
     margin-bottom: 10px;;
+  }
+  .justify-start {
+    justify-content: flex-start;
   }
   .no-query {
     height: 500px;
