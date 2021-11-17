@@ -11,6 +11,9 @@ export default new Vuex.Store({
       input: [],
       items: [],
     },
+    completeKeywords: [
+      47, 77, 78, 82, 83, 129, 130, 152, 153, 157, 159, 171, 172,
+    ],
     fetchedResults: {},
     interface: {
       searchOptions: false,

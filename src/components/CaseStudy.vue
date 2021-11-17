@@ -47,7 +47,7 @@
                 >
                   <span class="font-weight-medium" slot="opposite">{{ renderDates(event.start_date, event.end_date) }}</span>
                   <span class="font-weight-medium" v-if="$vuetify.breakpoint.mobile">{{ renderDates(event.start_date, event.end_date) }}: <br /></span>
-                  <router-link class="font-weight-medium" v-if="event.ent_type === 'autor'" :to="{ name: 'List', query: { Author: event.id }}">{{ event.ent_description }} <v-icon>mdi-arrow-right</v-icon></router-link>
+                  <router-link class="font-weight-medium" v-if="event.ent_type === 'autor'" :to="{ name: 'List', query: { Author: event.id }}">{{ event.ent_description }}&nbsp;<v-icon>mdi-chevron-right</v-icon></router-link>
                   <span v-else :class="{ 'font-weight-medium': event.ent_type != 'event' }">{{ event.ent_description }}</span>
                 </v-timeline-item>
               </v-timeline>

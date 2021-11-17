@@ -13,6 +13,9 @@
       disable-filtering
       @update:page="updateOffset"
       @update:items-per-page="updateLimit"
+      :footer-props="{
+        'items-per-page-options': [10, 20, 50, 100, 1000, -1]
+      }"
       class="data-table"
     >
       <template v-slot:item.text.autor="{ item }">

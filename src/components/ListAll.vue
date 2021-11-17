@@ -1,9 +1,10 @@
 <template>
   <v-container>
-    <v-row>
-      <v-col>
+    <v-row justify="center">
+      <v-col cols="12" xl="8" class="grey-bg">
         <v-tabs
           v-model="active"
+          background-color="transparent"
           grow
         >
           <v-tab
@@ -20,25 +21,76 @@
             v-for="(tab, i) in tabs"
             :key="tab.name"
           >
-            <v-card>
-              <v-data-table
-                :items="tab.items"
-                :headers="tab.header"
-                :loading="tab.loading"
-                :server-items-length="tab.pagination.count || 50"
-                disable-sort
-                disable-filtering
-                @update:page="updateOffset($event, i)"
-                @update:items-per-page="updateLimit($event, i)"
-                :footer-props="{
-                  'items-per-page-options': [10, 20, 50, 100, 1000, -1]
-                }"
-              >
-                <template v-slot:item.url="{ item }">
-                  {{ getIdFromUrl(item.url) }}
-                </template>
-              </v-data-table>
-            </v-card>
+            <v-data-table
+              :items="tab.items"
+              :headers="tab.header"
+              :loading="tab.loading"
+              :server-items-length="tab.pagination.count || 50"
+              disable-sort
+              disable-filtering
+              @update:page="updateOffset($event, i)"
+              @update:items-per-page="updateLimit($event, i)"
+              :footer-props="{ 'items-per-page-options': [10, 20, 50, 100, 1000, -1] }"
+              class="data-table"
+            >
+              <template v-slot:item.url="{ item }">
+                {{ getIdFromUrl(item.url) }}
+              </template>
+              <template v-slot:item.name="{ item }">
+                <v-chip
+                  v-if="item.url.includes('autor')"
+                  :to="{ name: 'List', query: { Author: getIdFromUrl(item.url) }}"
+                  color="red lighten-3"
+                >
+                  {{ item.name }}&nbsp;<v-icon>mdi-chevron-right</v-icon>
+                </v-chip>
+                <v-chip
+                  v-else
+                  :to="{ name: 'List', query: { Place: getIdFromUrl(item.url) }}"
+                  color="green lighten-3"
+                >
+                  {{ item.name }}&nbsp;<v-icon>mdi-chevron-right</v-icon>
+                </v-chip>
+              </template>
+              <template v-slot:item.zitat="{ item }">
+                <router-link
+                  :to="{ name: 'List', query: { Passage: getIdFromUrl(item.url) }}"
+                >
+                  <b>
+                    {{ item.zitat }}&nbsp;<v-icon>mdi-chevron-right</v-icon>
+                  </b>
+                </router-link>
+              </template>
+              <template v-slot:item.stichwort="{ item }">
+                <v-chip
+                  :to="{ name: 'List', query: { Keyword: getIdFromUrl(item.url) }}"
+                  color="blue lighten-4"
+                >
+                  {{ item.stichwort }}&nbsp;<v-icon>mdi-chevron-right</v-icon>
+                </v-chip>
+              </template>
+              <template v-slot:item.title="{ item }">
+                <router-link
+                  :to="{ name: 'Case Study', params: { id: getIdFromUrl(item.url) }}"
+                >
+                  <b>
+                    {{ item.title }}&nbsp;<v-icon>mdi-chevron-right</v-icon>
+                  </b>
+                </router-link>
+              </template>
+              <template v-slot:item.complete="{ item }">
+                <v-icon v-if="$store.state.completeKeywords.includes(parseInt(getIdFromUrl(item.url)))">mdi-check-outline</v-icon>
+              </template>
+              <template v-if="tab.pagination.limit >= 20" v-slot:top="{ pagination, options, updateOptions }">
+                <v-data-footer
+                  :pagination="pagination"
+                  :options="options"
+                  @update:options="updateOptions"
+                  items-per-page-text="$vuetify.dataTable.itemsPerPageText"
+                  :items-per-page-options="[10, 20, 50, 100, 1000, -1]"
+                />
+              </template>
+            </v-data-table>
           </v-tab-item>
         </v-tabs-items>
       </v-col>
@@ -95,6 +147,7 @@ export default {
         { text: 'ID', value: 'url' },
         { text: 'Name', value: 'stichwort' },
         { text: 'Type', value: 'art' },
+        { text: 'Complete?', value: 'complete' },
       ],
       pagination: {
         offset: 0,
@@ -150,6 +203,7 @@ export default {
         fetch(address)
           .then((res) => res.json())
           .then((res) => {
+            console.log('list all res', res);
             this.tabs[tabIndex].items = res.results;
             this.tabs[tabIndex].pagination.count = res.count;
             this.$store.commit('addToResults', { req: address, res });

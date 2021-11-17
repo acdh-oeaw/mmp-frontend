@@ -21,21 +21,21 @@
               >
                 <template v-slot:item="data">
                   <v-list-item-content>
-                    <v-list-item-title>{{ data.item.selected_text }}</v-list-item-title>
+                    <v-list-item-title>{{ $store.state.completeKeywords.includes(parseInt(data.item.id)) && data.item.text.includes('[wurzel') ? data.item.selected_text + ' (complete)' : data.item.selected_text }}</v-list-item-title>
                     <v-list-item-subtitle>{{ data.item.group }}</v-list-item-subtitle>
                   </v-list-item-content>
                 </template>
                 <template v-slot:selection="data">
                   <v-chip
-                      v-bind="data.attrs"
-                      :input-value="data.selected"
-                      close
-                      :color="getChipColorFromGroup(data.item.group)"
-                      @click="data.select"
-                      @click:close="$store.commit('removeItemFromInput', data.item)"
-                    >
-                      {{ shorten(data.item.selected_text, 30) }}
-                    </v-chip>
+                    v-bind="data.attrs"
+                    :input-value="data.selected"
+                    close
+                    :color="getChipColorFromGroup(data.item.group)"
+                    @click="data.select"
+                    @click:close="$store.commit('removeItemFromInput', data.item)"
+                  >
+                    {{ shorten(data.item.selected_text, 30) }}
+                  </v-chip>
                 </template>
                 <template v-slot:prepend>
                   <v-btn
@@ -48,13 +48,6 @@
                 </template>
                 <template v-slot:prepend-inner>
                   <v-skeleton-loader type="chip" v-for="n in skeletonChips" :key="n" />
-                </template>
-                <template v-slot:append-item>
-                  <v-list-item>
-                    <v-list-item-content>
-                      <v-list-item-title>Browse all items</v-list-item-title>
-                    </v-list-item-content>
-                  </v-list-item>
                 </template>
               </v-autocomplete>
             </v-col>
@@ -425,7 +418,8 @@ export default {
   mounted() {
     console.log('route', this.$route);
     console.log('query', this.query);
-
+    this.$store.commit('clearItems');
+    this.$store.commit('clearInput');
     // Add query from url to Autocomplete
     const apiParams = {
       Author: { url: 'autor', text: 'name' },
