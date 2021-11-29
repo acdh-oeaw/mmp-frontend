@@ -11,6 +11,7 @@
                 clearable
                 item-text="selected_text"
                 return-object
+                no-filter
                 autofocus
                 ref="autocomplete"
                 :items="filteredSearchedSorted"
@@ -42,6 +43,7 @@
                     text
                     small
                     @click="pushQuery"
+                    class="disable-events"
                   >
                     Search
                   </v-btn>
@@ -67,7 +69,12 @@
           <v-row class="grey-bg">
             <template v-if="!$vuetify.breakpoint.mobile">
               <v-col>
-                <v-btn text small @dblclick="ee">
+                <v-btn
+                  text
+                  small
+                  @dblclick="ee"
+                  class="disable-events"
+                >
                   View as
                 </v-btn>
               </v-col>
@@ -240,7 +247,7 @@
 <script>
 /* eslint-disable vue/no-unused-vars */
 import { VRangeSlider, VSlider } from 'vuetify/lib';
-// import Fuse from 'fuse.js';
+import Fuse from 'fuse.js';
 
 import helpers from '@/helpers';
 import SearchOptionDialog from './SearchOptionDialog';
@@ -295,17 +302,13 @@ export default {
         return storeEq;
       });
 
-      // this wasnt working out, maybe some day...
-      // let fuse = new Fuse(filterArr, { keys: ['selected_text'] });
-      // fuse = fuse.search(this.textInput);
-      // console.log('searched, filtered', fuse);
-      // fuse = fuse.map((res) => res.item);
-      // console.log('searched, sorted, filtered', fuse);
-      // fuse.push(...items);
+      // finally got this to work
+      let fuse = new Fuse(filterArr, { keys: ['selected_text'] });
+      fuse = fuse.search(this.textInput);
+      fuse = fuse.map((res) => res.item);
+      console.log('searched, sorted, filtered', fuse);
 
-      // return fuse;
-
-      return filterArr;
+      return fuse;
     },
     currentView: {
       get() {
