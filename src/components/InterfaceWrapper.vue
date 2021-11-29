@@ -160,7 +160,7 @@
                       text
                       block
                       class="justify-start"
-                      :to="{ name: 'List All'}"
+                      :to="{ name: 'List All' }"
                     >
                       <v-icon>mdi-format-list-bulleted</v-icon>
                       &nbsp;
@@ -306,7 +306,7 @@ export default {
       let fuse = new Fuse(filterArr, { keys: ['selected_text'] });
       fuse = fuse.search(this.textInput);
       fuse = fuse.map((res) => res.item);
-      console.log('searched, sorted, filtered', fuse);
+      // console.log('searched, sorted, filtered', fuse);
 
       return fuse;
     },

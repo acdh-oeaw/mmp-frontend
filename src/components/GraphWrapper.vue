@@ -25,7 +25,7 @@
       :onNodeClick="nodeClick"
       :nodeCanvasObjectMode="() => 'after'"
       :nodeCanvasObject="nodeObject"
-      :linkDirectionalParticles="2"
+      :linkDirectionalArrowLength="3.5"
       height="500"
     />
     <router-view />

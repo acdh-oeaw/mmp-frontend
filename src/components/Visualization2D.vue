@@ -18,6 +18,7 @@ export default {
     },
     graph: Object,
     highlightedNodeIds: Set, // TODO
+    linkDirectionalArrowLength: Number,
     linkDirectionalParticles: Number,
     linkDirectionalParticleSpeed: Number,
     linkWidth: String,
@@ -70,6 +71,7 @@ export default {
         .linkWidth(parseFloat(this.linkWidth) || 1)
         .linkDirectionalParticles(this.linkDirectionalParticles || 0)
         .linkDirectionalParticleSpeed(this.linkDirectionalParticleSpeed || 0.01)
+        .linkDirectionalArrowLength(this.linkDirectionalArrowLength || 0)
         .graphData(this.transformedData(this.graph || {
           nodes: [],
           edges: [],
