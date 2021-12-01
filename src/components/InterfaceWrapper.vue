@@ -85,6 +85,19 @@
                   small
                   elevation="0"
                   class="view-picker"
+                  :disabled="currentView === 'List'"
+                  :to="{ name: 'List', query }"
+                >
+                  List
+                </v-btn>
+              </v-col>
+              <v-col>
+                <v-btn
+                  text
+                  block
+                  small
+                  elevation="0"
+                  class="view-picker"
                   :disabled="currentView === 'Graph'"
                   :to="{ name: 'Network Graph', query }"
                 >
@@ -111,19 +124,6 @@
                   small
                   elevation="0"
                   class="view-picker"
-                  :disabled="currentView === 'List'"
-                  :to="{ name: 'List', query }"
-                >
-                  List
-                </v-btn>
-              </v-col>
-              <v-col>
-                <v-btn
-                  text
-                  block
-                  small
-                  elevation="0"
-                  class="view-picker"
                   :disabled="currentView === 'Word Cloud'"
                   :to="{ name: 'Word Cloud', query }"
                 >
@@ -135,7 +135,7 @@
               <v-col cols="12">
                 <v-select
                   v-model="currentView"
-                  :items="['Network Graph', 'Map', 'List', 'Word Cloud']"
+                  :items="['List', 'Network Graph', 'Map', 'Word Cloud']"
                   label="View as"
                 />
               </v-col>

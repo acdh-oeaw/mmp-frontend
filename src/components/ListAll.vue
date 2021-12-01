@@ -81,14 +81,17 @@
               <template v-slot:item.complete="{ item }">
                 <v-icon v-if="$store.state.completeKeywords.includes(parseInt(getIdFromUrl(item.url)))">mdi-check-outline</v-icon>
               </template>
-              <template v-if="tab.pagination.limit >= 20" v-slot:top="{ pagination, options, updateOptions }">
-                <v-data-footer
-                  :pagination="pagination"
-                  :options="options"
-                  @update:options="updateOptions"
-                  items-per-page-text="$vuetify.dataTable.itemsPerPageText"
-                  :items-per-page-options="[10, 20, 50, 100, 1000, -1]"
-                />
+              <template v-slot:top>
+                <v-container>
+                  <v-text-field
+                    v-model="tabs[i].filter"
+                    @input="fetchEntities(i)"
+                    append-icon="mdi-magnify"
+                    label="Search"
+                    single-line
+                    hide-details
+                  />
+                </v-container>
               </template>
             </v-data-table>
           </v-tab-item>
@@ -109,6 +112,7 @@ export default {
     tabs: [{
       name: 'Author',
       api: 'autor',
+      filter: '',
       items: [],
       loading: false,
       header: [
@@ -125,6 +129,7 @@ export default {
     {
       name: 'Passage',
       api: 'stelle',
+      filter: '',
       items: [],
       loading: false,
       header: [
@@ -141,6 +146,7 @@ export default {
     {
       name: 'Keyword',
       api: 'keyword',
+      filter: '',
       items: [],
       loading: false,
       header: [
@@ -158,6 +164,7 @@ export default {
     {
       name: 'Use Case',
       api: 'usecase',
+      filter: '',
       items: [],
       loading: false,
       header: [
@@ -176,6 +183,7 @@ export default {
       api: 'ort',
       display: 'name',
       sub: 'kommentar',
+      filter: '',
       items: [],
       loading: false,
       header: [
@@ -193,7 +201,8 @@ export default {
   methods: {
     fetchEntities(tabIndex) {
       this.tabs[tabIndex].loading = true;
-      const address = `https://mmp.acdh-dev.oeaw.ac.at/api/${this.tabs[tabIndex].api}/?offset=${this.tabs[tabIndex].pagination.offset}&limit=${this.tabs[tabIndex].pagination.limit}&format=json`;
+      const names = ['name', 'zitat', 'stichwort', 'title', 'name'];
+      const address = `https://mmp.acdh-dev.oeaw.ac.at/api/${this.tabs[tabIndex].api}/?${names[tabIndex]}=${this.tabs[tabIndex].filter}&${names[tabIndex]}_lookup=icontains&offset=${this.tabs[tabIndex].pagination.offset}&limit=${this.tabs[tabIndex].pagination.limit}&format=json`;
       const prefetched = this.$store.state.fetchedResults[address];
       if (prefetched) {
         this.tabs[tabIndex].items = prefetched.results;

@@ -18,7 +18,7 @@ export default new Vuex.Store({
     interface: {
       searchOptions: false,
       sidebarDrawer: false,
-      currentView: 'Network Graph',
+      currentView: 'List',
     },
     searchFilters: {
       author: true,
