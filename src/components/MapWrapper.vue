@@ -34,15 +34,18 @@ export default {
   },
   props: ['usecase'],
   data: () => ({
-    entries: null,
+    entries: [],
     loading: false,
   }),
   watch: {
     '$route.query': {
       handler(query) {
-        let address = 'https://mmp.acdh-dev.oeaw.ac.at/api/spatialcoverage/?format=json';
+        let urls = [
+          'https://mmp.acdh-dev.oeaw.ac.at/api/spatialcoverage/?format=json',
+          'https://mmp.acdh-dev.oeaw.ac.at/api/cones/?format=json',
+        ];
         if (this.usecase) {
-          address += `&stelle__use_case=${this.usecase}`;
+          urls = urls.map((url) => `${url}&stelle__use_case=${this.usecase}`);
         } else {
           const terms = {
             Author: 'stelle__text__autor',
@@ -55,7 +58,7 @@ export default {
             if (query[cat]) {
               const arr = query[cat].split('+');
               arr.forEach((val) => {
-                address += `&${terms[cat]}=${val}`;
+                urls = urls.map((url) => `${url}&${terms[cat]}=${val}`);
               });
             }
           });
@@ -66,33 +69,36 @@ export default {
 
             if (query.time.toString().includes('+')) {
               const times = query.time.split('+');
-              address += `&${startKey}=${times[0]}&${startKey}_lookup=lt`;
-              address += `&${endKey}=${times[1]}&${endKey}_lookup=gt`;
+              urls = urls.map((url) => `${url}&${startKey}=${times[0]}&${startKey}_lookup=lt&${endKey}=${times[1]}&${endKey}_lookup=gt`);
             } else {
-              address += `&${startKey}=${query.time - 5}&${startKey}_lookup=lt`;
-              address += `&${endKey}=${query.time + 4}&${endKey}_lookup=gt`;
+              urls = urls.map((url) => `${url}&${startKey}=${query.time - 5}&${startKey}_lookup=lt&${endKey}=${query.time + 4}&${endKey}_lookup=g`);
             }
           }
         }
-        console.log('address', address);
+        console.log('urls', urls);
 
-        const prefetched = this.$store.state.fetchedResults[address];
+        const prefetched = this.$store.state.fetchedResults[urls.toString()];
         if (prefetched) {
           this.entries = prefetched;
         } else {
           this.loading = true;
-          fetch(address)
-            .then((res) => res.json())
+          Promise.all(urls.map((x) => fetch(x)))
             .then((res) => {
-              console.log('map-data', res);
-              this.$store.commit('addToResults', { req: address, res });
-              this.entries = res;
+              Promise.all(res.map((x) => x.json()))
+                .then((jsonRes) => {
+                  console.log('map-data', res);
+                  this.$store.commit('addToResults', { req: urls.toString(), res });
+                  this.entries = jsonRes;
+                })
+                .catch((err) => {
+                  console.error('err', err);
+                })
+                .finally(() => {
+                  this.loading = false;
+                });
             })
             .catch((err) => {
-              console.error(err);
-            })
-            .finally(() => {
-              this.loading = false;
+              console.error('err', err);
             });
         }
       },

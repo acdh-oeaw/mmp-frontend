@@ -4,7 +4,27 @@
       <v-row :justify="currentView.includes('Detail') ? 'start' : 'center'">
         <v-col cols="12" :lg="currentView.includes('Detail') ? 8 : 12" xl="8">
           <v-row class="grey-bg">
-            <v-col cols="11">
+            <v-col :cols="$vuetify.breakpoint.mobile ? 12 : 1">
+              <v-menu
+                :close-on-content-click="false"
+              >
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                    min-height="50px"
+                    height="100%"
+                    block
+                    depressed
+                    v-bind="attrs"
+                    v-on="on"
+                  >
+                    <v-icon>mdi-cog</v-icon>
+                    <v-icon>mdi-chevron-down</v-icon>
+                  </v-btn>
+                </template>
+                <search-options />
+              </v-menu>
+            </v-col>
+            <v-col :cols="$vuetify.breakpoint.mobile ? 12 : 10">
               <v-autocomplete
                 v-model="$store.state.autocomplete.input"
                 multiple
@@ -14,6 +34,7 @@
                 no-filter
                 autofocus
                 ref="autocomplete"
+                placeholder="Search for Authors, Passages, Keywords, Case Studies or Places"
                 :items="filteredSearchedSorted"
                 :search-input.sync="textInput"
                 @change="textInput = ''"
@@ -38,22 +59,12 @@
                     {{ shorten(data.item.selected_text, 30) }}
                   </v-chip>
                 </template>
-                <template v-slot:prepend>
-                  <v-btn
-                    text
-                    small
-                    @click="pushQuery"
-                    class="disable-events"
-                  >
-                    Search
-                  </v-btn>
-                </template>
                 <template v-slot:prepend-inner>
                   <v-skeleton-loader type="chip" v-for="n in skeletonChips" :key="n" />
                 </template>
               </v-autocomplete>
             </v-col>
-            <v-col>
+            <v-col :cols="$vuetify.breakpoint.mobile ? 12 : 1">
               <v-btn
                 min-height="50px"
                 height="100%"
@@ -83,7 +94,6 @@
                   text
                   block
                   small
-                  elevation="0"
                   class="view-picker"
                   :disabled="currentView === 'List'"
                   :to="{ name: 'List', query }"
@@ -96,7 +106,6 @@
                   text
                   block
                   small
-                  elevation="0"
                   class="view-picker"
                   :disabled="currentView === 'Graph'"
                   :to="{ name: 'Network Graph', query }"
@@ -109,7 +118,6 @@
                   text
                   block
                   small
-                  elevation="0"
                   class="view-picker"
                   :disabled="currentView === 'Map'"
                   :to="{ name: 'Map', query }"
@@ -122,7 +130,6 @@
                   text
                   block
                   small
-                  elevation="0"
                   class="view-picker"
                   :disabled="currentView === 'Word Cloud'"
                   :to="{ name: 'Word Cloud', query }"
@@ -141,47 +148,17 @@
               </v-col>
             </template>
             <v-col :class="{ 'text-right': !$vuetify.breakpoint.mobile, 'text-center': $vuetify.breakpoint.mobile }">
-              <v-menu left z-index="100">
-                <template v-slot:activator="{ on, attrs }">
-                  <v-btn
-                    small
-                    text
-                    v-bind="attrs"
-                    v-on="on"
-                  >
-                    More
-                    &nbsp;
-                    <v-icon>mdi-chevron-down</v-icon>
-                  </v-btn>
-                </template>
-                <v-list>
-                  <v-list-item dense>
-                    <v-btn
-                      text
-                      block
-                      class="justify-start"
-                      :to="{ name: 'List All' }"
-                    >
-                      <v-icon>mdi-format-list-bulleted</v-icon>
-                      &nbsp;
-                      List All Entities
-                    </v-btn>
-                  </v-list-item>
-                  <v-list-item dense>
-                    <v-btn
-                      text
-                      block
-                      class="justify-start"
-                      @click="$store.commit('toggleOptions')"
-                    >
-                      <v-icon>mdi-cog</v-icon>
-                      &nbsp;
-                      Search Options
-                    </v-btn>
-                  </v-list-item>
-                </v-list>
-              </v-menu>
-            <search-option-dialog />
+              <v-btn
+                text
+                block
+                small
+                class="justify-end"
+                :to="{ name: 'List All' }"
+              >
+                &nbsp;
+                <v-icon>mdi-format-list-bulleted</v-icon>
+                List All Entities
+              </v-btn>
             </v-col>
           </v-row>
           <v-row align="center" justify="center" v-if="!Object.keys(query).length && !Object.keys($route.params).length">
@@ -250,7 +227,7 @@ import { VRangeSlider, VSlider } from 'vuetify/lib';
 import Fuse from 'fuse.js';
 
 import helpers from '@/helpers';
-import SearchOptionDialog from './SearchOptionDialog';
+import SearchOptions from './SearchOptions';
 
 export default {
   name: 'Interface',
@@ -263,13 +240,13 @@ export default {
         group: 'Author',
       },
       barbari: {
-        id: '33',
+        id: 33,
         text: 'barbari',
         selected_text: 'barbari, [wurzel: barbar]',
         group: 'Keyword',
       },
       spain: {
-        id: '6',
+        id: 6,
         text: 'Spain and the Bible: Patrick Marschner',
         selected_text: 'Spain and the Bible: Patrick Marschner',
         group: 'Use Case',
@@ -286,7 +263,7 @@ export default {
   components: {
     VSlider,
     VRangeSlider,
-    SearchOptionDialog,
+    SearchOptions,
   },
   mixins: [helpers],
   computed: {
@@ -374,6 +351,11 @@ export default {
     },
   },
   watch: {
+    '$vuetify.breakpoint.name': {
+      handler(val) {
+        console.log('breakpoint', val);
+      },
+    },
     textInput(val) {
       if (!val || val.length < 1) return;
       let urls = [];
@@ -483,8 +465,8 @@ export default {
     border-radius: 5px;
     margin-bottom: 10px;;
   }
-  .justify-start {
-    justify-content: flex-start;
+  .justify-end {
+    justify-content: flex-end;
   }
   .no-query {
     height: 500px;

@@ -38,8 +38,12 @@
     <word-cloud
       :words="filteredWords"
       :animation-duration="500"
+      :spacing=".08"
+      font-family="'Roboto', sans-serif"
       class="cloud"
       @update:progress="updateProgress"
+      :rotation="crossRotate"
+      :color="colorWords"
     >
       <!-- this would show word occurences when hovering over a specific word, but it looks bad -->
       <!-- <template slot-scope="{ text, weight }">
@@ -86,6 +90,7 @@
   </v-card>
 </template>
 <script>
+import Gradient from 'javascript-color-gradient';
 import WordCloud from 'vuewordcloud';
 
 export default {
@@ -106,6 +111,26 @@ export default {
     words: [],
   }),
   methods: {
+    colorWords(word) {
+      const colors = [
+        '#a91a1a',
+        '#3a8d86',
+        '#0c76ce',
+        '#c09000',
+        '#3b823e',
+      ];
+      const colorGradient = new Gradient();
+      colorGradient.setGradient(...colors);
+
+      colorGradient.setMidpoint(20);
+      // console.log(colorGradient.getArray());
+
+      return colorGradient.getColor(Math.floor((20 * word[1]) / this.maxOccurence));
+    },
+    crossRotate() {
+      // eslint-disable-next-line no-nested-ternary
+      return Math.floor(Math.random() * 4) < 2 ? 0 : Math.floor(Math.random() * 2) * 0.5 - 0.25; // 50% chance of 0, 25% chance of -0.25, 25% chance of 0.25
+    },
     sortWords(a, b) { // sorts after occurences, then alphabetically
       if (a[1] < b[1]) return 1;
       if (a[1] > b[1]) return -1;
@@ -118,6 +143,11 @@ export default {
         this.progress = Math.floor((100 * obj.completedWords) / obj.totalWords);
         // console.log(this.progress, this.filteredWords.length, this.loading);
       }
+    },
+  },
+  computed: {
+    maxOccurence() {
+      return Math.max(...this.words.map((word) => word[1])); // copilot wrote this on its own!
     },
   },
   watch: {
@@ -173,7 +203,9 @@ export default {
               console.log('word cloud res', res);
               let words = Object.entries(res.token_dict);
               this.words = words.sort(this.sortWords);
-              for (let i = 1; words.length > 200; i += 1) words = words.filter((entry) => entry[1] > i); // improves performance by a lot
+
+              for (let i = 1; words.length > 75; i += 1) words = words.filter((entry) => entry[1] > i); // improves performance by a lot
+
               words = words.sort(this.sortWords);
               this.filteredWords = words;
               this.$store.commit('addToResults', { req: address, words });

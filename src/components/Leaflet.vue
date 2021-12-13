@@ -4,7 +4,7 @@
       absolute
       class="overlay"
       opacity=".2"
-      :value="!data || !data.count || loading"
+      :value="loading || !data.some((d) => d.count)"
       z-index="1000"
     >
       <h1 v-if="!loading" class="no-nodes">
@@ -25,7 +25,67 @@
       <l-tile-layer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      <l-geo-json v-if="data" :geojson="data" />
+      <l-control position="topright">
+        <v-menu
+          v-model="menu"
+          :close-on-content-click="false"
+          left
+        >
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn
+              fab
+              small
+              v-bind="attrs"
+              v-on="on"
+            >
+              <v-icon>mdi-layers-triple</v-icon>
+            </v-btn>
+          </template>
+          <v-card>
+            <v-card-title>Select Layers</v-card-title>
+            <v-card-text>
+              <v-checkbox
+                v-model="showLayers.spatial"
+                label="Spatial Coverage"
+                color="green"
+                dense
+              />
+              <v-checkbox
+                v-model="showLayers.cones"
+                color="blue"
+                dense
+                label="Cones"
+              />
+              <v-checkbox
+                disabled
+                v-model="showLayers.places"
+                label="Places"
+                dense
+              />
+            </v-card-text>
+            <v-card-actions>
+              <v-btn
+                @click="menu = false"
+                text
+                small
+              >
+                Close
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-menu>
+      </l-control>
+      <l-geo-json
+        v-if="data[0] && showLayers.spatial"
+        :geojson="data[0]"
+        :options="{onEachFeature: onEach}"
+        :options-style="spatialStyle"
+      />
+      <l-geo-json
+        v-if="data[1] && showLayers.cones"
+        :geojson="data[1]"
+        :options="{onEachFeature: onEach}"
+      />
     </l-map>
   </div>
 </template>
@@ -33,7 +93,12 @@
 <script>
 import 'leaflet/dist/leaflet.css';
 import { latLngBounds, L } from 'leaflet';
-import { LMap, LGeoJson, LTileLayer } from 'vue2-leaflet';
+import {
+  LMap,
+  LGeoJson,
+  LTileLayer,
+  LControl,
+} from 'vue2-leaflet';
 
 export default {
   name: 'Leaflet',
@@ -42,10 +107,16 @@ export default {
       [34.016242, 5.488281],
       [71.663663, 34.667969],
     ]),
+    menu: false,
+    showLayers: {
+      spatial: true,
+      cones: false,
+      places: false,
+    },
   }),
   props: {
     data: {
-      default: null,
+      default: [],
     },
     loading: {
       default: false,
@@ -58,6 +129,39 @@ export default {
     LMap,
     LGeoJson,
     LTileLayer,
+    LControl,
+  },
+  computed: {
+    onEach() {
+      return (feature, layer) => {
+        // console.log('feature, layer', feature, layer);
+        layer
+          .bindTooltip(
+            `<div>Keyword: ${feature.properties.key_word.stichwort}</div>
+            <div>Passages: ${feature.properties.stelle.length}</div>`,
+            { permanent: false, sticky: true },
+          )
+          .on({
+            click: (e) => {
+              console.log('click', e);
+            },
+          });
+      };
+    },
+    spatialStyle() {
+      return (feature) => ({
+        color: 'green',
+        fillColor: 'green',
+        fillOpacity: 1 / (feature.properties.fuzzyness + 1),
+        weight: 1.5,
+      });
+    },
+    coneStyle() {
+      return (feature) => ({
+        fillOpacity: 1 / (feature.properties.fuzzyness + 1),
+        weight: 1.5,
+      });
+    },
   },
   methods: {
     getBounds(arr) {
@@ -87,11 +191,12 @@ export default {
   },
   watch: {
     data(to) {
-      console.log('to', to);
-
-      const filteredCoords = to;
-      filteredCoords.features = filteredCoords.features.filter((x) => x.geometry);
-      this.bounds = this.getBounds(filteredCoords.features || []);
+      console.log('to', to, this.data);
+      if (to[0]) {
+        const filteredCoords = to[0];
+        filteredCoords.features = filteredCoords.features.filter((x) => x.geometry);
+        this.bounds = this.getBounds(filteredCoords.features || []);
+      }
     },
   },
 };
