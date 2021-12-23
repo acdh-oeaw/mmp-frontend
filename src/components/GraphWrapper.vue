@@ -168,13 +168,13 @@ export default {
 
       if (q) {
         this.$router.push({
-          name: 'Keyword Detail',
+          name: this.$route.path.includes('/view') ? 'Keyword Detail Fullscreen' : 'Keyword Detail',
           params: { id: q },
           query: this.usecase ? { 'Use Case': this.usecase } : this.$route.query,
         });
       } else {
         this.$router.push({
-          name: 'Network Graph',
+          name: this.$route.path.includes('/view') ? 'Network Graph Fullscreen' : 'Network Graph',
           query: this.$route.query,
         });
       }

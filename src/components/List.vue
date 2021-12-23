@@ -28,7 +28,13 @@
         </a>
       </template>
       <template v-slot:item.text.title="{ item }">
-        <router-link :to="{ name: $route.path.includes('/view') ? 'Passage Detail Fullscreen' : 'Passage Detail', params: { id: item.url.replace(/\D/g, '') }, query: $route.query }" class="text-decoration-none">
+        <router-link
+          :to="{
+            name: $route.path.includes('/view') ? 'Passage Detail Fullscreen' : 'Passage Detail',
+            params: { id: item.url.replace(/\D/g, '') }, query: $route.query
+          }"
+          class="text-decoration-none"
+        >
           <b>{{ item.text.title }}</b>
         </router-link>
       </template>
