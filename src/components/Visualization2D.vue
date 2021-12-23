@@ -60,7 +60,7 @@ export default {
     setCanvas() {
       this.graphDom
         .nodeLabel('label')
-        .height(this.height || this.$refs.visWrapper.clientHeight)
+        .height(this.height || undefined)
         .width(this.width || this.$refs.visWrapper.clientWidth)
         .backgroundColor(this.backgroundColor || null)
         .dagMode(this.dagMode)

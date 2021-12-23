@@ -1,58 +1,56 @@
 <template>
   <v-card
-    height="500"
     width="100%"
     outlined
     color="transparent"
+    :height="$route.path.includes('/view/') ? '100vh' : 500"
   >
     <v-overlay
       absolute
       opacity=".2"
-      :value="loading || progress < 100 || !filteredWords.length"
+      :value="loading || avgProgress < 100 || !filteredWords.some((x) => x.length)"
       z-index="99"
     >
-    <h1 v-if="progress < 100 && words.length" class="no-nodes">
+    <h1 v-if="avgProgress < 100" class="no-nodes">
       <v-progress-circular
-        :value="progress"
+        :value="avgProgress"
         :indeterminate="loading"
-        :active="progress < 100"
+        :active="avgProgress < 100 || loading"
         color="#0F1226"
       />
     </h1>
-    <h1 v-if="!words.length && !loading" class="no-nodes">
+    <h1 v-if="!loading && !filteredWords.some((x) => x.length)" class="no-nodes">
       No words found!
     </h1>
     </v-overlay>
-    <v-btn
-      rounded
-      absolute
-      top
-      right
-      @click="drawer = true"
-      style="z-index: 100"
+    <v-row
+      :style="'width:' + $route.path.includes('/view/') ? '100vh' : 500"
+      no-gutters
     >
-      <v-icon>
-        mdi-menu
-      </v-icon>
-    </v-btn>
-    <word-cloud
-      :words="filteredWords"
-      :animation-duration="500"
-      :spacing=".08"
-      font-family="'Roboto', sans-serif"
-      class="cloud"
-      @update:progress="updateProgress"
-      :rotation="crossRotate"
-      :color="colorWords"
-    >
-      <!-- this would show word occurences when hovering over a specific word, but it looks bad -->
-      <!-- <template slot-scope="{ text, weight }">
-        <div :title="weight" class="word">
-          {{ text }}
-        </div>
-        <div class="wordHover">{{ text }}: {{ weight }}</div>
-      </template> -->
-    </word-cloud>
+      <template v-for="filtered, i in filteredWords">
+        <v-col v-if="showWords[i] && filtered.length"  :key="i">
+          <word-cloud
+            :words="filtered"
+            :animation-duration="500"
+            :spacing=".08"
+            font-family="'Roboto', sans-serif"
+            @update:progress="updateProgress($event, i)"
+            :rotation="crossRotate"
+            :color="colorWords"
+            class="word-cloud"
+            :class="{ 'full-height': $route.path.includes('/view/') }"
+          >
+            <!-- this would show word occurences when hovering over a specific word, but it looks bad -->
+            <!-- <template slot-scope="{ text, weight }">
+              <div :title="weight" class="word">
+                {{ text }}
+              </div>
+              <div class="wordHover">{{ text }}: {{ weight }}</div>
+            </template> -->
+          </word-cloud>
+        </v-col>
+      </template>
+    </v-row>
     <v-navigation-drawer
       v-model="drawer"
       absolute
@@ -69,10 +67,32 @@
         >
           <v-icon>mdi-close</v-icon>
         </v-btn>
-        <v-card-title>Occurences</v-card-title>
+        <v-card-text>
+          <v-checkbox
+            v-model="check"
+            label="Show all words"
+            value="words"
+            color="green lighten-1"
+          />
+          <v-checkbox
+            v-model="check"
+            label="Show keywords"
+            value="keywords"
+            color="blue lighten-2"
+          />
+        </v-card-text>
+        <v-card-title>Keyword Occurences</v-card-title>
         <v-card-text>
           <ul>
-            <li v-for="entry in words" :key="entry[0]">
+            <li v-for="entry in words[1]" :key="entry[0]">
+              {{ entry[0] }}:&nbsp;{{ entry[1] }}
+            </li>
+          </ul>
+        </v-card-text>
+        <v-card-title>All Occurences</v-card-title>
+        <v-card-text>
+          <ul>
+            <li v-for="entry in words[0]" :key="entry[0]">
               {{ entry[0] }}:&nbsp;{{ entry[1] }}
             </li>
           </ul>
@@ -87,6 +107,30 @@
         </v-card-actions>
       </v-card>
     </v-navigation-drawer>
+    <v-btn
+      icon
+      absolute
+      top
+      right
+      @click="drawer = true"
+    >
+      <v-icon>
+        mdi-menu
+      </v-icon>
+    </v-btn>
+    <v-btn
+      absolute
+      bottom
+      right
+      icon
+      :to="{
+        name: $route.path.includes('/view/') ? 'Word Cloud' : 'Word Cloud Fullscreen',
+        query: usecase ? {'Use Case': usecase} : $route.query
+      }"
+    >
+      <v-icon v-if="$route.path.includes('/view/')">mdi-fullscreen-exit</v-icon>
+      <v-icon v-else>mdi-fullscreen</v-icon>
+    </v-btn>
   </v-card>
 </template>
 <script>
@@ -96,9 +140,10 @@ import WordCloud from 'vuewordcloud';
 export default {
   name: 'WordCloudWrapper',
   components: { WordCloud },
-  props: ['usecase'],
+  props: ['usecase', 'height'],
   data: () => ({
-    filteredWords: [],
+    avgProgress: 0,
+    filteredWords: [[], []],
     drawer: false,
     loading: true,
     overlay: {
@@ -107,8 +152,9 @@ export default {
       y: 0,
       word: '',
     },
-    progress: 0,
-    words: [],
+    progress: [0, 0],
+    check: ['words', 'keywords'],
+    words: [[], []],
   }),
   methods: {
     colorWords(word) {
@@ -127,9 +173,35 @@ export default {
 
       return colorGradient.getColor(Math.floor((20 * word[1]) / this.maxOccurence));
     },
-    crossRotate() {
-      // eslint-disable-next-line no-nested-ternary
-      return Math.floor(Math.random() * 4) < 2 ? 0 : Math.floor(Math.random() * 2) * 0.5 - 0.25; // 50% chance of 0, 25% chance of -0.25, 25% chance of 0.25
+    crossRotate(word) {
+      if ([this.words[0][0][0], this.words[1][0][0]].includes(word[0])) {
+        return 0; // ensures the first word is always horizontal
+      }
+      switch (Math.floor(Math.random() * 4)) {
+        case 2:
+          return 0.25;
+        case 3:
+          return -0.25;
+        default:
+          return 0;
+      }
+    },
+    handleRes(res) {
+      console.log('word cloud res', res);
+      const words = [
+        Object.entries(res[0].token_dict),
+        res[1].token_dict.map((x) => Object.entries(x)[0]),
+      ];
+
+      console.log('words', words);
+      this.words = words.map((x) => x.sort(this.sortWords));
+      console.log('this.words', this.words);
+      for (let i = 0; i < words.length; i += 1) {
+        for (let j = 1; words[i].length > 75; j += 1) words[i] = words[i].filter((entry) => entry[1] > j); // improves performance by a lot
+      }
+      console.log('words', words);
+
+      this.filteredWords = words;
     },
     sortWords(a, b) { // sorts after occurences, then alphabetically
       if (a[1] < b[1]) return 1;
@@ -138,16 +210,24 @@ export default {
       if (a[0] < b[0]) return -1;
       return 0;
     },
-    updateProgress(obj) {
+    updateProgress(obj, i) {
       if (obj) {
-        this.progress = Math.floor((100 * obj.completedWords) / obj.totalWords);
-        // console.log(this.progress, this.filteredWords.length, this.loading);
+        this.progress[i] = Math.floor((100 * obj.completedWords) / obj.totalWords);
+        this.avgProgress = Math.floor((this.progress[0] + this.progress[1]) / this.progress.filter((x) => x.length).length);
+        // console.log('progress', this.progress, this.filteredWords.length, obj);
       }
     },
   },
   computed: {
     maxOccurence() {
-      return Math.max(...this.words.map((word) => word[1])); // copilot wrote this on its own!
+      console.log();
+      return Math.max(...[...this.words[0], ...this.words[1]].map((word) => word[1])); // this returns the max occurence of all words and keywords
+    },
+    showWords() {
+      return [
+        this.check.includes('words'),
+        this.check.includes('keywords'),
+      ];
     },
   },
   watch: {
@@ -155,8 +235,11 @@ export default {
       handler(query) {
         this.loading = true;
         this.words = [];
-        let address = 'https://mmp.acdh-dev.oeaw.ac.at/archiv/nlp-data/?Filter=Search';
-        if (this.usecase) address += `&use_case=${this.usecase}`;
+        let urls = [
+          'https://mmp.acdh-dev.oeaw.ac.at/archiv/nlp-data/?',
+          'https://mmp.acdh-dev.oeaw.ac.at/archiv/kw-stelle/?',
+        ];
+        if (this.usecase) urls = urls.map((x) => `${x}&use_case=${this.usecase}`);
         else {
           const terms = {
             Author: 'text__autor',
@@ -171,50 +254,45 @@ export default {
               console.log(query[cat]);
               const arr = query[cat].toString(10).split('+');
               arr.forEach((val) => {
-                address += `&${terms[cat]}=${val}`;
+                urls = urls.map((x) => `${x}&${terms[cat]}=${val}`);
               });
             }
           });
 
-          if (query.Passage) address += `&ids=${query.Passage.replaceAll('+', ',')}`;
+          if (query.Passage) urls = urls.map((x) => `${x}&ids=${query.Passage.replaceAll('+', ',')}`);
 
           if (query.time) {
             if (query.time.toString().includes('+')) {
               const times = query.time.split('+');
-              address += `&start_date=${times[0]}&start_date_lookup=lt`;
-              address += `&end_date=${times[1]}&end_date_lookup=gt`;
+              urls = urls.map((x) => `${x}&start_date=${times[0]}&start_date_lookup=lt&end_date=${times[1]}&end_date_lookup=gt`);
             } else {
-              address += `&start_date=${query.time - 5}&start_date_lookup=lt`;
-              address += `&end_date=${query.time + 4}&end_date_lookup=gt`;
+              urls = urls.map((x) => `${x}&start_date=${query.time - 5}&start_date_lookup=lt&end_date=${query.time + 4}&end_date_lookup=gt`);
             }
           }
-
-          console.log('address', address);
+          console.log('urls', urls);
         }
-        const prefetched = this.$store.state.fetchedResults[address];
+        const prefetched = this.$store.state.fetchedResults[urls.toString()];
 
         if (prefetched) {
-          this.filteredWords = prefetched;
+          this.handleRes(prefetched);
           this.loading = false;
         } else {
-          fetch(address)
-            .then((res) => res.json())
+          Promise.all(urls.map((x) => fetch(x)))
             .then((res) => {
-              console.log('word cloud res', res);
-              let words = Object.entries(res.token_dict);
-              this.words = words.sort(this.sortWords);
-
-              for (let i = 1; words.length > 75; i += 1) words = words.filter((entry) => entry[1] > i); // improves performance by a lot
-
-              words = words.sort(this.sortWords);
-              this.filteredWords = words;
-              this.$store.commit('addToResults', { req: address, words });
+              Promise.all(res.map((x) => x.json()))
+                .then((jsonRes) => {
+                  this.handleRes(jsonRes);
+                  this.$store.commit('addToResults', { req: urls.toString(), res: jsonRes });
+                })
+                .catch((err) => {
+                  console.error(err);
+                })
+                .finally(() => {
+                  this.loading = false;
+                });
             })
             .catch((err) => {
               console.error(err);
-            })
-            .finally(() => {
-              this.loading = false;
             });
         }
       },
@@ -225,8 +303,12 @@ export default {
 };
 </script>
 <style scoped>
-.cloud {
-  height: 500px;
+.word-cloud {
+  min-height: 500px;
+  width: 50%;
+}
+.full-height {
+  height: 100vh !important;
 }
 /* .graph-tooltip {
   position: absolute;

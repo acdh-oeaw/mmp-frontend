@@ -1,7 +1,9 @@
 <template>
   <v-app class="app-class">
-    <app-bar />
-    <div class="buffer" :class="{ light: $route.name !== 'Home', smaller: $vuetify.breakpoint.mobile }" />
+    <template v-if="!$route.path.includes('/view/')">
+      <app-bar />
+      <div class="buffer" :class="{ light: $route.name !== 'Home', smaller: $vuetify.breakpoint.mobile }" />
+    </template>
     <v-main>
       <router-view />
     </v-main>

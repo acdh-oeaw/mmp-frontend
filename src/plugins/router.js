@@ -10,6 +10,7 @@ import Map from '@/components/MapWrapper';
 import List from '@/components/List';
 import WordCloudWrapper from '@/components/WordCloudWrapper';
 import ListAll from '@/components/ListAll';
+import FullscreenView from '@/components/FullscreenView';
 
 import KeywordDetail from '@/components/KeywordDetail';
 import PassageDetail from '@/components/PassageDetail';
@@ -77,6 +78,47 @@ const routes = [
     path: '/list-all/',
     name: 'List All',
     component: ListAll,
+  },
+  {
+    path: '/view/',
+    name: 'View',
+    component: FullscreenView,
+    children: [
+      {
+        path: 'map',
+        name: 'Map Fullscreen',
+        component: Map,
+      },
+      {
+        path: 'graph',
+        name: 'Network Graph Fullscreen',
+        component: Graph,
+        children: [
+          {
+            path: 'detail/:id',
+            name: 'Keyword Detail Fullscreen',
+            component: KeywordDetail,
+          },
+        ],
+      },
+      {
+        path: 'list',
+        name: 'List Fullscreen',
+        component: List,
+        children: [
+          {
+            path: 'detail/:id',
+            name: 'Passage Detail Fullscreen',
+            component: PassageDetail,
+          },
+        ],
+      },
+      {
+        path: 'cloud',
+        name: 'Word Cloud Fullscreen',
+        component: WordCloudWrapper,
+      },
+    ],
   },
 ];
 

@@ -28,7 +28,7 @@
         </a>
       </template>
       <template v-slot:item.text.title="{ item }">
-        <router-link :to="{ name: 'Passage Detail', params: { id: item.url.replace(/\D/g, '') }, query: $route.query }" class="text-decoration-none">
+        <router-link :to="{ name: $route.path.includes('/view') ? 'Passage Detail Fullscreen' : 'Passage Detail', params: { id: item.url.replace(/\D/g, '') }, query: $route.query }" class="text-decoration-none">
           <b>{{ item.text.title }}</b>
         </router-link>
       </template>
@@ -51,6 +51,18 @@
       <template v-slot:item.written="{ item }">
         <!-- displays unkown if neither start nor end date are defined -->
         {{ (item.start_date || item.end_date) ? `${item.start_date || 'unknown'} - ${item.end_date || 'unknown'}` : 'unknown' }}
+      </template>
+      <template v-slot:footer.prepend>
+        <v-btn
+          icon
+          :to="{
+            name: $route.path.includes('/view/') ? 'List' : 'List Fullscreen',
+            query: $route.query
+          }"
+        >
+          <v-icon v-if="$route.path.includes('/view/')">mdi-fullscreen-exit</v-icon>
+          <v-icon v-else>mdi-fullscreen</v-icon>
+        </v-btn>
       </template>
     </v-data-table>
     <router-view />

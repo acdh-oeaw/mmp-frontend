@@ -9,7 +9,7 @@
 
     <v-list-item class="keyword-header">
       <v-list-item-action>
-        <router-link :to="{ name: 'List', query: $route.query }" class="text-decoration-none">
+        <router-link :to="{ name: $route.path.includes('/view/')? 'List Fullscreen' : 'List', query: $route.query }" class="text-decoration-none">
           <v-icon>mdi-close</v-icon>
         </router-link>
       </v-list-item-action>

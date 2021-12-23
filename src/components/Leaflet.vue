@@ -19,12 +19,25 @@
     </v-overlay>
     <l-map
       :zoom="3"
-      :style="`height: ${height}px; width: 100%`"
+      :style="`height: ${$route.path.includes('/view/') ? '100vh' : height + 'px'}; width: 100%`"
       :bounds="bounds"
     >
       <l-tile-layer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
+      <l-control position="bottomright">
+        <v-btn
+          fab
+          small
+          :to="{
+            name: $route.path.includes('/view/') ? 'Map' : 'Map Fullscreen',
+            query: usecase ? {'Use Case': usecase} : $route.query
+          }"
+        >
+          <v-icon v-if="$route.path.includes('/view/')">mdi-fullscreen-exit</v-icon>
+          <v-icon v-else>mdi-fullscreen</v-icon>
+        </v-btn>
+      </l-control>
       <l-control position="topright">
         <v-menu
           v-model="menu"
@@ -124,6 +137,9 @@ export default {
     height: {
       default: 500,
     },
+    usecase: {
+      default: '',
+    },
   },
   components: {
     LMap,
@@ -138,7 +154,8 @@ export default {
         layer
           .bindTooltip(
             `<div>Keyword: ${feature.properties.key_word.stichwort}</div>
-            <div>Passages: ${feature.properties.stelle.length}</div>`,
+            <div>Passages: ${feature.properties.stelle.length}</div>
+            <div>Certainty: ${11 - feature.properties.fuzzyness}</div>`,
             { permanent: false, sticky: true },
           )
           .on({
@@ -196,6 +213,12 @@ export default {
         const filteredCoords = to[0];
         filteredCoords.features = filteredCoords.features.filter((x) => x.geometry);
         this.bounds = this.getBounds(filteredCoords.features || []);
+
+        const places = {};
+
+        places.passages = to[0].features.map((x) => x.properties.stelle.map((y) => y.ort));
+        places.texts = to[1].features.map((x) => x.properties.stelle.map((y) => y.ort));
+        console.log('places', places);
       }
     },
   },

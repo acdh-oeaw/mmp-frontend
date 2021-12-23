@@ -3,6 +3,7 @@
   <v-card
     color="transparent"
     width="100%"
+    height="100%"
   >
     <v-overlay
       absolute
@@ -21,14 +22,66 @@
       </h1>
     </v-overlay>
     <visualization
+      id="visId"
       :graph="styledNodes"
       :onNodeClick="nodeClick"
       :nodeCanvasObjectMode="() => 'after'"
       :nodeCanvasObject="nodeObject"
       :linkDirectionalArrowLength="3.5"
-      height="500"
+      :height="$route.path.includes('/view/') ? undefined : '500'"
     />
     <router-view />
+    <v-speed-dial
+      v-model="fab"
+      absolute
+      top
+      right
+      direction="bottom"
+      transition="slide-y-transition"
+    >
+      <template v-slot:activator>
+        <v-btn
+          v-model="fab"
+          icon
+          small
+        >
+          <v-icon v-if="fab">
+            mdi-close
+          </v-icon>
+          <v-icon v-else>
+            mdi-tray-arrow-down
+          </v-icon>
+        </v-btn>
+      </template>
+      <v-btn
+        fab
+        small
+        @click="getCanvasData"
+      >
+        <v-icon>mdi-image</v-icon>
+      </v-btn>
+      <v-btn
+        fab
+        small
+        @click="getJsonData"
+      >
+        <v-icon>mdi-code-json</v-icon>
+      </v-btn>
+    </v-speed-dial>
+    <v-btn
+      absolute
+      bottom
+      right
+      depressed
+      icon
+      :to="{
+        name: $route.path.includes('/view/') ? 'Network Graph' : 'Network Graph Fullscreen',
+        query: usecase ? {'Use Case': usecase} : $route.query
+      }"
+    >
+      <v-icon v-if="$route.path.includes('/view/')">mdi-fullscreen-exit</v-icon>
+      <v-icon v-else>mdi-fullscreen</v-icon>
+    </v-btn>
   </v-card>
 </template>
 
@@ -42,12 +95,27 @@ export default {
     Visualization,
   },
   data: () => ({
+    fab: false,
     graph: null,
     loading: false,
   }),
   props: ['usecase'],
   mixins: [helpers],
   methods: {
+    getCanvasData() {
+      const link = document.createElement('a');
+      link.download = 'graph.png';
+      link.href = document.getElementById('visId').getElementsByTagName('canvas')[0].toDataURL();
+      link.click();
+      link.remove();
+    },
+    getJsonData() {
+      const link = document.createElement('a');
+      link.download = 'graph.json';
+      link.href = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(this.graph))}`;
+      link.click();
+      link.remove();
+    },
     nodeObject(node, ctx, globalScale) {
       const label = this.removeRoot(node.label);
       const fontSize = 15 / globalScale;

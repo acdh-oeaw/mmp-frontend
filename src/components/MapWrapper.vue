@@ -4,7 +4,7 @@
     width="100%"
     class="map-wrapper"
   >
-    <leaflet :data="entries" :loading="loading" />
+    <leaflet :data="entries" :loading="loading" :usecase="usecase" />
     <!-- <div v-for="(feature, i) in featureList">
       <div
       class="card"
@@ -51,7 +51,7 @@ export default {
             Author: 'stelle__text__autor',
             Passage: 'stelle',
             Keyword: 'key_word',
-            // 'Use Case': 'unused',
+            'Use Case': 'stelle__use_case',
             // Place: 'unused',
           };
           Object.keys(query).forEach((cat) => {
@@ -87,7 +87,7 @@ export default {
               Promise.all(res.map((x) => x.json()))
                 .then((jsonRes) => {
                   console.log('map-data', res);
-                  this.$store.commit('addToResults', { req: urls.toString(), res });
+                  this.$store.commit('addToResults', { req: urls.toString(), res: jsonRes });
                   this.entries = jsonRes;
                 })
                 .catch((err) => {
