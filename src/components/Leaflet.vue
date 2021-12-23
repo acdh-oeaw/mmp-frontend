@@ -19,7 +19,7 @@
     </v-overlay>
     <l-map
       :zoom="3"
-      :style="`height: ${$route.path.includes('/view/') ? '100vh' : height + 'px'}; width: 100%`"
+      :style="`height: ${$route.path.includes('/view/') && $route.name !== 'Keyword Detail Fullscreen' ? '100vh' : height + 'px'}; width: 100%`"
       :bounds="bounds"
     >
       <l-tile-layer
