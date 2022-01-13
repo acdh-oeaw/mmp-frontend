@@ -23,6 +23,9 @@
             <v-tab key="timeline">
               Timeline
             </v-tab>
+            <v-tab key="story" v-if="study.story_map">
+              Story Map
+            </v-tab>
             <v-tab key="graph">
               Graph
             </v-tab>
@@ -51,6 +54,9 @@
                   <span v-else :class="{ 'font-weight-medium': event.ent_type != 'event' }">{{ event.ent_description }}</span>
                 </v-timeline-item>
               </v-timeline>
+            </v-tab-item>
+            <v-tab-item key="story">
+              <v-card color="transparent" v-html="study.story_map" />
             </v-tab-item>
             <v-tab-item key="graph">
               <v-card color="transparent">
@@ -135,6 +141,7 @@ export default {
         Promise.all(res.map((x) => x.json()))
           .then((jsonRes) => {
             console.log('Study', jsonRes);
+            if (jsonRes[0].story_map) jsonRes[0].story_map = jsonRes[0].story_map.replaceAll('/explore/', '/view/');
             this.study = jsonRes[0];
             this.events = jsonRes[1];
           })

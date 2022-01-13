@@ -11,7 +11,7 @@
       :value="loading || avgProgress < 100 || !filteredWords.some((x) => x.length)"
       z-index="99"
     >
-    <h1 v-if="avgProgress < 100" class="no-nodes">
+    <h1 v-if="avgProgress < 100 && filteredWords.some((x) => x.length)" class="no-nodes">
       <v-progress-circular
         :value="avgProgress"
         :indeterminate="loading"
@@ -28,7 +28,7 @@
       no-gutters
     >
       <template v-for="filtered, i in filteredWords">
-        <v-col v-if="showWords[i] && filtered.length"  :key="i">
+        <v-col v-if="showWords[i] && filtered.length"  :key="JSON.stringify(filtered) + i">
           <word-cloud
             :words="filtered"
             :animation-duration="500"
@@ -125,7 +125,7 @@
       icon
       :to="{
         name: $route.path.includes('/view/') ? 'Word Cloud' : 'Word Cloud Fullscreen',
-        query: usecase ? {'Use Case': usecase} : $route.query
+        query: usecase ? { 'Use Case': usecase } : $route.query
       }"
     >
       <v-icon v-if="$route.path.includes('/view/')">mdi-fullscreen-exit</v-icon>

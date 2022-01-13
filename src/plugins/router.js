@@ -14,6 +14,7 @@ import FullscreenView from '@/components/FullscreenView';
 
 import KeywordDetail from '@/components/KeywordDetail';
 import PassageDetail from '@/components/PassageDetail';
+import PlaceDetail from '@/components/PlaceDetail';
 
 Vue.use(VueRouter);
 
@@ -42,6 +43,23 @@ const routes = [
         path: 'map',
         name: 'Map',
         component: Map,
+        children: [
+          // {
+          //   path: 'spatial/:id',
+          //   name: 'Spatial Detail',
+          //   component: SpatialDetail,
+          // },
+          // {
+          //   path: 'cone/:id',
+          //   name: 'Cone Detail',
+          //   component: ConeDetail,
+          // },
+          {
+            path: 'place/:id',
+            name: 'Place Detail',
+            component: PlaceDetail,
+          },
+        ],
       },
       {
         path: 'graph',

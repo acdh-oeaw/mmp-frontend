@@ -21,6 +21,7 @@
         <data-table :data="feature.properties.stelle" />
       </div>
     </div> -->
+  <router-view />
   </v-card>
 </template>
 
@@ -74,7 +75,12 @@ export default {
               urls = urls.map((url) => `${url}&${startKey}=${query.time - 5}&${startKey}_lookup=lt&${endKey}=${query.time + 4}&${endKey}_lookup=g`);
             }
           }
+          if (query.Place) {
+            console.log('place detected');
+            urls.push(`https://mmp.acdh-dev.oeaw.ac.at/api/ort-geojson/?format=json&ids=${query.Place.split('+').join(',')}`);
+          }
         }
+
         console.log('urls', urls);
 
         const prefetched = this.$store.state.fetchedResults[urls.toString()];
@@ -86,7 +92,7 @@ export default {
             .then((res) => {
               Promise.all(res.map((x) => x.json()))
                 .then((jsonRes) => {
-                  console.log('map-data', res);
+                  console.log('map-data', jsonRes);
                   this.$store.commit('addToResults', { req: urls.toString(), res: jsonRes });
                   this.entries = jsonRes;
                 })
