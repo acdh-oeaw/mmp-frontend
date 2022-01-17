@@ -9,7 +9,6 @@
       absolute
       opacity=".2"
       :value="loading || avgProgress < 100 || !filteredWords.some((x) => x.length)"
-      z-index="99"
     >
     <h1 v-if="avgProgress < 100 && filteredWords.some((x) => x.length)" class="no-nodes">
       <v-progress-circular
@@ -55,7 +54,6 @@
       v-model="drawer"
       absolute
       right
-      style="z-index: 101"
     >
       <v-card>
         <v-btn
@@ -329,7 +327,6 @@ export default {
   position: absolute;
   background: white;
   font-size: 2rem;
-  z-index: 100;
 }
 .word:hover + div.wordHover {
   display: unset;

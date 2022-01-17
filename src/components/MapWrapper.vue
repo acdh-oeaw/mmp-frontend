@@ -2,7 +2,6 @@
   <v-card
     color="transparent"
     width="100%"
-    class="map-wrapper"
   >
     <leaflet :data="entries" :loading="loading" :usecase="usecase" />
     <!-- <div v-for="(feature, i) in featureList">
@@ -114,9 +113,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-  .map-wrapper {
-    z-index: 0;
-  }
-</style>
