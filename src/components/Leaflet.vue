@@ -1,25 +1,8 @@
 <template>
   <div>
-    <v-overlay
-      absolute
-      class="overlay"
-      opacity=".2"
-      :value="loading || !data.some((d) => d.count)"
-      z-index="1000"
-    >
-      <h1 v-if="!loading" class="no-nodes">
-        No locations found!
-      </h1>
-      <h1 v-else>
-        <v-progress-circular
-          indeterminate
-          color="#0F1226"
-        />
-      </h1>
-    </v-overlay>
     <l-map
       :zoom="3"
-      :style="`height: ${$route.path.includes('/view/') && $route.name !== 'Keyword Detail Fullscreen' ? '100vh' : height + 'px'}; width: 100%`"
+      :style="`height: ${$route.path.includes('/view/') && $route.name !== 'Keyword Detail Fullscreen' ? '100vh' : height + 'px'}; width: 100%; z-index: 4`"
       :bounds="bounds"
     >
       <l-tile-layer
@@ -193,6 +176,22 @@
         </l-marker>
       </template>
     </l-map>
+    <v-overlay
+      absolute
+      class="overlay"
+      opacity=".2"
+      :value="loading || !data.some((d) => d.count)"
+    >
+      <h1 v-if="!loading" class="no-nodes">
+        No locations found!
+      </h1>
+      <h1 v-else>
+        <v-progress-circular
+          indeterminate
+          color="#0F1226"
+        />
+      </h1>
+    </v-overlay>
   </div>
 </template>
 
