@@ -84,16 +84,26 @@
       <v-icon v-if="$route.path.includes('/view/')">mdi-fullscreen-exit</v-icon>
       <v-icon v-else>mdi-fullscreen</v-icon>
     </v-btn>
-    <v-btn
-      absolute
-      top
-      left
-      depressed
-      icon
-      @click="refresh"
+    <v-tooltip
+      right
+      transition="slide-x-transition"
     >
-      <v-icon>mdi-refresh</v-icon>
-    </v-btn>
+      <template v-slot:activator="{ on, attrs }">
+        <v-btn
+          absolute
+          top
+          left
+          depressed
+          icon
+          @click="refresh"
+          v-bind="attrs"
+          v-on="on"
+        >
+          <v-icon>mdi-refresh</v-icon>
+        </v-btn>
+      </template>
+      <span>Refresh Graph, unpin all nodes</span>
+    </v-tooltip>
   </v-card>
 </template>
 

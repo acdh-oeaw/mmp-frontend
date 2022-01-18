@@ -8,7 +8,7 @@
   >
     <v-list-item class="keyword-header">
       <v-list-item-action>
-        <router-link :to="{ name: 'Network Graph', query: $route.query }">
+        <router-link :to="{ name: $route.path.includes('/view/') ? 'Network Graph Fullscreen' : 'Network Graph', query: $route.query }">
           <v-icon>mdi-close</v-icon>
         </router-link>
       </v-list-item-action>
@@ -18,7 +18,24 @@
             {{ data.keywords.map((x) => x.stichwort).join(', ') }}
           </v-list-item-title>
           <v-list-item-subtitle>
-            Mentioned in <router-link :to="{ name: 'List', query: { Keyword: $route.params.id }}">{{ data.passages.count }} passage{{ data.passages.count === 1 ? '' : 's' }}</router-link>
+            Mentioned in
+            <router-link
+              :to="{
+                name: $route.path.includes('/view/') ? 'List Fullscreen' : 'List',
+                query: { Keyword: $route.params.id },
+              }"
+            >
+              {{ data.passages.count }} passage{{ data.passages.count === 1 ? '' : 's' }}<v-icon small>mdi-link</v-icon>
+            </router-link>,
+            <router-link
+              :to="{
+                name: $route.path.includes('/view/') ? 'Keyword Detail Fullscreen' : 'Keyword Detail',
+                params: { id: $route.params.id },
+                query: { Keyword: $route.params.id },
+              }"
+            >
+              show all connections<v-icon small>mdi-link</v-icon>
+            </router-link>
           </v-list-item-subtitle>
         </div>
         <v-skeleton-loader
@@ -101,19 +118,45 @@
           />
         </v-col>
       </v-row>
-      <v-row align="end">
+      <v-row>
         <v-col>
-          <v-btn
-            dark
-            color="#171d3b"
-            block
-            :to="{ name: 'List', query: { Keyword: data.keywords.map((x) => x.url.replace(/\D/g, '')).join('+') }}"
-            v-if="!loading.keywords"
-          >
-            {{ shorten(`Show all Passages for ${data.keywords.map((x) => x.stichwort).join(', ')}`, 40) }}
-          </v-btn>
+          <template v-if="!loading.keywords">
+            <v-row>
+              <v-col>
+                <v-btn
+                  dark
+                  color="#171d3b"
+                  block
+                  class="detail-button"
+                  :to="{
+                    name: $route.path.includes('/view/') ? 'List Fullscreen' : 'List',
+                    query: { Keyword: data.keywords.map((x) => x.url.replace(/\D/g, '')).join('+') }
+                  }"
+                >
+                  {{ shorten(`Show all Passages for ${data.keywords.map((x) => x.stichwort).join(', ')}`, 40) }}
+                </v-btn>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col>
+                <v-btn
+                  light
+                  outlined
+                  block
+                  class="detail-button"
+                  :to="{
+                    name: $route.path.includes('/view/') ? 'Keyword Detail Fullscreen' : 'Keyword Detail',
+                    params: { id: $route.params.id },
+                    query: { Keyword: $route.params.id },
+                  }"
+                >
+                  Show all Connections in Graph
+                </v-btn>
+              </v-col>
+            </v-row>
+          </template>
           <v-skeleton-loader
-            type="button"
+            type="button@2"
             v-else
           />
         </v-col>
@@ -179,8 +222,9 @@ export default {
         }
       });
 
-      // console.log('keyIds, edges, count, retArr', keyIds, edges, count, retArr);
-
+      console.log('connections', retArr);
+      // priorise connections with keyword in query
+      // return retArr.sort((a) => (this.$route.query?.Keyword.split('+').includes(a.id) ? -1 : 1));
       return retArr;
     },
     drawerWidth() {
@@ -296,6 +340,14 @@ export default {
 <style>
 button.v-expansion-panel-header {
   padding: 6px;
+}
+.detail-button {
+  padding: 5px;
+}
+.fixed-bottom {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
 }
 .v-skeleton-loader__button {
   width: 100%;
