@@ -26,6 +26,8 @@ export default {
     nodeCanvasObjectMode: Function,
     nodePointerAreaPaint: Function,
     onNodeClick: Function,
+    onNodeDrag: Function,
+    onNodeDragEnd: Function,
     onSimulationEnd: Function,
     onSimulationTick: Function,
     onZoom: Function,
@@ -65,6 +67,8 @@ export default {
         .backgroundColor(this.backgroundColor || null)
         .dagMode(this.dagMode)
         .onNodeClick(this.onNodeClick)
+        .onNodeDrag(this.onNodeDrag)
+        .onNodeDragEnd(this.onNodeDragEnd)
         .onEngineStop(this.onSimulationEnd)
         .onEngineTick(this.onEngineEnd)
         .onZoom(this.onZoom)
@@ -84,7 +88,7 @@ export default {
         .nodeCanvasObjectMode(this.nodeCanvasObjectMode)
         .nodePointerAreaPaint(this.nodePointerAreaPaint)
         .cooldownTicks(100)
-        .onEngineStop(() => this.graphDom.zoomToFit(400));
+        .onEngineTick(() => this.graphDom.zoomToFit(400));
     },
   },
   watch: {

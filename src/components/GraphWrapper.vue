@@ -23,8 +23,10 @@
     </v-overlay>
     <visualization
       id="visId"
+      :key="renderKey"
       :graph="styledNodes"
       :onNodeClick="nodeClick"
+      :onNodeDragEnd="nodeDragEnd"
       :nodeCanvasObjectMode="() => 'after'"
       :nodeCanvasObject="nodeObject"
       :linkDirectionalArrowLength="3.5"
@@ -82,6 +84,16 @@
       <v-icon v-if="$route.path.includes('/view/')">mdi-fullscreen-exit</v-icon>
       <v-icon v-else>mdi-fullscreen</v-icon>
     </v-btn>
+    <v-btn
+      absolute
+      top
+      left
+      depressed
+      icon
+      @click="refresh"
+    >
+      <v-icon>mdi-refresh</v-icon>
+    </v-btn>
   </v-card>
 </template>
 
@@ -98,6 +110,7 @@ export default {
     fab: false,
     graph: null,
     loading: false,
+    renderKey: 0,
   }),
   props: ['usecase'],
   mixins: [helpers],
@@ -115,6 +128,11 @@ export default {
       link.href = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(this.graph))}`;
       link.click();
       link.remove();
+    },
+    nodeDragEnd(node, translate) {
+      console.log('nodeDrag', node, translate);
+      node.fx = node.x;
+      node.fy = node.y;
     },
     nodeObject(node, ctx, globalScale) {
       const label = this.removeRoot(node.label);
@@ -178,6 +196,13 @@ export default {
           query: this.$route.query,
         });
       }
+    },
+    refresh() {
+      this.graph.nodes.forEach((node) => {
+        node.fx = undefined;
+        node.fy = undefined;
+      });
+      this.renderKey += 1;
     },
   },
   computed: {
