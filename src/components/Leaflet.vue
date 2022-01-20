@@ -121,7 +121,11 @@
                 <template v-slot:label>
                   Related&nbsp;Places
                   &nbsp;
-                  <v-chip color="green lighten-1" small :disabled="!relatedPlaces.length">
+                  <v-chip
+                    color="green lighten-1"
+                    small
+                    :disabled="!relatedPlaces.length"
+                  >
                     <v-progress-circular
                       v-if="loading"
                       indeterminate

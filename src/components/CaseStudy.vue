@@ -55,7 +55,7 @@
                 </v-timeline-item>
               </v-timeline>
             </v-tab-item>
-            <v-tab-item key="story">
+            <v-tab-item key="story" v-if="study.story_map">
               <v-card color="transparent" v-html="study.story_map" />
             </v-tab-item>
             <v-tab-item key="graph">
