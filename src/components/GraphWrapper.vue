@@ -31,10 +31,12 @@
       :nodeCanvasObject="nodeObject"
       :linkDirectionalArrowLength="3.5"
       :height="$route.path.includes('/view/') ? undefined : '500'"
+      :zoomToFit="zoomToFit"
+      :paused="paused"
     />
     <router-view />
     <v-speed-dial
-      v-model="fab"
+      v-model="fab.download"
       absolute
       top
       right
@@ -43,11 +45,11 @@
     >
       <template v-slot:activator>
         <v-btn
-          v-model="fab"
+          v-model="fab.download"
           icon
           small
         >
-          <v-icon v-if="fab">
+          <v-icon v-if="fab.download">
             mdi-close
           </v-icon>
           <v-icon v-else>
@@ -55,20 +57,40 @@
           </v-icon>
         </v-btn>
       </template>
-      <v-btn
-        fab
-        small
-        @click="getCanvasData"
+      <v-tooltip
+        left
+        transition="slide-x-reverse-transition"
       >
-        <v-icon>mdi-image</v-icon>
-      </v-btn>
-      <v-btn
-        fab
-        small
-        @click="getJsonData"
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            fab
+            small
+            @click="getCanvasData"
+            v-bind="attrs"
+            v-on="on"
+          >
+            <v-icon>mdi-image</v-icon>
+          </v-btn>
+        </template>
+        <span>Download canvas as .png</span>
+      </v-tooltip>
+      <v-tooltip
+        left
+        transition="slide-x-reverse-transition"
       >
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            fab
+            small
+            @click="getJsonData"
+            v-bind="attrs"
+            v-on="on"
+          >
         <v-icon>mdi-code-json</v-icon>
       </v-btn>
+        </template>
+        <span>Download node data as .json</span>
+      </v-tooltip>
     </v-speed-dial>
     <v-btn
       absolute
@@ -84,29 +106,84 @@
       <v-icon v-if="$route.path.includes('/view/')">mdi-fullscreen-exit</v-icon>
       <v-icon v-else>mdi-fullscreen</v-icon>
     </v-btn>
-    <v-tooltip
-      right
-      transition="slide-x-transition"
+    <v-speed-dial
+      v-model="fab.control"
+      absolute
+      top
+      left
+      direction="bottom"
+      transition="slide-y-transition"
     >
-      <template v-slot:activator="{ on, attrs }">
+      <template v-slot:activator>
         <v-btn
-          absolute
-          top
-          left
-          depressed
+          v-model="fab.control"
           icon
-          @click="refresh"
-          v-bind="attrs"
-          v-on="on"
+          small
         >
-          <v-icon>mdi-refresh</v-icon>
+          <v-icon v-if="fab.control">
+            mdi-close
+          </v-icon>
+          <v-icon v-else>
+            mdi-dots-vertical
+          </v-icon>
         </v-btn>
       </template>
-      <span>Refresh Graph, unpin all nodes</span>
-    </v-tooltip>
+      <v-tooltip
+        right
+        transition="slide-x-transition"
+      >
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            fab
+            small
+            disabled
+            @click="paused = !paused"
+            v-bind="attrs"
+            v-on="on"
+          >
+            <v-icon v-if="!paused">mdi-pause</v-icon>
+            <v-icon v-else>mdi-play</v-icon>
+          </v-btn>
+        </template>
+        <span>{{ paused ? 'Unp' : 'P' /* hehehehe*/ }}ause Simulation</span>
+      </v-tooltip>
+      <v-tooltip
+        right
+        transition="slide-x-transition"
+      >
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            fab
+            small
+            @click="zoomToFit = !zoomToFit"
+            v-bind="attrs"
+            v-on="on"
+          >
+            <v-icon>mdi-fit-to-screen-outline</v-icon>
+          </v-btn>
+        </template>
+        <span>Fit Nodes to Screen</span>
+      </v-tooltip>
+      <v-tooltip
+        right
+        transition="slide-x-transition"
+      >
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            fab
+            small
+            @click="refresh"
+            v-bind="attrs"
+            v-on="on"
+          >
+            <v-icon>mdi-refresh</v-icon>
+          </v-btn>
+        </template>
+        <span>Refresh Graph, unpin all nodes</span>
+      </v-tooltip>
+    </v-speed-dial>
   </v-card>
 </template>
-
 <script>
 import helpers from '@/helpers';
 import Visualization from './Visualization2D';
@@ -117,10 +194,15 @@ export default {
     Visualization,
   },
   data: () => ({
-    fab: false,
+    fab: {
+      download: false,
+      control: false,
+    },
     graph: null,
     loading: false,
+    paused: true,
     renderKey: 0,
+    zoomToFit: true,
   }),
   props: ['usecase'],
   mixins: [helpers],

@@ -23,7 +23,7 @@
             <v-tab key="timeline">
               Timeline
             </v-tab>
-            <v-tab key="story" v-if="study.story_map">
+            <v-tab v-if="study.story_map" key="story">
               Story Map
             </v-tab>
             <v-tab key="graph">
@@ -48,14 +48,45 @@
                   :color="getIconFromType(event.ent_type).color"
                   :class="{ 'text-right': i%2 == 1 && !$vuetify.breakpoint.mobile }"
                 >
-                  <span class="font-weight-medium" slot="opposite">{{ renderDates(event.start_date, event.end_date) }}</span>
-                  <span class="font-weight-medium" v-if="$vuetify.breakpoint.mobile">{{ renderDates(event.start_date, event.end_date) }}: <br /></span>
-                  <router-link class="font-weight-medium" v-if="event.ent_type === 'autor'" :to="{ name: 'List', query: { Author: event.id }}">{{ event.ent_description }}&nbsp;<v-icon>mdi-chevron-right</v-icon></router-link>
-                  <span v-else :class="{ 'font-weight-medium': event.ent_type != 'event' }">{{ event.ent_description }}</span>
+                  <span
+                    class="font-weight-medium"
+                    slot="opposite"
+                  >
+                    {{ renderDates(event.start_date, event.end_date) }}
+                  </span>
+                  <span
+                    class="font-weight-medium"
+                    v-if="$vuetify.breakpoint.mobile"
+                  >
+                    {{ renderDates(event.start_date, event.end_date) }}: <br />
+                  </span>
+                  <router-link
+                    class="font-weight-medium"
+                    v-if="event.ent_type === 'autor'"
+                    :to="{
+                      name: 'List',
+                      query: { Author: event.id }
+                    }"
+                  >
+                    {{ event.ent_description }}
+                    &nbsp;
+                    <v-icon>mdi-chevron-right</v-icon>
+                  </router-link>
+                  <span
+                    v-else
+                    :class="{
+                      'font-weight-medium': event.ent_type != 'event'
+                    }"
+                  >
+                    {{ event.ent_description }}
+                  </span>
                 </v-timeline-item>
               </v-timeline>
             </v-tab-item>
-            <v-tab-item key="story" v-if="study.story_map">
+            <v-tab-item
+              key="story"
+              v-if="study.story_map"
+            >
               <v-card color="transparent" v-html="study.story_map" />
             </v-tab-item>
             <v-tab-item key="graph">
@@ -73,7 +104,10 @@
             </v-tab-item>
           </v-tabs-items>
         </template>
-        <v-skeleton-loader v-else type="text, heading, text@11" />
+        <v-skeleton-loader
+          v-else
+          type="text, heading, text@11"
+        />
       </v-col>
     </v-row>
   </v-container>

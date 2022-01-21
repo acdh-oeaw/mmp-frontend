@@ -55,7 +55,7 @@
       absolute
       right
     >
-      <v-card>
+      <v-card min-height="500">
         <v-btn
           absolute
           top
@@ -79,25 +79,54 @@
             color="blue lighten-2"
           />
         </v-card-text>
-        <v-card-title>Keyword Occurences</v-card-title>
-        <v-card-text>
-          <ul>
-            <li v-for="entry in words[1]" :key="entry[0]">
-              {{ entry[0] }}:&nbsp;{{ entry[1] }}
-            </li>
-          </ul>
-        </v-card-text>
-        <v-card-title>All Occurences</v-card-title>
-        <v-card-text>
-          <ul>
-            <li v-for="entry in words[0]" :key="entry[0]">
-              {{ entry[0] }}:&nbsp;{{ entry[1] }}
-            </li>
-          </ul>
-        </v-card-text>
+          <v-expansion-panels
+            flat
+          >
+          <v-expansion-panel>
+            <v-expansion-panel-header>
+              <template v-slot:actions>
+                <v-icon class="icon">mdi-chevron-down</v-icon>
+              </template>
+              <span class="header">
+                Keyword Occurences
+              </span>
+            </v-expansion-panel-header>
+            <v-expansion-panel-content>
+              <v-card-text>
+                <ul>
+                  <li v-for="entry in words[1]" :key="entry[0]">
+                    {{ entry[0] }}:&nbsp;{{ entry[1] }}
+                  </li>
+                </ul>
+              </v-card-text>
+            </v-expansion-panel-content>
+          </v-expansion-panel>
+          <v-expansion-panel>
+            <v-expansion-panel-header>
+              <template v-slot:actions>
+                <v-icon class="icon">mdi-chevron-down</v-icon>
+              </template>
+              <span class="header">
+                All Occurences
+              </span>
+            </v-expansion-panel-header>
+            <v-expansion-panel-content>
+              <v-card-text>
+                <ul>
+                  <li v-for="entry in words[0]" :key="entry[0]">
+                    {{ entry[0] }}:&nbsp;{{ entry[1] }}
+                  </li>
+                </ul>
+              </v-card-text>
+            </v-expansion-panel-content>
+          </v-expansion-panel>
+        </v-expansion-panels>
         <v-card-actions>
           <v-btn
             text
+            absolute
+            bottom
+            right
             @click="drawer = false"
           >
             Close

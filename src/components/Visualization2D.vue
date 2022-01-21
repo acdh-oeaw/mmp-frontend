@@ -30,7 +30,7 @@ export default {
     onNodeDragEnd: Function,
     onSimulationEnd: Function,
     onSimulationTick: Function,
-    onZoom: Function,
+    paused: Boolean,
     selectedNodeIds: Set, // TODO
     showNeighborsOnly: {
       type: Boolean,
@@ -38,6 +38,10 @@ export default {
     }, // TODO
     width: String,
     height: String,
+    zoomToFit: {
+      type: Boolean,
+      default: false,
+    },
 
   },
   methods: {
@@ -71,7 +75,6 @@ export default {
         .onNodeDragEnd(this.onNodeDragEnd)
         .onEngineStop(this.onSimulationEnd)
         .onEngineTick(this.onEngineEnd)
-        .onZoom(this.onZoom)
         .linkWidth(parseFloat(this.linkWidth) || 1)
         .linkDirectionalParticles(this.linkDirectionalParticles || 0)
         .linkDirectionalParticleSpeed(this.linkDirectionalParticleSpeed || 0.01)
@@ -86,15 +89,19 @@ export default {
         }))
         .nodeCanvasObject(this.nodeCanvasObject)
         .nodeCanvasObjectMode(this.nodeCanvasObjectMode)
-        .nodePointerAreaPaint(this.nodePointerAreaPaint)
-        .cooldownTicks(100)
-        .onEngineTick(() => this.graphDom.zoomToFit(400));
+        .nodePointerAreaPaint(this.nodePointerAreaPaint);
     },
   },
   watch: {
     graph(val) {
-      console.log('graph changed, data:', val);
-      this.setCanvas();
+      this.graphDom.graphData(this.transformedData(val));
+    },
+    paused(val) {
+      if (val) this.graphDom.pauseSimulation();
+      else this.graphDom.resumeSimulation();
+    },
+    zoomToFit() { // cheap workaraound, change zoomToFit to !zoomToFit to zoom (to fit)
+      this.graphDom.zoomToFit();
     },
   },
   mounted() {
