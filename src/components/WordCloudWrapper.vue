@@ -55,7 +55,7 @@
       absolute
       right
     >
-      <v-card min-height="500">
+      <v-card min-height="498">
         <v-btn
           absolute
           top
