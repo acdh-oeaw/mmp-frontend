@@ -11,9 +11,8 @@ module.exports = {
     parser: 'babel-eslint',
   },
   rules: {
-    'vue/valid-v-slot': 'off',
     'max-len': 'off',
-    'no-param-reassign': ["error", { "props": false }],
+    'no-param-reassign': ['error', { props: false }],
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'import/extensions': ['error', 'always', {
@@ -22,7 +21,7 @@ module.exports = {
       jsx: 'never',
       ts: 'never',
       tsx: 'never',
-      vue: 'never'
+      vue: 'never',
     }],
   },
   overrides: [

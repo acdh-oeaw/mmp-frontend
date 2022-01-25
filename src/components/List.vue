@@ -18,7 +18,7 @@
       }"
       class="data-table"
     >
-      <template v-slot:item.text.autor="{ item }">
+      <template v-slot:[`item.text.autor`]="{ item }">
         <a
           v-for="author in item.text.autor"
           @click="addAuthorToInput(author)"
@@ -27,7 +27,7 @@
           {{ author.name_en || author.name }}
         </a>
       </template>
-      <template v-slot:item.text.title="{ item }">
+      <template v-slot:[`item.text.title`]="{ item }">
         <router-link
           :to="{
             name: fullscreen ? 'Passage Detail Fullscreen' : 'Passage Detail',
@@ -38,7 +38,7 @@
           <b>{{ item.text.title }}</b>
         </router-link>
       </template>
-      <template v-slot:item.keywords="{ item }">
+      <template v-slot:[`item.keywords`]="{ item }">
         <!-- displays unkown if neither start nor end date are defined -->
         <div
           class="keyword-chip"
@@ -54,11 +54,11 @@
           </v-chip>
         </div>
       </template>
-      <template v-slot:item.written="{ item }">
+      <template v-slot:[`item.written`]="{ item }">
         <!-- displays unkown if neither start nor end date are defined -->
         {{ (item.start_date || item.end_date) ? `${item.start_date || 'unknown'} - ${item.end_date || 'unknown'}` : 'unknown' }}
       </template>
-      <template v-slot:footer.prepend>
+      <template v-slot:[`footer.prepend`]>
         <v-btn
           icon
           :to="{
