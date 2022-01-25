@@ -30,7 +30,7 @@
       :nodeCanvasObjectMode="() => 'after'"
       :nodeCanvasObject="nodeObject"
       :linkDirectionalArrowLength="3.5"
-      :height="$route.path.includes('/view/') ? undefined : '500'"
+      :height="fullscreen ? undefined : '500'"
       :zoomToFit="zoomToFit"
       :paused="paused"
     />
@@ -99,11 +99,11 @@
       depressed
       icon
       :to="{
-        name: $route.path.includes('/view/') ? 'Network Graph' : 'Network Graph Fullscreen',
+        name: fullscreen ? 'Network Graph' : 'Network Graph Fullscreen',
         query: usecase ? {'Use Case': usecase} : $route.query
       }"
     >
-      <v-icon v-if="$route.path.includes('/view/')">mdi-fullscreen-exit</v-icon>
+      <v-icon v-if="fullscreen">mdi-fullscreen-exit</v-icon>
       <v-icon v-else>mdi-fullscreen</v-icon>
     </v-btn>
     <v-speed-dial
@@ -278,13 +278,13 @@ export default {
 
       if (q) {
         this.$router.push({
-          name: this.$route.path.includes('/view') ? 'Keyword Detail Fullscreen' : 'Keyword Detail',
+          name: this.fullscreen ? 'Keyword Detail Fullscreen' : 'Keyword Detail',
           params: { id: q },
           query: this.usecase ? { 'Use Case': this.usecase } : this.$route.query,
         });
       } else {
         this.$router.push({
-          name: this.$route.path.includes('/view') ? 'Network Graph Fullscreen' : 'Network Graph',
+          name: this.fullscreen ? 'Network Graph Fullscreen' : 'Network Graph',
           query: this.$route.query,
         });
       }
@@ -337,7 +337,7 @@ export default {
 
           console.log('query', query);
           Object.keys(terms).forEach((cat) => {
-            if (query[cat]) {
+            if (query[cat] && cat !== 'time') {
               const arr = query[cat].split('+');
               arr.forEach((val) => {
                 address += `&${terms[cat]}=${val}`;

@@ -175,7 +175,7 @@
                   &#32;
                   <v-chip @click="$store.commit('addToItemsAndInput', defaultChips.barbari)" color="blue lighten-4">barbari</v-chip>
                   or
-                  <v-chip @click="$store.commit('addToItemsAndInput', defaultChips.spain)" color="amber lighten-3">Spain and the Bible</v-chip>
+                  <v-chip @click="$store.commit('addToItemsAndInput', defaultChips.spain)" color="amber lighten-3">Steppe Peoples 1: "Schwarzes Meer"</v-chip>
                 </p>
                 <p>
                   Use the <b>slider</b> below to adjust and narrow down the <b>historical</b> scope of your query.
@@ -246,9 +246,9 @@ export default {
         group: 'Keyword',
       },
       spain: {
-        id: 6,
-        text: 'Spain and the Bible: Patrick Marschner',
-        selected_text: 'Spain and the Bible: Patrick Marschner',
+        id: 3,
+        text: 'Steppe Peoples 1: "Schwarzes Meer" - Jordanes, Prokop, Zacharias Rhetor',
+        selected_text: 'Steppe Peoples 1: "Schwarzes Meer" - Jordanes, Prokop, Zacharias Rhetor',
         group: 'Use Case',
       },
     },
@@ -418,7 +418,7 @@ export default {
       console.log('cat', cat, apiParams[cat]);
       console.log(cat, 'found:', this.query[cat]);
 
-      let ids = this.query[cat].toString(10).split('+');
+      let ids = this.query[cat].toString().split('+');
       const idCount = ids.length;
       this.skeletonChips += idCount;
       ids = ids.join(',');

@@ -55,7 +55,7 @@ export default {
             // Place: 'unused',
           };
           Object.keys(query).forEach((cat) => {
-            if (query[cat]) {
+            if (query[cat] && cat !== 'time') {
               const arr = query[cat].split('+');
               arr.forEach((val) => {
                 urls = urls.map((url) => `${url}&${terms[cat]}=${val}`);

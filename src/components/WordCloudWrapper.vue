@@ -3,7 +3,7 @@
     width="100%"
     outlined
     color="transparent"
-    :height="$route.path.includes('/view/') ? '100vh' : 500"
+    :height="fullscreen ? 'calc(100vh - 4px)' : 500"
   >
     <v-overlay
       absolute
@@ -23,7 +23,6 @@
     </h1>
     </v-overlay>
     <v-row
-      :style="'width:' + $route.path.includes('/view/') ? '100vh' : 500"
       no-gutters
     >
       <template v-for="filtered, i in filteredWords">
@@ -37,7 +36,7 @@
             :rotation="crossRotate"
             :color="colorWords"
             class="word-cloud"
-            :class="{ 'full-height': $route.path.includes('/view/') }"
+            :class="{ 'full-height': fullscreen }"
           >
             <!-- this would show word occurences when hovering over a specific word, but it looks bad -->
             <!-- <template slot-scope="{ text, weight }">
@@ -55,7 +54,7 @@
       absolute
       right
     >
-      <v-card min-height="498">
+      <v-card :min-height="fullscreen ? 'calc(100vh - 4px)': 498">
         <v-btn
           absolute
           top
@@ -151,11 +150,11 @@
       right
       icon
       :to="{
-        name: $route.path.includes('/view/') ? 'Word Cloud' : 'Word Cloud Fullscreen',
+        name: fullscreen ? 'Word Cloud' : 'Word Cloud Fullscreen',
         query: usecase ? { 'Use Case': usecase } : $route.query
       }"
     >
-      <v-icon v-if="$route.path.includes('/view/')">mdi-fullscreen-exit</v-icon>
+      <v-icon v-if="fullscreen">mdi-fullscreen-exit</v-icon>
       <v-icon v-else>mdi-fullscreen</v-icon>
     </v-btn>
   </v-card>
@@ -163,6 +162,8 @@
 <script>
 import Gradient from 'javascript-color-gradient';
 import WordCloud from 'vuewordcloud';
+
+import helpers from '@/helpers';
 
 export default {
   name: 'WordCloudWrapper',
@@ -183,6 +184,7 @@ export default {
     check: ['words', 'keywords'],
     words: [[], []],
   }),
+  mixins: [helpers],
   methods: {
     colorWords(word) {
       const colors = [
@@ -277,9 +279,9 @@ export default {
           };
 
           Object.keys(query).forEach((cat) => {
-            if (query[cat]) {
+            if (query[cat] && cat !== 'time') {
               console.log(query[cat]);
-              const arr = query[cat].toString(10).split('+');
+              const arr = query[cat].toString().split('+');
               arr.forEach((val) => {
                 urls = urls.map((x) => `${x}&${terms[cat]}=${val}`);
               });

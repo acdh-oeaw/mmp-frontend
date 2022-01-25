@@ -30,7 +30,7 @@
       <template v-slot:item.text.title="{ item }">
         <router-link
           :to="{
-            name: $route.path.includes('/view') ? 'Passage Detail Fullscreen' : 'Passage Detail',
+            name: fullscreen ? 'Passage Detail Fullscreen' : 'Passage Detail',
             params: { id: item.url.replace(/\D/g, '') }, query: $route.query
           }"
           class="text-decoration-none"
@@ -62,11 +62,11 @@
         <v-btn
           icon
           :to="{
-            name: $route.path.includes('/view/') ? 'List' : 'List Fullscreen',
+            name: fullscreen ? 'List' : 'List Fullscreen',
             query: $route.query
           }"
         >
-          <v-icon v-if="$route.path.includes('/view/')">mdi-fullscreen-exit</v-icon>
+          <v-icon v-if="fullscreen">mdi-fullscreen-exit</v-icon>
           <v-icon v-else>mdi-fullscreen</v-icon>
         </v-btn>
       </template>
@@ -76,6 +76,8 @@
 </template>
 
 <script>
+import helpers from '@/helpers';
+
 export default {
   name: 'List',
   data: () => ({
@@ -95,6 +97,7 @@ export default {
     },
     renderKey: 0,
   }),
+  mixins: [helpers],
   methods: {
     addKeywordToInput(obj) {
       this.$store.commit('addToItemsAndInput', {
@@ -121,7 +124,7 @@ export default {
       };
       let address = `https://mmp.acdh-dev.oeaw.ac.at/api/stelle/?format=json&limit=${this.pagination.limit}&offset=${this.pagination.offset}`;
       Object.keys(query).forEach((cat) => {
-        if (query[cat]) {
+        if (query[cat] && cat !== 'time') {
           console.log(query[cat]);
           const arr = query[cat].toString(10).split('+');
           arr.forEach((val) => {

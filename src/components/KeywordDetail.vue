@@ -8,7 +8,7 @@
   >
     <v-list-item class="keyword-header">
       <v-list-item-action>
-        <router-link :to="{ name: $route.path.includes('/view/') ? 'Network Graph Fullscreen' : 'Network Graph', query: $route.query }">
+        <router-link :to="{ name: fullscreen ? 'Network Graph Fullscreen' : 'Network Graph', query: $route.query }">
           <v-icon>mdi-close</v-icon>
         </router-link>
       </v-list-item-action>
@@ -21,7 +21,7 @@
             Mentioned in
             <router-link
               :to="{
-                name: $route.path.includes('/view/') ? 'List Fullscreen' : 'List',
+                name: fullscreen ? 'List Fullscreen' : 'List',
                 query: { Keyword: $route.params.id },
               }"
             >
@@ -29,7 +29,7 @@
             </router-link>,
             <router-link
               :to="{
-                name: $route.path.includes('/view/') ? 'Keyword Detail Fullscreen' : 'Keyword Detail',
+                name: fullscreen ? 'Keyword Detail Fullscreen' : 'Keyword Detail',
                 params: { id: $route.params.id },
                 query: { Keyword: $route.params.id },
               }"
@@ -129,7 +129,7 @@
                   block
                   class="detail-button"
                   :to="{
-                    name: $route.path.includes('/view/') ? 'List Fullscreen' : 'List',
+                    name: fullscreen ? 'List Fullscreen' : 'List',
                     query: { Keyword: data.keywords.map((x) => x.url.replace(/\D/g, '')).join('+') }
                   }"
                 >
@@ -145,7 +145,7 @@
                   block
                   class="detail-button"
                   :to="{
-                    name: $route.path.includes('/view/') ? 'Keyword Detail Fullscreen' : 'Keyword Detail',
+                    name: fullscreen ? 'Keyword Detail Fullscreen' : 'Keyword Detail',
                     params: { id: $route.params.id },
                     query: { Keyword: $route.params.id },
                   }"

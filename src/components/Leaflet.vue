@@ -2,7 +2,7 @@
   <div>
     <l-map
       :zoom="3"
-      :style="`height: ${$route.path.includes('/view/') && $route.name !== 'Keyword Detail Fullscreen' ? '100vh' : height + 'px'}; width: 100%; z-index: 4`"
+      :style="`height: ${fullscreen && $route.name !== 'Keyword Detail Fullscreen' ? '100vh' : height + 'px'}; width: 100%; z-index: 4`"
       :bounds="bounds"
     >
       <l-tile-layer
@@ -13,11 +13,11 @@
           fab
           small
           :to="{
-            name: $route.path.includes('/view/') ? 'Map' : 'Map Fullscreen',
+            name: fullscreen ? 'Map' : 'Map Fullscreen',
             query: usecase ? {'Use Case': usecase} : $route.query
           }"
         >
-          <v-icon v-if="$route.path.includes('/view/')">mdi-fullscreen-exit</v-icon>
+          <v-icon v-if="fullscreen">mdi-fullscreen-exit</v-icon>
           <v-icon v-else>mdi-fullscreen</v-icon>
         </v-btn>
       </l-control>

@@ -12,4 +12,9 @@ export default {
     removeRoot: (label) => label.split(',')[0],
     shorten: (str, n) => (str.length > n ? `${str.substring(0, n)}...` : str),
   },
+  computed: {
+    fullscreen() {
+      return this.$route.name.includes('Fullscreen');
+    },
+  },
 };

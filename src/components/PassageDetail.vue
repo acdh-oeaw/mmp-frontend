@@ -9,7 +9,7 @@
 
     <v-list-item class="keyword-header">
       <v-list-item-action>
-        <router-link :to="{ name: $route.path.includes('/view/')? 'List Fullscreen' : 'List', query: $route.query }" class="text-decoration-none">
+        <router-link :to="{ name: fullscreen ? 'List Fullscreen' : 'List', query: $route.query }" class="text-decoration-none">
           <v-icon>mdi-close</v-icon>
         </router-link>
       </v-list-item-action>
@@ -84,6 +84,8 @@
 </template>
 
 <script>
+import helpers from '@/helpers';
+
 export default {
   name: 'PassasgeDetail',
   data: () => ({
@@ -99,6 +101,7 @@ export default {
       author: null,
     },
   }),
+  mixins: [helpers],
   methods: {
     addRes(res) {
       this.title.title = res.text.title;

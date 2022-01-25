@@ -1,6 +1,6 @@
 <template>
   <v-app class="app-class">
-    <template v-if="!$route.path.includes('/view/')">
+    <template v-if="!$route.name.includes('Fullscreen')">
       <app-bar />
       <div class="buffer" :class="{ light: $route.name !== 'Home', smaller: $vuetify.breakpoint.mobile }" />
     </template>
