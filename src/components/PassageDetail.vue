@@ -105,7 +105,7 @@ export default {
   methods: {
     addRes(res) {
       this.title.title = res.text.title;
-      this.title.written = (res.start_date || res.end_date) ? `${res.start_date || 'unknown'} - ${res.end_date || 'unknown'}` : 'unknown';
+      this.title.written = (res.text.start_date || res.text.end_date) ? `${res.text.start_date || 'unknown'} - ${res.text.end_date || 'unknown'}` : 'unknown';
       this.title.author = res.text.autor.map((x) => x.name_en).join(', ');
 
       this.items = [
@@ -142,7 +142,7 @@ export default {
           value: res.text.edition,
         },
         {
-          key: 'Written',
+          key: 'Text written in',
           value: this.title.written,
         },
         {

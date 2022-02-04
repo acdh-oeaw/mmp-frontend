@@ -20,11 +20,11 @@
     >
       <template v-slot:[`item.text.autor`]="{ item }">
         <a
-          v-for="author in item.text.autor"
+          v-for="author, i in item.text.autor"
           @click="addAuthorToInput(author)"
           :key="author.id"
         >
-          {{ author.name_en || author.name }}
+          {{ author.name_en || author.name }}&nbsp;<v-icon small>mdi-plus</v-icon><span v-if="i + 1 != item.text.autor.length">, </span>
         </a>
       </template>
       <template v-slot:[`item.text.title`]="{ item }">
@@ -35,11 +35,10 @@
           }"
           class="text-decoration-none"
         >
-          <b>{{ item.text.title }}</b>
+          <b>{{ item.text.title }}</b><v-icon>mdi-chevron-right</v-icon>
         </router-link>
       </template>
       <template v-slot:[`item.keywords`]="{ item }">
-        <!-- displays unkown if neither start nor end date are defined -->
         <div
           class="keyword-chip"
           v-for="(keyword, i) in item.key_word.map((x) => x.stichwort)"
@@ -56,7 +55,7 @@
       </template>
       <template v-slot:[`item.written`]="{ item }">
         <!-- displays unkown if neither start nor end date are defined -->
-        {{ (item.start_date || item.end_date) ? `${item.start_date || 'unknown'} - ${item.end_date || 'unknown'}` : 'unknown' }}
+        {{ (item.text.start_date || item.text.end_date) ? `${item.text.start_date || 'unknown'} - ${item.text.end_date || 'unknown'}` : 'unknown' }}
       </template>
       <template v-slot:[`footer.prepend`]>
         <v-btn
@@ -82,11 +81,11 @@ export default {
   name: 'List',
   data: () => ({
     headers: [
-      { text: 'Author', value: 'text.autor' },
+      { text: 'Author', value: 'text.autor', width: '150px' },
       { text: 'Title', value: 'text.title' },
       { text: 'Label', value: 'display_label' },
       { text: 'Keywords', value: 'keywords' },
-      { text: 'Written', value: 'written' },
+      { text: 'Time Frame', value: 'written', width: '100px' },
     ],
     items: [],
     loading: false,
