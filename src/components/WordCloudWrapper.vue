@@ -83,36 +83,18 @@
             flat
             accordion
           >
-            <v-expansion-panel>
+            <v-expansion-panel v-for="title, i in ['Keyword occurences', 'All occurences']" :key="title">
               <v-expansion-panel-header>
-                Keyword occurences
+                {{ title }}
               </v-expansion-panel-header>
               <v-expansion-panel-content>
-                <v-card-text>
-                  <v-list>
-                    <v-list-item v-for="entry in words[1]" :key="entry[0]">
-                      <v-list-item-content>
-                        <v-list-item-title>{{ entry[0] }}:&nbsp;{{ entry[1] }}</v-list-item-title>
-                      </v-list-item-content>
-                    </v-list-item>
-                  </v-list>
-                </v-card-text>
-              </v-expansion-panel-content>
-            </v-expansion-panel>
-            <v-expansion-panel>
-              <v-expansion-panel-header>
-                All occurences
-              </v-expansion-panel-header>
-              <v-expansion-panel-content>
-                <v-card-text>
-                  <v-list>
-                    <v-list-item v-for="entry in words[0]" :key="entry[0]">
-                      <v-list-item-content>
-                        <v-list-item-title>{{ entry[0] }}:&nbsp;{{ entry[1] }}</v-list-item-title>
-                      </v-list-item-content>
-                    </v-list-item>
-                  </v-list>
-                </v-card-text>
+                <v-list dense>
+                  <v-list-item v-for="entry in words[1-i]" :key="entry[0]">
+                    <v-list-item-content>
+                      <v-list-item-title>{{ entry[0] }}:&nbsp;{{ entry[1] }}</v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
+                </v-list>
               </v-expansion-panel-content>
             </v-expansion-panel>
           </v-expansion-panels>
