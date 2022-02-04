@@ -196,6 +196,7 @@
         />
       </h1>
     </v-overlay>
+    <router-view />
   </div>
 </template>
 
@@ -301,12 +302,11 @@ export default {
             click: () => {
               console.log('click', feature);
               // features.properties.id doesn't exist yet
-              // this.$router.push({
-              //   name: 'Place Detail',
-              //   params: {
-              //     id: feature.properties.id,
-              //   },
-              // });
+              this.$router.push({
+                name: this.fullscreen ? 'Place Detail Fullscreen' : 'Place Detail',
+                query: this.$route.query,
+                params: { id: feature.id },
+              });
             },
           });
       };

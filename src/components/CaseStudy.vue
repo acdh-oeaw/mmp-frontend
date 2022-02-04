@@ -170,25 +170,29 @@ export default {
       `https://mmp.acdh-dev.oeaw.ac.at/archiv/usecase-timetable-data/${id}`,
     ];
 
-    Promise.all(urls.map((x) => fetch(x)))
-      .then((res) => {
-        Promise.all(res.map((x) => x.json()))
-          .then((jsonRes) => {
-            console.log('Study', jsonRes);
-            if (jsonRes[0].story_map) jsonRes[0].story_map = jsonRes[0].story_map.replaceAll('/explore/', '/view/');
-            this.study = jsonRes[0];
-            this.events = jsonRes[1];
-          })
-          .catch((err) => {
-            console.error(err);
-          })
-          .finally(() => {
-            this.loading = false;
-          });
-      })
-      .catch((err) => {
-        console.error(err);
-      });
+    const prefetched = this.$store.state.fetchedResults[urls.toString()];
+    if (prefetched) {
+      [this.study, this.events] = prefetched;
+    } else {
+      Promise.all(urls.map((x) => fetch(x)))
+        .then((res) => {
+          Promise.all(res.map((x) => x.json()))
+            .then((jsonRes) => {
+              console.log('Study', jsonRes);
+              if (jsonRes[0].story_map) jsonRes[0].story_map = jsonRes[0].story_map.replaceAll('/explore/', '/view/');
+              [this.study, this.events] = jsonRes;
+            })
+            .catch((err) => {
+              console.error(err);
+            })
+            .finally(() => {
+              this.loading = false;
+            });
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    }
   },
 };
 </script>

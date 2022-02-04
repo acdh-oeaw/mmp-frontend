@@ -16,5 +16,13 @@ export default {
     fullscreen() {
       return this.$route.name.includes('Fullscreen');
     },
+    drawerWidth() {
+      const widths = {
+        xs: '100vw',
+        sm: '100vw',
+        md: '50vw',
+      };
+      return widths[this.$vuetify.breakpoint.name] || '33vw';
+    },
   },
 };

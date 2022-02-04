@@ -6,14 +6,13 @@
     color="#F1F5FA"
     :width="drawerWidth"
   >
-
     <v-list-item class="keyword-header">
       <v-list-item-action>
         <router-link :to="{ name: fullscreen ? 'List Fullscreen' : 'List', query: $route.query }" class="text-decoration-none">
           <v-icon>mdi-close</v-icon>
         </router-link>
       </v-list-item-action>
-      <v-list-item-content v-if="true">
+      <v-list-item-content>
         <div v-if="!loading">
           <v-list-item-title class="text-h5">
             {{ title.title }}
@@ -65,7 +64,7 @@
                 small
                 @click="$store.commit('addToItemsAndInput', { id: val.url.replace(/\D/g, ''), selected_text: val.name, group: item.key })"
               >
-                {{ val.name_en || val.name }}
+                {{ val.name_en || val.name || val.name_lat}}
               </v-chip>
             </div>
           </td>
@@ -154,19 +153,6 @@ export default {
           value: res.kommentar,
         },
       ];
-    },
-  },
-  computed: {
-    drawerWidth() {
-      switch (this.$vuetify.breakpoint.name) {
-        case 'xs':
-        case 'sm':
-          return '100vw';
-        case 'md':
-          return '50vw';
-        default:
-          return '33vw';
-      }
     },
   },
   watch: {

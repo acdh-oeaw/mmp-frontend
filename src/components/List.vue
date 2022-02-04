@@ -24,7 +24,7 @@
           @click="addAuthorToInput(author)"
           :key="author.id"
         >
-          {{ author.name_en || author.name }}&nbsp;<v-icon small>mdi-plus</v-icon><span v-if="i + 1 != item.text.autor.length">, </span>
+          {{ author.name_en || author.name || author.name_lat }}&nbsp;<v-icon small>mdi-plus</v-icon><span v-if="i + 1 != item.text.autor.length">, </span>
         </a>
       </template>
       <template v-slot:[`item.text.title`]="{ item }">

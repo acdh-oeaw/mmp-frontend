@@ -106,6 +106,23 @@ const routes = [
         path: 'map',
         name: 'Map Fullscreen',
         component: Map,
+        children: [
+          // {
+          //   path: 'spatial/:id',
+          //   name: 'Spatial Detail',
+          //   component: SpatialDetail Fullscreen,
+          // },
+          // {
+          //   path: 'cone/:id',
+          //   name: 'Cone Detail Fullscreen',
+          //   component: ConeDetail,
+          // },
+          {
+            path: 'place/:id',
+            name: 'Place Detail Fullscreen',
+            component: PlaceDetail,
+          },
+        ],
       },
       {
         path: 'graph',

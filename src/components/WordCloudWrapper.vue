@@ -78,48 +78,45 @@
             color="blue lighten-2"
           />
         </v-card-text>
+        <v-container>
           <v-expansion-panels
             flat
+            accordion
           >
-          <v-expansion-panel>
-            <v-expansion-panel-header>
-              <template v-slot:actions>
-                <v-icon class="icon">mdi-chevron-down</v-icon>
-              </template>
-              <span class="header">
-                Keyword Occurences
-              </span>
-            </v-expansion-panel-header>
-            <v-expansion-panel-content>
-              <v-card-text>
-                <ul>
-                  <li v-for="entry in words[1]" :key="entry[0]">
-                    {{ entry[0] }}:&nbsp;{{ entry[1] }}
-                  </li>
-                </ul>
-              </v-card-text>
-            </v-expansion-panel-content>
-          </v-expansion-panel>
-          <v-expansion-panel>
-            <v-expansion-panel-header>
-              <template v-slot:actions>
-                <v-icon class="icon">mdi-chevron-down</v-icon>
-              </template>
-              <span class="header">
-                All Occurences
-              </span>
-            </v-expansion-panel-header>
-            <v-expansion-panel-content>
-              <v-card-text>
-                <ul>
-                  <li v-for="entry in words[0]" :key="entry[0]">
-                    {{ entry[0] }}:&nbsp;{{ entry[1] }}
-                  </li>
-                </ul>
-              </v-card-text>
-            </v-expansion-panel-content>
-          </v-expansion-panel>
-        </v-expansion-panels>
+            <v-expansion-panel>
+              <v-expansion-panel-header>
+                Keyword occurences
+              </v-expansion-panel-header>
+              <v-expansion-panel-content>
+                <v-card-text>
+                  <v-list>
+                    <v-list-item v-for="entry in words[1]" :key="entry[0]">
+                      <v-list-item-content>
+                        <v-list-item-title>{{ entry[0] }}:&nbsp;{{ entry[1] }}</v-list-item-title>
+                      </v-list-item-content>
+                    </v-list-item>
+                  </v-list>
+                </v-card-text>
+              </v-expansion-panel-content>
+            </v-expansion-panel>
+            <v-expansion-panel>
+              <v-expansion-panel-header>
+                All occurences
+              </v-expansion-panel-header>
+              <v-expansion-panel-content>
+                <v-card-text>
+                  <v-list>
+                    <v-list-item v-for="entry in words[0]" :key="entry[0]">
+                      <v-list-item-content>
+                        <v-list-item-title>{{ entry[0] }}:&nbsp;{{ entry[1] }}</v-list-item-title>
+                      </v-list-item-content>
+                    </v-list-item>
+                  </v-list>
+                </v-card-text>
+              </v-expansion-panel-content>
+            </v-expansion-panel>
+          </v-expansion-panels>
+        </v-container>
         <v-card-actions>
           <v-btn
             text

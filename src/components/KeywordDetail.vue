@@ -227,14 +227,6 @@ export default {
       // return retArr.sort((a) => (this.$route.query?.Keyword.split('+').includes(a.id) ? -1 : 1));
       return retArr;
     },
-    drawerWidth() {
-      const widths = {
-        xs: '100vw',
-        sm: '100vw',
-        md: '50vw',
-      };
-      return widths[this.$vuetify.breakpoint.name] || '33vw';
-    },
   },
   watch: {
     '$route.params': {
@@ -250,47 +242,55 @@ export default {
 
         // Keywords
         let urls = ids.map((x) => `https://mmp.acdh-dev.oeaw.ac.at/api/keyword/${x}/?format=json`);
-
-        Promise.all(urls.map((x) => fetch(x)))
-          .then((res) => {
-            Promise.all(res.map((x) => x.json()))
-              .then((jsonRes) => {
-                console.log('promise all keyword1', jsonRes);
-                this.$store.commit('addToResults', { req: urls.toString(), res: jsonRes });
-                this.data.keywords = jsonRes;
-              })
-              .catch((err) => {
-                console.error(err);
-              })
-              .finally(() => {
-                this.loading.keywords = false;
-              });
-          })
-          .catch((err) => {
-            console.error(err);
-          });
+        let prefetched = this.$store.state.fetchedResults[urls.toString()];
+        if (prefetched) {
+          this.data.keywords = prefetched;
+        } else {
+          Promise.all(urls.map((x) => fetch(x)))
+            .then((res) => {
+              Promise.all(res.map((x) => x.json()))
+                .then((jsonRes) => {
+                  console.log('promise all keyword1', jsonRes);
+                  this.$store.commit('addToResults', { req: urls.toString(), res: jsonRes });
+                  this.data.keywords = jsonRes;
+                })
+                .catch((err) => {
+                  console.error(err);
+                })
+                .finally(() => {
+                  this.loading.keywords = false;
+                });
+            })
+            .catch((err) => {
+              console.error(err);
+            });
+        }
 
         // Overtime
         urls = ids.map((x) => `https://mmp.acdh-dev.oeaw.ac.at/archiv/keyword/century/${x}`);
-
-        Promise.all(urls.map((x) => fetch(x)))
-          .then((res) => {
-            Promise.all(res.map((x) => x.json()))
-              .then((jsonRes) => {
-                console.log('promise all overtimes', jsonRes);
-                this.$store.commit('addToResults', { req: urls.toString(), res: jsonRes });
-                this.data.overtime = jsonRes;
-              })
-              .catch((err) => {
-                console.error(err);
-              })
-              .finally(() => {
-                this.loading.overtime = false;
-              });
-          })
-          .catch((err) => {
-            console.error(err);
-          });
+        prefetched = this.$store.state.fetchedResults[urls.toString()];
+        if (prefetched) {
+          this.data.overtime = prefetched;
+        } else {
+          Promise.all(urls.map((x) => fetch(x)))
+            .then((res) => {
+              Promise.all(res.map((x) => x.json()))
+                .then((jsonRes) => {
+                  console.log('promise all overtimes', jsonRes);
+                  this.$store.commit('addToResults', { req: urls.toString(), res: jsonRes });
+                  this.data.overtime = jsonRes;
+                })
+                .catch((err) => {
+                  console.error(err);
+                })
+                .finally(() => {
+                  this.loading.overtime = false;
+                });
+            })
+            .catch((err) => {
+              console.error(err);
+            });
+        }
 
         // Else
         urls = [
@@ -304,32 +304,31 @@ export default {
           urls[2] += `&key_word=${x}`;
         });
 
-        Promise.all(urls.map((x) => fetch(x)))
-          .then((res) => {
-            Promise.all(res.map((x) => x.json()))
-              .then((jsonRes) => {
-                console.log('promise all keyword-', jsonRes);
-                this.$store.commit('addToResults', { req: urls.toString(), res: jsonRes });
-                this.data = {
-                  overtime: this.data.overtime,
-                  keywords: this.data.keywords,
-                  nodes: jsonRes[0],
-                  passages: jsonRes[1],
-                  geography: jsonRes[3],
-                };
-                console.log('keyword data', this.data);
-                // console.log('connections', this.connections);
-              })
-              .catch((err) => {
-                console.error(err);
-              })
-              .finally(() => {
-                this.loading.else = false;
-              });
-          })
-          .catch((err) => {
-            console.error(err);
-          });
+        prefetched = this.$store.state.fetchedResults[urls.toString()];
+        if (prefetched) {
+          [this.data.nodes, this.data.passages,, this.data.geography] = prefetched;
+        } else {
+          Promise.all(urls.map((x) => fetch(x)))
+            .then((res) => {
+              Promise.all(res.map((x) => x.json()))
+                .then((jsonRes) => {
+                  console.log('promise all keyword-', jsonRes);
+                  this.$store.commit('addToResults', { req: urls.toString(), res: jsonRes });
+                  [this.data.nodes, this.data.passages,, this.data.geography] = jsonRes;
+                  console.log('keyword data', this.data);
+                  // console.log('connections', this.connections);
+                })
+                .catch((err) => {
+                  console.error(err);
+                })
+                .finally(() => {
+                  this.loading.else = false;
+                });
+            })
+            .catch((err) => {
+              console.error(err);
+            });
+        }
       },
       deep: true,
       immediate: true,
