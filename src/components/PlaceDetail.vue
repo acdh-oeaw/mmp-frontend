@@ -15,7 +15,7 @@
       <v-list-item-content>
         <template v-if="!loading">
           <v-list-item-title class="text-h5">
-            {{ data.ort.name_en || data.ort.name || data.ort.name_lat }}
+            {{ getOptimalName(data.ort) }}
           </v-list-item-title>
           <v-list-item-subtitle v-if="data.ort.name_antik">
             {{ data.ort.name_antik }}
@@ -59,7 +59,7 @@
               two-line
             >
               <v-list-item-title>{{ text.title }}</v-list-item-title>
-              <v-list-item-subtitle>{{ text.autor.map((x) => x.name_en || x.name || x.name_lat).join(', ') }}</v-list-item-subtitle>
+              <v-list-item-subtitle>{{ text.autor.map((x) => getOptimalName(x)).join(', ') }}</v-list-item-subtitle>
               <v-list-item-subtitle>{{ text.jahrhundert }}</v-list-item-subtitle>
             </v-list-item>
           </v-expansion-panel-content>
@@ -81,7 +81,7 @@
               v-for="author in data.authors.results"
               :key="author.url"
             >
-              <v-list-item-title>{{ author.name_en || author.name || author.name_lat }}</v-list-item-title>
+              <v-list-item-title>{{ getOptimalName(author) }}</v-list-item-title>
               <v-list-item-subtitle>{{ author.jahrhundert }}</v-list-item-subtitle>
             </v-list-item>
           </v-expansion-panel-content>

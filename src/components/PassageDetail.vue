@@ -64,7 +64,7 @@
                 small
                 @click="$store.commit('addToItemsAndInput', { id: val.url.replace(/\D/g, ''), selected_text: val.name, group: item.key })"
               >
-                {{ val.name_en || val.name || val.name_lat}}
+                {{ getOptimalName(val)}}
               </v-chip>
             </div>
           </td>
