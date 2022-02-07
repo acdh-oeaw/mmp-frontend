@@ -1,7 +1,7 @@
 <template>
   <div>
     <l-map
-      :zoom="3"
+      :zoom="zoom"
       :style="`height: ${fullscreen && $route.name !== 'Keyword Detail Fullscreen' ? '100vh' : height + 'px'}; width: 100%; z-index: 4`"
       :bounds="bounds"
     >
@@ -172,6 +172,11 @@
           v-for="place in relatedPlaces"
           :key="place.url"
           :lat-lng="returnLatLng(place.coords.coordinates)"
+          @click="$router.push({
+            name: fullscreen ? 'Place Detail Fullscreen' : 'Place Detail',
+            query: $route.query,
+            params: { id: getIdFromUrl(place.url) },
+          })"
         >
           <l-tooltip>
             <div>Name: {{ place.name }}</div>
@@ -321,21 +326,25 @@ export default {
     },
   },
   methods: {
-    getBounds(arr) {
-      if (!arr.length) {
+    getBounds(coordArr) {
+      if (!coordArr.length) {
         return latLngBounds([
           [34.016242, 5.488281],
           [71.663663, 34.667969],
         ]);
       }
-      console.log('coords', arr.map((x) => x.geometry.coordinates), L);
-      const coords = arr
-        .filter((x) => x.geometry?.coordinates.length)
-        .map((x) => x.geometry?.coordinates)
-        .flat(2);
 
-      const xCords = coords.map((x) => x[1]);
-      const yCords = coords.map((y) => y[0]);
+      if (coordArr.length === 1) {
+        return latLngBounds([
+          [coordArr[0][1] - 2, coordArr[0][0] - 2],
+          [coordArr[0][1] + 2, coordArr[0][0] + 2],
+        ]);
+      }
+
+      console.log('coords', coordArr, L);
+
+      const xCords = coordArr.map((x) => x[1]);
+      const yCords = coordArr.map((y) => y[0]);
 
       return latLngBounds([
         [Math.min(...xCords), Math.min(...yCords)],
@@ -352,34 +361,43 @@ export default {
   watch: {
     data(to) {
       console.log('to', to, this.data);
-      if (to[0]) {
-        const filteredCoords = to[0];
-        filteredCoords.features = filteredCoords.features.filter((x) => x.geometry);
-        this.bounds = this.getBounds(filteredCoords.features || []);
-
-        const places = {
-          passages: {
-            spatial: [],
-            cones: [],
-          },
-          texts: {
-            spatial: [],
-            cones: [],
-          },
-        };
-
-        places.passages.spatial = to[0].features.map((x) => x.properties.stelle.map((y) => y.ort));
-        places.passages.cones = to[1].features.map((x) => x.properties.stelle.map((y) => y.ort));
-        places.texts.spatial = to[0].features.map((x) => x.properties.stelle.map((y) => y.text.ort));
-        places.texts.cones = to[1].features.map((x) => x.properties.stelle.map((y) => y.text.ort));
-
-        const allPlaces = places.passages.spatial.concat(places.passages.cones, places.texts.spatial, places.texts.cones)
-          .flat(2)
-          .filter((x) => x?.coords?.coordinates);
-
-        console.log('allCoords', allPlaces);
-        this.relatedPlaces = this.removeDuplicates(allPlaces, ['url']);
+      let allCoords = to[0].features
+        .concat(to[1].features)
+        .map((x) => x.geometry?.coordinates)
+        .flat(2);
+      if (!Array.isArray(to[2].results)) {
+        allCoords = allCoords.concat(to[2].results?.features
+          .map((x) => x.geometry?.coordinates));
       }
+
+      allCoords = allCoords.filter((x) => x);
+
+      console.log('allCoords', allCoords);
+
+      this.bounds = this.getBounds(allCoords);
+
+      const places = {
+        passages: {
+          spatial: [],
+          cones: [],
+        },
+        texts: {
+          spatial: [],
+          cones: [],
+        },
+      };
+
+      places.passages.spatial = to[0].features.map((x) => x.properties.stelle.map((y) => y.ort));
+      places.passages.cones = to[1].features.map((x) => x.properties.stelle.map((y) => y.ort));
+      places.texts.spatial = to[0].features.map((x) => x.properties.stelle.map((y) => y.text.ort));
+      places.texts.cones = to[1].features.map((x) => x.properties.stelle.map((y) => y.text.ort));
+
+      const allPlaces = places.passages.spatial.concat(places.passages.cones, places.texts.spatial, places.texts.cones)
+        .flat(2)
+        .filter((x) => x?.coords?.coordinates);
+
+      console.log('allCoords', allPlaces);
+      this.relatedPlaces = this.removeDuplicates(allPlaces, ['url']);
     },
   },
   created() {

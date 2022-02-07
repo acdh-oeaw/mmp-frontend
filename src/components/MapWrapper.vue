@@ -44,6 +44,8 @@ export default {
           'https://mmp.acdh-dev.oeaw.ac.at/api/spatialcoverage/?format=json',
           'https://mmp.acdh-dev.oeaw.ac.at/api/cones/?format=json',
         ];
+        const blankUrls = urls;
+
         if (this.usecase) {
           urls = urls.map((url) => `${url}&stelle__use_case=${this.usecase}`);
         } else {
@@ -54,8 +56,9 @@ export default {
             'Use Case': 'stelle__use_case',
             // Place: 'unused',
           };
+
           Object.keys(query).forEach((cat) => {
-            if (query[cat] && cat !== 'time') {
+            if (query[cat] && !['Place', 'time'].includes(cat)) {
               const arr = query[cat].split('+');
               arr.forEach((val) => {
                 urls = urls.map((url) => `${url}&${terms[cat]}=${val}`);
@@ -76,8 +79,12 @@ export default {
           }
           if (query.Place) {
             console.log('place detected');
+            if (JSON.stringify(urls) === JSON.stringify(blankUrls)) {
+              // prevents fetching every coverage if no other filters are applied
+              urls = urls.map((x) => `${x}&id=0`);
+            }
             urls.push(`https://mmp.acdh-dev.oeaw.ac.at/api/ort-geojson/?format=json&ids=${query.Place.split('+').join(',')}`);
-          }
+          } else urls.push('https://mmp.acdh-dev.oeaw.ac.at/api/ort/?format=json&id=0');
         }
 
         console.log('urls', urls);
