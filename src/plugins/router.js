@@ -15,6 +15,7 @@ import FullscreenView from '@/components/FullscreenView';
 import KeywordDetail from '@/components/KeywordDetail';
 import PassageDetail from '@/components/PassageDetail';
 import PlaceDetail from '@/components/PlaceDetail';
+import SpatialDetail from '@/components/SpatialDetail';
 
 Vue.use(VueRouter);
 
@@ -44,16 +45,11 @@ const routes = [
         name: 'Map',
         component: Map,
         children: [
-          // {
-          //   path: 'spatial/:id',
-          //   name: 'Spatial Detail',
-          //   component: SpatialDetail,
-          // },
-          // {
-          //   path: 'cone/:id',
-          //   name: 'Cone Detail',
-          //   component: ConeDetail,
-          // },
+          {
+            path: 'spatial/:id',
+            name: 'Spatial Detail',
+            component: SpatialDetail,
+          },
           {
             path: 'place/:id',
             name: 'Place Detail',
@@ -107,16 +103,11 @@ const routes = [
         name: 'Map Fullscreen',
         component: Map,
         children: [
-          // {
-          //   path: 'spatial/:id',
-          //   name: 'Spatial Detail',
-          //   component: SpatialDetail Fullscreen,
-          // },
-          // {
-          //   path: 'cone/:id',
-          //   name: 'Cone Detail Fullscreen',
-          //   component: ConeDetail,
-          // },
+          {
+            path: 'spatial/:id',
+            name: 'Spatial Detail Fullscreen',
+            component: SpatialDetail,
+          },
           {
             path: 'place/:id',
             name: 'Place Detail Fullscreen',

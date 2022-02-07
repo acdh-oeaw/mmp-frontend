@@ -1,7 +1,6 @@
 <template>
   <div>
     <l-map
-      :zoom="zoom"
       :style="`height: ${fullscreen && $route.name !== 'Keyword Detail Fullscreen' ? '100vh' : height + 'px'}; width: 100%; z-index: 4`"
       :bounds="bounds"
     >
@@ -288,7 +287,13 @@ export default {
           )
           .on({
             click: (e) => {
-              console.log('click', e, feature);
+              console.log('click', feature, e);
+              // this is ready to go, just waiting on feature.id or url
+              // this.$router.push({
+              //   name: this.fullscreen ? 'Spatial Detail Fullscreen' : 'Spatial Detail',
+              //   query: this.$route.query,
+              //   params: { id: feature.id },
+              // });
             },
           });
       };

@@ -1,7 +1,7 @@
 export default {
   methods: {
     debug: (message, name) => {
-      console.log('debug', name, message);
+      console.debug('debug', name, message);
     },
     getOptimalName: (obj) => obj.name_en || obj.name_lat || obj.name || obj.name_fr || obj.name_it || obj.name_gr,
     getIdFromUrl: (url) => url.replace(/\D/g, ''),
