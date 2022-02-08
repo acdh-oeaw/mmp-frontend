@@ -238,9 +238,9 @@ export default {
     relatedPlaces: [],
     showLayers: {
       spatial: true,
-      cones: false,
+      cones: true,
       places: true,
-      relatedPlaces: false,
+      relatedPlaces: true,
     },
   }),
   props: {
@@ -288,12 +288,11 @@ export default {
           .on({
             click: (e) => {
               console.log('click', feature, e);
-              // this is ready to go, just waiting on feature.id or url
-              // this.$router.push({
-              //   name: this.fullscreen ? 'Spatial Detail Fullscreen' : 'Spatial Detail',
-              //   query: this.$route.query,
-              //   params: { id: feature.id },
-              // });
+              this.$router.push({
+                name: this.fullscreen ? 'Spatial Detail Fullscreen' : 'Spatial Detail',
+                query: this.$route.query,
+                params: { id: feature.id },
+              });
             },
           });
       };
