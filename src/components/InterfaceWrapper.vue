@@ -42,8 +42,22 @@
                 :loading="loading"
               >
                 <template v-slot:item="data">
-                  <v-list-item-content>
-                    <v-list-item-title>{{ $store.state.completeKeywords.includes(parseInt(data.item.id)) && data.item.text.includes('[wurzel') ? data.item.selected_text + ' (complete)' : data.item.selected_text }}</v-list-item-title>
+                  <v-list-item-content v-if="data.item.group === 'Keyword' && data.item.selected_text.includes(',')">
+                    <v-list-item-title>
+                      {{ data.item.selected_text.split(',')[0] }}
+                      <span v-if="$store.state.completeKeywords.includes(parseInt(data.item.id))">(complete)</span>
+                    </v-list-item-title>
+                    <v-list-item-subtitle>Keyword ({{ data.item.selected_text.split(',')[1].replace(/\W/g, '') }})</v-list-item-subtitle>
+                  </v-list-item-content>
+                  <v-list-item-content v-else-if="data.item.group === 'Keyword'">
+                    <v-list-item-title>
+                      {{ data.item.selected_text }}
+                      <span v-if="$store.state.completeKeywords.includes(parseInt(data.item.id))">(complete)</span>
+                    </v-list-item-title>
+                    <v-list-item-subtitle>Keyword</v-list-item-subtitle>
+                  </v-list-item-content>
+                  <v-list-item-content v-else>
+                    <v-list-item-title>{{ data.item.selected_text }}</v-list-item-title>
                     <v-list-item-subtitle>{{ data.item.group }}</v-list-item-subtitle>
                   </v-list-item-content>
                 </template>
@@ -242,7 +256,7 @@ export default {
       barbari: {
         id: 33,
         text: 'barbari',
-        selected_text: 'barbari, [wurzel: barbar]',
+        selected_text: 'barbari',
         group: 'Keyword',
       },
       spain: {
