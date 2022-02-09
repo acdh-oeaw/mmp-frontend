@@ -382,6 +382,7 @@ export default {
 
       urls = urls.map((x) => (x + val));
 
+      // this has to be reworoked
       const labels = ['Author', 'Passage', 'Keyword', 'Use Case', 'Place'];
       const prefetched = this.$store.state.fetchedResults[urls.toString()];
 
@@ -398,7 +399,7 @@ export default {
                 console.log('promise all autocomplete', jsonRes);
                 this.$store.commit('addToResults', { req: urls.toString(), res: jsonRes });
                 jsonRes.forEach((x, i) => {
-                  this.$store.commit('addItems', { items: x.results, label: labels[i] });
+                  this.$store.commit('addItems', { items: x.results, label: labels[i] }); // TODO: this shouldnt work
                 });
               })
               .catch((err) => {

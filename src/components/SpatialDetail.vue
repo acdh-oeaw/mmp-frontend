@@ -6,7 +6,7 @@
     color="#F1F5FA"
     :width="drawerWidth"
   >
-    <v-list-item class="keyword-header">
+    <v-list-item>
         <v-list-item-action>
           <router-link :to="{ name: fullscreen ? 'Map Fullscreen' : 'Map', query: $route.query }" class="text-decoration-none">
             <v-icon>mdi-close</v-icon>
@@ -41,7 +41,7 @@
                     {{ passage.display_label }}
                 </v-list-item-title>
                 <v-list-item-subtitle v-if="passage.text.autor.length">
-                  {{ passage.text.autor.map((x) => getOptimalName(x)).join(', ') }}
+                  {{ passage.text.title }}, {{ passage.text.autor.map((x) => getOptimalName(x)).join(', ') }}
                   <v-icon v-if="!passage.text.jahrhundert">mdi-chevron-right</v-icon>
                 </v-list-item-subtitle>
                 <v-list-item-subtitle v-if="passage.text.jahrhundert">

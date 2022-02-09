@@ -6,7 +6,7 @@
     color="#F1F5FA"
     :width="drawerWidth"
   >
-    <v-list-item class="keyword-header">
+    <v-list-item>
       <v-list-item-action>
         <router-link :to="{ name: fullscreen ? 'List Fullscreen' : 'List', query: $route.query }" class="text-decoration-none">
           <v-icon>mdi-close</v-icon>

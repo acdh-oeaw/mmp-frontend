@@ -10,23 +10,25 @@
         v-if="loading"
       />
       <v-list-item v-else-if="data.length" v-for="text in data" :key="text.url" class="list-item">
-        <v-list-item-title>
-          {{ text.title }}
-        </v-list-item-title>
-        <v-list-item-subtitle>
-          {{ text.autor.map((x) => x.name_en).join(', ') }}
-        </v-list-item-subtitle>
-        <v-list-item-subtitle>
-          <v-chip
-            v-for="keyword in text.keywords"
-            :key="keyword.url"
-            class="keyword-chip"
-            small
-            color="blue lighten-4"
-          >
-            {{ keyword.stichwort }}
-          </v-chip>
-        </v-list-item-subtitle>
+        <v-list-item-content>
+          <v-list-item-title>
+            {{ text.title }}
+          </v-list-item-title>
+          <v-list-item-subtitle>
+            {{ text.autor.map((x) => x.name_en).join(', ') }}
+          </v-list-item-subtitle>
+          <v-list-item-subtitle>
+            <v-chip
+              v-for="keyword in text.keywords"
+              :key="keyword.url"
+              class="keyword-chip"
+              small
+              color="blue lighten-4"
+            >
+              {{ keyword.stichwort }}
+            </v-chip>
+          </v-list-item-subtitle>
+        </v-list-item-content>
       </v-list-item>
       <v-list-item v-else>No passages found!</v-list-item>
     </v-list>
@@ -82,9 +84,6 @@ export default {
   }
   .v-expansion-panel-content__wrap {
     padding-left: 0px;
-  }
-  .v-list-item:not(.keyword-header) {
-    display: block;
   }
   .list-item {
     margin-bottom: 10px;

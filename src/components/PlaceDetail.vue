@@ -6,7 +6,7 @@
     color="#F1F5FA"
     :width="drawerWidth"
   >
-    <v-list-item class="keyword-header">
+    <v-list-item>
       <v-list-item-action>
         <router-link :to="{ name: fullscreen ? 'Map Fullscreen' : 'Map', query: $route.query }" class="text-decoration-none">
           <v-icon>mdi-close</v-icon>
@@ -58,9 +58,11 @@
               :key="text.url"
               two-line
             >
+            <v-list-item-content>
               <v-list-item-title>{{ text.title }}</v-list-item-title>
               <v-list-item-subtitle>{{ text.autor.map((x) => getOptimalName(x)).join(', ') }}</v-list-item-subtitle>
               <v-list-item-subtitle>{{ text.jahrhundert }}</v-list-item-subtitle>
+            </v-list-item-content>
             </v-list-item>
           </v-expansion-panel-content>
         </v-expansion-panel>
@@ -81,8 +83,10 @@
               v-for="author in data.authors.results"
               :key="author.url"
             >
+            <v-list-item-content>
               <v-list-item-title>{{ getOptimalName(author) }}</v-list-item-title>
               <v-list-item-subtitle>{{ author.jahrhundert }}</v-list-item-subtitle>
+            </v-list-item-content>
             </v-list-item>
           </v-expansion-panel-content>
         </v-expansion-panel>

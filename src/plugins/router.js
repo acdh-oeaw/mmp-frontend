@@ -16,6 +16,7 @@ import KeywordDetail from '@/components/KeywordDetail';
 import PassageDetail from '@/components/PassageDetail';
 import PlaceDetail from '@/components/PlaceDetail';
 import SpatialDetail from '@/components/SpatialDetail';
+import AuthorDetail from '@/components/AuthorDetail';
 
 Vue.use(VueRouter);
 
@@ -75,9 +76,14 @@ const routes = [
         component: List,
         children: [
           {
-            path: 'detail/:id',
+            path: 'passage/:id',
             name: 'Passage Detail',
             component: PassageDetail,
+          },
+          {
+            path: 'author/:id',
+            name: 'Author Detail',
+            component: AuthorDetail,
           },
         ],
       },
@@ -133,9 +139,14 @@ const routes = [
         component: List,
         children: [
           {
-            path: 'detail/:id',
+            path: 'passage/:id',
             name: 'Passage Detail Fullscreen',
             component: PassageDetail,
+          },
+          {
+            path: 'author/:id',
+            name: 'Author Detail Fullscreen',
+            component: AuthorDetail,
           },
         ],
       },

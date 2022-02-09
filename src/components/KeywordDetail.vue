@@ -6,7 +6,7 @@
     color="#F1F5FA"
     :width="drawerWidth"
   >
-    <v-list-item class="keyword-header">
+    <v-list-item>
       <v-list-item-action>
         <router-link :to="{ name: fullscreen ? 'Network Graph Fullscreen' : 'Network Graph', query: $route.query }">
           <v-icon>mdi-close</v-icon>
@@ -102,6 +102,7 @@
                 </template>
                 <span class="header">
                   {{ data.keywords.map((x) => x.stichwort).join(', ') }} <v-icon small>mdi-arrow-left-right</v-icon> {{ conn.label }}
+                  ({{ conn.count }} connections)
                 </span>
               </v-expansion-panel-header>
               <v-expansion-panel-content>
@@ -202,9 +203,9 @@ export default {
 
       if (!this.data.keywords || !this.data.nodes) return retArr;
 
-      const keyIds = this.data.keywords.map((x) => this.getIdFromUrl(x.url));
-      let edges = this.data.nodes.edges.map((edge) => ({ source: this.getIdFromUrl(edge.source), target: this.getIdFromUrl(edge.target) }));
-      edges = this.removeDuplicates(edges, ['source', 'target']);
+      // const keyIds = this.data.keywords.map((x) => this.getIdFromUrl(x.url));
+      const edges = this.data.nodes.edges.map((edge) => ({ source: this.getIdFromUrl(edge.source), target: this.getIdFromUrl(edge.target) }));
+      // edges = this.removeDuplicates(edges, ['source', 'target']);
 
       const targets = edges.map((edge) => edge.target);
       const count = {};
@@ -212,14 +213,14 @@ export default {
       targets.forEach((target) => {
         count[target] = count[target] ? count[target] + 1 : 1;
       });
+      console.log('keyword connections', edges, targets, count);
 
       Object.entries(count).forEach((entry) => {
-        if (entry[1] === keyIds.length) {
-          retArr.push({
-            id: entry[0],
-            label: this.removeRoot(this.data.nodes.nodes.filter((node) => this.getIdFromUrl(node.id) === entry[0])[0].label),
-          });
-        }
+        retArr.push({
+          id: entry[0],
+          label: this.removeRoot(this.data.nodes.nodes.filter((node) => this.getIdFromUrl(node.id) === entry[0])[0].label),
+          count: entry[1],
+        });
       });
 
       console.log('connections', retArr);

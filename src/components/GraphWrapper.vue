@@ -92,20 +92,7 @@
         <span>Download node data as .json</span>
       </v-tooltip>
     </v-speed-dial>
-    <v-btn
-      absolute
-      bottom
-      right
-      depressed
-      icon
-      :to="{
-        name: fullscreen ? 'Network Graph' : 'Network Graph Fullscreen',
-        query: usecase ? {'Use Case': usecase} : $route.query
-      }"
-    >
-      <v-icon v-if="fullscreen">mdi-fullscreen-exit</v-icon>
-      <v-icon v-else>mdi-fullscreen</v-icon>
-    </v-btn>
+    <fullscreen-button :usecase="usecase" />
     <v-speed-dial
       v-model="fab.control"
       absolute
@@ -187,11 +174,13 @@
 <script>
 import helpers from '@/helpers';
 import Visualization from './Visualization2D';
+import FullscreenButton from './FullscreenButton';
 
 export default {
   name: 'NetworkGraph',
   components: {
     Visualization,
+    FullscreenButton,
   },
   data: () => ({
     fab: {

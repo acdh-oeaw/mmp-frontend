@@ -19,13 +19,18 @@
       class="data-table"
     >
       <template v-slot:[`item.text.autor`]="{ item }">
-        <a
+        <router-link
           v-for="author, i in item.text.autor"
-          @click="addAuthorToInput(author)"
-          :key="author.id"
+          :to="{
+            name: fullscreen ? 'Author Detail Fullscreen' : 'Author Detail',
+            params: { id: author.url.replace(/\D/g, '') },
+            query: $route.query,
+          }"
+          :key="author.url"
+          class="text-decoration-none"
         >
-          {{ getOptimalName(author) }}&nbsp;<v-icon small>mdi-plus</v-icon><span v-if="i + 1 != item.text.autor.length">, </span>
-        </a>
+          {{ getOptimalName(author) }}&nbsp;<v-icon>mdi-chevron-right</v-icon><span v-if="i + 1 != item.text.autor.length">, </span>
+        </router-link>
       </template>
       <template v-slot:[`item.text.title`]="{ item }">
         <router-link
@@ -58,16 +63,7 @@
         {{ (item.text.start_date || item.text.end_date) ? `${item.text.start_date || 'unknown'} - ${item.text.end_date || 'unknown'}` : 'unknown' }}
       </template>
       <template v-slot:[`footer.prepend`]>
-        <v-btn
-          icon
-          :to="{
-            name: fullscreen ? 'List' : 'List Fullscreen',
-            query: $route.query
-          }"
-        >
-          <v-icon v-if="fullscreen">mdi-fullscreen-exit</v-icon>
-          <v-icon v-else>mdi-fullscreen</v-icon>
-        </v-btn>
+        <fullscreen-button />
       </template>
     </v-data-table>
     <router-view />
@@ -76,8 +72,10 @@
 
 <script>
 import helpers from '@/helpers';
+import FullscreenButton from './FullscreenButton';
 
 export default {
+  components: { FullscreenButton },
   name: 'List',
   data: () => ({
     headers: [

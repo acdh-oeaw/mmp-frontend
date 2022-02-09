@@ -123,19 +123,7 @@
         mdi-menu
       </v-icon>
     </v-btn>
-    <v-btn
-      absolute
-      bottom
-      right
-      icon
-      :to="{
-        name: fullscreen ? 'Word Cloud' : 'Word Cloud Fullscreen',
-        query: usecase ? { 'Use Case': usecase } : $route.query
-      }"
-    >
-      <v-icon v-if="fullscreen">mdi-fullscreen-exit</v-icon>
-      <v-icon v-else>mdi-fullscreen</v-icon>
-    </v-btn>
+    <fullscreen-button :usecase="usecase" />
   </v-card>
 </template>
 <script>
@@ -143,10 +131,11 @@ import Gradient from 'javascript-color-gradient';
 import WordCloud from 'vuewordcloud';
 
 import helpers from '@/helpers';
+import FullscreenButton from './FullscreenButton';
 
 export default {
   name: 'WordCloudWrapper',
-  components: { WordCloud },
+  components: { WordCloud, FullscreenButton },
   props: ['usecase', 'height'],
   data: () => ({
     avgProgress: 0,
