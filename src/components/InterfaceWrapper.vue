@@ -246,6 +246,7 @@ import SearchOptions from './SearchOptions';
 export default {
   name: 'Interface',
   data: () => ({
+    autoQuery: true,
     defaultChips: {
       baudovinia: {
         id: 8,
@@ -349,11 +350,14 @@ export default {
 
       query.time = Array.isArray(this.range) ? this.range.map((x) => x * 10).join('+') : this.range * 10;
       if (query.time === '400+1200') query.time = undefined;
-
+      this.autoQuery = false;
       this.$router.push({
         name: this.currentView,
         query,
       });
+      setTimeout(() => {
+        this.autoQuery = true;
+      }, 400); // dont judge me
     },
     // This function changes the slider from range to point, and creates a new range value fittingly
     toggleSliderComponent(mode) {
@@ -369,6 +373,58 @@ export default {
       handler(val) {
         console.log('breakpoint', val);
       },
+    },
+    '$route.query': {
+      handler(val) {
+        if (this.autoQuery) { // you can disable this process
+          console.log('route', this.$route);
+          console.log('query', val);
+          this.$store.commit('clearItems');
+          this.$store.commit('clearInput');
+          // Add query from url to Autocomplete
+          const apiParams = {
+            Author: { url: 'autor', text: 'name' },
+            Passage: { url: 'stelle', text: 'zitat' },
+            Keyword: { url: 'keyword', text: 'stichwort' },
+            'Use Case': { url: 'usecase', text: 'title' },
+            Place: { url: 'ort', text: 'name' },
+          };
+
+          Object.keys(val).forEach((cat) => {
+            if (val[cat]) {
+              console.log('cat', cat, apiParams[cat]);
+              console.log(cat, 'found:', val[cat]);
+
+              let ids = val[cat].toString().split('+');
+              const idCount = ids.length;
+              this.skeletonChips += idCount;
+              ids = ids.join(',');
+
+              fetch(`https://mmp.acdh-dev.oeaw.ac.at/api/${apiParams[cat].url}/?ids=${ids}`)
+                .then((res) => res.json())
+                .then((res) => {
+                  console.log('Query', cat, res);
+                  res.results.forEach((x) => {
+                    this.$store.commit('addToItemsAndInput', {
+                      id: this.getIdFromUrl(x.url),
+                      text: x[apiParams[cat].text],
+                      selected_text: x[apiParams[cat].text],
+                      group: cat,
+                    });
+                  });
+                })
+                .catch((err) => {
+                  console.error(err);
+                })
+                .finally(() => {
+                  this.skeletonChips -= idCount;
+                });
+            }
+          });
+        }
+      },
+      deep: true,
+      immediate: true,
     },
     textInput(val) {
       if (!val || val.length < 1) return;
@@ -414,50 +470,6 @@ export default {
           });
       }
     },
-  },
-  mounted() {
-    console.log('route', this.$route);
-    console.log('query', this.query);
-    this.$store.commit('clearItems');
-    this.$store.commit('clearInput');
-    // Add query from url to Autocomplete
-    const apiParams = {
-      Author: { url: 'autor', text: 'name' },
-      Passage: { url: 'stelle', text: 'zitat' },
-      Keyword: { url: 'keyword', text: 'stichwort' },
-      'Use Case': { url: 'usecase', text: 'title' },
-      Place: { url: 'ort', text: 'name' },
-    };
-
-    Object.keys(this.query).forEach((cat) => {
-      console.log('cat', cat, apiParams[cat]);
-      console.log(cat, 'found:', this.query[cat]);
-
-      let ids = this.query[cat].toString().split('+');
-      const idCount = ids.length;
-      this.skeletonChips += idCount;
-      ids = ids.join(',');
-
-      fetch(`https://mmp.acdh-dev.oeaw.ac.at/api/${apiParams[cat].url}/?ids=${ids}`)
-        .then((res) => res.json())
-        .then((res) => {
-          console.log('Query', cat, res);
-          res.results.forEach((x) => {
-            this.$store.commit('addToItemsAndInput', {
-              id: this.getIdFromUrl(x.url),
-              text: x[apiParams[cat].text],
-              selected_text: x[apiParams[cat].text],
-              group: cat,
-            });
-          });
-        })
-        .catch((err) => {
-          console.error(err);
-        })
-        .finally(() => {
-          this.skeletonChips -= idCount;
-        });
-    });
   },
 };
 </script>

@@ -29,7 +29,9 @@
           :key="author.url"
           class="text-decoration-none"
         >
-          {{ getOptimalName(author) }}&nbsp;<v-icon>mdi-chevron-right</v-icon><span v-if="i + 1 != item.text.autor.length">, </span>
+          <span v-if="i != 0">, </span>
+          {{ getOptimalName(author) }}
+          <v-icon>mdi-chevron-right</v-icon>
         </router-link>
       </template>
       <template v-slot:[`item.text.title`]="{ item }">

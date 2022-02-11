@@ -169,6 +169,35 @@
         <span>Refresh Graph, unpin all nodes</span>
       </v-tooltip>
     </v-speed-dial>
+    <div
+      absolute
+      bottom
+      left
+      class="legend"
+    >
+      <v-list dense color="transparent">
+        <v-list-item
+          v-for="type in types"
+          :key="type"
+          dense
+          style="min-height: unset"
+        >
+          <v-list-item-icon style="margin: 0">
+            <v-icon
+              :color="colors[type]"
+              small
+            >
+              mdi-square
+            </v-icon>
+          </v-list-item-icon>
+          <v-list-item-content style="padding: 0">
+            <v-list-item-title>
+              {{ type }}
+            </v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list>
+    </div>
   </v-card>
 </template>
 <script>
@@ -183,6 +212,13 @@ export default {
     FullscreenButton,
   },
   data: () => ({
+    colors: {
+      Schlagwort: '#039BE5', // blue darken-1
+      Ethonym: '#00897B', // teal darken-1
+      Eigenname: '#FFB300', // amber darken-1
+      Region: '#43A047', // green darken-1
+      Unsicher: 'black',
+    },
     fab: {
       download: false,
       control: false,
@@ -232,7 +268,7 @@ export default {
         ctx.stroke();
       }
 
-      ctx.fillStyle = node.color;
+      ctx.fillStyle = this.colors[node.keyword_type] || 'grey';
       const rectProps = [node.x - bckgDimensions[0] / 2, node.y - bckgDimensions[1] / 2, ...bckgDimensions];
       ctx.fillRect(...rectProps);
 
@@ -296,6 +332,7 @@ export default {
       console.log('graph', this.graph);
       ret.edges.forEach((x) => {
         const targetNode = ret.nodes.filter((node) => node.id === x.source.id)[0];
+        x.color = this.colors[targetNode?.keyword_type] || 'grey';
 
         if (targetNode?.val) targetNode.val += 1;
         else if (targetNode) targetNode.val = 2;
@@ -306,6 +343,11 @@ export default {
         return x;
       });
       return ret;
+    },
+    types() {
+      const ret = this.graph?.nodes?.map((x) => x.keyword_type);
+      console.log('types', ret);
+      return [...new Set(ret)]; // removes duplicates
     },
   },
   watch: {
@@ -386,5 +428,10 @@ export default {
 <style lang="css">
   .no-nodes {
     color: rgba(0, 0, 0, .87);
+  }
+  .legend {
+    width: min-content;
+    position: absolute;
+    bottom: 0;
   }
 </style>

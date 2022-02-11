@@ -54,19 +54,19 @@
             </div>
           </td>
           <td v-else-if="['Place', 'Author'].includes(item.key)">
-            <div
-              class="keyword-chip"
-              v-for="val in item.value"
+            <router-link
+              v-for="val, i in item.value"
               :key="val.url"
+              :to="{
+                name: fullscreen ? `${item.key} Detail Fullscreen` : `${item.key} Detail`,
+                query: item.key === 'Place' ? { Place: getIdFromUrl(val.url) } : $route.query,
+                params: { id: getIdFromUrl(val.url) }
+              }"
             >
-              <v-chip
-                :color="item.key === 'Place' ? 'green lighten-3' : 'red lighten-3'"
-                small
-                @click="$store.commit('addToItemsAndInput', { id: val.url.replace(/\D/g, ''), selected_text: val.name, group: item.key })"
-              >
-                {{ getOptimalName(val)}}
-              </v-chip>
-            </div>
+              <span v-if="i != 0">, </span>
+              {{ getOptimalName(val) }}
+              <v-icon>mdi-chevron-right</v-icon>
+            </router-link>
           </td>
           <td v-else>
             {{ item.value }}
