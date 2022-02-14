@@ -41,14 +41,14 @@
             <v-card-text>
               <v-checkbox
                 v-model="showLayers.spatial"
-                color="red"
+                color="red darken-1"
                 dense
                 :disabled="!(data[0] && data[0].count)"
               >
                 <template v-slot:label>
                   Spatial&nbsp;Coverage
                   &nbsp;
-                  <v-chip color="red lighten-1" small :disabled="!data[0] || !data[0].count">
+                  <v-chip color="red darken-1" dark small :disabled="!data[0] || !data[0].count">
                     <template v-if="loading">
                       <v-progress-circular
                         indeterminate
@@ -64,14 +64,14 @@
               </v-checkbox>
               <v-checkbox
                 v-model="showLayers.cones"
-                color="blue"
+                color="yellow darken-1"
                 dense
                 :disabled="!(data[1] && data[1].count)"
               >
                 <template v-slot:label>
                   Cones
                   &nbsp;
-                  <v-chip color="blue lighten-1" small :disabled="!data[1] || !data[1].count">
+                  <v-chip color="yellow darken-1" small :disabled="!data[1] || !data[1].count">
                     <template v-if="loading">
                       <v-progress-circular
                         indeterminate
@@ -94,7 +94,7 @@
                 <template v-slot:label>
                   Places
                   &nbsp;
-                  <v-chip color="green lighten-1" small :disabled="!data[2] || !data[2].count">
+                  <v-chip color="green lighten-1" dark small :disabled="!data[2] || !data[2].count">
                     <template v-if="loading">
                       <v-progress-circular
                         indeterminate
@@ -122,6 +122,7 @@
                   &nbsp;
                   <v-chip
                     color="green lighten-1"
+                    dark
                     small
                     :disabled="!relatedPlaces.length"
                   >
@@ -160,6 +161,7 @@
         v-if="data[1] && showLayers.cones"
         :geojson="data[1]"
         :options="{ onEachFeature: onEach }"
+        :options-style="coneStyle"
       />
       <l-geo-json
         v-if="data[2] && data[2].results && showLayers.places"
@@ -269,6 +271,7 @@ export default {
   computed: {
     coneStyle() {
       return (feature) => ({
+        color: '#FDD835',
         fillOpacity: 1 / (feature.properties.fuzzyness + 1),
         weight: 1.5,
       });
@@ -281,7 +284,7 @@ export default {
             `
             <div>Keyword: ${feature.properties.key_word.stichwort}</div>
             <div>Passages: ${feature.properties.stelle.length}</div>
-            <div>Certainty: ${11 - feature.properties.fuzzyness}</div>
+            <div>Certainty: ${11 - feature.properties.fuzzyness} / 10</div>
             `,
             { permanent: false, sticky: true },
           )
@@ -322,8 +325,7 @@ export default {
     },
     spatialStyle() {
       return (feature) => ({
-        color: 'red',
-        fillColor: 'red',
+        color: '#E53935',
         fillOpacity: 1 / (feature.properties.fuzzyness + 1),
         weight: 1.5,
       });

@@ -30,27 +30,28 @@
       <v-divider />
       <v-list v-if="!loading">
         <v-subheader>Passages</v-subheader>
-        <v-list-item v-for="passage in data.properties.stelle" :key="passage.url" v-ripple>
-          <v-hover v-slot="{ hover }">
-            <router-link :to="{
-              name: fullscreen ? 'Passage Detail Fullscreen' : 'Passage Detail',
-              query: { Passage: getIdFromUrl(passage.url) },
-              params: { id: getIdFromUrl(passage.url) }}"            >
-              <v-list-item-content :class="{ 'selected': hover }">
-                <v-list-item-title>
-                    {{ passage.display_label }}
-                </v-list-item-title>
-                <v-list-item-subtitle v-if="passage.text.autor.length">
-                  {{ passage.text.title }}, {{ passage.text.autor.map((x) => getOptimalName(x)).join(', ') }}
-                  <v-icon v-if="!passage.text.jahrhundert">mdi-chevron-right</v-icon>
-                </v-list-item-subtitle>
-                <v-list-item-subtitle v-if="passage.text.jahrhundert">
-                  {{ passage.text.jahrhundert }} century
-                  <v-icon>mdi-chevron-right</v-icon>
-                </v-list-item-subtitle>
-              </v-list-item-content>
-            </router-link>
-          </v-hover>
+        <v-list-item
+          v-for="passage in data.properties.stelle"
+          :key="passage.url"
+          :to="{
+            name: fullscreen ? 'Passage Detail Fullscreen' : 'Passage Detail',
+            query: { Passage: getIdFromUrl(passage.url) },
+            params: { id: getIdFromUrl(passage.url) }}"
+          >
+          <v-list-item-content>
+            <v-list-item-title>
+                {{ passage.display_label }}
+            </v-list-item-title>
+            <v-list-item-subtitle v-if="passage.text.autor.length">
+              {{ passage.text.title }}, {{ passage.text.autor.map((x) => getOptimalName(x)).join(', ') }}
+            </v-list-item-subtitle>
+            <v-list-item-subtitle v-if="passage.text.jahrhundert">
+              {{ passage.text.jahrhundert }} century
+            </v-list-item-subtitle>
+          </v-list-item-content>
+          <v-list-item-icon>
+            <v-icon>mdi-chevron-right</v-icon>
+          </v-list-item-icon>
         </v-list-item>
       </v-list>
       <v-list v-else>

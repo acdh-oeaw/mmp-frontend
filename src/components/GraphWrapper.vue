@@ -8,7 +8,7 @@
     <v-overlay
       absolute
       class="overlay"
-      opacity=".1"
+      opacity=".2"
       :value="!nodeCount || loading"
     >
       <h1 v-if="!loading" class="no-nodes">

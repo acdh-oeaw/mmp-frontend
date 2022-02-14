@@ -36,7 +36,40 @@
         flat
         accordion
         v-if="!loading"
+        :value="[0, 1]"
       >
+        <v-expansion-panel>
+          <v-expansion-panel-header :disabled="!data.authors.count">
+            <template v-slot:actions>
+              <v-chip
+                small
+                color="red lighten-3"
+                :disabled="!data.authors.count"
+              >{{ data.authors.count }}</v-chip>
+              <v-icon>mdi-chevron-down</v-icon>
+            </template>
+            Authors
+          </v-expansion-panel-header>
+          <v-expansion-panel-content>
+            <v-list-item
+              v-for="author in data.authors.results"
+              :key="author.url"
+              :to="{ name: fullscreen ? 'Author Detail Fullscreen' : 'Author Detail',
+                query: { Author: getIdFromUrl(author.url) },
+                params: { id: getIdFromUrl(author.url) }
+              }"
+            >
+            <v-list-item-content>
+              <v-list-item-title>{{ getOptimalName(author) }}</v-list-item-title>
+              <v-list-item-subtitle v-if="author.kommentar">{{ author.kommentar }}</v-list-item-subtitle>
+              <v-list-item-subtitle>{{ author.jahrhundert }}</v-list-item-subtitle>
+            </v-list-item-content>
+            <v-list-item-icon>
+              <v-icon>mdi-chevron-right</v-icon>
+            </v-list-item-icon>
+            </v-list-item>
+          </v-expansion-panel-content>
+        </v-expansion-panel>
         <v-expansion-panel>
           <v-expansion-panel-header :disabled="!data.texts.count">
             <template v-slot:actions>
@@ -62,30 +95,6 @@
               <v-list-item-title>{{ text.title }}</v-list-item-title>
               <v-list-item-subtitle>{{ text.autor.map((x) => getOptimalName(x)).join(', ') }}</v-list-item-subtitle>
               <v-list-item-subtitle>{{ text.jahrhundert }}</v-list-item-subtitle>
-            </v-list-item-content>
-            </v-list-item>
-          </v-expansion-panel-content>
-        </v-expansion-panel>
-        <v-expansion-panel>
-          <v-expansion-panel-header :disabled="!data.authors.count">
-            <template v-slot:actions>
-              <v-chip
-                small
-                color="red lighten-3"
-                :disabled="!data.authors.count"
-              >{{ data.authors.count }}</v-chip>
-              <v-icon>mdi-chevron-down</v-icon>
-            </template>
-            Authors
-          </v-expansion-panel-header>
-          <v-expansion-panel-content>
-            <v-list-item
-              v-for="author in data.authors.results"
-              :key="author.url"
-            >
-            <v-list-item-content>
-              <v-list-item-title>{{ getOptimalName(author) }}</v-list-item-title>
-              <v-list-item-subtitle>{{ author.jahrhundert }}</v-list-item-subtitle>
             </v-list-item-content>
             </v-list-item>
           </v-expansion-panel-content>
