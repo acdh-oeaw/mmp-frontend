@@ -19,31 +19,35 @@
       class="data-table"
     >
       <template v-slot:[`item.text.autor`]="{ item }">
-        <router-link
-          v-for="author, i in item.text.autor"
-          :to="{
-            name: fullscreen ? 'Author Detail Fullscreen' : 'Author Detail',
-            params: { id: author.url.replace(/\D/g, '') },
-            query: $route.query,
-          }"
-          :key="author.url"
-          class="text-decoration-none"
-        >
-          <span v-if="i != 0">, </span>
-          {{ getOptimalName(author) }}
-          <v-icon>mdi-chevron-right</v-icon>
-        </router-link>
+        <template v-if="item.text">
+          <router-link
+            v-for="author, i in item.text.autor"
+            :to="{
+              name: fullscreen ? 'Author Detail Fullscreen' : 'Author Detail',
+              params: { id: author.url.replace(/\D/g, '') },
+              query: $route.query,
+            }"
+            :key="author.url"
+            class="text-decoration-none"
+          >
+            <span v-if="i != 0">, </span>
+            {{ getOptimalName(author) }}
+            <v-icon>mdi-chevron-right</v-icon>
+          </router-link>
+        </template>
       </template>
       <template v-slot:[`item.text.title`]="{ item }">
-        <router-link
-          :to="{
-            name: fullscreen ? 'Passage Detail Fullscreen' : 'Passage Detail',
-            params: { id: item.url.replace(/\D/g, '') }, query: $route.query
-          }"
-          class="text-decoration-none"
-        >
-          <b>{{ item.text.title }}</b><v-icon>mdi-chevron-right</v-icon>
-        </router-link>
+        <template v-if="item.text">
+          <router-link
+            :to="{
+              name: fullscreen ? 'Passage Detail Fullscreen' : 'Passage Detail',
+              params: { id: item.url.replace(/\D/g, '') }, query: $route.query
+            }"
+            class="text-decoration-none"
+          >
+            <b>{{ item.text.title }}</b><v-icon>mdi-chevron-right</v-icon>
+          </router-link>
+        </template>
       </template>
       <template v-slot:[`item.keywords`]="{ item }">
         <div
@@ -62,7 +66,7 @@
       </template>
       <template v-slot:[`item.written`]="{ item }">
         <!-- displays unkown if neither start nor end date are defined -->
-        {{ (item.text.start_date || item.text.end_date) ? `${item.text.start_date || 'unknown'} - ${item.text.end_date || 'unknown'}` : 'unknown' }}
+        {{ (item.text && (item.text.start_date || item.text.end_date)) ? `${item.text.start_date || 'unknown'} - ${item.text.end_date || 'unknown'}` : 'unknown' }}
       </template>
       <template v-slot:[`footer.prepend`]>
         <fullscreen-button />
