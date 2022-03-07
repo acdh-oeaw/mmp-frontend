@@ -365,45 +365,49 @@ export default {
     // },
   },
   watch: {
-    data(to) {
-      console.log('to', to, this.data);
-      let allCoords = to[0].features
-        .concat(to[1].features)
-        .map((x) => x.geometry?.coordinates)
-        .flat(2);
-      if (!Array.isArray(to[2].results)) {
-        allCoords = allCoords.concat(to[2].results?.features
-          .map((x) => x.geometry?.coordinates));
-      }
+    data: {
+      handler(to) {
+        console.log('to', to, this.data);
+        let allCoords = to[0].features
+          .concat(to[1].features)
+          .map((x) => x.geometry?.coordinates)
+          .flat(2);
+        if (!Array.isArray(to[2].results)) {
+          allCoords = allCoords.concat(to[2].results?.features
+            .map((x) => x.geometry?.coordinates));
+        }
 
-      allCoords = allCoords.filter((x) => x);
+        allCoords = allCoords.filter((x) => x);
 
-      console.log('allCoords', allCoords);
+        console.log('allCoords', allCoords);
 
-      this.bounds = this.getBounds(allCoords);
+        this.bounds = this.getBounds(allCoords);
 
-      const places = {
-        passages: {
-          spatial: [],
-          cones: [],
-        },
-        texts: {
-          spatial: [],
-          cones: [],
-        },
-      };
+        const places = {
+          passages: {
+            spatial: [],
+            cones: [],
+          },
+          texts: {
+            spatial: [],
+            cones: [],
+          },
+        };
 
-      places.passages.spatial = to[0].features.map((x) => x.properties.stelle.map((y) => y.ort));
-      places.passages.cones = to[1].features.map((x) => x.properties.stelle.map((y) => y.ort));
-      places.texts.spatial = to[0].features.map((x) => x.properties.stelle.map((y) => y.text.ort));
-      places.texts.cones = to[1].features.map((x) => x.properties.stelle.map((y) => y.text.ort));
+        places.passages.spatial = to[0].features.map((x) => x.properties.stelle.map((y) => y.ort));
+        places.passages.cones = to[1].features.map((x) => x.properties.stelle.map((y) => y.ort));
+        places.texts.spatial = to[0].features.map((x) => x.properties.stelle.map((y) => y.text.ort));
+        places.texts.cones = to[1].features.map((x) => x.properties.stelle.map((y) => y.text.ort));
 
-      const allPlaces = places.passages.spatial.concat(places.passages.cones, places.texts.spatial, places.texts.cones)
-        .flat(2)
-        .filter((x) => x?.coords?.coordinates);
+        const allPlaces = places.passages.spatial.concat(places.passages.cones, places.texts.spatial, places.texts.cones)
+          .flat(2)
+          .filter((x) => x?.coords?.coordinates);
 
-      console.log('allCoords', allPlaces);
-      this.relatedPlaces = this.removeDuplicates(allPlaces, ['url']);
+        console.log('allCoords', allPlaces);
+        this.relatedPlaces = this.removeDuplicates(allPlaces, ['url']);
+      },
+      deep: true,
+      immediate: true,
     },
   },
   created() {
