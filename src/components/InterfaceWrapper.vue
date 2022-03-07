@@ -5,9 +5,7 @@
         <v-col cols="12" :lg="currentView.includes('Detail') ? 8 : 12" xl="8">
           <v-row class="grey-bg">
             <v-col :cols="$vuetify.breakpoint.mobile ? 12 : 1">
-              <v-menu
-                :close-on-content-click="false"
-              >
+              <v-menu :close-on-content-click="false">
                 <template v-slot:activator="{ on, attrs }">
                   <v-btn
                     min-height="50px"
@@ -490,7 +488,7 @@ export default {
   .grey-bg {
     background-color: #e8ebf0;
     border-radius: 5px;
-    margin-bottom: 10px;;
+    margin-bottom: 22px;
   }
   .justify-end {
     justify-content: flex-end;
