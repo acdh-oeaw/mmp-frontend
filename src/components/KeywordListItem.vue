@@ -6,7 +6,7 @@
     <v-list two-line>
       <v-skeleton-loader
         type="list-item-three-line@3"
-        class="list-loader"
+        class="transparent-skeleton"
         v-if="loading"
       />
       <v-list-item v-else-if="data.length" v-for="text in data" :key="text.url" class="list-item">
@@ -79,7 +79,7 @@ export default {
 </script>
 
 <style>
-  div.list-loader > div {
+  div.transparent-skeleton > div {
     background-color: transparent !important;
   }
   .v-expansion-panel-content__wrap {

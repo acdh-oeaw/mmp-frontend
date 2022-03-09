@@ -7,7 +7,7 @@
     icon
     :to="{
       name: fullscreen ? $route.name.replace(' Fullscreen', '') : `${$route.name} Fullscreen`,
-      query: usecase ? {'Use Case': usecase} : $route.query,
+      query: usecase ? { 'Use Case': usecase } : $route.query,
       params: $route.params
     }"
   >

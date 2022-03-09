@@ -38,6 +38,14 @@
         <v-expansion-panel :disabled="!loading && !usecases.count">
           <v-expansion-panel-header>
             Use Cases
+            <template v-slot:actions>
+              <v-chip
+                small
+                :disabled="!usecases.count"
+                color="amber lighten-3"
+              >{{ usecases.count }}</v-chip>
+              <v-icon>mdi-chevron-down</v-icon>
+            </template>
           </v-expansion-panel-header>
           <v-expansion-panel-content>
             <v-list v-if="!loading">
@@ -76,9 +84,17 @@
             </v-list>
           </v-expansion-panel-content>
         </v-expansion-panel>
-        <v-expansion-panel>
+        <v-expansion-panel :disabled="!loading && !passages.count">
           <v-expansion-panel-header>
             Passages
+            <template v-slot:actions>
+              <v-chip
+                small
+                :disabled="!passages.count"
+                color="teal lighten-4"
+              >{{ passages.count }}</v-chip>
+              <v-icon>mdi-chevron-down</v-icon>
+            </template>
           </v-expansion-panel-header>
           <v-expansion-panel-content>
             <v-list v-if="!loading">

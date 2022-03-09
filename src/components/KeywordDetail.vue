@@ -97,13 +97,13 @@
               :key="conn.id"
             >
               <v-expansion-panel-header>
-                <template v-slot:actions>
-                  <v-icon class="icon">mdi-chevron-down</v-icon>
-                </template>
-                <span class="header">
+                <span>
                   {{ data.keywords.map((x) => x.stichwort).join(', ') }} <v-icon small>mdi-arrow-left-right</v-icon> {{ conn.label }}
-                  ({{ conn.count }} connections)
                 </span>
+                <template v-slot:actions>
+                  <v-chip small>{{ conn.count }} connections</v-chip>
+                  <v-icon>mdi-chevron-down</v-icon>
+                </template>
               </v-expansion-panel-header>
               <v-expansion-panel-content>
                 <keyword-list-item
@@ -115,6 +115,7 @@
           </v-expansion-panels>
           <v-skeleton-loader
             type="list-item@5"
+            class="transparent-skeleton"
             v-else
           />
         </v-col>
@@ -357,11 +358,5 @@ button.v-expansion-panel-header {
 }
 .theme--light.v-tabs-items {
   background-color: transparent;
-}
-.icon {
-  order: 0;
-}
-.header {
-  order: 1;
 }
 </style>

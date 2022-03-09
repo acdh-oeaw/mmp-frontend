@@ -124,7 +124,7 @@
             fab
             small
             disabled
-            @click="paused = !paused"
+            @click.stop="paused = !paused"
             v-bind="attrs"
             v-on="on"
           >
@@ -142,7 +142,7 @@
           <v-btn
             fab
             small
-            @click="zoomToFit = !zoomToFit"
+            @click.stop="zoomToFit = !zoomToFit"
             v-bind="attrs"
             v-on="on"
           >
@@ -159,7 +159,7 @@
           <v-btn
             fab
             small
-            @click="refresh"
+            @click.stop="refresh"
             v-bind="attrs"
             v-on="on"
           >

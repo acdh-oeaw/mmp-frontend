@@ -36,10 +36,11 @@
         flat
         accordion
         v-if="!loading"
+        multiple
         :value="[0, 1]"
       >
-        <v-expansion-panel>
-          <v-expansion-panel-header :disabled="!data.authors.count">
+        <v-expansion-panel :disabled="!data.authors.count">
+          <v-expansion-panel-header>
             <template v-slot:actions>
               <v-chip
                 small
@@ -70,8 +71,8 @@
             </v-list-item>
           </v-expansion-panel-content>
         </v-expansion-panel>
-        <v-expansion-panel>
-          <v-expansion-panel-header :disabled="!data.texts.count">
+        <v-expansion-panel :disabled="!data.texts.count">
+          <v-expansion-panel-header>
             <template v-slot:actions>
               <v-chip
                 small

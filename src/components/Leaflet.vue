@@ -374,7 +374,7 @@ export default {
             .concat(to[1].features)
             .map((x) => x.geometry?.coordinates)
             .flat(2);
-          if (!Array.isArray(to[2].results)) {
+          if (to[2] && !Array.isArray(to[2].results)) {
             allCoords = allCoords.concat(to[2].results?.features
               .map((x) => x.geometry?.coordinates));
           }

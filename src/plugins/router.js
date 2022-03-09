@@ -18,6 +18,8 @@ import PlaceDetail from '@/components/PlaceDetail';
 import SpatialDetail from '@/components/SpatialDetail';
 import AuthorDetail from '@/components/AuthorDetail';
 
+import Debug from '@/components/Debug';
+
 Vue.use(VueRouter);
 
 const routes = [
@@ -25,6 +27,11 @@ const routes = [
     path: '/',
     name: 'Home',
     component: Home,
+  },
+  {
+    path: '/debug',
+    name: 'Debug',
+    component: Debug,
   },
   {
     path: '/studies/',

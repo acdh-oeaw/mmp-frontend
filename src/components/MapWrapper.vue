@@ -32,7 +32,13 @@ export default {
   components: {
     Leaflet,
   },
-  props: ['usecase'],
+  props: [
+    'passage',
+    'author',
+    'keyword',
+    'place',
+    'usecase',
+  ],
   data: () => ({
     entries: [],
     loading: false,
@@ -46,17 +52,41 @@ export default {
         ];
         const blankUrls = urls;
 
-        if (this.usecase) {
-          urls = urls.map((url) => `${url}&stelle__use_case=${this.usecase}`);
-        } else {
-          const terms = {
-            Author: 'stelle__text__autor',
-            Passage: 'stelle',
-            Keyword: 'key_word',
-            'Use Case': 'stelle__use_case',
-            // Place: 'unused',
-          };
+        const terms = {
+          Author: 'stelle__text__autor',
+          Passage: 'stelle',
+          Keyword: 'key_word',
+          'Use Case': 'stelle__use_case',
+          // Place: 'unused',
+        };
 
+        const props = [
+          this.author,
+          this.passage,
+          this.keyword,
+          this.usecase,
+          this.place,
+        ];
+
+        console.log('map props', props);
+
+        if (props.some((x) => x)) {
+          console.debug('map props detected!');
+          props.forEach((prop, i) => {
+            if (prop && prop !== '0') {
+              console.debug('map prop', prop);
+              if (i === 4) {
+                if (JSON.stringify(urls) === JSON.stringify(blankUrls)) {
+                  // prevents fetching every coverage if no other filters are applied
+                  urls = urls.map((x) => `${x}&id=0`);
+                }
+                urls.push(`https://mmp.acdh-dev.oeaw.ac.at/api/ort-geojson/?format=json&ids=${prop}`);
+              } else {
+                urls = urls.map((url) => `${url}&${terms[Object.keys(terms)[i]]}=${prop}`);
+              }
+            }
+          });
+        } else {
           Object.keys(query).forEach((cat) => {
             if (query[cat] && !['Place', 'time'].includes(cat)) {
               const arr = query[cat].split('+');
@@ -87,7 +117,7 @@ export default {
           } else urls.push('https://mmp.acdh-dev.oeaw.ac.at/api/ort/?format=json&id=0');
         }
 
-        console.log('urls', urls);
+        console.log('map urls', urls);
 
         const prefetched = this.$store.state.fetchedResults[urls.toString()];
         if (prefetched) {

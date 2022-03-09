@@ -86,6 +86,14 @@
             <v-expansion-panel v-for="title, i in ['Keyword occurences', 'All occurences']" :key="title">
               <v-expansion-panel-header>
                 {{ title }}
+                <template v-slot:actions>
+                  <v-chip
+                    small
+                  >{{ words[1-i].length }}</v-chip>
+                  <v-icon>
+                    $expand
+                  </v-icon>
+                </template>
               </v-expansion-panel-header>
               <v-expansion-panel-content>
                 <v-list dense>

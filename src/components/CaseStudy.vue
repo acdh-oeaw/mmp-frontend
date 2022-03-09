@@ -16,29 +16,45 @@
           <p class="text-h4">{{ study.title }}</p>
           <p v-if="study.description">{{ study.description }}</p>
           <v-tabs
-            v-model="tab"
             fixed-tabs
+            show-arrows
             background-color="transparent"
           >
-            <v-tab key="timeline">
+            <v-tab
+              exact
+              :to="{ query: { tab: 'timeline' }}"
+            >
               Timeline
             </v-tab>
-            <v-tab v-if="study.story_map" key="story">
+            <v-tab
+              exact
+              v-if="study.story_map"
+              :to="{ query: { tab: 'story' }}"
+            >
               Story Map
             </v-tab>
-            <v-tab key="graph">
+            <v-tab
+              exact
+              :to="{ query: { tab: 'graph' }}"
+            >
               Graph
             </v-tab>
-            <v-tab key="map">
+            <v-tab
+              exact
+              :to="{ query: { tab: 'map' }}"
+            >
               Map
             </v-tab>
-            <v-tab key="cloud">
+            <v-tab
+              exact
+              :to="{ query: { tab: 'cloud' }}"
+            >
               Word Cloud
             </v-tab>
           </v-tabs>
           <br />
-          <v-tabs-items v-model="tab">
-            <v-tab-item key="timeline">
+          <v-tabs-items :value="$route.query.tab || 'timeline'">
+            <v-tab-item value="timeline">
               <v-timeline :dense="$vuetify.breakpoint.mobile">
                 <v-timeline-item
                   v-for="(event, i) in events"
@@ -84,22 +100,22 @@
               </v-timeline>
             </v-tab-item>
             <v-tab-item
-              key="story"
               v-if="study.story_map"
+              value="story"
             >
               <v-card color="transparent" v-html="study.story_map" />
             </v-tab-item>
-            <v-tab-item key="graph">
+            <v-tab-item value="graph">
               <v-card color="transparent">
                 <graph :usecase="id || $route.params.id" />
               </v-card>
             </v-tab-item>
-            <v-tab-item key="map">
+            <v-tab-item value="map">
               <v-card color="transparent">
                 <map-wrapper :usecase="id || $route.params.id" />
               </v-card>
             </v-tab-item>
-            <v-tab-item key="cloud">
+            <v-tab-item value="cloud">
               <word-cloud-wrapper :usecase="id || $route.params.id" />
             </v-tab-item>
           </v-tabs-items>
@@ -125,7 +141,6 @@ export default {
     study: {},
     events: [],
     loading: true,
-    tab: 'timeline',
   }),
   props: ['id'],
   components: {
@@ -181,6 +196,8 @@ export default {
               console.log('Study', jsonRes);
               if (jsonRes[0].story_map) jsonRes[0].story_map = jsonRes[0].story_map.replaceAll('/explore/', '/view/');
               [this.study, this.events] = jsonRes;
+
+              console.log('route', this.$route);
             })
             .catch((err) => {
               console.error(err);
