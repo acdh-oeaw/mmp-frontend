@@ -75,14 +75,14 @@ export default {
           props.forEach((prop, i) => {
             if (prop && prop !== '0') {
               console.debug('map prop', prop);
-              if (i === 4) {
+              if (i === 4) { // place
                 if (JSON.stringify(urls) === JSON.stringify(blankUrls)) {
                   // prevents fetching every coverage if no other filters are applied
                   urls = urls.map((x) => `${x}&id=0`);
                 }
                 urls.push(`https://mmp.acdh-dev.oeaw.ac.at/api/ort-geojson/?format=json&ids=${prop}`);
               } else {
-                urls = urls.map((url) => `${url}&${terms[Object.keys(terms)[i]]}=${prop}`);
+                urls = urls.map((url) => `${url}&${Object.values(terms)[i]}=${prop}`);
               }
             }
           });

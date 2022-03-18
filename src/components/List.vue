@@ -101,6 +101,7 @@ export default {
     renderKey: 0,
   }),
   mixins: [helpers],
+  props: ['keyword', 'passage', 'author', 'usecase', 'place'],
   methods: {
     addKeywordToInput(obj) {
       this.$store.commit('addToItemsAndInput', {
@@ -125,28 +126,55 @@ export default {
         'Use Case': 'use_case',
         Place: 'ort',
       };
+
       let address = `https://mmp.acdh-dev.oeaw.ac.at/api/stelle/?format=json&limit=${this.pagination.limit}&offset=${this.pagination.offset}`;
-      Object.keys(query).forEach((cat) => {
-        if (query[cat] && cat !== 'time') {
-          console.log(query[cat]);
-          const arr = query[cat].toString(10).split('+');
-          arr.forEach((val) => {
-            address += `&${terms[cat]}=${val}`;
-          });
-        }
-      });
 
-      if (query.Passage) address += `&ids=${query.Passage.replaceAll('+', ',')}`;
+      const props = [
+        this.author,
+        this.passage,
+        this.keyword,
+        this.usecase,
+        this.place,
+      ];
 
-      if (query.time) {
-        const key = this.$store.state.slider === 'passage' ? '' : 'text__';
-        if (query.time.toString().includes('+')) {
-          const times = query.time.split('+');
-          address += `&${key}start_date=${times[0]}&${key}start_date_lookup=lt`;
-          address += `&${key}end_date=${times[1]}&${key}end_date_lookup=gt`;
-        } else {
-          address += `&${key}start_date=${query.time - 5}&${key}start_date_lookup=lt`;
-          address += `&${key}end_date=${query.time + 4}&${key}end_date_lookup=gt`;
+      if (props.some((x) => x)) {
+        console.debug('list props detected!', props);
+        let j;
+        props.forEach((prop, i) => {
+          if (prop && prop !== '0') {
+            console.debug('list prop', prop);
+            if (i === 1) { // passage
+              address += `&ids=${prop.toString().split('+').join(',')}`;
+            } else {
+              if (i > 1) j = i - 1; // because terms is missing an element
+              else j = i;
+              address += `&${terms[Object.keys(terms)[j]]}=${prop}`;
+            }
+          }
+        });
+      } else {
+        Object.keys(query).forEach((cat) => {
+          if (query[cat] && cat !== 'time') {
+            console.log(query[cat]);
+            const arr = query[cat].toString(10).split('+');
+            arr.forEach((val) => {
+              address += `&${terms[cat]}=${val}`;
+            });
+          }
+        });
+
+        if (query.Passage) address += `&ids=${query.Passage.replaceAll('+', ',')}`;
+
+        if (query.time) {
+          const key = this.$store.state.slider === 'passage' ? '' : 'text__';
+          if (query.time.toString().includes('+')) {
+            const times = query.time.split('+');
+            address += `&${key}start_date=${times[0]}&${key}start_date_lookup=lt`;
+            address += `&${key}end_date=${times[1]}&${key}end_date_lookup=gt`;
+          } else {
+            address += `&${key}start_date=${query.time - 5}&${key}start_date_lookup=lt`;
+            address += `&${key}end_date=${query.time + 4}&${key}end_date_lookup=gt`;
+          }
         }
       }
 

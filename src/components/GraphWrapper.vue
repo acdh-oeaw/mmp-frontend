@@ -229,7 +229,7 @@ export default {
     renderKey: 0,
     zoomToFit: true,
   }),
-  props: ['usecase'],
+  props: ['usecase', 'keyword', 'passage', 'author', 'place'],
   mixins: [helpers],
   methods: {
     getCanvasData() {
@@ -354,18 +354,40 @@ export default {
     '$route.query': {
       handler(query) {
         let address = 'https://mmp.acdh-dev.oeaw.ac.at/archiv/keyword-data/?';
-        console.log('usecase', this.usecase);
-        if (this.usecase) {
-          address += `rvn_stelle_key_word_keyword__use_case=${this.usecase}`;
-        } else {
-          const terms = {
-            Author: 'rvn_stelle_key_word_keyword__text__autor',
-            Passage: 'rvn_stelle_key_word_keyword',
-            // Keyword: 'id', // has been replaced with new multiple id functionality
-            'Use Case': 'rvn_stelle_key_word_keyword__use_case',
-            Place: 'rvn_stelle_key_word_keyword__text__autor__ort',
-          };
+        const terms = {
+          Author: 'rvn_stelle_key_word_keyword__text__autor',
+          Passage: 'rvn_stelle_key_word_keyword',
+          // Keyword: 'id', // has been replaced with new multiple id functionality
+          'Use Case': 'rvn_stelle_key_word_keyword__use_case',
+          Place: 'rvn_stelle_key_word_keyword__text__autor__ort',
+        };
 
+        const props = [
+          this.author,
+          this.passage,
+          this.keyword,
+          this.usecase,
+          this.place,
+        ];
+
+        console.log('map props', props);
+
+        if (props.some((x) => x)) {
+          console.debug('cloud props detected!');
+          let j;
+          props.forEach((prop, i) => {
+            if (prop && prop !== '0') {
+              console.debug('cloud prop', prop);
+              if (i === 2) { // keyword
+                address += `&ids=${prop.toString().split('+').join(',')}`;
+              } else {
+                if (i > 2) j = i - 1; // because terms is missing an element
+                else j = i;
+                address += `&${terms[Object.keys(terms)[j]]}=${prop}`;
+              }
+            }
+          });
+        } else {
           console.log('query', query);
           Object.keys(terms).forEach((cat) => {
             if (query[cat] && cat !== 'time') {

@@ -7,6 +7,7 @@
           label="Passage"
           type="number"
           @change="renderKey += 1"
+          min="0"
         />
       </v-col>
       <v-col>
@@ -15,6 +16,7 @@
           label="Place"
           type="number"
           @change="renderKey += 1"
+          min="0"
         />
       </v-col>
       <v-col>
@@ -23,6 +25,7 @@
           label="Keyword"
           type="number"
           @change="renderKey += 1"
+          min="0"
         />
       </v-col>
       <v-col>
@@ -31,6 +34,7 @@
           label="Use Case"
           type="number"
           @change="renderKey += 1"
+          min="0"
         />
       </v-col>
       <v-col>
@@ -39,6 +43,7 @@
           label="Author"
           type="number"
           @change="renderKey += 1"
+          min="0"
         />
       </v-col>
     </v-row>
@@ -93,31 +98,31 @@
   </v-container>
 </template>
 <script>
-// import WordCloudWrapper from './WordCloudWrapper';
-// import List from './List';
-// import Graph from './GraphWrapper';
+import WordCloudWrapper from './WordCloudWrapper';
+import List from './List';
+import Graph from './GraphWrapper';
 import MapWrapper from './MapWrapper';
 
 export default {
   name: 'Debug',
   data: () => ({
-    passage: 3,
+    passage: 0,
     place: 0,
     keyword: 0,
-    usecase: 0,
+    usecase: 5,
     author: 0,
     show: {
-      map: true,
+      map: false,
       cloud: false,
       list: false,
-      graph: false,
+      graph: true,
     },
     renderKey: 0,
   }),
   components: {
-  //  WordCloudWrapper,
-  //   List,
-  //   Graph,
+    WordCloudWrapper,
+    List,
+    Graph,
     MapWrapper,
   },
 };

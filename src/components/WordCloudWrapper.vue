@@ -89,7 +89,7 @@
                 <template v-slot:actions>
                   <v-chip
                     small
-                  >{{ words[1-i].length }}</v-chip>
+                  >{{ words[1-i] ? words[1-i].length : 0 }}</v-chip>
                   <v-icon>
                     $expand
                   </v-icon>
@@ -144,7 +144,7 @@ import FullscreenButton from './FullscreenButton';
 export default {
   name: 'WordCloudWrapper',
   components: { WordCloud, FullscreenButton },
-  props: ['usecase', 'height'],
+  props: ['usecase', 'keyword', 'author', 'passage', 'place', 'height'],
   data: () => ({
     avgProgress: 0,
     filteredWords: [[], []],
@@ -244,16 +244,41 @@ export default {
           'https://mmp.acdh-dev.oeaw.ac.at/archiv/nlp-data/?',
           'https://mmp.acdh-dev.oeaw.ac.at/archiv/kw-stelle/?',
         ];
-        if (this.usecase) urls = urls.map((x) => `${x}&use_case=${this.usecase}`);
-        else {
-          const terms = {
-            Author: 'text__autor',
-            // Passage: 'id', // not used anymore
-            Keyword: 'key_word',
-            'Use Case': 'use_case',
-            Place: 'ort',
-          };
 
+        const terms = {
+          Author: 'text__autor',
+          // Passage: 'id', // not used anymore
+          Keyword: 'key_word',
+          'Use Case': 'use_case',
+          Place: 'ort',
+        };
+
+        const props = [
+          this.author,
+          this.passage,
+          this.keyword,
+          this.usecase,
+          this.place,
+        ];
+
+        console.log('map props', props);
+
+        if (props.some((x) => x)) {
+          console.debug('cloud props detected!');
+          let j;
+          props.forEach((prop, i) => {
+            if (prop && prop !== '0') {
+              console.debug('cloud prop', prop);
+              if (i === 1) { // passage
+                urls = urls.map((url) => `${url}&ids=${prop.toString().split('+').join(',')}`);
+              } else {
+                if (i > 1) j = i - 1; // because terms is missing an element
+                else j = i;
+                urls = urls.map((url) => `${url}&${terms[Object.keys(terms)[j]]}=${prop}`);
+              }
+            }
+          });
+        } else {
           Object.keys(query).forEach((cat) => {
             if (query[cat] && cat !== 'time') {
               console.log(query[cat]);
