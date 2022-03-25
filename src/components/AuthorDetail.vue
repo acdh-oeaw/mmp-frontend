@@ -20,10 +20,13 @@
           <v-list-item-subtitle>
             {{ data.jahrhundert || 'unknown century' }}, {{ getOptimalName(data.ort) || 'unknown place' }}
           </v-list-item-subtitle>
+          <v-list-item-subtitle v-if="data.gnd_id">
+            GND-ID: {{ data.gnd_id }}
+          </v-list-item-subtitle>
         </div>
         <v-skeleton-loader
           v-else
-          type="heading, text"
+          type="heading, text@2"
         />
       </v-list-item-content>
     </v-list-item>

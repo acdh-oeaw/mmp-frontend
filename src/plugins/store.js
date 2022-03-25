@@ -26,6 +26,8 @@ export default new Vuex.Store({
       keyword: {
         name: true,
         phrase: true,
+        ethnonym: true,
+        region: true,
       },
       usecase: true,
       place: {

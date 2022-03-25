@@ -384,22 +384,15 @@ export default {
           console.log('allCoords', allCoords);
 
           const places = {
-            passages: {
-              spatial: [],
-              cones: [],
-            },
             texts: {
               spatial: [],
               cones: [],
             },
           };
+          places.texts.spatial = to[0].features.map((x) => x.properties.texts.map((y) => y.places));
+          places.texts.cones = to[1].features.map((x) => x.properties.texts.map((y) => y.places));
 
-          places.passages.spatial = to[0].features.map((x) => x.properties.stelle.map((y) => y.ort));
-          places.passages.cones = to[1].features.map((x) => x.properties.stelle.map((y) => y.ort));
-          places.texts.spatial = to[0].features.map((x) => x.properties.stelle.map((y) => y.text.ort));
-          places.texts.cones = to[1].features.map((x) => x.properties.stelle.map((y) => y.text.ort));
-
-          const allPlaces = places.passages.spatial.concat(places.passages.cones, places.texts.spatial, places.texts.cones)
+          const allPlaces = places.texts.spatial.concat(places.texts.cones)
             .flat(2)
             .filter((x) => x?.coords?.coordinates);
 

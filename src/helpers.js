@@ -3,6 +3,7 @@ export default {
     debug: (message, name) => {
       console.debug('debug', name, message);
     },
+    displayTimeRange: (start, end) => (start || end ? `${start || 'unknown'} - ${end || 'unknown'}` : 'unknown'),
     getOptimalName: (obj) => obj.name_en || obj.name_antik || obj.name_lat || obj.name || obj.name_fr || obj.name_it || obj.name_gr,
     getIdFromUrl: (url) => url.replace(/\D/g, ''),
     // this worked first try please clap

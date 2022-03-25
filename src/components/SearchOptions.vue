@@ -47,6 +47,22 @@
         prepend-icon="mdi-chevron-right"
         dense
       />
+      <v-checkbox
+        label="Ethnonym"
+        v-model="filters.keyword.ethnonym"
+        @change="changeValue($event, 'keyword.ethnonym')"
+        color="blue lighten-2"
+        prepend-icon="mdi-chevron-right"
+        dense
+      />
+      <v-checkbox
+        label="Region"
+        v-model="filters.keyword.region"
+        @change="changeValue($event, 'keyword.phrase')"
+        color="blue lighten-2"
+        prepend-icon="mdi-chevron-right"
+        dense
+      />
       <v-divider />
       <v-checkbox
         label="Use Case"

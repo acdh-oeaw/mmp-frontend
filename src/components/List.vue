@@ -66,7 +66,7 @@
       </template>
       <template v-slot:[`item.written`]="{ item }">
         <!-- displays unkown if neither start nor end date are defined -->
-        {{ (item.text && (item.text.start_date || item.text.end_date)) ? `${item.text.start_date || 'unknown'} - ${item.text.end_date || 'unknown'}` : 'unknown' }}
+        {{ (item.text ? displayTimeRange(item.text.start_date, item.text.end_date) : 'unknown') }}
       </template>
       <template v-slot:[`footer.prepend`]>
         <fullscreen-button />
@@ -163,7 +163,7 @@ export default {
           }
         });
 
-        if (query.Passage) address += `&ids=${query.Passage.replaceAll('+', ',')}`;
+        if (query.Passage) address += `&ids=${query.Passage.toString().replaceAll('+', ',')}`;
 
         if (query.time) {
           const key = this.$store.state.slider === 'passage' ? '' : 'text__';

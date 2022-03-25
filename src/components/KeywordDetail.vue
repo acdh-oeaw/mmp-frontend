@@ -227,7 +227,11 @@ export default {
       console.log('connections', retArr);
       // priorise connections with keyword in query
       // return retArr.sort((a) => (this.$route.query?.Keyword.split('+').includes(a.id) ? -1 : 1));
-      return retArr;
+
+      // sort by connection count
+      return retArr.sort((a, b) => b.count - a.count);
+
+      // return retArr;
     },
   },
   watch: {

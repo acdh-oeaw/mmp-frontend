@@ -29,24 +29,40 @@
       </v-list-item>
       <v-divider />
       <v-list v-if="!loading">
+        <v-subheader>Texts</v-subheader>
+        <v-list-item
+          v-for="text in removeDuplicates(data.properties.texts, ['id'])"
+          :key="text.id"
+        >
+          <v-list-item-content>
+            <v-list-item-title>
+              {{ text.title }}
+            </v-list-item-title>
+            <v-list-item-subtitle v-if="text.authors.length">
+              {{ text.authors.map((x) => x.name).join(', ') }}
+            </v-list-item-subtitle>
+            <v-list-item-subtitle v-if="text.places.length">
+              <!-- {{ text.places.map((x) => x.name).join(', ') }} -->
+            </v-list-item-subtitle>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list>
+      <v-list v-if="!loading">
         <v-subheader>Passages</v-subheader>
         <v-list-item
           v-for="passage in data.properties.stelle"
-          :key="passage.url"
+          :key="passage.id"
           :to="{
             name: fullscreen ? 'Passage Detail Fullscreen' : 'Passage Detail',
-            query: { Passage: getIdFromUrl(passage.url) },
-            params: { id: getIdFromUrl(passage.url) }}"
+            query: { Passage: passage.id },
+            params: { id: passage.id }}"
           >
           <v-list-item-content>
             <v-list-item-title>
                 {{ passage.display_label }}
             </v-list-item-title>
-            <v-list-item-subtitle v-if="passage.text.autor.length">
-              {{ passage.text.title }}, {{ passage.text.autor.map((x) => getOptimalName(x)).join(', ') }}
-            </v-list-item-subtitle>
-            <v-list-item-subtitle v-if="passage.text.jahrhundert">
-              {{ passage.text.jahrhundert }} century
+            <v-list-item-subtitle v-if="passage.start_date || passage.end_date">
+              {{ displayTimeRange(passage.start_date, passage.end_date) }}
             </v-list-item-subtitle>
           </v-list-item-content>
           <v-list-item-icon>
