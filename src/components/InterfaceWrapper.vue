@@ -40,24 +40,26 @@
                 :loading="loading"
               >
                 <template v-slot:item="data">
-                  <v-list-item-content v-if="data.item.group === 'Keyword' && data.item.selected_text.includes(',')">
+                  <v-list-item-content v-if="data.item.group === 'Keyword' && data.item.selected_text.includes(',') && groupIsEnabled(data.item.group, data.item.selected_text.split(',')[1].replace(/\W/g, ''))">
                     <v-list-item-title>
                       {{ data.item.selected_text.split(',')[0] }}
                       <span v-if="$store.state.completeKeywords.includes(parseInt(data.item.id))">(complete)</span>
                     </v-list-item-title>
                     <v-list-item-subtitle>Keyword ({{ data.item.selected_text.split(',')[1].replace(/\W/g, '') }})</v-list-item-subtitle>
                   </v-list-item-content>
-                  <v-list-item-content v-else-if="data.item.group === 'Keyword'">
+                  <!-- this duplicates keywords -->
+                  <!-- <v-list-item-content v-else-if="Object.values($store.state.searchFilters.keyword).some((x) => x)">
                     <v-list-item-title>
                       {{ data.item.selected_text }}
                       <span v-if="$store.state.completeKeywords.includes(parseInt(data.item.id))">(complete)</span>
                     </v-list-item-title>
                     <v-list-item-subtitle>Keyword</v-list-item-subtitle>
-                  </v-list-item-content>
-                  <v-list-item-content v-else>
+                  </v-list-item-content> -->
+                  <v-list-item-content v-else-if="groupIsEnabled(data.item.group)">
                     <v-list-item-title>{{ data.item.selected_text }}</v-list-item-title>
                     <v-list-item-subtitle>{{ data.item.group }}</v-list-item-subtitle>
                   </v-list-item-content>
+                  <span v-else v-show="false" class="d-none" />
                 </template>
                 <template v-slot:selection="data">
                   <v-chip
@@ -329,6 +331,28 @@ export default {
       };
       return colors[group];
     },
+    groupIsEnabled(group, subgroup) {
+      const subgroupSheet = {
+        Schlagwort: 'phrase',
+        Ethonym: 'ethnonym',
+        Region: 'region',
+        Eigenname: 'name',
+      };
+      switch (group) {
+        case 'Author':
+          return this.$store.state.searchFilters.author;
+        case 'Passage':
+          return this.$store.state.searchFilters.passage;
+        case 'Use Case':
+          return this.$store.state.searchFilters.usecase;
+        case 'Keyword':
+          return this.$store.state.searchFilters.keyword[subgroupSheet[subgroup]];
+        case 'Place':
+          return Object.values(this.$store.state.searchFilters.place).some((x) => x); // TODO
+        default:
+          return true;
+      }
+    },
     pushQuery() {
       this.$refs.autocomplete.blur(); // this is the only working solution I found to unfocus autocomplete
       this.tooltip = false;
@@ -367,11 +391,6 @@ export default {
     },
   },
   watch: {
-    '$vuetify.breakpoint.name': {
-      handler(val) {
-        console.log('breakpoint', val);
-      },
-    },
     '$route.query': {
       handler(val) {
         if (this.autoQuery) { // you can disable this process
@@ -426,15 +445,13 @@ export default {
     },
     textInput(val) {
       if (!val || val.length < 1) return;
-      let urls = [];
+      const urls = {};
       const filters = this.$store.state.searchFilters;
-      if (filters.author) urls.push('https://mmp.acdh-dev.oeaw.ac.at/archiv-ac/autor-autocomplete/?q=');
-      if (filters.passage) urls.push('https://mmp.acdh-dev.oeaw.ac.at/archiv-ac/stelle-autocomplete/?q=');
-      if (Object.values(filters.keyword).some((x) => x)) urls.push('https://mmp.acdh-dev.oeaw.ac.at/archiv-ac/keyword-autocomplete/?q=');
-      if (filters.usecase) urls.push('https://mmp.acdh-dev.oeaw.ac.at/archiv-ac/usecase-autocomplete/?q=');
-      if (Object.values(filters.place).some((x) => x)) urls.push('https://mmp.acdh-dev.oeaw.ac.at/archiv-ac/ort-autocomplete/?q=');
-
-      urls = urls.map((x) => (x + val));
+      if (filters.author) urls.Author = `https://mmp.acdh-dev.oeaw.ac.at/archiv-ac/autor-autocomplete/?q=${val}`;
+      if (filters.passage) urls.Passage = `https://mmp.acdh-dev.oeaw.ac.at/archiv-ac/stelle-autocomplete/?q=${val}`;
+      if (Object.values(filters.keyword).some((x) => x)) urls.Keyword = `https://mmp.acdh-dev.oeaw.ac.at/archiv-ac/keyword-autocomplete/?q=${val}`;
+      if (filters.usecase) urls['Use Case'] = `https://mmp.acdh-dev.oeaw.ac.at/archiv-ac/usecase-autocomplete/?q=${val}`;
+      if (Object.values(filters.place).some((x) => x)) urls.Place = `https://mmp.acdh-dev.oeaw.ac.at/archiv-ac/ort-autocomplete/?q=${val}`;
 
       // this has to be reworoked
       const labels = ['Author', 'Passage', 'Keyword', 'Use Case', 'Place'];
@@ -446,14 +463,15 @@ export default {
         });
       } else {
         this.loading = true;
-        Promise.all(urls.map((x) => fetch(x)))
+        Promise.all(Object.values(urls).map((x) => fetch(x)))
           .then((res) => {
             Promise.all(res.map((x) => x.json()))
               .then((jsonRes) => {
                 console.log('promise all autocomplete', jsonRes);
                 this.$store.commit('addToResults', { req: urls.toString(), res: jsonRes });
+                console.log('urls', urls);
                 jsonRes.forEach((x, i) => {
-                  this.$store.commit('addItems', { items: x.results, label: labels[i] }); // TODO: this shouldnt work
+                  this.$store.commit('addItems', { items: x.results, label: Object.keys(urls)[i] });
                 });
               })
               .catch((err) => {
