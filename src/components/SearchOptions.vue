@@ -63,6 +63,14 @@
         prepend-icon="mdi-chevron-right"
         dense
       />
+      <v-checkbox
+        label="Unsure"
+        v-model="filters.keyword.unsure"
+        @change="changeValue($event, 'keyword.unsure')"
+        color="blue lighten-2"
+        prepend-icon="mdi-chevron-right"
+        dense
+      />
       <v-divider />
       <v-checkbox
         label="Use Case"

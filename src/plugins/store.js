@@ -28,6 +28,7 @@ export default new Vuex.Store({
         phrase: true,
         ethnonym: true,
         region: true,
+        unsure: true,
       },
       usecase: true,
       place: {
@@ -86,6 +87,4 @@ export default new Vuex.Store({
       state.slider = val;
     },
   },
-  actions: {},
-  modules: {},
 });
