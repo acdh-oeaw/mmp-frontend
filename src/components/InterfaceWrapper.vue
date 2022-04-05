@@ -433,7 +433,7 @@ export default {
       if (Object.values(filters.place).some((x) => x)) urls.Place = `https://mmp.acdh-dev.oeaw.ac.at/archiv-ac/ort-autocomplete/?q=${val}`;
 
       const labels = ['Author', 'Passage', 'Keyword', 'Use Case', 'Place'];
-      const prefetched = this.$store.state.fetchedResults[urls.toString()];
+      const prefetched = this.$store.state.fetchedResults[JSON.stringify(urls)];
 
       if (prefetched) {
         prefetched.forEach((x, i) => {
@@ -446,7 +446,7 @@ export default {
             Promise.all(res.map((x) => x.json()))
               .then((jsonRes) => {
                 console.log('promise all autocomplete', jsonRes);
-                this.$store.commit('addToResults', { req: urls.toString(), res: jsonRes });
+                this.$store.commit('addToResults', { req: JSON.stringify(urls), res: jsonRes });
                 console.log('urls', urls);
                 jsonRes.forEach((x, i) => {
                   this.$store.commit('addItems', { items: x.results, label: Object.keys(urls)[i] });
