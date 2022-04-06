@@ -353,7 +353,7 @@ export default {
   watch: {
     '$route.query': {
       handler(query) {
-        let address = 'https://mmp.acdh-dev.oeaw.ac.at/archiv/keyword-data/?';
+        let address = `https://mmp.acdh-dev.oeaw.ac.at/archiv/keyword-data/?has_usecase=${this.hasUsecase}`;
         const terms = {
           Author: 'rvn_stelle_key_word_keyword__text__autor',
           Passage: 'rvn_stelle_key_word_keyword',

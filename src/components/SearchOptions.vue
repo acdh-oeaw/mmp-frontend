@@ -63,14 +63,6 @@
         prepend-icon="mdi-chevron-right"
         dense
       />
-      <v-checkbox
-        label="Unsure"
-        v-model="filters.keyword.unsure"
-        @change="changeValue($event, 'keyword.unsure')"
-        color="blue lighten-2"
-        prepend-icon="mdi-chevron-right"
-        dense
-      />
       <v-divider />
       <v-checkbox
         label="Use Case"
@@ -112,9 +104,29 @@
       />
       <v-divider />
       <v-radio-group
-        v-model="slideOption"
-        @change="$store.commit('changeSlider', $event)"
+        label="Only include data related to Case Studies:"
+        v-model="hasUsecase"
+      >
+        <v-radio
+          label="Yes"
+          color="teal lighten-2"
+          value="true"
+        />
+        <v-radio
+          label="Exclude this data"
+          color="teal lighten-2"
+          value="false"
+        />
+        <v-radio
+          label="Include everything"
+          color="teal lighten-2"
+          value="if you can read this have a nice day :)"
+        />
+      </v-radio-group>
+      <v-divider />
+      <v-radio-group
         label="Timeslider should filter for:"
+        v-model="slideOption"
       >
         <v-radio
           label="Passages"
@@ -147,11 +159,26 @@ export default {
       model: true,
       indeterminate: false,
     },
-    slideOption: 'passage',
   }),
   computed: {
     filters() {
       return this.$store.state.searchFilters;
+    },
+    hasUsecase: {
+      get() {
+        return this.$store.state.hasUsecase;
+      },
+      set(val) {
+        this.$store.commit('changeValue', { key: 'hasUsecase', val });
+      },
+    },
+    slideOption: {
+      get() {
+        return this.$store.state.slider;
+      },
+      set(val) {
+        this.$store.commit('changeValue', { key: 'slider', val });
+      },
     },
     active: {
       get() {
@@ -173,13 +200,9 @@ export default {
     handleCategories(cat, vals) {
       // console.log('filter vals', vals);
       this[cat].indeterminate = false;
-      if (vals.every((x) => x)) {
-        this[cat].model = true;
-      } else if (vals.every((x) => !x)) {
-        this[cat].model = false;
-      } else {
-        this[cat].indeterminate = true;
-      }
+      if (vals.every((x) => x)) this[cat].model = true;
+      else if (vals.every((x) => !x)) this[cat].model = false;
+      else this[cat].indeterminate = true;
     },
   },
   watch: {

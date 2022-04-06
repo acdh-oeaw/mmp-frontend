@@ -282,13 +282,13 @@ export default {
         Eigenname: 'name',
         Region: 'region',
         Ethonym: 'ethnonym',
-        Unsicher: 'unsure',
       };
 
       const filterArr = items.filter((item) => {
         const storeEq = this.$store.state.searchFilters[item.group.replace(' ', '').toLowerCase()];
         if (typeof storeEq === 'object') {
           if (item.group === 'Keyword' && item.selected_text.includes(',')) {
+            if (item.selected_text.includes('Unsicher')) return true;
             return storeEq[keywordSheet[item.selected_text.split(',')[1].replace(/\W/g, '')]];
           }
           return Object.values(storeEq).some((x) => x);
@@ -460,6 +460,7 @@ export default {
               });
           })
           .catch((err) => {
+            this.loading = false;
             console.error(err);
           });
       }

@@ -21,7 +21,7 @@
             {{ data.jahrhundert || 'unknown century' }}, {{ getOptimalName(data.ort) || 'unknown place' }}
           </v-list-item-subtitle>
           <v-list-item-subtitle v-if="data.gnd_id">
-            GND-ID: {{ data.gnd_id }}
+            GND-ID: <a :href="'https://d-nb.info/gnd/' + data.gnd_id.replace(/\D/g, '')" target="_blank">{{ data.gnd_id.replace(/\D/g, '')}}</a>
           </v-list-item-subtitle>
         </div>
         <v-skeleton-loader
@@ -32,6 +32,21 @@
     </v-list-item>
     <v-divider />
     <v-container>
+      <div
+        class="keyword-chip"
+        v-for="keyword in keywords.results"
+        :key="keyword.url"
+      >
+        <v-chip
+          color="blue lighten-4"
+          small
+          @click="$store.commit('addToItemsAndInput', { id: keyword.url.replace(/\D/g, ''), selected_text: keyword.stichwort, group: 'Keyword' })"
+        >
+          {{ keyword.stichwort }}
+        </v-chip>
+      </div>
+      &nbsp;
+      <v-divider />
       <v-expansion-panels
         :value="[0, 1]"
         flat
@@ -151,6 +166,7 @@ export default {
     data: {},
     usecases: [],
     passages: [],
+    keywords: {},
   }),
   mixins: [helpers],
   watch: {
@@ -162,9 +178,9 @@ export default {
         const urls = [
           `https://mmp.acdh-dev.oeaw.ac.at/api/autor/${params.id}/?format=json`,
           `https://mmp.acdh-dev.oeaw.ac.at/api/usecase/?has_stelle__text__autor=${params.id}&format=json`,
-          `https://mmp.acdh-dev.oeaw.ac.at/api/stelle/?text__autor=${params.id}&format=json`,
+          `https://mmp.acdh-dev.oeaw.ac.at/api/stelle/?text__autor=${params.id}&format=json&has_usecase=${this.hasUsecase}`,
+          `https://mmp.acdh-dev.oeaw.ac.at/api/keyword/?rvn_stelle_key_word_keyword__text__autor=${params.id}&format=json&has_usecase=${this.hasUsecase}`,
         ];
-
         const prefetched = this.$store.state.fetchedResults[urls.toString()];
 
         if (prefetched) {
@@ -178,7 +194,7 @@ export default {
                 .then((jsonRes) => {
                   console.log('author res', jsonRes);
                   this.$store.commit('addToResults', { req: urls.toString(), res: jsonRes });
-                  [this.data, this.usecases, this.passages] = jsonRes;
+                  [this.data, this.usecases, this.passages, this.keywords] = jsonRes;
                 })
                 .catch((err) => {
                   console.error(err);

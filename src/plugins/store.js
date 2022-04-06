@@ -28,7 +28,6 @@ export default new Vuex.Store({
         phrase: true,
         ethnonym: true,
         region: true,
-        unsure: true,
       },
       usecase: true,
       place: {
@@ -37,6 +36,7 @@ export default new Vuex.Store({
         author: true,
       },
     },
+    hasUsecase: 'true',
     slider: 'passage',
   },
   mutations: {
@@ -83,8 +83,8 @@ export default new Vuex.Store({
         state.searchFilters[cat][key] = val;
       });
     },
-    changeSlider: (state, val) => {
-      state.slider = val;
+    changeValue: (state, { key, val }) => {
+      state[key] = val;
     },
   },
 });

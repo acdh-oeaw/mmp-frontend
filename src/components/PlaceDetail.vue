@@ -130,8 +130,8 @@ export default {
         this.loading = true;
         const urls = [
           `https://mmp.acdh-dev.oeaw.ac.at/api/ort/${params.id}/?format=json`,
-          `https://mmp.acdh-dev.oeaw.ac.at/api/text/?ort=${params.id}&format=json`,
-          `https://mmp.acdh-dev.oeaw.ac.at/api/autor/?ort=${params.id}&format=json`,
+          `https://mmp.acdh-dev.oeaw.ac.at/api/text/?ort=${params.id}&format=json&has_usecase=${this.hasUsecase}`,
+          `https://mmp.acdh-dev.oeaw.ac.at/api/autor/?ort=${params.id}&format=json&has_usecase=${this.hasUsecase}`,
         ];
         const prefetched = this.$store.state.fetchedResults[urls.toString()];
 

@@ -48,7 +48,7 @@ export default {
   ],
   mixins: [helpers],
   mounted() {
-    let url = `https://mmp.acdh-dev.oeaw.ac.at/api/stelle/?key_word=${this.siblingNode}`;
+    let url = `https://mmp.acdh-dev.oeaw.ac.at/api/stelle/?key_word=${this.siblingNode}&has_usecase=${this.hasUsecase}`;
     this.parentNodes.forEach((x) => {
       url += `&key_word=${x}`;
     });

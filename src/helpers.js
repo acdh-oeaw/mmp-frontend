@@ -26,5 +26,8 @@ export default {
       };
       return widths[this.$vuetify.breakpoint.name] || '33vw';
     },
+    hasUsecase() {
+      return this.$store.state.hasUsecase;
+    },
   },
 };

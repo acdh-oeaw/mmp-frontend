@@ -301,7 +301,7 @@ export default {
         // Else
         urls = [
           `https://mmp.acdh-dev.oeaw.ac.at/archiv/keyword-data/?ids=${ids.join(',')}`,
-          'https://mmp.acdh-dev.oeaw.ac.at/api/stelle/?format=json',
+          `https://mmp.acdh-dev.oeaw.ac.at/api/stelle/?format=json&has_usecase=${this.hasUsecase}`,
           'https://mmp.acdh-dev.oeaw.ac.at/api/spatialcoverage/?format=json',
         ];
 
