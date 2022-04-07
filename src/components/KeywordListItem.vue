@@ -48,9 +48,10 @@ export default {
   ],
   mixins: [helpers],
   mounted() {
-    let url = `https://mmp.acdh-dev.oeaw.ac.at/api/stelle/?key_word=${this.siblingNode}&has_usecase=${this.hasUsecase}`;
+    const { intersect } = this.$store.state.apiParams;
+    let url = `https://mmp.acdh-dev.oeaw.ac.at/api/stelle/?${intersect ? 'key_word_and' : 'key_word'}=${this.siblingNode}&has_usecase=${this.hasUsecase}`;
     this.parentNodes.forEach((x) => {
-      url += `&key_word=${x}`;
+      url += intersect ? `&key_word_and=${x}` : `&key_word=${x}`;
     });
 
     const prefetched = this.$store.state.fetchedResults[url];

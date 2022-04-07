@@ -306,7 +306,7 @@ export default {
         ];
 
         ids.forEach((x) => {
-          urls[1] += `&key_word=${x}`;
+          urls[1] += this.$store.state.apiParams.intersect ? `&key_word_and=${x}` : `&key_word=${x}`;
           urls[2] += `&key_word=${x}`;
         });
 

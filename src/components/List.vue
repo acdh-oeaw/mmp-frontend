@@ -122,7 +122,7 @@ export default {
       const terms = {
         Author: 'text__autor',
         // Passage: 'id', // not used anymore
-        Keyword: 'key_word',
+        Keyword: this.$store.state.apiParams.intersect ? 'key_word_and' : 'key_word',
         'Use Case': 'use_case',
         Place: 'ort',
       };

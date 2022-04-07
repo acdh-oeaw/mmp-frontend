@@ -36,8 +36,11 @@ export default new Vuex.Store({
         author: true,
       },
     },
-    hasUsecase: 'true',
-    slider: 'passage',
+    apiParams: {
+      hasUsecase: 'true',
+      intersect: true,
+      slider: 'passage',
+    },
   },
   mutations: {
     addItems: (state, { items, label }) => {
@@ -83,8 +86,8 @@ export default new Vuex.Store({
         state.searchFilters[cat][key] = val;
       });
     },
-    changeValue: (state, { key, val }) => {
-      state[key] = val;
+    setApiParam: (state, { key, val }) => {
+      state.apiParams[key] = val;
     },
   },
 });

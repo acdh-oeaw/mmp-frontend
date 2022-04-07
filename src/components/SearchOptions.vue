@@ -120,7 +120,23 @@
         <v-radio
           label="Include everything"
           color="teal lighten-2"
-          value="if you can read this have a nice day :)"
+          value="if you can read this have a nice day :^)"
+        />
+      </v-radio-group>
+      <v-divider />
+      <v-radio-group
+        label="When using multiple entries, use (if possible):"
+        v-model="intersection"
+      >
+        <v-radio
+          label="Intersection"
+          color="teal lighten-2"
+          :value="true"
+        />
+        <v-radio
+          label="Union"
+          color="teal lighten-2"
+          :value="false"
         />
       </v-radio-group>
       <v-divider />
@@ -166,18 +182,26 @@ export default {
     },
     hasUsecase: {
       get() {
-        return this.$store.state.hasUsecase;
+        return this.$store.state.apiParams.hasUsecase;
       },
       set(val) {
-        this.$store.commit('changeValue', { key: 'hasUsecase', val });
+        this.$store.commit('setApiParam', { key: 'hasUsecase', val });
+      },
+    },
+    intersection: {
+      get() {
+        return this.$store.state.apiParams.intersect;
+      },
+      set(val) {
+        this.$store.commit('setApiParam', { key: 'intersect', val });
       },
     },
     slideOption: {
       get() {
-        return this.$store.state.slider;
+        return this.$store.state.apiParams.slider;
       },
       set(val) {
-        this.$store.commit('changeValue', { key: 'slider', val });
+        this.$store.commit('setApiParam', { key: 'slider', val });
       },
     },
     active: {
