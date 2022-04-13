@@ -88,7 +88,6 @@
                 <v-btn
                   text
                   small
-                  @dblclick="ee"
                   class="disable-events"
                 >
                   View as
@@ -210,12 +209,43 @@
                   {{ (value * 10) }} AD
                 </template>
                 <template v-slot:append>
-                  <v-btn icon>
-                    <img class="icon" @click="toggleSliderComponent('v-range-slider')" :src="disabledSlider ? $vuetify.icons.values.rangeDisabled : $vuetify.icons.values.range" alt="Range Icon" />
-                  </v-btn>
-                  <v-btn icon>
-                    <img class="icon" @click="toggleSliderComponent('v-slider')" :src="disabledSlider ? $vuetify.icons.values.sliderDisabled : $vuetify.icons.values.slider" alt="Slider Icon" />
-                  </v-btn>
+                  <v-menu :close-on-content-click="false">
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-btn
+                        icon
+                        v-bind="attrs"
+                        v-on="on"
+                      >
+                        <v-icon>mdi-cog</v-icon>
+                      </v-btn>
+                    </template>
+                    <v-card>
+                      <v-card-text class="text-center">
+                        <v-btn icon>
+                          <img class="icon" @click="toggleSliderComponent('v-range-slider')" :src="disabledSlider ? $vuetify.icons.values.rangeDisabled : $vuetify.icons.values.range" alt="Range Icon" />
+                        </v-btn>
+                        <v-btn icon>
+                          <img class="icon" @click="toggleSliderComponent('v-slider')" :src="disabledSlider ? $vuetify.icons.values.sliderDisabled : $vuetify.icons.values.slider" alt="Slider Icon" />
+                        </v-btn>
+                        <v-divider />
+                        <v-radio-group
+                          label="Timeslider should filter for:"
+                          v-model="slideOption"
+                        >
+                          <v-radio
+                            label="Passages"
+                            color="teal lighten-2"
+                            value="passage"
+                          />
+                          <v-radio
+                            label="Texts"
+                            color="red darken-4"
+                            value="text"
+                          />
+                        </v-radio-group>
+                      </v-card-text>
+                    </v-card>
+                  </v-menu>
                 </template>
               </component>
             </v-col>
@@ -310,6 +340,14 @@ export default {
       },
       set(val) {
         this.$router.push({ name: val, query: this.query });
+      },
+    },
+    slideOption: {
+      get() {
+        return this.$store.state.apiParams.slider;
+      },
+      set(val) {
+        this.$store.commit('setApiParam', { key: 'slider', val });
       },
     },
     query() {

@@ -346,7 +346,7 @@ export default {
     },
     types() {
       const ret = this.graph?.nodes?.map((x) => x.keyword_type);
-      console.log('types', ret);
+      // console.log('types', ret);
       return [...new Set(ret)]; // removes duplicates
     },
   },
