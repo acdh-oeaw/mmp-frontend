@@ -9,27 +9,31 @@
         class="transparent-skeleton"
         v-if="loading"
       />
-      <v-list-item v-else-if="data.length" v-for="text in data" :key="text.url" class="list-item">
-        <v-list-item-content>
-          <v-list-item-title>
-            {{ text.title }}
-          </v-list-item-title>
-          <v-list-item-subtitle>
-            {{ text.autor.map((x) => x.name_en).join(', ') }}
-          </v-list-item-subtitle>
-          <v-list-item-subtitle>
-            <v-chip
-              v-for="keyword in text.keywords"
-              :key="keyword.url"
-              class="keyword-chip"
-              small
-              color="blue lighten-4"
+        <v-list-item
+          v-else-if="data.length"
+          v-for="passage in data"
+          three-line
+          :key="passage.url"
+          :to="{
+              name: fullscreen ? 'Passage Detail Fullscreen' : 'Passage Detail',
+              query: { Passage: getIdFromUrl(passage.url) },
+              params: { id: getIdFromUrl(passage.url) }}"
             >
-              {{ keyword.stichwort }}
-            </v-chip>
-          </v-list-item-subtitle>
-        </v-list-item-content>
-      </v-list-item>
+            <v-list-item-content>
+              <v-list-item-title>
+                  {{ passage.display_label }}
+              </v-list-item-title>
+              <v-list-item-subtitle v-if="passage.text.autor.length">
+                {{ passage.text.title }}, {{ passage.text.autor.map((x) => getOptimalName(x)).join(', ') }}
+              </v-list-item-subtitle>
+              <v-list-item-subtitle v-if="passage.text.jahrhundert">
+                {{ passage.text.jahrhundert }} century
+              </v-list-item-subtitle>
+            </v-list-item-content>
+            <v-list-item-icon>
+              <v-icon>mdi-chevron-right</v-icon>
+            </v-list-item-icon>
+        </v-list-item>
       <v-list-item v-else>No passages found!</v-list-item>
     </v-list>
   </v-card>
@@ -56,16 +60,21 @@ export default {
 
     const prefetched = this.$store.state.fetchedResults[url];
     if (prefetched) {
-      const texts = prefetched.results.map((x) => ({ ...x.text, keywords: x.key_word }));
-      this.data = this.removeDuplicates(texts, ['url']);
+      this.loading = false;
+      // const texts = prefetched.results.map((x) => ({ ...x.text, keywords: x.key_word }));
+      const passages = prefetched.results;
+      console.log('stored passages', passages);
+      this.data = this.removeDuplicates(passages, 'url');
     } else {
       fetch(url)
         .then((res) => res.json())
         .then((jsonRes) => {
           this.$store.commit('addToResults', { req: url, jsonRes });
 
-          const texts = jsonRes.results.map((x) => ({ ...x.text, keywords: x.key_word }));
-          this.data = this.removeDuplicates(texts, ['url']);
+          // const texts = jsonRes.results.map((x) => ({ ...x.text, keywords: x.key_word }));
+          const passages = jsonRes.results;
+          console.log('passages', passages);
+          this.data = this.removeDuplicates(passages, 'url');
           console.log('Keyword List Item data', this.data);
         })
         .catch((err) => {
