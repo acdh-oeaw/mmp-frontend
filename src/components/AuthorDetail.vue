@@ -179,7 +179,6 @@ export default {
           `https://mmp.acdh-dev.oeaw.ac.at/api/stelle/?text__autor=${params.id}&format=json&has_usecase=${this.hasUsecase}`,
           `https://mmp.acdh-dev.oeaw.ac.at/api/keyword/?rvn_stelle_key_word_keyword__text__autor=${params.id}&format=json&has_usecase=${this.hasUsecase}`,
         ];
-        
         const prefetched = this.$store.state.fetchedResults[urls.toString()];
 
         if (prefetched) {
