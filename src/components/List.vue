@@ -128,7 +128,6 @@ export default {
       };
 
       let address = `https://mmp.acdh-dev.oeaw.ac.at/api/stelle/?format=json&limit=${this.pagination.limit}&offset=${this.pagination.offset}&has_usecase=${this.hasUsecase}`;
-
       const props = [
         this.author,
         this.passage,
