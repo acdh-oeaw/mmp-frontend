@@ -314,13 +314,14 @@ export default {
       return (feature) => ({
         color: '#FDD835',
         fillOpacity: 1 / (feature.properties.fuzzyness + 1),
-        weight: 0,
+        weight: 1.5,
         className: `blur${feature.properties.fuzzyness}`,
       });
     },
     spatialStyle() {
       return (feature) => ({
-        fillOpacity: 0.5,
+        color: '#E53935',
+        fillOpacity: 1 / (feature.properties.fuzzyness + 1),
         weight: 0,
         className: `blur${feature.properties.fuzzyness}`,
       });
