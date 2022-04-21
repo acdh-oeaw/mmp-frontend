@@ -314,13 +314,14 @@ export default {
       return (feature) => ({
         color: '#FDD835',
         fillOpacity: 1 / (feature.properties.fuzzyness + 1),
-        weight: 0,
+        weight: 1.5,
         className: `blur${feature.properties.fuzzyness}`,
       });
     },
     spatialStyle() {
       return (feature) => ({
-        fillOpacity: 0.5,
+        color: '#E53935',
+        fillOpacity: 1 / (feature.properties.fuzzyness + 1),
         weight: 0,
         className: `blur${feature.properties.fuzzyness}`,
       });
@@ -404,9 +405,7 @@ export default {
     },
     alterSvg(polygonFeature) {
       if (!document.getElementById(polygonFeature)) {
-        const split = polygonFeature.match(/\d+/g);
-        console.log('split', split);
-        const fuzzyness = split[0];
+        const fuzzyness = polygonFeature.match(/\d+/g)[0];
         const svg = this.$refs.map.mapObject.getPanes().overlayPane.firstChild;
         const svgFilter = document.createElementNS('http://www.w3.org/2000/svg', 'filter');
         const svgBlur = document.createElementNS('http://www.w3.org/2000/svg', 'feGaussianBlur');
@@ -419,16 +418,35 @@ export default {
         svgFilter.setAttribute('width', '200%');
         svgFilter.setAttribute('height', '200%');
 
-        const scale = this.$refs.map.mapObject.getZoom() / 5;
+        let scale = this.$refs.map.mapObject.getZoom() / 5;
 
         // Set deviation attribute of blur
-        const blurring = fuzzyness * scale;
+        let blurring = fuzzyness * scale;
+        svgBlur.setAttribute('class', 'feGaussianBlur');
         svgBlur.setAttribute('stdDeviation', `${blurring} ${blurring}`);
 
         // Append blur element to filter element
         svgFilter.appendChild(svgBlur);
         // Append filter element to SVG element
         svg.appendChild(svgFilter);
+        console.log('svg end');
+
+        let fromZoom;
+        this.$refs.map.mapObject.on('zoomend', () => {
+          // eslint-disable-next-line prefer-destructuring
+          const crs = this.$refs.map.mapObject.options.crs;
+
+          // eslint-disable-next-line no-underscore-dangle
+          if (fromZoom === undefined) { fromZoom = this.$refs.map.mapObject._zoom; }
+          // eslint-disable-next-line no-underscore-dangle
+          const toZoom = this.$refs.map.mapObject._zoom;
+
+          scale = crs.scale(toZoom) / crs.scale(fromZoom);
+          blurring = fuzzyness * scale;
+
+          svgBlur.setAttribute('class', 'feGaussianBlur');
+          svgBlur.setAttribute('stdDeviation', `${blurring} ${blurring}`);
+        });
       }
     },
     /*
@@ -544,6 +562,7 @@ export default {
       this.alterSvg(list[j].classList[0]);
       list[j].setAttribute('filter', `url(#${list[j].classList[0]})`);
     }
+    console.log('updated');
   },
 };
 </script>
