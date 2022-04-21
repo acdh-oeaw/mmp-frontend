@@ -21,7 +21,7 @@
             {{ data.jahrhundert || 'unknown century' }}, {{ getOptimalName(data.ort) || 'unknown place' }}
           </v-list-item-subtitle>
           <v-list-item-subtitle v-if="data.gnd_id">
-            GND-ID: <a :href="'https://d-nb.info/gnd/' + data.gnd_id.replace(/\D/g, '')" target="_blank">{{ data.gnd_id.replace(/\D/g, '')}}</a>
+            GND-ID: <a :href="'https://d-nb.info/gnd/' + data.gnd_id.replace(/\D/g, '')" target="_blank">{{ data.gnd_id.replace(/\D/g, '')}} <v-icon small>mdi-open-in-new</v-icon></a>
           </v-list-item-subtitle>
         </div>
         <v-skeleton-loader
@@ -45,8 +45,6 @@
           {{ keyword.stichwort }}
         </v-chip>
       </div>
-      &nbsp;
-      <v-divider />
       <v-expansion-panels
         :value="[0, 1]"
         flat
