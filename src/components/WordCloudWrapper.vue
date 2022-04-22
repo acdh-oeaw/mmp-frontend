@@ -6,24 +6,26 @@
     :height="fullscreen ? 'calc(100vh - 4px)' : 500"
   >
     <v-overlay
+      v-if="false"
       absolute
       opacity=".2"
       :value="loading || avgProgress < 100 || !filteredWords.some((x) => x.length)"
     >
-    <h1 v-if="avgProgress < 100 && filteredWords.some((x) => x.length)" class="no-nodes">
-      <v-progress-circular
-        :value="avgProgress"
-        :indeterminate="loading"
-        :active="avgProgress < 100 || loading"
-        color="#0F1226"
-      />
-    </h1>
-    <h1 v-if="!loading && !filteredWords.some((x) => x.length)" class="no-nodes">
-      No words found!
-    </h1>
+      <h1 v-if="avgProgress < 100 && filteredWords.some((x) => x.length)" class="no-nodes">
+        <v-progress-circular
+          :value="avgProgress"
+          :indeterminate="loading"
+          :active="avgProgress < 100 || loading"
+          color="#0F1226"
+        />
+      </h1>
+      <h1 v-if="!loading && !filteredWords.some((x) => x.length)" class="no-nodes">
+        No words found!
+      </h1>
     </v-overlay>
     <v-row
       no-gutters
+      v-if="type === 'cloud'"
     >
       <template v-for="filtered, i in filteredWords">
         <v-col v-if="showWords[i] && filtered.length"  :key="JSON.stringify(filtered) + i">
@@ -46,6 +48,20 @@
               <div class="wordHover">{{ text }}: {{ weight }}</div>
             </template> -->
           </word-cloud>
+        </v-col>
+      </template>
+    </v-row>
+    <v-row v-else-if="type === 'pie'">
+      <template v-for="filtered, i in filteredWords">
+        <v-col :key="i + type">
+          <pie-chart :data="filtered" :title="['All Occurences', 'Keyword Occurences'][i]" />
+        </v-col>
+      </template>
+    </v-row>
+    <v-row v-else>
+      <template v-for="filtered, i in filteredWords">
+        <v-col :key="i + type">
+          <word-cloud-beta :data="filtered" :title="['All Occurences', 'Keyword Occurences'][i]" />
         </v-col>
       </template>
     </v-row>
@@ -132,6 +148,81 @@
       </v-icon>
     </v-btn>
     <fullscreen-button :usecase="usecase" />
+    <v-speed-dial
+      v-model="speeddial"
+      absolute
+      top
+      left
+      direction="bottom"
+      transition="slide-y-transition"
+    >
+      <template v-slot:activator>
+        <v-btn
+          v-model="speeddial"
+          icon
+          small
+        >
+          <v-icon v-if="speeddial">
+            mdi-close
+          </v-icon>
+          <v-icon v-else>
+            mdi-dots-vertical
+          </v-icon>
+        </v-btn>
+      </template>
+      <v-tooltip
+        right
+        transition="slide-x-transition"
+      >
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            fab
+            small
+            @click="type = 'cloud'"
+            v-bind="attrs"
+            v-on="on"
+          >
+            <v-icon>mdi-cloud</v-icon>
+          </v-btn>
+        </template>
+        <span>Word Cloud</span>
+      </v-tooltip>
+      <v-tooltip
+        right
+        transition="slide-x-transition"
+      >
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            fab
+            small
+            @click.stop="type = 'pie'"
+            v-bind="attrs"
+            v-on="on"
+          >
+            <v-icon>mdi-chart-pie</v-icon>
+          </v-btn>
+        </template>
+        <span>Pie Chart</span>
+      </v-tooltip>
+      <v-tooltip
+        right
+        transition="slide-x-transition"
+      >
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            color="secondary"
+            fab
+            small
+            @click="type = 'beta'"
+            v-bind="attrs"
+            v-on="on"
+          >
+            <v-icon>mdi-cloud-alert</v-icon>
+          </v-btn>
+        </template>
+        <span>Word Cloud Beta</span>
+      </v-tooltip>
+    </v-speed-dial>
   </v-card>
 </template>
 <script>
@@ -139,11 +230,15 @@ import Gradient from 'javascript-color-gradient';
 import WordCloud from 'vuewordcloud';
 
 import helpers from '@/helpers';
+import PieChart from './PieChart';
+import WordCloudBeta from './WordCloudBeta';
 import FullscreenButton from './FullscreenButton';
 
 export default {
   name: 'WordCloudWrapper',
-  components: { WordCloud, FullscreenButton },
+  components: {
+    WordCloud, FullscreenButton, PieChart, WordCloudBeta,
+  },
   props: ['usecase', 'keyword', 'author', 'passage', 'place', 'height'],
   data: () => ({
     avgProgress: 0,
@@ -156,8 +251,10 @@ export default {
       y: 0,
       word: '',
     },
+    speeddial: false,
     progress: [0, 0],
     check: ['words', 'keywords'],
+    type: 'cloud',
     words: [[], []],
   }),
   mixins: [helpers],

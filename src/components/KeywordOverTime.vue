@@ -9,14 +9,8 @@ import { Chart } from 'highcharts-vue';
 
 export default ({
   name: 'OverTime',
-  data: () => ({
-  }),
-  components: {
-    Chart,
-  },
-  props: [
-    'data',
-  ],
+  components: { Chart },
+  props: ['data'],
   computed: {
     chartData() {
       return {
