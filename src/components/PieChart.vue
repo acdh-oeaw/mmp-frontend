@@ -31,7 +31,9 @@ export default {
           type: 'pie',
           height: '500px',
         },
-        title: this.title || false,
+        title: {
+          text: this.title || false,
+        },
         credits: {
           enabled: false,
         },
@@ -62,7 +64,7 @@ export default {
   },
 };
 </script>
-<style scoped>
+<style>
 div.pieWrapper {
   margin: 20px;
 }
