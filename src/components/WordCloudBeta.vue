@@ -8,6 +8,8 @@ import { Chart } from 'highcharts-vue';
 import highcharts from 'highcharts';
 import wordcloud from 'highcharts/modules/wordcloud';
 
+import Gradient from 'javascript-color-gradient';
+
 wordcloud(highcharts);
 
 export default {
@@ -20,6 +22,19 @@ export default {
   computed: {
     cloudOptions() {
       console.log(this.renderKey);
+
+      const colors = [
+        '#a91a1a',
+        '#3a8d86',
+        '#0c76ce',
+        '#c09000',
+        '#3b823e',
+      ];
+      const colorGradient = new Gradient();
+      colorGradient.setGradient(...colors);
+
+      colorGradient.setMidpoint(50);
+
       return {
         chart: {
           backgroundColor: 'transparent',
@@ -29,19 +44,25 @@ export default {
         tooltip: {
           pointFormat: 'Occurences: {point.occ}',
         },
-        title: this.title || false,
+        title: {
+          text: this.title || false,
+        },
         credits: {
           enabled: false,
         },
         series: {
           name: 'Occurrences',
           data: this.data.map((x) => ({
-            name: x[0].toUpperCase(),
+            name: x[0],
             weight: x[1] ** (3 / 4),
             occ: x[1],
+            color: colorGradient.getColor(Math.floor((50 * x[1]) / this.maxOccurence)),
           })),
         },
       };
+    },
+    maxOccurence() {
+      return Math.max(...this.data.map((x) => x[1]));
     },
   },
   mounted() {
@@ -50,8 +71,9 @@ export default {
   },
 };
 </script>
-<style scoped>
-div.pieWrapper {
-  margin: 20px;
+<style>
+text.highcharts-point {
+  font-family: 'Roboto', sans-serif !important;
+  scale: 1.3;
 }
 </style>

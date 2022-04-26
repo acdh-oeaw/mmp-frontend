@@ -53,14 +53,22 @@
     </v-row>
     <v-row v-else-if="type === 'pie'">
       <template v-for="filtered, i in filteredWords">
-        <v-col :key="i + type">
+        <v-col
+          v-if="showWords[i]"
+          :key="JSON.stringify(filtered) + i"
+          :cols="showWords.filter((x) => x).length >= 2 ? 6 : 12"
+        >
           <pie-chart :data="filtered" :title="['All Occurences', 'Keyword Occurences'][i]" />
         </v-col>
       </template>
     </v-row>
     <v-row v-else>
       <template v-for="filtered, i in filteredWords">
-        <v-col :key="i + type">
+        <v-col
+          v-if="showWords[i]"
+          :key="JSON.stringify(filtered) + i"
+          :cols="showWords.filter((x) => x).length >= 2 ? 6 : 12"
+        >
           <word-cloud-beta :data="filtered" :title="['All Occurences', 'Keyword Occurences'][i]" />
         </v-col>
       </template>
@@ -77,6 +85,7 @@
           right
           icon
           @click="drawer = false"
+          style="z-index: 100"
         >
           <v-icon>mdi-close</v-icon>
         </v-btn>
