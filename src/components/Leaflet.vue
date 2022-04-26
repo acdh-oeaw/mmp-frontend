@@ -147,7 +147,7 @@
             <v-card-title>Select Basemap</v-card-title>
             <v-card-text>
               <v-radio-group v-model="radioGroup">
-                <v-radio v-for="tileProvider in tileProviders" :key="tileProvider.id" :label="tileProvider.name" :value="tileProvider.id" v-on:change="test(tileProvider.id)">
+                <v-radio v-for="tileProvider in tileProviders" :key="tileProvider.id" :label="tileProvider.name" :value="tileProvider.id" v-on:change="changeBasemap(tileProvider.id)">
                 </v-radio>
               </v-radio-group>
             </v-card-text>
@@ -180,7 +180,7 @@
       <l-geo-json
         v-if="data[2] && data[2].results && showLayers.places"
         :geojson="data[2].results"
-        :options="{ onEachFeature: onEachPlace }"
+        :options="optionsMarkers"
       />
       <template v-if="showLayers.relatedPlaces">
         <l-marker
@@ -241,6 +241,8 @@ import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 
 import helpers from '@/helpers';
 import greenMarker from '@/assets/recolored_marker_icon.png';
+import redMarker from '@/assets/red_marker_icon.png';
+import blueMarker from '@/assets/blue_marker_icon.png';
 import greenMarker2x from '@/assets/recolored_marker_icon_2x.png';
 
 export default {
@@ -313,17 +315,17 @@ export default {
     coneStyle() {
       return (feature) => ({
         color: '#FDD835',
-        fillOpacity: 1 / (feature.properties.fuzzyness + 1),
+        fillOpacity: 0.6,
         weight: 1.5,
-        className: `blur${feature.properties.fuzzyness}`,
+        className: `blur${feature.properties.fuzzyness} blurred`,
       });
     },
     spatialStyle() {
       return (feature) => ({
         color: '#E53935',
-        fillOpacity: 1 / (feature.properties.fuzzyness + 1),
+        fillOpacity: 0.6,
         weight: 0,
-        className: `blur${feature.properties.fuzzyness}`,
+        className: `blur${feature.properties.fuzzyness} blurred`,
       });
     },
     onEach() {
@@ -349,6 +351,12 @@ export default {
           });
       };
     },
+    optionsMarkers() {
+      return {
+        pointToLayer: this.pointToLayer,
+        onEachFeature: this.onEachPlace,
+      };
+    },
     onEachPlace() {
       return (feature, layer) => {
         layer
@@ -370,6 +378,16 @@ export default {
               });
             },
           });
+      };
+    },
+    pointToLayer() {
+      return (feature, latlng) => {
+        const featCat = feature.properties.kategorie.match(/\d+/g)[0];
+        const icon = new L.Icon({ iconUrl: blueMarker, iconSize: [16, 26] });
+
+        if (Number(featCat) === 8) { icon.options.iconUrl = redMarker; }
+        // eslint-disable-next-line object-shorthand
+        return L.marker(latlng, { icon: icon });
       };
     },
   },
@@ -413,10 +431,10 @@ export default {
         svgFilter.setAttribute('id', `blur${fuzzyness}`);
 
         // Give room to blur to prevent clipping
-        svgFilter.setAttribute('x', '-50%');
-        svgFilter.setAttribute('y', '-50%');
-        svgFilter.setAttribute('width', '200%');
-        svgFilter.setAttribute('height', '200%');
+        svgFilter.setAttribute('x', '-100%');
+        svgFilter.setAttribute('y', '-100%');
+        svgFilter.setAttribute('width', '500%');
+        svgFilter.setAttribute('height', '500%');
 
         let scale = this.$refs.map.mapObject.getZoom() / 5;
 
@@ -429,7 +447,6 @@ export default {
         svgFilter.appendChild(svgBlur);
         // Append filter element to SVG element
         svg.appendChild(svgFilter);
-        console.log('svg end');
 
         let fromZoom;
         this.$refs.map.mapObject.on('zoomend', () => {
@@ -449,53 +466,7 @@ export default {
         });
       }
     },
-    /*
-    draw(coordinates, fuzzyness) {
-      const sortedCoords = [];
-      coordinates.forEach((j) => {
-        sortedCoords.push([j[1], j[0]]);
-      });
-      let projectedPolygon;
-      const polygon = new PIXI.Graphics();
-      const blurFilter = new PIXI.filters.BlurFilter();
-      polygon.filters = [blurFilter];
-
-      const pixiContainer = new PIXI.Container();
-      pixiContainer.addChild(polygon);
-
-      let firstDraw = true;
-      let prevZoom;
-
-      const pixiOverlay = L.pixiOverlay((utils) => {
-        const zoom = utils.getMap().getZoom();
-        const container = utils.getContainer();
-        const renderer = utils.getRenderer();
-        const project = utils.latLngToLayerPoint;
-        const scale = utils.getScale();
-        blurFilter.blur = fuzzyness * 20 * scale;
-
-        if (firstDraw) {
-          projectedPolygon = sortedCoords.map((coords) => project(coords));
-        }
-        if (firstDraw || prevZoom !== zoom) {
-          polygon.clear();
-          polygon.lineStyle(0, 0, 0);
-          polygon.beginFill(0x0000ff, 0.5);
-
-          projectedPolygon.forEach((coords, index) => {
-            if (index === 0) polygon.moveTo(coords.x, coords.y);
-            else polygon.lineTo(coords.x, coords.y);
-          });
-          polygon.endFill();
-        }
-        firstDraw = false;
-        prevZoom = zoom;
-        renderer.render(container);
-      }, pixiContainer);
-      pixiOverlay.addTo(this.$refs.map.mapObject);
-    },
-    */
-    test(id) {
+    changeBasemap(id) {
       this.tileProviders.forEach((i) => {
         if (i.id === id) i.visible = true;
         else i.visible = false;
@@ -557,12 +528,11 @@ export default {
     });
   },
   updated() {
-    const list = document.getElementsByClassName('leaflet-interactive');
+    const list = document.getElementsByClassName('blurred');
     for (let j = 0; j < list.length; j += 1) {
       this.alterSvg(list[j].classList[0]);
       list[j].setAttribute('filter', `url(#${list[j].classList[0]})`);
     }
-    console.log('updated');
   },
 };
 </script>
