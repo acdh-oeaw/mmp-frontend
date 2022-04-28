@@ -49,6 +49,7 @@
                 color="red darken-1"
                 dense
                 :disabled="!(data[0] && data[0].count)"
+                v-on:change="uncheckSpatial()"
               >
                 <template v-slot:label>
                   Spatial&nbsp;Coverage
@@ -65,6 +66,17 @@
                       {{ data[0].count }}
                     </template>
                   </v-chip>
+                </template>
+              </v-checkbox>
+              <v-checkbox
+                v-model="showLayers.labels"
+                color="blue darken-1"
+                dense
+                :disabled="!(polygonCenters && polygonCenters.count)"
+              >
+                <template v-slot:label>
+                  Labels
+                  &nbsp;
                 </template>
               </v-checkbox>
               <v-checkbox
@@ -163,14 +175,17 @@
           </v-card>
         </v-menu>
       </l-control>
-      <div>
       <l-geo-json
         v-if="data[0] && showLayers.spatial"
         :geojson="data[0]"
         :options="{ onEachFeature: onEach }"
         :options-style="spatialStyle"
       />
-      </div>
+      <l-geo-json
+        v-if="data[0] && showLayers.spatial && showLayers.labels"
+        :geojson="polygonCenters"
+        :options="optionsLabels"
+      />
       <l-geo-json
         v-if="data[1] && showLayers.cones"
         :geojson="data[1]"
@@ -248,6 +263,7 @@ import greenMarker2x from '@/assets/recolored_marker_icon_2x.png';
 export default {
   name: 'Leaflet',
   data: () => ({
+    polygonCenters: {},
     bounds: latLngBounds([
       [34.016242, 5.488281],
       [71.663663, 34.667969],
@@ -283,6 +299,7 @@ export default {
     relatedPlaces: [],
     showLayers: {
       spatial: true,
+      labels: true,
       cones: true,
       places: true,
       relatedPlaces: true,
@@ -325,7 +342,7 @@ export default {
         color: '#E53935',
         fillOpacity: 0.6,
         weight: 0,
-        className: `blur${feature.properties.fuzzyness} blurred`,
+        className: `blur${feature.properties.fuzzyness} blurred id_${feature.id}`,
       });
     },
     onEach() {
@@ -349,6 +366,12 @@ export default {
               });
             },
           });
+      };
+    },
+    optionsLabels() {
+      return {
+        pointToLayer: this.pointToLabel,
+        onEachFeature: this.onEachLabel,
       };
     },
     optionsMarkers() {
@@ -380,6 +403,43 @@ export default {
           });
       };
     },
+    onEachLabel() {
+      return (feature, layer) => {
+        layer
+          .bindTooltip(
+            `
+            <div>Keyword: ${feature.properties.key_word.stichwort}</div>
+            <div>Passages: ${feature.properties.stelle.length}</div>
+            <div>Certainty: ${11 - feature.properties.fuzzyness} / 10</div>
+            `,
+            { permanent: false, sticky: true },
+          )
+          .on({
+            click: (e) => {
+              console.log('click', feature, e);
+              this.$router.push({
+                name: this.fullscreen ? 'Spatial Detail Fullscreen' : 'Spatial Detail',
+                query: this.$route.query,
+                params: { id: feature.id },
+              });
+            },
+          })
+          .on({
+            mouseover: () => {
+              document.getElementsByClassName(`id_${feature.id}`)[0].setAttribute('stroke', '#00ff51');
+              document.getElementsByClassName(`id_${feature.id}`)[0].setAttribute('stroke-width', 2.5);
+              document.getElementsByClassName(`id_${feature.id}`)[0].setAttribute('filter', '');
+            },
+          })
+          .on({
+            mouseout: () => {
+              const filter = document.getElementsByClassName(`id_${feature.id}`)[0].classList[0];
+              document.getElementsByClassName(`id_${feature.id}`)[0].setAttribute('stroke-width', 0);
+              document.getElementsByClassName(`id_${feature.id}`)[0].setAttribute('filter', `url(#${filter})`);
+            },
+          });
+      };
+    },
     pointToLayer() {
       return (feature, latlng) => {
         const featCat = feature.properties.kategorie.match(/\d+/g)[0];
@@ -388,6 +448,30 @@ export default {
         if (Number(featCat) === 8) { icon.options.iconUrl = redMarker; }
         // eslint-disable-next-line object-shorthand
         return L.marker(latlng, { icon: icon });
+      };
+    },
+    pointToLabel() {
+      return (feature, latlng) => {
+        const nE = L.latLngBounds(feature.geometry.polygonCoords).getNorthEast();
+        const sW = L.latLngBounds(feature.geometry.polygonCoords).getSouthWest();
+        let distanceLat = nE.lat - sW.lat;
+        let distanceLng = nE.lng - sW.lng;
+        console.log(distanceLat);
+        if (distanceLat > 10) {
+          distanceLat = 10;
+          distanceLng = 10;
+        }
+        if (distanceLat < 1.5) {
+          distanceLat = 1.5;
+          distanceLng = 1.5;
+        }
+        const labelIcon = new L.DivIcon({
+          html: `<div style="font-size:${distanceLat * 8}px;text-shadow: 2px 0 0 #fff, -2px 0 0 #fff, 0 2px 0 #fff, 0 -2px 0 #fff, 1px 1px #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff;">${feature.properties.key_word.stichwort}</div>`,
+          iconSize: 'auto',
+          className: 'label',
+          iconAnchor: [distanceLat * 9, distanceLng * 9],
+        });
+        return L.marker(latlng, { icon: labelIcon });
       };
     },
   },
@@ -460,7 +544,6 @@ export default {
 
           scale = crs.scale(toZoom) / crs.scale(fromZoom);
           blurring = fuzzyness * scale;
-
           svgBlur.setAttribute('class', 'feGaussianBlur');
           svgBlur.setAttribute('stdDeviation', `${blurring} ${blurring}`);
         });
@@ -471,6 +554,10 @@ export default {
         if (i.id === id) i.visible = true;
         else i.visible = false;
       });
+    },
+    uncheckSpatial() {
+      console.log('unchecked', this.showLayers);
+      if (this.showLayers.spatial === false) { this.showLayers.labels = false; }
     },
     // foundLocations() {
     //   return this.entries.length && !this.entries.count && this.entries.features.length;
@@ -511,6 +598,18 @@ export default {
           this.relatedPlaces = this.removeDuplicates(allPlaces, ['url']);
           const relatedCoords = this.relatedPlaces.map((x) => x.coords.coordinates);
           this.bounds = this.getBounds(allCoords.concat(relatedCoords));
+
+          // eslint-disable-next-line prefer-destructuring
+          this.polygonCenters = JSON.parse(JSON.stringify(to[0]));
+          this.polygonCenters.features.forEach((feature) => {
+            const polygonCoords = feature.geometry.coordinates;
+            const centerCoords = L.polygon(feature.geometry.coordinates).getBounds().getCenter();
+            feature.geometry = {
+              polygonCoords,
+              coordinates: [centerCoords.lat, centerCoords.lng],
+              type: 'Point',
+            };
+          });
         }
       },
       deep: true,
