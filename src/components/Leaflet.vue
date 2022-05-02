@@ -287,12 +287,28 @@ export default {
           'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
       },
       {
-        name: 'Test',
+        name: 'Digital Atlas of the Roman Empire',
         id: 3,
         visible: false,
-        url: 'https://data1.geo.univie.ac.at/TMS/DPP/DPP_ancient_12-13/{z}/{x}/{y}.png',
+        url: 'https://dh.gu.se/tiles/imperium/{z}/{x}/{y}.png',
         attribution:
-          'Universität Wien, SRTM, UMD Land Cover, Hansen',
+          '© Johan Åhlfeldt, Centre for Digital Humanities, University of Gothenburg 2019. Contact: johan.ahlfeldt@lir.gu.se',
+      },
+      {
+        name: 'Stamen Watercolor',
+        id: 4,
+        visible: false,
+        url: 'https://stamen-tiles.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.jpg',
+        attribution:
+          'Map tiles by Stamen Design, under CC BY 3.0. Data by OpenStreetMap, under CC BY SA.',
+      },
+      {
+        name: 'Stamen Terrain',
+        id: 5,
+        visible: false,
+        url: 'https://stamen-tiles.a.ssl.fastly.net/terrain/{z}/{x}/{y}.jpg',
+        attribution:
+          'Map tiles by Stamen Design, under CC BY 3.0. Data by OpenStreetMap, under CC BY SA.',
       },
     ],
     menu: false,
@@ -523,7 +539,7 @@ export default {
         let scale = this.$refs.map.mapObject.getZoom() / 5;
 
         // Set deviation attribute of blur
-        let blurring = fuzzyness * scale;
+        let blurring = (11 - fuzzyness) * scale;
         svgBlur.setAttribute('class', 'feGaussianBlur');
         svgBlur.setAttribute('stdDeviation', `${blurring} ${blurring}`);
 
