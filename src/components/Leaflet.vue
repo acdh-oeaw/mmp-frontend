@@ -3,6 +3,7 @@
     <l-map
       ref="map" :style="`height: ${fullscreen && $route.name !== 'Keyword Detail Fullscreen' ? '100vh' : height + 'px'}; width: 100%; z-index: 4`"
       :bounds="bounds"
+      :max-bounds="maxBounds"
     >
       <l-tile-layer
         v-for="tileProvider in tileProviders"
@@ -11,7 +12,8 @@
         :visible="tileProvider.visible"
         :url="tileProvider.url"
         :attribution="tileProvider.attribution"
-        layer-type="base"/>
+        layer-type="base"
+        :options="tileOptions" />
       <l-control position="bottomright">
         <v-btn
           fab
@@ -268,7 +270,15 @@ export default {
       [34.016242, 5.488281],
       [71.663663, 34.667969],
     ]),
+    maxBounds: latLngBounds([
+      [31.1548, -18.9867],
+      [72.1374, 42.8004],
+    ]),
     radioGroup: 1,
+    tileOptions: {
+      maxZoom: 8,
+      minZoom: 4,
+    },
     tileProviders: [
       {
         name: 'OpenStreetMap',
@@ -295,20 +305,20 @@ export default {
           '© Johan Åhlfeldt, Centre for Digital Humanities, University of Gothenburg 2019. Contact: johan.ahlfeldt@lir.gu.se',
       },
       {
-        name: 'Stamen Watercolor',
+        name: 'Humanitarian OpenStreetMap',
         id: 4,
         visible: false,
-        url: 'https://stamen-tiles.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.jpg',
+        url: 'https://a.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
         attribution:
-          'Map tiles by Stamen Design, under CC BY 3.0. Data by OpenStreetMap, under CC BY SA.',
+          '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
       },
       {
-        name: 'Stamen Terrain',
+        name: 'OpenTopoMap',
         id: 5,
         visible: false,
-        url: 'https://stamen-tiles.a.ssl.fastly.net/terrain/{z}/{x}/{y}.jpg',
+        url: 'https://a.tile.opentopomap.org/{z}/{x}/{y}.png',
         attribution:
-          'Map tiles by Stamen Design, under CC BY 3.0. Data by OpenStreetMap, under CC BY SA.',
+          '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
       },
     ],
     menu: false,
@@ -550,6 +560,7 @@ export default {
 
         let fromZoom;
         this.$refs.map.mapObject.on('zoomend', () => {
+          console.log('mapZooom', this.$refs.map.mapObject.getZoom());
           // eslint-disable-next-line prefer-destructuring
           const crs = this.$refs.map.mapObject.options.crs;
 
