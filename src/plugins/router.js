@@ -6,6 +6,7 @@ import Interface from '@/components/InterfaceWrapper';
 import Studies from '@/components/Studies';
 import CaseStudy from '@/components/CaseStudy';
 import Graph from '@/components/GraphWrapper';
+import GraphBeta from '@/components/GraphWrapperBeta';
 import Map from '@/components/MapWrapper';
 import List from '@/components/List';
 import WordCloudWrapper from '@/components/WordCloudWrapper';
@@ -69,6 +70,18 @@ const routes = [
         path: 'graph',
         name: 'Network Graph',
         component: Graph,
+        children: [
+          {
+            path: 'detail/:id',
+            name: 'Keyword Detail',
+            component: KeywordDetail,
+          },
+        ],
+      },
+      {
+        path: 'graph-beta',
+        name: 'Network Graph Beta',
+        component: GraphBeta,
         children: [
           {
             path: 'detail/:id',

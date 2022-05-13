@@ -46,8 +46,9 @@ export default {
   },
   methods: {
     transformedData(obj) {
+      console.log('transformedData', obj);
       return {
-        nodes: obj.nodes,
+        nodes: obj.nodes.sort((a, b) => b.index - a.index),
         links: obj.edges,
       };
     },
@@ -87,6 +88,7 @@ export default {
             edges: [],
           },
         }))
+        .nodeRelSize(this.nodeRelSize || 4)
         .nodeCanvasObject(this.nodeCanvasObject)
         .nodeCanvasObjectMode(this.nodeCanvasObjectMode)
         .nodePointerAreaPaint(this.nodePointerAreaPaint);

@@ -25,7 +25,7 @@ export default {
         return !newKeys.some(uneq);
       }));
     },
-    removeRoot: (label) => label.split(',')[0],
+    removeRoot: (label) => label.split(', [')[0],
     shorten: (str, n) => (str.length > n ? `${str.substring(0, n)}...` : str),
   },
   computed: {
