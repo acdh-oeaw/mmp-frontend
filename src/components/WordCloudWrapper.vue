@@ -58,7 +58,11 @@
           :key="JSON.stringify(filtered) + i"
           :cols="showWords.filter((x) => x).length >= 2 ? 6 : 12"
         >
-          <pie-chart :data="filtered" :title="['All Occurences', 'Keyword Occurences'][i]" />
+          <pie-chart
+            :data="filtered"
+            :title="['All Occurences', 'Keyword Occurences'][i]"
+            :height="fullscreen ? '100%' : '500px'"
+          />
         </v-col>
       </template>
     </v-row>
@@ -204,7 +208,7 @@
           <v-btn
             fab
             small
-            @click.stop="type = 'pie'"
+            @click="type = 'pie'"
             v-bind="attrs"
             v-on="on"
           >

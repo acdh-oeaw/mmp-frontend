@@ -11,7 +11,7 @@ export default {
   data: () => ({
     renderKey: 0,
   }),
-  props: ['data', 'title'],
+  props: ['data', 'title', 'height'],
   components: { Chart },
   computed: {
     pieOptions() {
@@ -29,7 +29,7 @@ export default {
           plotBorderWidth: null,
           plotShadow: false,
           type: 'pie',
-          height: '500px',
+          height: this.height || '500px',
         },
         title: {
           text: this.title || false,
