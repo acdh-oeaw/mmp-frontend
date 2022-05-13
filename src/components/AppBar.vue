@@ -21,7 +21,7 @@
             </router-link>
           </v-toolbar-title>
         </v-col>
-        <v-col cols="8" class="text-right d-none d-md-inline">
+        <v-col :cols="$route.name.includes('Detail') ? 4 : 8" class="text-right d-none d-md-inline">
           <div :class="{ light: !isHome }">
             <router-link color="white" :to="{ name: '', params: {} }" class="nav-link">
               About the Project
@@ -32,7 +32,7 @@
               &nbsp;&nbsp;&bull;&nbsp;&nbsp;
             </span>
             <router-link :to="{ name: 'Studies' }" class="nav-link">
-              Case Studies
+              Case&nbsp;Studies
             </router-link>
             <span
               class="non-selectable" :class="{ 'white--text': isHome }"
@@ -40,10 +40,11 @@
               &nbsp;&nbsp;&bull;&nbsp;&nbsp;
             </span>
             <router-link :to="{ name: $store.state.interface.currentView }" class="nav-link">
-              Explore the Data
+              Explore&nbsp;the&nbsp;Data
             </router-link>
           </div>
         </v-col>
+        <v-col cols="4" v-if="$route.name.includes('Detail')" />
       </v-row>
     </v-app-bar>
     <sidebar v-model="drawer" />

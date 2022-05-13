@@ -21,18 +21,17 @@
         />
       </h1>
     </v-overlay>
-    <visualization
+    <visualization-beta
       id="visId"
       :key="renderKey"
-      :graph="styledNodes"
+      :graph="weightedGraph"
       :onNodeClick="nodeClick"
-      :onNodeDragEnd="nodeDragEnd"
-      :nodeCanvasObjectMode="() => 'after'"
       :nodeCanvasObject="nodeObject"
-      :linkDirectionalArrowLength="3.5"
+      :nodeCanvasObjectMode="() => 'after'"
       :height="fullscreen ? undefined : '500'"
       :zoomToFit="zoomToFit"
       :paused="paused"
+      :nodeRelSize="4"
     />
     <router-view />
     <v-speed-dial
@@ -177,17 +176,17 @@
             fab
             small
             :to="{
-              name: 'Network Graph Beta',
+              name: 'Network Graph',
               query: $route.query,
               params: $route.params,
             }"
             v-bind="attrs"
             v-on="on"
           >
-            <v-icon>mdi-test-tube</v-icon>
+            <v-icon>mdi-test-tube-empty</v-icon>
           </v-btn>
         </template>
-        <span>Beta Graph</span>
+        <span>Normal Graph</span>
       </v-tooltip>
     </v-speed-dial>
     <div
@@ -223,13 +222,13 @@
 </template>
 <script>
 import helpers from '@/helpers';
-import Visualization from './Visualization2D';
+import VisualizationBeta from './Visualization2DBeta';
 import FullscreenButton from './FullscreenButton';
 
 export default {
   name: 'NetworkGraph',
   components: {
-    Visualization,
+    VisualizationBeta,
     FullscreenButton,
   },
   data: () => ({
@@ -263,69 +262,26 @@ export default {
     getJsonData() {
       const link = document.createElement('a');
       link.download = 'graph.json';
-      link.href = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(this.styledNodes))}`;
+      link.href = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(this.graph))}`;
       link.click();
       link.remove();
     },
-    nodeDragEnd(node, translate) {
-      console.log('nodeDrag', node, translate);
-      node.fx = node.x;
-      node.fy = node.y;
-    },
     nodeObject(node, ctx, globalScale) {
-      const label = this.removeRoot(node.label);
-      const fontSize = 15 / globalScale;
-      ctx.font = `${fontSize}px Sans-Serif`;
-
-      let textWidth;
-      let textHeight;
-
-      if (label.includes(' ')) {
-        const labelLines = label.split(/\s/);
-        textHeight = labelLines.length * fontSize;
-        textWidth = Math.max(...labelLines.map((x) => ctx.measureText(x).width)); // get max width of lienes
-      } else {
-        textWidth = ctx.measureText(label).width;
-        textHeight = fontSize;
-      }
-
-      const bckgDimensions = [textWidth, textHeight].map((n) => n + fontSize * 0.2);
-
       const isSelected = this.$route.params.id?.toString(10).split('+').includes(node.id.replace(/\D/g, ''));
 
       if (isSelected) {
-        ctx.lineWidth = 8 / globalScale;
         ctx.strokeStyle = 'black';
+        ctx.lineWidth = 8 / globalScale;
       } else {
-        ctx.lineWidth = 1.3 / globalScale;
         ctx.strokeStyle = '#F1F5FA';
+        ctx.lineWidth = 1 / globalScale;
       }
 
-      ctx.arc(node.x, node.y, node.val, 0, 2 * Math.PI, false);
+      ctx.arc(node.x, node.y, node.val / 2, 0, 2 * Math.PI, false);
       ctx.stroke();
+
       ctx.fillStyle = this.colors[node.keyword_type] || 'grey';
-      const rectProps = [node.x - bckgDimensions[0] / 2, node.y - bckgDimensions[1] / 2, ...bckgDimensions];
-      ctx.fillRect(...rectProps);
-
-      if (isSelected) {
-        ctx.lineWidth = 2 / globalScale;
-        ctx.strokeRect(...rectProps);
-      } else {
-        ctx.lineWidth = 1.3 / globalScale;
-        ctx.strokeRect(...rectProps);
-      }
-
       ctx.fill();
-
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillStyle = 'white';
-      if (label.includes(' ')) {
-        const labelLines = label.split(/\s/);
-        labelLines.forEach((line, i) => {
-          ctx.fillText(line, node.x, node.y - fontSize * ((labelLines.length - 1) / 2 - i));
-        });
-      } else ctx.fillText(label, node.x, node.y);
     },
     nodeClick(node) {
       console.log('node clicked', node);
@@ -361,7 +317,6 @@ export default {
       this.graph.nodes.forEach((node) => {
         node.fx = undefined;
         node.fy = undefined;
-        node.val = 1;
       });
       this.renderKey += 1;
     },
@@ -370,21 +325,22 @@ export default {
     nodeCount() {
       return this.graph?.nodes?.length;
     },
-    styledNodes() {
+    weightedGraph() {
+      if (!this.graph) return null;
       const ret = this.graph;
-      if (!ret) return ret;
-      console.log('graph', this.graph);
-      ret.edges.forEach((x) => {
-        const targetNode = ret.nodes.filter((node) => node.id === x.source.id)[0];
-        x.color = this.colors[targetNode?.keyword_type] || 'grey';
+      console.log('weightedGraph', ret);
+      ret.edges.forEach((edge) => {
+        edge.color = '#D5D5D5';
 
+        const targetNode = ret.nodes.filter((node) => node.id === edge.source.id)[0];
         if (targetNode?.val) targetNode.val += 1;
         else if (targetNode) targetNode.val = 2;
       });
-      console.log('ret', ret);
-      ret.nodes = ret.nodes.map((x) => {
-        x.val = Math.log(x.val) * 3;
-        return x;
+
+      ret.nodes.map((node) => {
+        const retNode = node;
+        retNode.color = this.colors[node.keyword_type];
+        return retNode;
       });
       return ret;
     },
