@@ -3,7 +3,6 @@
     <l-map
       ref="map" :style="`height: ${fullscreen && $route.name !== 'Keyword Detail Fullscreen' ? '100vh' : height + 'px'}; width: 100%; z-index: 4`"
       :bounds="bounds"
-      :max-bounds="maxBounds"
     >
       <l-tile-layer
         v-for="tileProvider in tileProviders"
@@ -270,11 +269,8 @@ export default {
       [34.016242, 5.488281],
       [71.663663, 34.667969],
     ]),
-    maxBounds: latLngBounds([
-      [31.1548, -18.9867],
-      [72.1374, 42.8004],
-    ]),
     radioGroup: 1,
+    url: process.env.BASE_URL,
     tileOptions: {
       maxZoom: 8,
       minZoom: 4,
@@ -317,6 +313,15 @@ export default {
         id: 5,
         visible: false,
         url: 'https://a.tile.opentopomap.org/{z}/{x}/{y}.png',
+        attribution:
+          '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+      },
+      {
+        name: 'TestTiles',
+        id: 6,
+        visible: false,
+        url: 'http://127.0.0.1:8887/{z}/{x}/{y}.png',
+        tms: false,
         attribution:
           '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
       },
