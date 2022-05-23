@@ -27,11 +27,12 @@
       :graph="weightedGraph"
       :onNodeClick="nodeClick"
       :nodeCanvasObject="nodeObject"
-      :nodeCanvasObjectMode="() => 'after'"
+      :nodeCanvasObjectMode="() => 'replace'"
       :height="fullscreen ? undefined : '500'"
       :zoomToFit="zoomToFit"
+      :linkDirectionalArrowLength="2"
       :paused="paused"
-      :nodeRelSize="4"
+      :nodeRelSize="1"
     />
     <router-view />
     <v-speed-dial
@@ -266,22 +267,51 @@ export default {
       link.click();
       link.remove();
     },
+    lightenColor(color, amount) {
+      if (!color) return color;
+
+      let numArray = color.replace('#', '').match(/.{2}/g).map((hex) => parseInt(hex, 16));
+      let revArray = numArray.map((num) => 255 - num);
+
+      const max = Math.max(...revArray);
+      const scale = (max - amount) / max;
+
+      revArray = revArray.map((num) => Math.round(num * scale));
+      numArray = revArray.map((num) => 255 - num);
+
+      const ret = `#${numArray.map((num) => num.toString(16).padStart(2, '0')).join('')}`;
+      console.log(color, ret, numArray, max, scale);
+      return ret;
+    },
+    lightenColor2(color, percent) {
+      if (!color) return color;
+      let numArray = color.replace('#', '').match(/.{2}/g).map((hex) => parseInt(hex, 16));
+      numArray = numArray.map((num) => Math.min(Math.round(num * (1 + percent / 100)), 255));
+
+      const ret = `#${numArray.map((num) => num.toString(16).padStart(2, '0')).join('')}`;
+      console.log(color, ret, numArray, percent);
+      return ret;
+    },
+    lightenColor3(color, fade) {
+      if (!color) return color;
+      const numArray = color.replace('#', '').match(/.{2}/g).map((hex) => parseInt(hex, 16));
+      return `rgba(${numArray.join(',')}, ${fade})`;
+    },
     nodeObject(node, ctx, globalScale) {
-      const isSelected = this.$route.params.id?.toString(10).split('+').includes(node.id.replace(/\D/g, ''));
+      ctx.beginPath();
+      const label = this.removeRoot(node.label);
+      const fontSize = ((node.val || 1) / 5 + 18) / globalScale;
+      ctx.font = `${fontSize}px Sans-Serif`;
 
-      if (isSelected) {
-        ctx.strokeStyle = 'black';
-        ctx.lineWidth = 8 / globalScale;
-      } else {
-        ctx.strokeStyle = '#F1F5FA';
-        ctx.lineWidth = 1 / globalScale;
-      }
-
-      ctx.arc(node.x, node.y, node.val / 2, 0, 2 * Math.PI, false);
-      ctx.stroke();
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
 
       ctx.fillStyle = this.colors[node.keyword_type] || 'grey';
-      ctx.fill();
+      ctx.strokeStyle = '#F1F5FA';
+      ctx.lineWidth = 0.5 / globalScale;
+
+      ctx.strokeText(label, node.x, node.y);
+      ctx.fillText(label, node.x, node.y);
     },
     nodeClick(node) {
       console.log('node clicked', node);
@@ -318,7 +348,7 @@ export default {
         node.fx = undefined;
         node.fy = undefined;
       });
-      this.renderKey += 1;
+      // this.renderKey += 1;
     },
   },
   computed: {
@@ -330,9 +360,9 @@ export default {
       const ret = this.graph;
       console.log('weightedGraph', ret);
       ret.edges.forEach((edge) => {
-        edge.color = '#D5D5D5';
-
         const targetNode = ret.nodes.filter((node) => node.id === edge.source.id)[0];
+        edge.color = this.lightenColor3(this.colors[targetNode?.keyword_type], 0.3) || '#D5D5D5';
+
         if (targetNode?.val) targetNode.val += 1;
         else if (targetNode) targetNode.val = 2;
       });

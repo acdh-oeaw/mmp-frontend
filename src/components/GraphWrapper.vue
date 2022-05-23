@@ -363,7 +363,7 @@ export default {
         node.fy = undefined;
         node.val = 1;
       });
-      this.renderKey += 1;
+      // this.renderKey += 1;
     },
   },
   computed: {
