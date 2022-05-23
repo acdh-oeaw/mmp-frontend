@@ -104,16 +104,16 @@
       />
       <v-divider />
       <v-radio-group
-        label="Only include data related to Case Studies:"
+        label="Include Data:"
         v-model="hasUsecase"
       >
         <v-radio
-          label="Yes"
+          label="Related to Case Studies"
           color="teal lighten-2"
           value="true"
         />
         <v-radio
-          label="Exclude this data"
+          label="Related to GENS Database"
           color="teal lighten-2"
           value="false"
         />
