@@ -370,7 +370,7 @@ export default {
     },
     spatialStyle() {
       return (feature) => ({
-        color: '#E53935',
+        color: feature.properties.color,
         fillOpacity: 0.6,
         weight: 0,
         className: `blur${feature.properties.fuzzyness} blurred id_${feature.id}`,
@@ -389,6 +389,7 @@ export default {
           )
           .on({
             click: (e) => {
+              this.$refs.map.mapObject.fitBounds(layer.getBounds());
               console.log('click', feature, e);
               this.$router.push({
                 name: this.fullscreen ? 'Spatial Detail Fullscreen' : 'Spatial Detail',
@@ -448,6 +449,7 @@ export default {
           .on({
             click: (e) => {
               console.log('click', feature, e);
+              this.$refs.map.mapObject.fitBounds(L.latLngBounds(feature.geometry.polygonCoords));
               this.$router.push({
                 name: this.fullscreen ? 'Spatial Detail Fullscreen' : 'Spatial Detail',
                 query: this.$route.query,
@@ -487,17 +489,16 @@ export default {
         const sW = L.latLngBounds(feature.geometry.polygonCoords).getSouthWest();
         let distanceLat = nE.lat - sW.lat;
         let distanceLng = nE.lng - sW.lng;
-        console.log(distanceLat);
-        if (distanceLat > 10) {
-          distanceLat = 10;
-          distanceLng = 10;
+        if (distanceLat > 8) {
+          distanceLat = 8;
+          distanceLng = 8;
         }
         if (distanceLat < 1.5) {
           distanceLat = 1.5;
           distanceLng = 1.5;
         }
         const labelIcon = new L.DivIcon({
-          html: `<div style="font-size:${distanceLat * 8}px;text-shadow: 2px 0 0 #fff, -2px 0 0 #fff, 0 2px 0 #fff, 0 -2px 0 #fff, 1px 1px #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff;">${feature.properties.key_word.stichwort}</div>`,
+          html: `<div style="font-size:${distanceLat * 8}px;text-shadow: 2px 0 0 #fff, -2px 0 0 #fff, 0 2px 0 #fff, 0 -2px 0 #fff, 1px 1px #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff; color: ${feature.properties.color};">${feature.properties.key_word.stichwort}</div>`,
           iconSize: 'auto',
           className: 'label',
           iconAnchor: [distanceLat * 9, distanceLng * 9],
@@ -527,7 +528,6 @@ export default {
 
       const xCords = coordArr.map((x) => x[1]);
       const yCords = coordArr.map((y) => y[0]);
-      console.log('mapZooom', this.$refs.map.mapObject.getZoom());
       return latLngBounds([
         [Math.min(...xCords), Math.min(...yCords)],
         [Math.max(...xCords), Math.max(...yCords)],
@@ -565,7 +565,6 @@ export default {
 
         let fromZoom;
         this.$refs.map.mapObject.on('zoomend', () => {
-          console.log('mapZooom', this.$refs.map.mapObject.getZoom());
           // eslint-disable-next-line prefer-destructuring
           const crs = this.$refs.map.mapObject.options.crs;
 
@@ -599,6 +598,15 @@ export default {
     data: {
       handler(to) {
         console.log('to', to, this.data);
+        const stichworte = {};
+        to[0].features.forEach((feature) => {
+          // eslint-disable-next-line prefer-template
+          stichworte[feature.properties.key_word.stichwort] = '#' + (0x1000000 + Math.random() * 0xffffff).toString(16).substr(1, 6);
+        });
+        to[0].features.forEach((feature) => {
+          feature.properties.color = stichworte[feature.properties.key_word.stichwort];
+        });
+        console.log('stichworte', stichworte);
         if (to.length) {
           let allCoords = to[0].features
             .concat(to[1].features)
@@ -634,7 +642,15 @@ export default {
           // eslint-disable-next-line prefer-destructuring
           this.polygonCenters = JSON.parse(JSON.stringify(to[0]));
           this.polygonCenters.features.forEach((feature) => {
-            const polygonCoords = feature.geometry.coordinates;
+            const polygonCoords = [];
+            let coordsFixed = [];
+            feature.geometry.coordinates.forEach((coords) => {
+              coords.forEach((coord) => {
+                coordsFixed.push([coord[1], coord[0]]);
+              });
+              polygonCoords.push(coordsFixed);
+              coordsFixed = [];
+            });
             const centerCoords = L.polygon(feature.geometry.coordinates).getBounds().getCenter();
             feature.geometry = {
               polygonCoords,
