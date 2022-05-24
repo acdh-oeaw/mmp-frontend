@@ -8,7 +8,7 @@
   >
     <v-list-item>
       <v-list-item-action>
-        <router-link :to="{ name: fullscreen ? 'Network Graph Fullscreen' : 'Network Graph', query: $route.query }">
+        <router-link :to="{ name: xPressLinkName, query: $route.query }">
           <v-icon>mdi-close</v-icon>
         </router-link>
       </v-list-item-action>
@@ -29,7 +29,6 @@
             </router-link>,
             <router-link
               :to="{
-                name: fullscreen ? 'Keyword Detail Fullscreen' : 'Keyword Detail',
                 params: { id: $route.params.id },
                 query: { Keyword: $route.params.id },
               }"
@@ -232,6 +231,15 @@ export default {
       return retArr.sort((a, b) => b.count - a.count);
 
       // return retArr;
+    },
+    xPressLinkName() {
+      const beta = this.$route.name.includes('Beta');
+      if (this.fullscreen) {
+        if (beta) return 'Network Graph Beta Fullscreen';
+        return 'Network Graph Fullscreen';
+      }
+      if (beta) return 'Network Graph Beta';
+      return 'Network Graph';
     },
   },
   watch: {

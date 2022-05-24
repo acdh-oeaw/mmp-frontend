@@ -1,7 +1,6 @@
 <template>
   <v-card
     width="100%"
-    outlined
     color="transparent"
     :height="fullscreen ? 'calc(100vh - 4px)' : 500"
   >

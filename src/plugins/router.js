@@ -85,7 +85,7 @@ const routes = [
         children: [
           {
             path: 'detail/:id',
-            name: 'Keyword Detail',
+            name: 'Keyword Detail Beta',
             component: KeywordDetail,
           },
         ],
@@ -149,6 +149,18 @@ const routes = [
           {
             path: 'detail/:id',
             name: 'Keyword Detail Fullscreen',
+            component: KeywordDetail,
+          },
+        ],
+      },
+      {
+        path: 'graph-beta',
+        name: 'Network Graph Beta Fullscreen',
+        component: GraphBeta,
+        children: [
+          {
+            path: 'detail/:id',
+            name: 'Keyword Detail Beta Fullscreen',
             component: KeywordDetail,
           },
         ],
