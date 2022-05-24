@@ -265,6 +265,7 @@ export default {
   name: 'Leaflet',
   data: () => ({
     polygonCenters: {},
+    stichworte: {},
     bounds: latLngBounds([
       [34.016242, 5.488281],
       [71.663663, 34.667969],
@@ -393,7 +394,7 @@ export default {
               console.log('click', feature, e);
               this.$router.push({
                 name: this.fullscreen ? 'Spatial Detail Fullscreen' : 'Spatial Detail',
-                query: this.$route.query,
+                query: this.usecase ? { 'Use Case': this.usecase } : this.$route.query,
                 params: { id: feature.id },
               });
             },
@@ -452,7 +453,7 @@ export default {
               this.$refs.map.mapObject.fitBounds(L.latLngBounds(feature.geometry.polygonCoords));
               this.$router.push({
                 name: this.fullscreen ? 'Spatial Detail Fullscreen' : 'Spatial Detail',
-                query: this.$route.query,
+                query: this.usecase ? { 'Use Case': this.usecase } : this.$route.query,
                 params: { id: feature.id },
               });
             },
@@ -598,15 +599,17 @@ export default {
     data: {
       handler(to) {
         console.log('to', to, this.data);
-        const stichworte = {};
+        console.log('stichworte bevor', this.stichworte);
         to[0].features.forEach((feature) => {
-          // eslint-disable-next-line prefer-template
-          stichworte[feature.properties.key_word.stichwort] = '#' + (0x1000000 + Math.random() * 0xffffff).toString(16).substr(1, 6);
+          if (!Object.keys(this.stichworte).includes(feature.properties.key_word.stichwort)) {
+            // eslint-disable-next-line prefer-template
+            this.stichworte[feature.properties.key_word.stichwort] = '#' + (0x1000000 + Math.random() * 0xffffff).toString(16).substr(1, 6);
+          }
         });
         to[0].features.forEach((feature) => {
-          feature.properties.color = stichworte[feature.properties.key_word.stichwort];
+          feature.properties.color = this.stichworte[feature.properties.key_word.stichwort];
         });
-        console.log('stichworte', stichworte);
+        console.log('stichworte danach', this.stichworte);
         if (to.length) {
           let allCoords = to[0].features
             .concat(to[1].features)
