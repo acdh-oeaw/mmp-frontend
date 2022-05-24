@@ -21,7 +21,7 @@
         />
       </h1>
     </v-overlay>
-    <visualization-beta
+    <visualization
       id="visId"
       :key="renderKey"
       :graph="weightedGraph"
@@ -32,7 +32,7 @@
       :zoomToFit="zoomToFit"
       :linkDirectionalArrowLength="2"
       :paused="paused"
-      :nodeRelSize="1"
+      :nodeRelSize="4"
     />
     <router-view />
     <v-speed-dial
@@ -223,13 +223,13 @@
 </template>
 <script>
 import helpers from '@/helpers';
-import VisualizationBeta from './Visualization2DBeta';
+import Visualization from './Visualization2D';
 import FullscreenButton from './FullscreenButton';
 
 export default {
-  name: 'NetworkGraph',
+  name: 'NetworkGraphBeta',
   components: {
-    VisualizationBeta,
+    Visualization,
     FullscreenButton,
   },
   data: () => ({
@@ -306,12 +306,24 @@ export default {
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
 
-      ctx.fillStyle = this.colors[node.keyword_type] || 'grey';
-      ctx.strokeStyle = '#F1F5FA';
-      ctx.lineWidth = 0.5 / globalScale;
+      const typeColor = this.colors[node.keyword_type] || 'grey';
+
+      if (this.$route.params.id?.toString(10).split('+').includes(node.id.replace(/\D/g, ''))) {
+        ctx.shadowColor = typeColor;
+        ctx.shadowBlur = 15;
+        ctx.fillStyle = '#F1F5FA';
+        ctx.strokeStyle = typeColor;
+        ctx.lineWidth = 2 / globalScale;
+      } else {
+        ctx.fillStyle = typeColor;
+        ctx.strokeStyle = '#F1F5FA';
+        ctx.lineWidth = 1.7 / globalScale;
+      }
 
       ctx.strokeText(label, node.x, node.y);
       ctx.fillText(label, node.x, node.y);
+
+      ctx.shadowBlur = 0;
     },
     nodeClick(node) {
       console.log('node clicked', node);
@@ -332,13 +344,13 @@ export default {
 
       if (q) {
         this.$router.push({
-          name: this.fullscreen ? 'Keyword Detail Fullscreen' : 'Keyword Detail',
+          name: this.fullscreen ? 'Keyword Detail Beta Fullscreen' : 'Keyword Detail Beta',
           params: { id: q },
           query: this.usecase ? { 'Use Case': this.usecase } : this.$route.query,
         });
       } else {
         this.$router.push({
-          name: this.fullscreen ? 'Network Graph Fullscreen' : 'Network Graph',
+          name: this.fullscreen ? 'Network Graph Beta Fullscreen' : 'Network Graph Beta',
           query: this.$route.query,
         });
       }
