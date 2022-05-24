@@ -13,7 +13,7 @@
         :attribution="tileProvider.attribution"
         layer-type="base"
         :options="tileOptions" />
-      <l-control position="bottomright">
+      <l-control position="bottomright" @ready="updateFuzzy">
         <v-btn
           fab
           small
@@ -329,13 +329,6 @@ export default {
     ],
     menu: false,
     relatedPlaces: [],
-    showLayers: {
-      spatial: true,
-      labels: true,
-      cones: true,
-      places: true,
-      relatedPlaces: true,
-    },
   }),
   props: {
     data: {
@@ -349,6 +342,15 @@ export default {
     },
     usecase: {
       default: '',
+    },
+    showLayers: {
+      default: {
+        spatial: true,
+        labels: true,
+        cones: true,
+        places: true,
+        relatedPlaces: true,
+      },
     },
   },
   mixins: [helpers],
@@ -581,6 +583,13 @@ export default {
         });
       }
     },
+    updateFuzzy() {
+      const list = document.getElementsByClassName('blurred');
+      for (let j = 0; j < list.length; j += 1) {
+        this.alterSvg(list[j].classList[0]);
+        list[j].setAttribute('filter', `url(#${list[j].classList[0]})`);
+      }
+    },
     changeBasemap(id) {
       this.tileProviders.forEach((i) => {
         if (i.id === id) i.visible = true;
@@ -599,17 +608,15 @@ export default {
     data: {
       handler(to) {
         console.log('to', to, this.data);
-        console.log('stichworte bevor', this.stichworte);
         to[0].features.forEach((feature) => {
-          if (!Object.keys(this.stichworte).includes(feature.properties.key_word.stichwort)) {
-            // eslint-disable-next-line prefer-template
-            this.stichworte[feature.properties.key_word.stichwort] = '#' + (0x1000000 + Math.random() * 0xffffff).toString(16).substr(1, 6);
+          if (feature.properties.color === undefined) {
+            if (!Object.keys(this.stichworte).includes(feature.properties.key_word.stichwort)) {
+              // eslint-disable-next-line prefer-template
+              this.stichworte[feature.properties.key_word.stichwort] = '#' + (0x1000000 + Math.random() * 0xffffff).toString(16).substr(1, 6);
+            }
+            feature.properties.color = this.stichworte[feature.properties.key_word.stichwort];
           }
         });
-        to[0].features.forEach((feature) => {
-          feature.properties.color = this.stichworte[feature.properties.key_word.stichwort];
-        });
-        console.log('stichworte danach', this.stichworte);
         if (to.length) {
           let allCoords = to[0].features
             .concat(to[1].features)
@@ -678,11 +685,7 @@ export default {
     });
   },
   updated() {
-    const list = document.getElementsByClassName('blurred');
-    for (let j = 0; j < list.length; j += 1) {
-      this.alterSvg(list[j].classList[0]);
-      list[j].setAttribute('filter', `url(#${list[j].classList[0]})`);
-    }
+    this.updateFuzzy();
   },
 };
 </script>
