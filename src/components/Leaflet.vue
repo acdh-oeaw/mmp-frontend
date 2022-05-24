@@ -1,12 +1,18 @@
 <template>
   <div>
     <l-map
-      :style="`height: ${fullscreen && $route.name !== 'Keyword Detail Fullscreen' ? '100vh' : height + 'px'}; width: 100%; z-index: 4`"
+      ref="map" :style="`height: ${fullscreen && $route.name !== 'Keyword Detail Fullscreen' ? '100vh' : height + 'px'}; width: 100%; z-index: 4`"
       :bounds="bounds"
     >
       <l-tile-layer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
+        v-for="tileProvider in tileProviders"
+        :key="tileProvider.name"
+        :name="tileProvider.name"
+        :visible="tileProvider.visible"
+        :url="tileProvider.url"
+        :attribution="tileProvider.attribution"
+        layer-type="base"
+        :options="tileOptions" />
       <l-control position="bottomright">
         <v-btn
           fab
@@ -44,6 +50,7 @@
                 color="red darken-1"
                 dense
                 :disabled="!(data[0] && data[0].count)"
+                v-on:change="uncheckSpatial()"
               >
                 <template v-slot:label>
                   Spatial&nbsp;Coverage
@@ -60,6 +67,17 @@
                       {{ data[0].count }}
                     </template>
                   </v-chip>
+                </template>
+              </v-checkbox>
+              <v-checkbox
+                v-model="showLayers.labels"
+                color="blue darken-1"
+                dense
+                :disabled="!(polygonCenters && polygonCenters.count)"
+              >
+                <template v-slot:label>
+                  Labels
+                  &nbsp;
                 </template>
               </v-checkbox>
               <v-checkbox
@@ -139,6 +157,13 @@
                 </template>
               </v-checkbox>
             </v-card-text>
+            <v-card-title>Select Basemap</v-card-title>
+            <v-card-text>
+              <v-radio-group v-model="radioGroup">
+                <v-radio v-for="tileProvider in tileProviders" :key="tileProvider.id" :label="tileProvider.name" :value="tileProvider.id" v-on:change="changeBasemap(tileProvider.id)">
+                </v-radio>
+              </v-radio-group>
+            </v-card-text>
             <v-card-actions>
               <v-btn
                 @click="menu = false"
@@ -158,6 +183,11 @@
         :options-style="spatialStyle"
       />
       <l-geo-json
+        v-if="data[0] && showLayers.spatial && showLayers.labels"
+        :geojson="polygonCenters"
+        :options="optionsLabels"
+      />
+      <l-geo-json
         v-if="data[1] && showLayers.cones"
         :geojson="data[1]"
         :options="{ onEachFeature: onEach }"
@@ -166,7 +196,7 @@
       <l-geo-json
         v-if="data[2] && data[2].results && showLayers.places"
         :geojson="data[2].results"
-        :options="{ onEachFeature: onEachPlace }"
+        :options="optionsMarkers"
       />
       <template v-if="showLayers.relatedPlaces">
         <l-marker
@@ -208,10 +238,10 @@
 
 <script>
 import 'leaflet/dist/leaflet.css';
+import * as L from 'leaflet';
 import {
   latLng,
   latLngBounds,
-  L,
   Icon,
 } from 'leaflet';
 import {
@@ -227,19 +257,81 @@ import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 
 import helpers from '@/helpers';
 import greenMarker from '@/assets/recolored_marker_icon.png';
+import redMarker from '@/assets/red_marker_icon.png';
+import blueMarker from '@/assets/blue_marker_icon.png';
 import greenMarker2x from '@/assets/recolored_marker_icon_2x.png';
 
 export default {
   name: 'Leaflet',
   data: () => ({
+    polygonCenters: {},
+    stichworte: {},
     bounds: latLngBounds([
       [34.016242, 5.488281],
       [71.663663, 34.667969],
     ]),
+    radioGroup: 1,
+    url: process.env.BASE_URL,
+    tileOptions: {
+      maxZoom: 8,
+      minZoom: 4,
+    },
+    tileProviders: [
+      {
+        name: 'OpenStreetMap',
+        id: 1,
+        visible: true,
+        attribution:
+          '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+        url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      },
+      {
+        name: 'Esri - World Imagery',
+        id: 2,
+        visible: false,
+        url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+        attribution:
+          'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+      },
+      {
+        name: 'Digital Atlas of the Roman Empire',
+        id: 3,
+        visible: false,
+        url: 'https://dh.gu.se/tiles/imperium/{z}/{x}/{y}.png',
+        attribution:
+          '© Johan Åhlfeldt, Centre for Digital Humanities, University of Gothenburg 2019. Contact: johan.ahlfeldt@lir.gu.se',
+      },
+      {
+        name: 'Humanitarian OpenStreetMap',
+        id: 4,
+        visible: false,
+        url: 'https://a.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
+        attribution:
+          '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+      },
+      {
+        name: 'OpenTopoMap',
+        id: 5,
+        visible: false,
+        url: 'https://a.tile.opentopomap.org/{z}/{x}/{y}.png',
+        attribution:
+          '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+      },
+      {
+        name: 'TestTiles',
+        id: 6,
+        visible: false,
+        url: 'http://127.0.0.1:8887/{z}/{x}/{y}.png',
+        tms: false,
+        attribution:
+          '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+      },
+    ],
     menu: false,
     relatedPlaces: [],
     showLayers: {
       spatial: true,
+      labels: true,
       cones: true,
       places: true,
       relatedPlaces: true,
@@ -272,13 +364,21 @@ export default {
     coneStyle() {
       return (feature) => ({
         color: '#FDD835',
-        fillOpacity: 1 / (feature.properties.fuzzyness + 1),
+        fillOpacity: 0.6,
         weight: 1.5,
+        className: `blur${feature.properties.fuzzyness} blurred`,
+      });
+    },
+    spatialStyle() {
+      return (feature) => ({
+        color: feature.properties.color,
+        fillOpacity: 0.6,
+        weight: 0,
+        className: `blur${feature.properties.fuzzyness} blurred id_${feature.id}`,
       });
     },
     onEach() {
       return (feature, layer) => {
-        // console.log('feature, layer', feature, layer);
         layer
           .bindTooltip(
             `
@@ -290,14 +390,27 @@ export default {
           )
           .on({
             click: (e) => {
+              this.$refs.map.mapObject.fitBounds(layer.getBounds());
               console.log('click', feature, e);
               this.$router.push({
                 name: this.fullscreen ? 'Spatial Detail Fullscreen' : 'Spatial Detail',
-                query: this.$route.query,
+                query: this.usecase ? { 'Use Case': this.usecase } : this.$route.query,
                 params: { id: feature.id },
               });
             },
           });
+      };
+    },
+    optionsLabels() {
+      return {
+        pointToLayer: this.pointToLabel,
+        onEachFeature: this.onEachLabel,
+      };
+    },
+    optionsMarkers() {
+      return {
+        pointToLayer: this.pointToLayer,
+        onEachFeature: this.onEachPlace,
       };
     },
     onEachPlace() {
@@ -323,12 +436,76 @@ export default {
           });
       };
     },
-    spatialStyle() {
-      return (feature) => ({
-        color: '#E53935',
-        fillOpacity: 1 / (feature.properties.fuzzyness + 1),
-        weight: 1.5,
-      });
+    onEachLabel() {
+      return (feature, layer) => {
+        layer
+          .bindTooltip(
+            `
+            <div>Keyword: ${feature.properties.key_word.stichwort}</div>
+            <div>Passages: ${feature.properties.stelle.length}</div>
+            <div>Certainty: ${11 - feature.properties.fuzzyness} / 10</div>
+            `,
+            { permanent: false, sticky: true },
+          )
+          .on({
+            click: (e) => {
+              console.log('click', feature, e);
+              this.$refs.map.mapObject.fitBounds(L.latLngBounds(feature.geometry.polygonCoords));
+              this.$router.push({
+                name: this.fullscreen ? 'Spatial Detail Fullscreen' : 'Spatial Detail',
+                query: this.usecase ? { 'Use Case': this.usecase } : this.$route.query,
+                params: { id: feature.id },
+              });
+            },
+          })
+          .on({
+            mouseover: () => {
+              document.getElementsByClassName(`id_${feature.id}`)[0].setAttribute('stroke', '#00ff51');
+              document.getElementsByClassName(`id_${feature.id}`)[0].setAttribute('stroke-width', 2.5);
+              document.getElementsByClassName(`id_${feature.id}`)[0].setAttribute('filter', '');
+            },
+          })
+          .on({
+            mouseout: () => {
+              const filter = document.getElementsByClassName(`id_${feature.id}`)[0].classList[0];
+              document.getElementsByClassName(`id_${feature.id}`)[0].setAttribute('stroke-width', 0);
+              document.getElementsByClassName(`id_${feature.id}`)[0].setAttribute('filter', `url(#${filter})`);
+            },
+          });
+      };
+    },
+    pointToLayer() {
+      return (feature, latlng) => {
+        const featCat = feature.properties.kategorie.match(/\d+/g)[0];
+        const icon = new L.Icon({ iconUrl: blueMarker, iconSize: [16, 26] });
+
+        if (Number(featCat) === 8) { icon.options.iconUrl = redMarker; }
+        // eslint-disable-next-line object-shorthand
+        return L.marker(latlng, { icon: icon });
+      };
+    },
+    pointToLabel() {
+      return (feature, latlng) => {
+        const nE = L.latLngBounds(feature.geometry.polygonCoords).getNorthEast();
+        const sW = L.latLngBounds(feature.geometry.polygonCoords).getSouthWest();
+        let distanceLat = nE.lat - sW.lat;
+        let distanceLng = nE.lng - sW.lng;
+        if (distanceLat > 8) {
+          distanceLat = 8;
+          distanceLng = 8;
+        }
+        if (distanceLat < 1.5) {
+          distanceLat = 1.5;
+          distanceLng = 1.5;
+        }
+        const labelIcon = new L.DivIcon({
+          html: `<div style="font-size:${distanceLat * 8}px;text-shadow: 2px 0 0 #fff, -2px 0 0 #fff, 0 2px 0 #fff, 0 -2px 0 #fff, 1px 1px #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff; color: ${feature.properties.color};">${feature.properties.key_word.stichwort}</div>`,
+          iconSize: 'auto',
+          className: 'label',
+          iconAnchor: [distanceLat * 9, distanceLng * 9],
+        });
+        return L.marker(latlng, { icon: labelIcon });
+      };
     },
   },
   methods: {
@@ -352,7 +529,6 @@ export default {
 
       const xCords = coordArr.map((x) => x[1]);
       const yCords = coordArr.map((y) => y[0]);
-
       return latLngBounds([
         [Math.min(...xCords), Math.min(...yCords)],
         [Math.max(...xCords), Math.max(...yCords)],
@@ -360,6 +536,60 @@ export default {
     },
     returnLatLng(coords) {
       return latLng(coords[1], coords[0]);
+    },
+    alterSvg(polygonFeature) {
+      if (!document.getElementById(polygonFeature)) {
+        const fuzzyness = polygonFeature.match(/\d+/g)[0];
+        const svg = this.$refs.map.mapObject.getPanes().overlayPane.firstChild;
+        const svgFilter = document.createElementNS('http://www.w3.org/2000/svg', 'filter');
+        const svgBlur = document.createElementNS('http://www.w3.org/2000/svg', 'feGaussianBlur');
+        // Set ID attribute of filter
+        svgFilter.setAttribute('id', `blur${fuzzyness}`);
+
+        // Give room to blur to prevent clipping
+        svgFilter.setAttribute('x', '-100%');
+        svgFilter.setAttribute('y', '-100%');
+        svgFilter.setAttribute('width', '500%');
+        svgFilter.setAttribute('height', '500%');
+
+        let scale = this.$refs.map.mapObject.getZoom() / 5;
+
+        // Set deviation attribute of blur
+        let blurring = (11 - fuzzyness) * scale;
+        svgBlur.setAttribute('class', 'feGaussianBlur');
+        svgBlur.setAttribute('stdDeviation', `${blurring} ${blurring}`);
+
+        // Append blur element to filter element
+        svgFilter.appendChild(svgBlur);
+        // Append filter element to SVG element
+        svg.appendChild(svgFilter);
+
+        let fromZoom;
+        this.$refs.map.mapObject.on('zoomend', () => {
+          // eslint-disable-next-line prefer-destructuring
+          const crs = this.$refs.map.mapObject.options.crs;
+
+          // eslint-disable-next-line no-underscore-dangle
+          if (fromZoom === undefined) { fromZoom = this.$refs.map.mapObject._zoom; }
+          // eslint-disable-next-line no-underscore-dangle
+          const toZoom = this.$refs.map.mapObject._zoom;
+
+          scale = crs.scale(toZoom) / crs.scale(fromZoom);
+          blurring = fuzzyness * scale;
+          svgBlur.setAttribute('class', 'feGaussianBlur');
+          svgBlur.setAttribute('stdDeviation', `${blurring} ${blurring}`);
+        });
+      }
+    },
+    changeBasemap(id) {
+      this.tileProviders.forEach((i) => {
+        if (i.id === id) i.visible = true;
+        else i.visible = false;
+      });
+    },
+    uncheckSpatial() {
+      console.log('unchecked', this.showLayers);
+      if (this.showLayers.spatial === false) { this.showLayers.labels = false; }
     },
     // foundLocations() {
     //   return this.entries.length && !this.entries.count && this.entries.features.length;
@@ -369,6 +599,17 @@ export default {
     data: {
       handler(to) {
         console.log('to', to, this.data);
+        console.log('stichworte bevor', this.stichworte);
+        to[0].features.forEach((feature) => {
+          if (!Object.keys(this.stichworte).includes(feature.properties.key_word.stichwort)) {
+            // eslint-disable-next-line prefer-template
+            this.stichworte[feature.properties.key_word.stichwort] = '#' + (0x1000000 + Math.random() * 0xffffff).toString(16).substr(1, 6);
+          }
+        });
+        to[0].features.forEach((feature) => {
+          feature.properties.color = this.stichworte[feature.properties.key_word.stichwort];
+        });
+        console.log('stichworte danach', this.stichworte);
         if (to.length) {
           let allCoords = to[0].features
             .concat(to[1].features)
@@ -400,6 +641,26 @@ export default {
           this.relatedPlaces = this.removeDuplicates(allPlaces, ['url']);
           const relatedCoords = this.relatedPlaces.map((x) => x.coords.coordinates);
           this.bounds = this.getBounds(allCoords.concat(relatedCoords));
+
+          // eslint-disable-next-line prefer-destructuring
+          this.polygonCenters = JSON.parse(JSON.stringify(to[0]));
+          this.polygonCenters.features.forEach((feature) => {
+            const polygonCoords = [];
+            let coordsFixed = [];
+            feature.geometry.coordinates.forEach((coords) => {
+              coords.forEach((coord) => {
+                coordsFixed.push([coord[1], coord[0]]);
+              });
+              polygonCoords.push(coordsFixed);
+              coordsFixed = [];
+            });
+            const centerCoords = L.polygon(feature.geometry.coordinates).getBounds().getCenter();
+            feature.geometry = {
+              polygonCoords,
+              coordinates: [centerCoords.lat, centerCoords.lng],
+              type: 'Point',
+            };
+          });
         }
       },
       deep: true,
@@ -415,6 +676,13 @@ export default {
       iconUrl: greenMarker,
       shadowUrl: markerShadow,
     });
+  },
+  updated() {
+    const list = document.getElementsByClassName('blurred');
+    for (let j = 0; j < list.length; j += 1) {
+      this.alterSvg(list[j].classList[0]);
+      list[j].setAttribute('filter', `url(#${list[j].classList[0]})`);
+    }
   },
 };
 </script>
