@@ -319,7 +319,6 @@ import greenMarker from '@/assets/recolored_marker_icon.png';
 import redMarker from '@/assets/red_marker_icon.png';
 import blueMarker from '@/assets/blue_marker_icon.png';
 import greenMarker2x from '@/assets/recolored_marker_icon_2x.png';
-import kingdoms1200Geojson from '@/assets/kingdoms_1200_test.geojson';
 import kingdomsMid800Geojson from '@/assets/kingdoms_mid_800.geojson';
 import romanRoadsGeojson from '@/assets/RomanRoads.geojson';
 import majorTownsGeojson from '@/assets/DARMC_Medieval_World.geojson';
@@ -330,7 +329,6 @@ export default {
     polygonCenters: {},
     coneOrigins: {},
     stichworte: {},
-    kingdoms1200: {},
     kingdomsMid800: {},
     romanRoads: {},
     majorTowns: {},
@@ -806,7 +804,6 @@ export default {
           this.polygonCenters = JSON.parse(JSON.stringify(to[0]));
           this.coneOrigins = JSON.parse(JSON.stringify(to[1]));
           this.kingdomsMid800 = JSON.parse(JSON.stringify(kingdomsMid800Geojson));
-          this.kingdoms1200 = JSON.parse(JSON.stringify(kingdoms1200Geojson));
           this.romanRoads = JSON.parse(JSON.stringify(romanRoadsGeojson));
           this.majorTowns = JSON.parse(JSON.stringify(majorTownsGeojson));
           this.coneOrigins.features.forEach((feature) => {
