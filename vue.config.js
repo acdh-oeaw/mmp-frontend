@@ -13,4 +13,14 @@ module.exports = {
       enableInSFC: true,
     },
   },
+  configureWebpack: {
+    module: {
+      rules: [
+        {
+          test: /\.geojson$/,
+          loader: 'json-loader',
+        },
+      ],
+    },
+  },
 };
