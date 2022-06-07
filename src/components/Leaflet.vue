@@ -594,7 +594,6 @@ export default {
           )
           .on({
             mouseover: () => {
-              console.log(document.getElementsByClassName(`id_${feature.id} cone`), 'hover');
               document.getElementsByClassName(`id_${feature.id} cone`)[0].setAttribute('stroke', '#00ff51');
               document.getElementsByClassName(`id_${feature.id} cone`)[0].setAttribute('stroke-width', 2.5);
               document.getElementsByClassName(`id_${feature.id} cone`)[0].setAttribute('filter', '');
@@ -634,7 +633,6 @@ export default {
     pointToTown() {
       return (feature, latlng) => {
         let circleMarker;
-        console.log(latlng, 'origin');
         if (feature.properties.cone === 'cone') {
           circleMarker = L.circleMarker(latlng, {
             radius: 5,
@@ -817,7 +815,6 @@ export default {
           allCoords = allCoords.filter((x) => x);
 
           console.log('allCoords', allCoords);
-          console.log('to eins', to[1]);
           const places = {
             texts: {
               spatial: [],
@@ -846,7 +843,6 @@ export default {
             let lat = 0;
             let lng = 0;
             feature.properties.texts.forEach((text) => {
-              console.log('text places place', text.places);
               if (text.places.length > 0) {
                 lng = text.places[0].lat;
                 lat = text.places[0].lng;
@@ -861,9 +857,7 @@ export default {
           });
           this.coneOrigins.features.forEach((feature) => {
             if (JSON.stringify(feature.geometry.coordinates) === '[null,null]' || (JSON.stringify(feature.geometry.coordinates)) === '[0,0]') {
-              console.log('testestest', feature.properties.stelle[0].display_label, feature);
               const index = this.coneOrigins.features.indexOf(feature);
-              console.log('index', index);
               this.coneOrigins.features.splice(index, 1);
             }
           });
