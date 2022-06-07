@@ -319,7 +319,6 @@ import greenMarker from '@/assets/recolored_marker_icon.png';
 import redMarker from '@/assets/red_marker_icon.png';
 import blueMarker from '@/assets/blue_marker_icon.png';
 import greenMarker2x from '@/assets/recolored_marker_icon_2x.png';
-import kingdoms1200Geojson from '@/assets/kingdoms_1200_test.geojson';
 import kingdomsMid800Geojson from '@/assets/kingdoms_mid_800.geojson';
 import romanRoadsGeojson from '@/assets/RomanRoads.geojson';
 import majorTownsGeojson from '@/assets/DARMC_Medieval_World.geojson';
@@ -330,7 +329,6 @@ export default {
     polygonCenters: {},
     coneOrigins: {},
     stichworte: {},
-    kingdoms1200: {},
     kingdomsMid800: {},
     romanRoads: {},
     majorTowns: {},
@@ -424,7 +422,7 @@ export default {
         color: '#FDD835',
         fillOpacity: 0.35,
         weight: 1.5,
-        className: `blur${feature.properties.fuzzyness} blurred`,
+        className: `blur${feature.properties.fuzzyness} blurred id_${feature.id} cone`,
       });
     },
     spatialStyle() {
@@ -432,7 +430,7 @@ export default {
         color: feature.properties.color,
         fillOpacity: 0.35,
         weight: 0,
-        className: `blur${feature.properties.fuzzyness} blurred id_${feature.id}`,
+        className: `blur${feature.properties.fuzzyness} blurred id_${feature.id} spatCov`,
       });
     },
     roadsStyle() {
@@ -486,7 +484,7 @@ export default {
     optionsOrigins() {
       return {
         pointToLayer: this.pointToTown,
-        onEachFeature: this.onEachTown,
+        onEachFeature: this.onEachOrigin,
       };
     },
     optionsTowns() {
@@ -554,9 +552,51 @@ export default {
           })
           .on({
             mouseover: () => {
-              document.getElementsByClassName(`id_${feature.id}`)[0].setAttribute('stroke', '#00ff51');
-              document.getElementsByClassName(`id_${feature.id}`)[0].setAttribute('stroke-width', 2.5);
-              document.getElementsByClassName(`id_${feature.id}`)[0].setAttribute('filter', '');
+              document.getElementsByClassName(`id_${feature.id} spatCov`)[0].setAttribute('stroke', '#00ff51');
+              document.getElementsByClassName(`id_${feature.id} spatCov`)[0].setAttribute('stroke-width', 2.5);
+              document.getElementsByClassName(`id_${feature.id} spatCov`)[0].setAttribute('filter', '');
+              let spatCov;
+              // eslint-disable-next-line
+              Object.values(this.$refs.spatCov.mapObject._layers).forEach((i) => {
+                if (i.feature.id === feature.id) { spatCov = i; }
+              });
+              spatCov.bringToFront();
+            },
+          })
+          .on({
+            mouseout: () => {
+              const filter = document.getElementsByClassName(`id_${feature.id} spatCov`)[0].classList[0];
+              document.getElementsByClassName(`id_${feature.id} spatCov`)[0].setAttribute('stroke-width', 0);
+              document.getElementsByClassName(`id_${feature.id} spatCov`)[0].setAttribute('filter', `url(#${filter})`);
+              let spatCov;
+              // eslint-disable-next-line
+              Object.values(this.$refs.spatCov.mapObject._layers).forEach((i) => {
+                if (i.feature.id === feature.id) { spatCov = i; }
+              });
+              spatCov.bringToBack();
+            },
+          });
+      };
+    },
+    onEachTown() {
+      return (feature, layer) => {
+        layer
+          .bindTooltip(
+            `<div>Town: ${feature.properties.Name}</div>`,
+          );
+      };
+    },
+    onEachOrigin() {
+      return (feature, layer) => {
+        layer
+          .bindTooltip(
+            `<div>Town: ${feature.properties.Name}</div>`,
+          )
+          .on({
+            mouseover: () => {
+              document.getElementsByClassName(`id_${feature.id} cone`)[0].setAttribute('stroke', '#00ff51');
+              document.getElementsByClassName(`id_${feature.id} cone`)[0].setAttribute('stroke-width', 2.5);
+              document.getElementsByClassName(`id_${feature.id} cone`)[0].setAttribute('filter', '');
               let spatCov;
               // eslint-disable-next-line
               Object.values(this.$refs.spatCov.mapObject._layers).forEach((i) => {
@@ -578,14 +618,6 @@ export default {
               spatCov.bringToBack();
             },
           });
-      };
-    },
-    onEachTown() {
-      return (feature, layer) => {
-        layer
-          .bindTooltip(
-            `<div>Town: ${feature.properties.Name}</div>`,
-          );
       };
     },
     pointToLayer() {
@@ -783,7 +815,6 @@ export default {
           allCoords = allCoords.filter((x) => x);
 
           console.log('allCoords', allCoords);
-          console.log('to eins', to[1]);
           const places = {
             texts: {
               spatial: [],
@@ -806,22 +837,29 @@ export default {
           this.polygonCenters = JSON.parse(JSON.stringify(to[0]));
           this.coneOrigins = JSON.parse(JSON.stringify(to[1]));
           this.kingdomsMid800 = JSON.parse(JSON.stringify(kingdomsMid800Geojson));
-          this.kingdoms1200 = JSON.parse(JSON.stringify(kingdoms1200Geojson));
           this.romanRoads = JSON.parse(JSON.stringify(romanRoadsGeojson));
           this.majorTowns = JSON.parse(JSON.stringify(majorTownsGeojson));
           this.coneOrigins.features.forEach((feature) => {
-            let lat;
-            let lng;
+            let lat = 0;
+            let lng = 0;
             feature.properties.texts.forEach((text) => {
-              lng = text.places[0].lat;
-              lat = text.places[0].lng;
-              feature.properties.Name = text.places[0].name;
-              feature.properties.cone = 'cone';
+              if (text.places.length > 0) {
+                lng = text.places[0].lat;
+                lat = text.places[0].lng;
+                feature.properties.Name = text.places[0].name;
+                feature.properties.cone = 'cone';
+              }
             });
             feature.geometry = {
               coordinates: [lat, lng],
               type: 'Point',
             };
+          });
+          this.coneOrigins.features.forEach((feature) => {
+            if (JSON.stringify(feature.geometry.coordinates) === '[null,null]' || (JSON.stringify(feature.geometry.coordinates)) === '[0,0]') {
+              const index = this.coneOrigins.features.indexOf(feature);
+              this.coneOrigins.features.splice(index, 1);
+            }
           });
           this.polygonCenters.features.forEach((feature) => {
             const polygonCoords = [];
