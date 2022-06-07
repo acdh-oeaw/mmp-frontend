@@ -422,7 +422,7 @@ export default {
         color: '#FDD835',
         fillOpacity: 0.35,
         weight: 1.5,
-        className: `blur${feature.properties.fuzzyness} blurred`,
+        className: `blur${feature.properties.fuzzyness} blurred id_${feature.id} cone`,
       });
     },
     spatialStyle() {
@@ -430,7 +430,7 @@ export default {
         color: feature.properties.color,
         fillOpacity: 0.35,
         weight: 0,
-        className: `blur${feature.properties.fuzzyness} blurred id_${feature.id}`,
+        className: `blur${feature.properties.fuzzyness} blurred id_${feature.id} spatCov`,
       });
     },
     roadsStyle() {
@@ -484,7 +484,7 @@ export default {
     optionsOrigins() {
       return {
         pointToLayer: this.pointToTown,
-        onEachFeature: this.onEachTown,
+        onEachFeature: this.onEachOrigin,
       };
     },
     optionsTowns() {
@@ -552,9 +552,52 @@ export default {
           })
           .on({
             mouseover: () => {
-              document.getElementsByClassName(`id_${feature.id}`)[0].setAttribute('stroke', '#00ff51');
-              document.getElementsByClassName(`id_${feature.id}`)[0].setAttribute('stroke-width', 2.5);
-              document.getElementsByClassName(`id_${feature.id}`)[0].setAttribute('filter', '');
+              document.getElementsByClassName(`id_${feature.id} spatCov`)[0].setAttribute('stroke', '#00ff51');
+              document.getElementsByClassName(`id_${feature.id} spatCov`)[0].setAttribute('stroke-width', 2.5);
+              document.getElementsByClassName(`id_${feature.id} spatCov`)[0].setAttribute('filter', '');
+              let spatCov;
+              // eslint-disable-next-line
+              Object.values(this.$refs.spatCov.mapObject._layers).forEach((i) => {
+                if (i.feature.id === feature.id) { spatCov = i; }
+              });
+              spatCov.bringToFront();
+            },
+          })
+          .on({
+            mouseout: () => {
+              const filter = document.getElementsByClassName(`id_${feature.id} spatCov`)[0].classList[0];
+              document.getElementsByClassName(`id_${feature.id} spatCov`)[0].setAttribute('stroke-width', 0);
+              document.getElementsByClassName(`id_${feature.id} spatCov`)[0].setAttribute('filter', `url(#${filter})`);
+              let spatCov;
+              // eslint-disable-next-line
+              Object.values(this.$refs.spatCov.mapObject._layers).forEach((i) => {
+                if (i.feature.id === feature.id) { spatCov = i; }
+              });
+              spatCov.bringToBack();
+            },
+          });
+      };
+    },
+    onEachTown() {
+      return (feature, layer) => {
+        layer
+          .bindTooltip(
+            `<div>Town: ${feature.properties.Name}</div>`,
+          );
+      };
+    },
+    onEachOrigin() {
+      return (feature, layer) => {
+        layer
+          .bindTooltip(
+            `<div>Town: ${feature.properties.Name}</div>`,
+          )
+          .on({
+            mouseover: () => {
+              console.log(document.getElementsByClassName(`id_${feature.id} cone`), 'hover');
+              document.getElementsByClassName(`id_${feature.id} cone`)[0].setAttribute('stroke', '#00ff51');
+              document.getElementsByClassName(`id_${feature.id} cone`)[0].setAttribute('stroke-width', 2.5);
+              document.getElementsByClassName(`id_${feature.id} cone`)[0].setAttribute('filter', '');
               let spatCov;
               // eslint-disable-next-line
               Object.values(this.$refs.spatCov.mapObject._layers).forEach((i) => {
@@ -578,14 +621,6 @@ export default {
           });
       };
     },
-    onEachTown() {
-      return (feature, layer) => {
-        layer
-          .bindTooltip(
-            `<div>Town: ${feature.properties.Name}</div>`,
-          );
-      };
-    },
     pointToLayer() {
       return (feature, latlng) => {
         const featCat = feature.properties.kategorie.match(/\d+/g)[0];
@@ -599,6 +634,7 @@ export default {
     pointToTown() {
       return (feature, latlng) => {
         let circleMarker;
+        console.log(latlng, 'origin');
         if (feature.properties.cone === 'cone') {
           circleMarker = L.circleMarker(latlng, {
             radius: 5,
@@ -807,18 +843,29 @@ export default {
           this.romanRoads = JSON.parse(JSON.stringify(romanRoadsGeojson));
           this.majorTowns = JSON.parse(JSON.stringify(majorTownsGeojson));
           this.coneOrigins.features.forEach((feature) => {
-            let lat;
-            let lng;
+            let lat = 0;
+            let lng = 0;
             feature.properties.texts.forEach((text) => {
-              lng = text.places[0].lat;
-              lat = text.places[0].lng;
-              feature.properties.Name = text.places[0].name;
-              feature.properties.cone = 'cone';
+              console.log('text places place', text.places);
+              if (text.places.length > 0) {
+                lng = text.places[0].lat;
+                lat = text.places[0].lng;
+                feature.properties.Name = text.places[0].name;
+                feature.properties.cone = 'cone';
+              }
             });
             feature.geometry = {
               coordinates: [lat, lng],
               type: 'Point',
             };
+          });
+          this.coneOrigins.features.forEach((feature) => {
+            if (JSON.stringify(feature.geometry.coordinates) === '[null,null]' || (JSON.stringify(feature.geometry.coordinates)) === '[0,0]') {
+              console.log('testestest', feature.properties.stelle[0].display_label, feature);
+              const index = this.coneOrigins.features.indexOf(feature);
+              console.log('index', index);
+              this.coneOrigins.features.splice(index, 1);
+            }
           });
           this.polygonCenters.features.forEach((feature) => {
             const polygonCoords = [];
