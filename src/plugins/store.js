@@ -86,6 +86,9 @@ export default new Vuex.Store({
         state.searchFilters[cat][key] = val;
       });
     },
+    setSpecificSubFilter: (state, { cat, key, val }) => {
+      state.searchFilters[cat][key] = val;
+    },
     setApiParam: (state, { key, val }) => {
       state.apiParams[key] = val;
     },

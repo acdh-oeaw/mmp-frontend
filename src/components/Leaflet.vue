@@ -1,67 +1,38 @@
 <template>
   <div>
-    <l-map
-      ref="map" :style="`height: ${fullscreen && $route.name !== 'Keyword Detail Fullscreen' ? '100vh' : height + 'px'}; width: 100%; z-index: 4`"
-      :bounds="bounds"
-    >
-      <l-tile-layer
-        v-for="tileProvider in tileProviders"
-        :key="tileProvider.name"
-        :name="tileProvider.name"
-        :visible="tileProvider.visible"
-        :url="tileProvider.url"
-        :attribution="tileProvider.attribution"
-        layer-type="base"
-        :options="tileOptions" />
+    <l-map ref="map"
+      :style="`height: ${fullscreen && $route.name !== 'Keyword Detail Fullscreen' ? '100vh' : height + 'px'}; width: 100%; z-index: 4`"
+      :bounds="bounds">
+      <l-tile-layer v-for="tileProvider in tileProviders" :key="tileProvider.name" :name="tileProvider.name"
+        :visible="tileProvider.visible" :url="tileProvider.url" :attribution="tileProvider.attribution"
+        layer-type="base" :options="tileOptions" />
       <l-control position="bottomright">
-        <v-btn
-          fab
-          small
-          :to="{
+        <v-btn fab small :to="{
             name: fullscreen ? 'Map' : 'Map Fullscreen',
-            query: usecase ? {'Use Case': usecase} : $route.query
-          }"
-        >
+            query: usecase ? addParamsToQuery({ 'Use Case': usecase }) : $route.query
+          }">
           <v-icon v-if="fullscreen">mdi-fullscreen-exit</v-icon>
           <v-icon v-else>mdi-fullscreen</v-icon>
         </v-btn>
       </l-control>
       <l-control position="topright">
-        <v-menu
-          v-model="menu"
-          :close-on-content-click="false"
-          left
-        >
+        <v-menu v-model="menu" :close-on-content-click="false" left>
           <template v-slot:activator="{ on, attrs }">
-            <v-btn
-              fab
-              small
-              v-bind="attrs"
-              v-on="on"
-            >
+            <v-btn fab small v-bind="attrs" v-on="on">
               <v-icon>mdi-layers-triple</v-icon>
             </v-btn>
           </template>
           <v-card>
             <v-card-title>Select Layers</v-card-title>
             <v-card-text>
-              <v-checkbox
-                v-model="showLayers.spatial"
-                color="red darken-1"
-                dense
-                :disabled="!(data[0] && data[0].count)"
-                v-on:change="uncheckSpatial()"
-              >
+              <v-checkbox v-model="showLayers.spatial" color="red darken-1" dense
+                :disabled="!(data[0] && data[0].count)" v-on:change="uncheckSpatial()">
                 <template v-slot:label>
                   Spatial&nbsp;Coverage
                   &nbsp;
                   <v-chip color="red darken-1" dark small :disabled="!data[0] || !data[0].count">
                     <template v-if="loading">
-                      <v-progress-circular
-                        indeterminate
-                        :size="15"
-                        :width="2"
-                      />
+                      <v-progress-circular indeterminate :size="15" :width="2" />
                     </template>
                     <template v-else>
                       {{ data[0].count }}
@@ -69,33 +40,21 @@
                   </v-chip>
                 </template>
               </v-checkbox>
-              <v-checkbox
-                v-model="showLayers.labels"
-                color="blue darken-1"
-                dense
-                :disabled="!(polygonCenters && polygonCenters.count)"
-              >
+              <v-checkbox v-model="showLayers.labels" color="blue darken-1" dense
+                :disabled="!(polygonCenters && polygonCenters.count)">
                 <template v-slot:label>
                   Labels
                   &nbsp;
                 </template>
               </v-checkbox>
-              <v-checkbox
-                v-model="showLayers.cones"
-                color="yellow darken-1"
-                dense
-                :disabled="!(data[1] && data[1].count)"
-              >
+              <v-checkbox v-model="showLayers.cones" color="yellow darken-1" dense
+                :disabled="!(data[1] && data[1].count)">
                 <template v-slot:label>
                   Cones
                   &nbsp;
                   <v-chip color="yellow darken-1" small :disabled="!data[1] || !data[1].count">
                     <template v-if="loading">
-                      <v-progress-circular
-                        indeterminate
-                        :size="15"
-                        :width="2"
-                      />
+                      <v-progress-circular indeterminate :size="15" :width="2" />
                     </template>
                     <template v-else>
                       {{ data[1].count }}
@@ -103,22 +62,14 @@
                   </v-chip>
                 </template>
               </v-checkbox>
-              <v-checkbox
-                v-model="showLayers.places"
-                color="green lighten-1"
-                dense
-                :disabled="!(data[2] && data[2].count)"
-              >
+              <v-checkbox v-model="showLayers.places" color="green lighten-1" dense
+                :disabled="!(data[2] && data[2].count)">
                 <template v-slot:label>
                   Places
                   &nbsp;
                   <v-chip color="green lighten-1" dark small :disabled="!data[2] || !data[2].count">
                     <template v-if="loading">
-                      <v-progress-circular
-                        indeterminate
-                        :size="15"
-                        :width="2"
-                      />
+                      <v-progress-circular indeterminate :size="15" :width="2" />
                     </template>
                     <template v-else-if="data[2]">
                       {{ data[2].count }}
@@ -129,27 +80,13 @@
                   </v-chip>
                 </template>
               </v-checkbox>
-              <v-checkbox
-                v-model="showLayers.relatedPlaces"
-                color="green lighten-1"
-                dense
-                :disabled="!relatedPlaces.length"
-              >
+              <v-checkbox v-model="showLayers.relatedPlaces" color="green lighten-1" dense
+                :disabled="!relatedPlaces.length">
                 <template v-slot:label>
                   Related&nbsp;Places
                   &nbsp;
-                  <v-chip
-                    color="green lighten-1"
-                    dark
-                    small
-                    :disabled="!relatedPlaces.length"
-                  >
-                    <v-progress-circular
-                      v-if="loading"
-                      indeterminate
-                      :size="15"
-                      :width="2"
-                    />
+                  <v-chip color="green lighten-1" dark small :disabled="!relatedPlaces.length">
+                    <v-progress-circular v-if="loading" indeterminate :size="15" :width="2" />
                     <template v-else>
                       {{ relatedPlaces.length }}
                     </template>
@@ -160,55 +97,34 @@
             <v-card-title>Select Basemap</v-card-title>
             <v-card-text>
               <v-radio-group v-model="radioGroup">
-                <v-radio v-for="tileProvider in tileProviders" :key="tileProvider.id" :label="tileProvider.name" :value="tileProvider.id" v-on:change="changeBasemap(tileProvider.id)">
+                <v-radio v-for="tileProvider in tileProviders" :key="tileProvider.id" :label="tileProvider.name"
+                  :value="tileProvider.id" v-on:change="changeBasemap(tileProvider.id)">
                 </v-radio>
               </v-radio-group>
             </v-card-text>
             <v-card-actions>
-              <v-btn
-                @click="menu = false"
-                text
-                small
-              >
+              <v-btn @click="menu = false" text small>
                 Close
               </v-btn>
             </v-card-actions>
           </v-card>
         </v-menu>
       </l-control>
-      <l-geo-json
-        v-if="data[0] && showLayers.spatial"
-        :geojson="data[0]"
-        :options="{ onEachFeature: onEach }"
-        :options-style="spatialStyle"
-      />
-      <l-geo-json
-        v-if="data[0] && showLayers.spatial && showLayers.labels"
-        :geojson="polygonCenters"
-        :options="optionsLabels"
-      />
-      <l-geo-json
-        v-if="data[1] && showLayers.cones"
-        :geojson="data[1]"
-        :options="{ onEachFeature: onEach }"
-        :options-style="coneStyle"
-      />
-      <l-geo-json
-        v-if="data[2] && data[2].results && showLayers.places"
-        :geojson="data[2].results"
-        :options="optionsMarkers"
-      />
+      <l-geo-json v-if="data[0] && showLayers.spatial" :geojson="data[0]" :options="{ onEachFeature: onEach }"
+        :options-style="spatialStyle" />
+      <l-geo-json v-if="data[0] && showLayers.spatial && showLayers.labels" :geojson="polygonCenters"
+        :options="optionsLabels" />
+      <l-geo-json v-if="data[1] && showLayers.cones" :geojson="data[1]" :options="{ onEachFeature: onEach }"
+        :options-style="coneStyle" />
+      <l-geo-json v-if="data[2] && data[2].results && showLayers.places" :geojson="data[2].results"
+        :options="optionsMarkers" />
       <template v-if="showLayers.relatedPlaces">
-        <l-marker
-          v-for="place in relatedPlaces"
-          :key="place.url"
-          :lat-lng="returnLatLng(place.coords.coordinates)"
+        <l-marker v-for="place in relatedPlaces" :key="place.url" :lat-lng="returnLatLng(place.coords.coordinates)"
           @click="$router.push({
             name: fullscreen ? 'Place Detail Fullscreen' : 'Place Detail',
             query: $route.query,
             params: { id: getIdFromUrl(place.url) },
-          })"
-        >
+          })">
           <l-tooltip>
             <div>Name: {{ place.name }}</div>
             <div v-if="place.name_antik">Ancient Name: {{ place.name_antik }}</div>
@@ -216,20 +132,12 @@
         </l-marker>
       </template>
     </l-map>
-    <v-overlay
-      absolute
-      class="overlay"
-      opacity=".2"
-      :value="loading || !data.some((d) => d.count)"
-    >
+    <v-overlay absolute class="overlay" opacity=".2" :value="loading || !data.some((d) => d.count)">
       <h1 v-if="!loading" class="no-nodes">
         No locations found!
       </h1>
       <h1 v-else>
-        <v-progress-circular
-          indeterminate
-          color="#0F1226"
-        />
+        <v-progress-circular indeterminate color="#0F1226" />
       </h1>
     </v-overlay>
     <router-view />
@@ -394,7 +302,7 @@ export default {
               console.log('click', feature, e);
               this.$router.push({
                 name: this.fullscreen ? 'Spatial Detail Fullscreen' : 'Spatial Detail',
-                query: this.usecase ? { 'Use Case': this.usecase } : this.$route.query,
+                query: this.usecase ? this.addParamsToQuery({ 'Use Case': this.usecase }) : this.$route.query,
                 params: { id: feature.id },
               });
             },
@@ -453,7 +361,7 @@ export default {
               this.$refs.map.mapObject.fitBounds(L.latLngBounds(feature.geometry.polygonCoords));
               this.$router.push({
                 name: this.fullscreen ? 'Spatial Detail Fullscreen' : 'Spatial Detail',
-                query: this.usecase ? { 'Use Case': this.usecase } : this.$route.query,
+                query: this.usecase ? this.addParamsToQuery({ 'Use Case': this.usecase }) : this.$route.query,
                 params: { id: feature.id },
               });
             },

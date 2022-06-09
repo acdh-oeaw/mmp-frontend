@@ -1,39 +1,26 @@
 <template>
-  <v-card
-    flat
-    color="rgba(0, 0, 0, 0)"
-  >
+  <v-card flat color="rgba(0, 0, 0, 0)">
     <v-list two-line>
-      <v-skeleton-loader
-        type="list-item-three-line@3"
-        class="transparent-skeleton"
-        v-if="loading"
-      />
-        <v-list-item
-          v-else-if="data.length"
-          v-for="passage in data"
-          three-line
-          :key="passage.url"
-          :to="{
+      <v-skeleton-loader type="list-item-three-line@3" class="transparent-skeleton" v-if="loading" />
+      <v-list-item v-else-if="data.length" v-for="passage in data" three-line :key="passage.url" :to="{
               name: fullscreen ? 'Passage Detail Fullscreen' : 'Passage Detail',
-              query: { Passage: getIdFromUrl(passage.url) },
-              params: { id: getIdFromUrl(passage.url) }}"
-            >
-            <v-list-item-content>
-              <v-list-item-title>
-                  {{ passage.display_label }}
-              </v-list-item-title>
-              <v-list-item-subtitle v-if="passage.text.autor.length">
-                {{ passage.text.title }}, {{ passage.text.autor.map((x) => getOptimalName(x)).join(', ') }}
-              </v-list-item-subtitle>
-              <v-list-item-subtitle v-if="passage.text.jahrhundert">
-                {{ passage.text.jahrhundert }} century
-              </v-list-item-subtitle>
-            </v-list-item-content>
-            <v-list-item-icon>
-              <v-icon>mdi-chevron-right</v-icon>
-            </v-list-item-icon>
-        </v-list-item>
+              query: addParamsToQuery({ Passage: getIdFromUrl(passage.url) }),
+              params: { id: getIdFromUrl(passage.url) }}">
+        <v-list-item-content>
+          <v-list-item-title>
+            {{ passage.display_label }}
+          </v-list-item-title>
+          <v-list-item-subtitle v-if="passage.text.autor.length">
+            {{ passage.text.title }}, {{ passage.text.autor.map((x) => getOptimalName(x)).join(', ') }}
+          </v-list-item-subtitle>
+          <v-list-item-subtitle v-if="passage.text.jahrhundert">
+            {{ passage.text.jahrhundert }} century
+          </v-list-item-subtitle>
+        </v-list-item-content>
+        <v-list-item-icon>
+          <v-icon>mdi-chevron-right</v-icon>
+        </v-list-item-icon>
+      </v-list-item>
       <v-list-item v-else>No passages found!</v-list-item>
     </v-list>
   </v-card>

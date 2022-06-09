@@ -7,14 +7,7 @@
             <v-col :cols="$vuetify.breakpoint.mobile ? 12 : 1">
               <v-menu :close-on-content-click="false">
                 <template v-slot:activator="{ on, attrs }">
-                  <v-btn
-                    min-height="50px"
-                    height="100%"
-                    block
-                    depressed
-                    v-bind="attrs"
-                    v-on="on"
-                  >
+                  <v-btn min-height="50px" height="100%" block depressed v-bind="attrs" v-on="on">
                     <v-icon>mdi-cog</v-icon>
                     <v-icon>mdi-chevron-down</v-icon>
                   </v-btn>
@@ -23,29 +16,19 @@
               </v-menu>
             </v-col>
             <v-col :cols="$vuetify.breakpoint.mobile ? 12 : 10">
-              <v-autocomplete
-                v-model="$store.state.autocomplete.input"
-                multiple
-                clearable
-                item-text="selected_text"
-                return-object
-                no-filter
-                autofocus
-                ref="autocomplete"
+              <v-autocomplete v-model="$store.state.autocomplete.input" multiple clearable item-text="selected_text"
+                return-object no-filter autofocus ref="autocomplete"
                 placeholder="Search for Authors, Passages, Keywords, Case Studies or Places"
-                :items="filteredSearchedSorted"
-                :search-input.sync="textInput"
-                @change="textInput = ''"
-                @keyup.enter="pushQuery"
-                :loading="loading"
-              >
+                :items="filteredSearchedSorted" :search-input.sync="textInput" @change="textInput = ''"
+                @keyup.enter="pushQuery" :loading="loading">
                 <template v-slot:item="data">
                   <v-list-item-content v-if="data.item.group === 'Keyword' && data.item.selected_text.includes(',')">
                     <v-list-item-title>
                       {{ data.item.selected_text.split(',')[0] }}
                       <span v-if="$store.state.completeKeywords.includes(parseInt(data.item.id))">(complete)</span>
                     </v-list-item-title>
-                    <v-list-item-subtitle>Keyword ({{ data.item.selected_text.split(',')[1].replace(/\W/g, '') }})</v-list-item-subtitle>
+                    <v-list-item-subtitle>Keyword ({{ data.item.selected_text.split(',')[1].replace(/\W/g, '') }})
+                    </v-list-item-subtitle>
                   </v-list-item-content>
                   <v-list-item-content v-else>
                     <v-list-item-title>{{ data.item.selected_text }}</v-list-item-title>
@@ -53,14 +36,9 @@
                   </v-list-item-content>
                 </template>
                 <template v-slot:selection="data">
-                  <v-chip
-                    v-bind="data.attrs"
-                    :input-value="data.selected"
-                    close
-                    :color="getChipColorFromGroup(data.item.group)"
-                    @click="data.select"
-                    @click:close="$store.commit('removeItemFromInput', data.item)"
-                  >
+                  <v-chip v-bind="data.attrs" :input-value="data.selected" close
+                    :color="getChipColorFromGroup(data.item.group)" @click="data.select"
+                    @click:close="$store.commit('removeItemFromInput', data.item)">
                     {{ shorten(data.item.selected_text, 30) }}
                   </v-chip>
                 </template>
@@ -70,14 +48,7 @@
               </v-autocomplete>
             </v-col>
             <v-col :cols="$vuetify.breakpoint.mobile ? 12 : 1">
-              <v-btn
-                min-height="50px"
-                height="100%"
-                x-large
-                block
-                depressed
-                @click="pushQuery"
-              >
+              <v-btn min-height="50px" height="100%" x-large block depressed @click="pushQuery">
                 <v-icon>mdi-magnify</v-icon>{{ !$vuetify.breakpoint.mobile ? '' : 'Search' }}
               </v-btn>
             </v-col>
@@ -85,101 +56,67 @@
           <v-row class="grey-bg">
             <template v-if="!$vuetify.breakpoint.mobile">
               <v-col>
-                <v-btn
-                  text
-                  small
-                  class="disable-events"
-                >
+                <v-btn text small class="disable-events">
                   View as
                 </v-btn>
               </v-col>
               <v-col>
-                <v-btn
-                  text
-                  block
-                  small
-                  class="view-picker"
-                  :disabled="currentView === 'List'"
-                  :to="{ name: 'List', query }"
-                >
+                <v-btn text block small class="view-picker" :disabled="currentView === 'List'"
+                  :to="{ name: 'List', query: addParamsToQuery(query) }">
                   List
                 </v-btn>
               </v-col>
               <v-col>
-                <v-btn
-                  text
-                  block
-                  small
-                  class="view-picker"
-                  :disabled="currentView === 'Graph'"
-                  :to="{ name: 'Network Graph', query }"
-                >
+                <v-btn text block small class="view-picker" :disabled="currentView === 'Graph'"
+                  :to="{ name: 'Network Graph', query: addParamsToQuery(query) }">
                   Network Graph
                 </v-btn>
               </v-col>
               <v-col>
-                <v-btn
-                  text
-                  block
-                  small
-                  class="view-picker"
-                  :disabled="currentView === 'Map'"
-                  :to="{ name: 'Map', query }"
-                >
+                <v-btn text block small class="view-picker" :disabled="currentView === 'Map'"
+                  :to="{ name: 'Map', query: addParamsToQuery(query) }">
                   Map
                 </v-btn>
               </v-col>
               <v-col>
-                <v-btn
-                  text
-                  block
-                  small
-                  class="view-picker"
-                  :disabled="currentView === 'Word Cloud'"
-                  :to="{ name: 'Word Cloud', query }"
-                >
+                <v-btn text block small class="view-picker" :disabled="currentView === 'Word Cloud'"
+                  :to="{ name: 'Word Cloud', query: addParamsToQuery(query) }">
                   Word Cloud
                 </v-btn>
               </v-col>
             </template>
             <template v-else>
               <v-col cols="12">
-                <v-select
-                  v-model="currentView"
-                  :items="['List', 'Network Graph', 'Map', 'Word Cloud']"
-                  label="View as"
-                />
+                <v-select v-model="currentView" :items="['List', 'Network Graph', 'Map', 'Word Cloud']"
+                  label="View as" />
               </v-col>
             </template>
             <v-col :class="{ 'text-right': !$vuetify.breakpoint.mobile, 'text-center': $vuetify.breakpoint.mobile }">
-              <v-btn
-                text
-                block
-                small
-                class="justify-end"
-                :to="{ name: 'List All' }"
-              >
+              <v-btn text block small class="justify-end" :to="{ name: 'List All', query: addParamsToQuery(query) }">
                 &nbsp;
                 <v-icon>mdi-format-list-bulleted</v-icon>
                 List All Entities
               </v-btn>
             </v-col>
           </v-row>
-          <v-row align="center" justify="center" v-if="!Object.keys(query).length && !Object.keys($route.params).length">
+          <v-row align="center" justify="center"
+            v-if="!Object.keys(query).length && !Object.keys($route.params).length">
             <v-col cols="12" md="8">
-              <div
-                class="text-center no-query"
-              >
+              <div class="text-center no-query">
                 <p>
-                  Search our database for medieval <b>authors</b>, <b>passages</b>, <b>keywords</b> (such as names of peoples) or <b>case studies</b>.
+                  Search our database for medieval <b>authors</b>, <b>passages</b>, <b>keywords</b> (such as names of
+                  peoples) or <b>case studies</b>.
                 </p>
                 <p>
                   For instance, try
-                  <v-chip @click="$store.commit('addToItemsAndInput', defaultChips.baudovinia)" color="red lighten-3">Baudonivia von Poitiers</v-chip>
+                  <v-chip @click="$store.commit('addToItemsAndInput', defaultChips.baudovinia)" color="red lighten-3">
+                    Baudonivia von Poitiers</v-chip>
                   &#32;
-                  <v-chip @click="$store.commit('addToItemsAndInput', defaultChips.barbari)" color="blue lighten-4">barbari</v-chip>
+                  <v-chip @click="$store.commit('addToItemsAndInput', defaultChips.barbari)" color="blue lighten-4">
+                    barbari</v-chip>
                   or
-                  <v-chip @click="$store.commit('addToItemsAndInput', defaultChips.spain)" color="amber lighten-3">Steppe Peoples 1: "Schwarzes Meer"</v-chip>
+                  <v-chip @click="$store.commit('addToItemsAndInput', defaultChips.spain)" color="amber lighten-3">
+                    Steppe Peoples 1: "Schwarzes Meer"</v-chip>
                 </p>
                 <p>
                   Use the <b>slider</b> below to adjust and narrow down the <b>historical</b> scope of your query.
@@ -192,56 +129,35 @@
           </v-row>
           <v-row>
             <v-col>
-              <component
-                :disabled="disabledSlider"
-                :is="sliderComponent"
-                v-model="range"
-                class="slider"
-                thumb-label="always"
-                light
-                thumb-size="50"
-                track-color="#d5d5d5"
-                :track-fill-color="range.length ? '#0f1226' : '#d5d5d5'"
-                max="120"
-                min="40"
-              >
+              <component :disabled="disabledSlider" :is="sliderComponent" v-model="range" class="slider"
+                thumb-label="always" light thumb-size="50" track-color="#d5d5d5"
+                :track-fill-color="range.length ? '#0f1226' : '#d5d5d5'" max="120" min="40">
                 <template v-slot:thumb-label="{ value }">
                   {{ (value * 10) }} AD
                 </template>
                 <template v-slot:append>
                   <v-menu :close-on-content-click="false">
                     <template v-slot:activator="{ on, attrs }">
-                      <v-btn
-                        icon
-                        v-bind="attrs"
-                        v-on="on"
-                      >
+                      <v-btn icon v-bind="attrs" v-on="on">
                         <v-icon>mdi-cog</v-icon>
                       </v-btn>
                     </template>
                     <v-card>
                       <v-card-text class="text-center">
                         <v-btn icon>
-                          <img class="icon" @click="toggleSliderComponent('v-range-slider')" :src="disabledSlider ? $vuetify.icons.values.rangeDisabled : $vuetify.icons.values.range" alt="Range Icon" />
+                          <img class="icon" @click="toggleSliderComponent('v-range-slider')"
+                            :src="disabledSlider ? $vuetify.icons.values.rangeDisabled : $vuetify.icons.values.range"
+                            alt="Range Icon" />
                         </v-btn>
                         <v-btn icon>
-                          <img class="icon" @click="toggleSliderComponent('v-slider')" :src="disabledSlider ? $vuetify.icons.values.sliderDisabled : $vuetify.icons.values.slider" alt="Slider Icon" />
+                          <img class="icon" @click="toggleSliderComponent('v-slider')"
+                            :src="disabledSlider ? $vuetify.icons.values.sliderDisabled : $vuetify.icons.values.slider"
+                            alt="Slider Icon" />
                         </v-btn>
                         <v-divider />
-                        <v-radio-group
-                          label="Timeslider should filter for:"
-                          v-model="slideOption"
-                        >
-                          <v-radio
-                            label="Passages"
-                            color="teal lighten-2"
-                            value="passage"
-                          />
-                          <v-radio
-                            label="Texts"
-                            color="red darken-4"
-                            value="text"
-                          />
+                        <v-radio-group label="Timeslider should filter for:" v-model="slideOption">
+                          <v-radio label="Passages" color="teal lighten-2" value="passage" />
+                          <v-radio label="Texts" color="red darken-4" value="text" />
                         </v-radio-group>
                       </v-card-text>
                     </v-card>
@@ -339,7 +255,7 @@ export default {
         return this.$route.name;
       },
       set(val) {
-        this.$router.push({ name: val, query: this.query });
+        this.$router.push({ name: val, query: this.addParamsToQuery(this.query) });
       },
     },
     slideOption: {
@@ -392,7 +308,7 @@ export default {
       this.autoQuery = false;
       this.$router.push({
         name: this.currentView,
-        query,
+        query: this.addParamsToQuery(query),
       });
       setTimeout(() => {
         this.autoQuery = true;
@@ -410,9 +326,11 @@ export default {
   watch: {
     '$route.query': {
       handler(val) {
+        const filteredParams = Object.fromEntries(Object.entries(val)
+          .filter((entry) => ['Author', 'Passage', 'Keyword', 'Use Case', 'Place', 'time'].includes(entry[0])));
         if (this.autoQuery) { // you can disable this process
           console.log('route', this.$route);
-          console.log('query', val);
+          console.log('query', filteredParams, val);
           this.$store.commit('clearItems');
           this.$store.commit('clearInput');
           // Add query from url to Autocomplete
@@ -424,12 +342,12 @@ export default {
             Place: { url: 'ort', text: 'name' },
           };
 
-          Object.keys(val).forEach((cat) => {
-            if (val[cat]) {
+          Object.keys(filteredParams).forEach((cat) => {
+            if (filteredParams[cat]) {
               console.log('cat', cat, apiParams[cat]);
-              console.log(cat, 'found:', val[cat]);
+              console.log(cat, 'found:', filteredParams[cat]);
 
-              let ids = val[cat].toString().split('+');
+              let ids = filteredParams[cat].toString().split('+');
               const idCount = ids.length;
               this.skeletonChips += idCount;
               ids = ids.join(',');

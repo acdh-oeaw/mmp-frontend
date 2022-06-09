@@ -1,14 +1,9 @@
 <template>
-  <v-navigation-drawer
-    permanent
-    fixed
-    right
-    color="#F1F5FA"
-    :width="drawerWidth"
-  >
+  <v-navigation-drawer permanent fixed right color="#F1F5FA" :width="drawerWidth">
     <v-list-item>
       <v-list-item-action>
-        <router-link :to="{ name: fullscreen ? 'Map Fullscreen' : 'Map', query: $route.query }" class="text-decoration-none">
+        <router-link :to="{ name: fullscreen ? 'Map Fullscreen' : 'Map', query: $route.query }"
+          class="text-decoration-none">
           <v-icon>mdi-close</v-icon>
         </router-link>
       </v-list-item-action>
@@ -24,62 +19,40 @@
             {{ data.ort.lat }}, {{ data.ort.long }}
           </v-list-item-subtitle>
         </template>
-        <v-skeleton-loader
-          v-else
-          type="heading, text@2"
-        />
+        <v-skeleton-loader v-else type="heading, text@2" />
       </v-list-item-content>
     </v-list-item>
     <v-divider />
     <v-container>
-      <v-expansion-panels
-        flat
-        accordion
-        v-if="!loading"
-        multiple
-        :value="[0, 1]"
-      >
+      <v-expansion-panels flat accordion v-if="!loading" multiple :value="[0, 1]">
         <v-expansion-panel :disabled="!data.authors.count">
           <v-expansion-panel-header>
             <template v-slot:actions>
-              <v-chip
-                small
-                color="red lighten-3"
-                :disabled="!data.authors.count"
-              >{{ data.authors.count }}</v-chip>
+              <v-chip small color="red lighten-3" :disabled="!data.authors.count">{{ data.authors.count }}</v-chip>
               <v-icon>mdi-chevron-down</v-icon>
             </template>
             Authors
           </v-expansion-panel-header>
           <v-expansion-panel-content>
-            <v-list-item
-              v-for="author in data.authors.results"
-              :key="author.url"
-              :to="{ name: fullscreen ? 'Author Detail Fullscreen' : 'Author Detail',
-                query: { Author: getIdFromUrl(author.url) },
+            <v-list-item v-for="author in data.authors.results" :key="author.url" :to="{ name: fullscreen ? 'Author Detail Fullscreen' : 'Author Detail',
+                query: addParamsToQuery({ Author: getIdFromUrl(author.url) }),
                 params: { id: getIdFromUrl(author.url) }
-              }"
-            >
-            <v-list-item-content>
-              <v-list-item-title>{{ getOptimalName(author) }}</v-list-item-title>
-              <v-list-item-subtitle v-if="author.kommentar">{{ author.kommentar }}</v-list-item-subtitle>
-              <v-list-item-subtitle>{{ author.jahrhundert }}</v-list-item-subtitle>
-            </v-list-item-content>
-            <v-list-item-icon>
-              <v-icon>mdi-chevron-right</v-icon>
-            </v-list-item-icon>
+              }">
+              <v-list-item-content>
+                <v-list-item-title>{{ getOptimalName(author) }}</v-list-item-title>
+                <v-list-item-subtitle v-if="author.kommentar">{{ author.kommentar }}</v-list-item-subtitle>
+                <v-list-item-subtitle>{{ author.jahrhundert }}</v-list-item-subtitle>
+              </v-list-item-content>
+              <v-list-item-icon>
+                <v-icon>mdi-chevron-right</v-icon>
+              </v-list-item-icon>
             </v-list-item>
           </v-expansion-panel-content>
         </v-expansion-panel>
         <v-expansion-panel :disabled="!data.texts.count">
           <v-expansion-panel-header>
             <template v-slot:actions>
-              <v-chip
-                small
-                color="red darken-3"
-                dark
-                :disabled="!data.texts.count"
-              >
+              <v-chip small color="red darken-3" dark :disabled="!data.texts.count">
                 {{ data.texts.count }}
               </v-chip>
               <v-icon>mdi-chevron-down</v-icon>
@@ -87,24 +60,17 @@
             Texts
           </v-expansion-panel-header>
           <v-expansion-panel-content>
-            <v-list-item
-              v-for="text in data.texts.results"
-              :key="text.url"
-              two-line
-            >
-            <v-list-item-content>
-              <v-list-item-title>{{ text.title }}</v-list-item-title>
-              <v-list-item-subtitle>{{ text.autor.map((x) => getOptimalName(x)).join(', ') }}</v-list-item-subtitle>
-              <v-list-item-subtitle>{{ text.jahrhundert }}</v-list-item-subtitle>
-            </v-list-item-content>
+            <v-list-item v-for="text in data.texts.results" :key="text.url" two-line>
+              <v-list-item-content>
+                <v-list-item-title>{{ text.title }}</v-list-item-title>
+                <v-list-item-subtitle>{{ text.autor.map((x) => getOptimalName(x)).join(', ') }}</v-list-item-subtitle>
+                <v-list-item-subtitle>{{ text.jahrhundert }}</v-list-item-subtitle>
+              </v-list-item-content>
             </v-list-item>
           </v-expansion-panel-content>
         </v-expansion-panel>
       </v-expansion-panels>
-      <v-skeleton-loader
-        v-else
-        type="paragraph@2"
-      />
+      <v-skeleton-loader v-else type="paragraph@2" />
     </v-container>
   </v-navigation-drawer>
 </template>
