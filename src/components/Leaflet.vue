@@ -26,6 +26,12 @@
           <v-icon v-else>mdi-fullscreen</v-icon>
         </v-btn>
       </l-control>
+      <l-control position="bottomleft">
+        <v-card v-model="kingdomsMid800" v-if="showLayers.caseStudy">
+          <v-card-title class="pt-0 pl-3 pb-0">Kingdoms</v-card-title>
+          <v-card-text v-for="kingdom in filterKingdoms(kingdomsMid800.features)" :key="kingdom.properties.Name" class="pt-0 pl-5 pb-0" :style="`color:${kingdom.properties.color}`"> {{ kingdom.properties.Name }} </v-card-text>
+        </v-card>
+      </l-control>
       <l-control position="topright">
         <v-menu
           v-model="menu"
@@ -43,13 +49,15 @@
             </v-btn>
           </template>
           <v-card>
-            <v-card-title>Select Layers</v-card-title>
+            <v-card-title class="pt-3 pl-5 pb-0">Select Layers</v-card-title>
             <v-card-text>
               <v-checkbox
+                hide-details
+                class="pa-0"
                 v-model="showLayers.spatial"
                 color="red darken-1"
                 dense
-                :disabled="!(data[0] && data[0].count)"
+                :disabled="!(data[0] && data[0].count) || (useCaseThree === '3')"
                 v-on:change="uncheckSpatial()"
               >
                 <template v-slot:label>
@@ -69,6 +77,7 @@
                 </template>
               </v-checkbox>
               <v-checkbox
+                hide-details
                 v-model="showLayers.labels"
                 color="blue darken-1"
                 dense
@@ -79,6 +88,7 @@
                 </template>
               </v-checkbox>
               <v-checkbox
+                hide-details
                 v-model="showLayers.cones"
                 color="yellow darken-1"
                 dense
@@ -102,6 +112,7 @@
                 </template>
               </v-checkbox>
               <v-checkbox
+                hide-details
                 v-model="showLayers.places"
                 color="green lighten-1"
                 dense
@@ -128,6 +139,7 @@
                 </template>
               </v-checkbox>
               <v-checkbox
+                hide-details
                 v-model="showLayers.relatedPlaces"
                 color="green lighten-1"
                 dense
@@ -154,45 +166,47 @@
                   </v-chip>
                 </template>
               </v-checkbox>
-            </v-card-text>
-            <v-card-title>Select Additional Layer</v-card-title>
-            <v-checkbox
-                v-model="showLayers.caseStudy"
-                dense
-              >
-                <template v-slot:label>
-                  Kingdoms
-                </template>
-              </v-checkbox>
+              <v-card-title class="pt-1 pl-1 pb-0">Select Additional Layers</v-card-title>
               <v-checkbox
-                v-model="showLayers.romanRoads"
-                dense
-              >
-                <template v-slot:label>
-                  Roman Roads
-                </template>
-              </v-checkbox>
-              <v-checkbox
-                v-model="showLayers.majorTowns"
-                dense
-              >
-              >
-                <template v-slot:label>
-                  Major Towns
-                </template>
-              </v-checkbox>
-            <v-card-title>Select Basemap</v-card-title>
-            <v-card-text>
-              <v-radio-group v-model="radioGroup">
-                <v-radio v-for="tileProvider in tileProviders" :key="tileProvider.id" :label="tileProvider.name" :value="tileProvider.id" v-on:change="changeBasemap(tileProvider.id)">
-                </v-radio>
-              </v-radio-group>
+                  hide-details
+                  v-model="showLayers.caseStudy"
+                  dense
+                >
+                  <template v-slot:label>
+                    Kingdoms
+                  </template>
+                </v-checkbox>
+                <v-checkbox
+                  hide-details
+                  v-model="showLayers.romanRoads"
+                  dense
+                >
+                  <template v-slot:label>
+                    Roman Roads
+                  </template>
+                </v-checkbox>
+                <v-checkbox
+                  hide-details
+                  v-model="showLayers.majorTowns"
+                  dense
+                >
+                >
+                  <template v-slot:label>
+                    Major Towns
+                  </template>
+                </v-checkbox>
+                <v-card-title class="pt-1 pl-1 pb-0">Basemaps</v-card-title>
+                <v-radio-group v-model="radioGroup" class="pa-0" hide-details>
+                  <v-radio class="ma-0 pa-0" v-for="tileProvider in tileProviders" :key="tileProvider.id" :label="tileProvider.name" :value="tileProvider.id" v-on:change="changeBasemap(tileProvider.id)" hide-details>
+                  </v-radio>
+                </v-radio-group>
             </v-card-text>
-            <v-card-actions>
+            <v-card-actions class="pt-0 ma-0">
               <v-btn
                 @click="menu = false"
                 text
                 small
+                hide-details
               >
                 Close
               </v-btn>
@@ -201,17 +215,20 @@
         </v-menu>
       </l-control>
       <l-geo-json
-        v-if="data[0] && showLayers.spatial"
+        v-if="(data[0] && showLayers.spatial) || (useCaseThree === '3')"
         :geojson="data[0]"
         :options="{ onEachFeature: onEach }"
         :options-style="spatialStyle"
         ref="spatCov"
       />
-      <l-geo-json
-        v-if="data[0] && showLayers.spatial && showLayers.labels"
-        :geojson="polygonCenters"
-        :options="optionsLabels"
-      />
+      <v-marker-cluster
+      :options="{maxClusterRadius: 40, spiderfyDistanceMultiplier: 7, showCoverageOnHover: false, spiderLegPolylineOptions: { weight: 3, color: '#222' }}">
+        <l-geo-json
+          v-if="data[0] && showLayers.spatial && showLayers.labels"
+          :geojson="polygonCenters"
+          :options="optionsLabels"
+        />
+      </v-marker-cluster>
       <l-geo-json
         v-if="data[1] && showLayers.cones"
         :geojson="data[1]"
@@ -231,7 +248,7 @@
       />
       <l-geo-json
         v-if="showLayers.caseStudy"
-        :geojson="kingdoms800"
+        :geojson="kingdomsMid800"
         :options="optionsCaseStudies"
       />
       <l-geo-json
@@ -239,12 +256,12 @@
         :geojson="romanRoads"
         :options-style="roadsStyle"
       />
-      <l-geo-json
-        v-if="showLayers.majorTowns"
-        :geojson="majorTowns"
-        :options="optionsTowns"
-        ref="towns"
-      />
+        <l-geo-json
+          v-if="showLayers.majorTowns"
+          :geojson="majorTowns"
+          :options="optionsTowns"
+          ref="towns"
+        />
       <template v-if="showLayers.relatedPlaces">
         <l-marker
           v-for="place in relatedPlaces"
@@ -312,17 +329,19 @@ import kingdoms800Geojson from '@/assets/kingdoms_800.geojson';
 import romanRoadsGeojson from '@/assets/RomanRoads.geojson';
 import majorTownsGeojson from '@/assets/DARMC_Medieval_World.geojson';
 
+import Vue2LeafletMarkercluster from 'vue2-leaflet-markercluster';
+
 export default {
   name: 'Leaflet',
   data: () => ({
     polygonCenters: {},
     coneOrigins: {},
     stichworte: {},
-    kingdoms: {},
     kingdomsMid800: {},
     kingdoms800: {},
     romanRoads: {},
     majorTowns: {},
+    useCaseThree: window.location.href.split('=')[1],
     bounds: latLngBounds([
       [34.016242, 5.488281],
       [71.663663, 34.667969],
@@ -335,20 +354,20 @@ export default {
     },
     tileProviders: [
       {
-        name: 'OpenStreetMap',
+        name: 'Esri - World Imagery',
         id: 1,
         visible: true,
-        attribution:
-          '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-        url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-      },
-      {
-        name: 'Esri - World Imagery',
-        id: 2,
-        visible: false,
         url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
         attribution:
           'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+      },
+      {
+        name: 'OpenStreetMap',
+        id: 2,
+        visible: false,
+        attribution:
+          '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+        url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
       },
       {
         name: 'Digital Atlas of the Roman Empire',
@@ -357,15 +376,6 @@ export default {
         url: 'https://dh.gu.se/tiles/imperium/{z}/{x}/{y}.png',
         attribution:
           '© Johan Åhlfeldt, Centre for Digital Humanities, University of Gothenburg 2019. Contact: johan.ahlfeldt@lir.gu.se',
-      },
-      {
-        name: 'TestTiles',
-        id: 4,
-        visible: false,
-        url: 'http://127.0.0.1:8887/awmc_base_polygons.mbtiles',
-        tms: false,
-        attribution:
-          '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
       },
     ],
     menu: false,
@@ -385,8 +395,7 @@ export default {
       default: '',
     },
     showLayers: {
-      type: Object,
-      default: () => ({
+      default: {
         spatial: true,
         labels: true,
         cones: true,
@@ -395,9 +404,12 @@ export default {
         caseStudy: false,
         romanRoads: false,
         majorTowns: false,
-      }),
+      },
     },
     origins: {
+      default: {},
+    },
+    kingdoms: {
       default: {},
     },
   },
@@ -409,13 +421,14 @@ export default {
     LControl,
     LMarker,
     LTooltip,
+    'v-marker-cluster': Vue2LeafletMarkercluster,
   },
   computed: {
     coneStyle() {
       return (feature) => ({
         color: feature.properties.color,
-        fillOpacity: 0.4,
-        weight: 1.5,
+        fillOpacity: feature.properties.fillOpacity,
+        weight: feature.properties.weight,
         className: `blur${feature.properties.fuzzyness} blurred id_${feature.id} cone`,
       });
     },
@@ -430,7 +443,7 @@ export default {
     roadsStyle() {
       return () => ({
         color: 'red',
-        weight: 0.75,
+        weight: 1.25,
       });
     },
     onEach() {
@@ -461,27 +474,17 @@ export default {
       return (feature, layer) => {
         // eslint-disable-next-line prefer-destructuring
         const type = feature.geometry.type;
-        if (feature.properties.color === undefined) {
-          if (!Object.keys(this.kingdoms).includes(feature.properties.Name)) {
-            const max = 255;
-            const min = 0;
-            const r = Math.floor(Math.random() * (max - min + 1)) + min;
-            const b = Math.floor(Math.random() * (max - min + 1)) + min;
-            // eslint-disable-next-line prefer-template
-            this.kingdoms[feature.properties.Name] = `rgb(${r},0,${b})`;
-          }
-          feature.properties.color = this.kingdoms[feature.properties.Name];
-        }
+        console.log('kingdom', feature);
         if (type === 'MultiPolygon') {
           layer.setStyle({
             fillOpacity: 0.15,
             color: `${feature.properties.color}`,
           });
-        }
-        if (feature.properties.Dashed === 'true') {
-          layer.setStyle({
-            dashArray: '10 10',
-          });
+          if (feature.properties.Dashed === 'true') {
+            layer.setStyle({
+              dashArray: '10 10',
+            });
+          }
         }
       };
     },
@@ -651,6 +654,7 @@ export default {
     },
     pointToLayer() {
       return (feature, latlng) => {
+        console.log(feature, 'API');
         const featCat = feature.properties.kategorie.match(/\d+/g)[0];
         const icon = new L.Icon({ iconUrl: blueMarker, iconSize: [16, 26] });
 
@@ -716,6 +720,27 @@ export default {
     },
   },
   methods: {
+    filterKingdoms(arr) {
+      const filteredKingdoms = [];
+      const kingdomNames = [];
+      let counter = 1;
+      arr.forEach((feature) => {
+        if (feature.geometry.type === 'MultiPolygon' && !kingdomNames.includes(feature.properties.Name)) {
+          kingdomNames.push(feature.properties.Name);
+          filteredKingdoms.push(feature);
+        }
+        if (feature.properties.color === undefined) {
+          if (!Object.keys(this.kingdoms).includes(feature.properties.Name)) {
+            const hue = counter * 137.508;
+            // eslint-disable-next-line prefer-template
+            this.kingdoms[feature.properties.Name] = `hsl(${hue},50%,75%)`;
+            counter += 1;
+          }
+          feature.properties.color = this.kingdoms[feature.properties.Name];
+        }
+      });
+      return filteredKingdoms;
+    },
     getBounds(coordArr) {
       console.log('getBounds', coordArr);
       if (!coordArr.length) {
@@ -824,6 +849,7 @@ export default {
   watch: {
     data: {
       handler(to) {
+        console.log('to', to, this.useCaseThree);
         console.log('to', to, this.data);
         to[0].features.forEach((feature) => {
           if (feature.properties.color === undefined) {
@@ -938,26 +964,36 @@ export default {
             });
             if (feature.properties.color === undefined) {
               if (!Object.keys(this.origins).includes(feature.properties.Name)) {
-                const max1 = 125;
-                const min1 = 0;
-                const max2 = 255;
-                const min2 = 175;
-                const b = Math.floor(Math.random() * (max1 - min1 + 1)) + min1;
-                const g = Math.floor(Math.random() * (max2 - min2 + 1)) + min2;
+                const max1 = 65;
+                const min1 = 45;
+                const hue = Math.floor(Math.random() * (max1 - min1 + 1)) + min1;
+                const max2 = 80;
+                const min2 = 50;
+                const x = Math.floor(Math.random() * (max2 - min2 + 1)) + min2;
                 // eslint-disable-next-line prefer-template
-                this.origins[feature.properties.Name] = `rgb(255,${g},${b})`;
+                this.origins[feature.properties.Name] = `hsl(${hue},100%,${x}%)`;
               }
             }
             if (feature.properties.texts[0].places.length > 0) {
               feature.properties.color = this.origins[feature.properties.texts[0].places[0].name];
             }
           });
-          console.log(this.coneOrigins, 'coneOrigins');
+          const allCoordsOrigins = [];
+          Object.values(coordsOrigins).forEach((ar) => {
+            allCoordsOrigins.push(...ar);
+          });
+          console.log(this.coneOrigins, allCoordsOrigins, 'coneOrigins');
           to[1].features.forEach((feature) => {
             feature.properties.cone = 'cone';
-            if (feature.properties.texts[0].places.length > 0) {
-              feature.properties.color = this.origins[feature.properties.texts[0].places[0].name];
-            }
+            feature.properties.texts.forEach((text) => {
+              if (text.places.length > 0) {
+                feature.properties.color = this.origins[text.places[0].name];
+                if (text.places[0].lat !== null && text.places[0].lng !== null) {
+                  feature.properties.fillOpacity = 0.4;
+                  feature.properties.weight = 1.5;
+                }
+              }
+            });
           });
         }
       },
@@ -981,3 +1017,10 @@ export default {
   },
 };
 </script>
+
+<style>
+  .marker-cluster div {
+    font: 25px "Helvetica Neue", Arial, Helvetica, sans-serif;
+    text-shadow: 2px 0 0 #fff, -2px 0 0 #fff, 0 2px 0 #fff, 0 -2px 0 #fff, 1px 1px #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff;
+  }
+</style>
