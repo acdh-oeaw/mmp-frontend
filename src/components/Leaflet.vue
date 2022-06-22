@@ -222,11 +222,14 @@
         ref="spatCov"
       />
       <v-marker-cluster
-      :options="{maxClusterRadius: 40, spiderfyDistanceMultiplier: 7, showCoverageOnHover: false, spiderLegPolylineOptions: { weight: 3, color: '#222' }}">
+      :options="{maxClusterRadius: 30, spiderfyDistanceMultiplier: 7, showCoverageOnHover: false, spiderLegPolylineOptions: { weight: 3, color: '#222' }}" ref="markerCluster">
         <l-geo-json
           v-if="data[0] && showLayers.spatial && showLayers.labels"
           :geojson="polygonCenters"
           :options="optionsLabels"
+          ref="labels"
+          @layerremove="testFunc()"
+          @layeradd="testFunc2()"
         />
       </v-marker-cluster>
       <l-geo-json
@@ -412,6 +415,9 @@ export default {
     kingdoms: {
       default: {},
     },
+    cluster: {
+      default: {},
+    },
   },
   mixins: [helpers],
   components: {
@@ -568,6 +574,7 @@ export default {
               document.getElementsByClassName(`id_${feature.id} spatCov`)[0].setAttribute('stroke', '#ff00e8');
               document.getElementsByClassName(`id_${feature.id} spatCov`)[0].setAttribute('stroke-width', 3.5);
               document.getElementsByClassName(`id_${feature.id} spatCov`)[0].setAttribute('filter', '');
+              console.log(feature, layer, 'mouseover');
               let spatCov;
               if (this.$refs.spatCov) {
                 // eslint-disable-next-line
@@ -575,7 +582,6 @@ export default {
                   if (i.feature.id === feature.id) { spatCov = i; }
                 });
               }
-              console.log(spatCov, 'mouseover');
               spatCov.bringToFront();
             },
           })
@@ -830,6 +836,14 @@ export default {
         if (i.id === id) i.visible = true;
         else i.visible = false;
       });
+    },
+    testFunc() {
+      this.$refs.markerCluster.mapObject.clearLayers();
+    },
+    testFunc2() {
+      console.log('label add');
+      this.$refs.markerCluster.mapObject.addLayer(this.$refs.labels.mapObject);
+      this.$refs.map.mapObject.addLayer(this.$refs.markerCluster.mapObject);
     },
     uncheckSpatial() {
       if (this.showLayers.spatial === false) { this.showLayers.labels = false; }
