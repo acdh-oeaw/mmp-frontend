@@ -343,7 +343,9 @@ export default {
           };
 
           Object.keys(filteredParams).forEach((cat) => {
-            if (filteredParams[cat]) {
+            if (cat === 'time') {
+              this.range = filteredParams[cat].split('+').map((x) => parseInt(x, 10) / 10);
+            } else if (filteredParams[cat]) {
               console.log('cat', cat, apiParams[cat]);
               console.log(cat, 'found:', filteredParams[cat]);
 
@@ -351,7 +353,6 @@ export default {
               const idCount = ids.length;
               this.skeletonChips += idCount;
               ids = ids.join(',');
-
               fetch(`https://mmp.acdh-dev.oeaw.ac.at/api/${apiParams[cat].url}/?ids=${ids}`)
                 .then((res) => res.json())
                 .then((res) => {

@@ -34,7 +34,10 @@
 </template>
 
 <script>
+import helpers from '../helpers';
+
 export default {
   name: 'Sidebar',
+  mixins: [helpers],
 };
 </script>
