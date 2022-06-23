@@ -19,6 +19,7 @@ export default {
     graph: Object,
     highlightedNodeIds: Set, // TODO
     linkDirectionalArrowLength: Number,
+    linkDirectionalArrowRelPos: Number,
     linkDirectionalParticles: Number,
     linkDirectionalParticleSpeed: Number,
     linkWidth: String,
@@ -46,11 +47,12 @@ export default {
   },
   methods: {
     transformedData(obj) {
-      console.log('transformedData', obj);
-      return {
-        nodes: obj.nodes.sort((a, b) => b.index - a.index),
+      const sorted = {
+        nodes: obj.nodes.sort((a, b) => a.val - b.val),
         links: obj.edges,
       };
+      console.log('transformedData', obj, sorted.nodes.map((x) => x.val));
+      return sorted;
     },
     addColorAndType(arr, typeArr) {
       // console.log('typeArr', typeArr, 'arr', arr);
@@ -80,6 +82,7 @@ export default {
         .linkDirectionalParticles(this.linkDirectionalParticles || 0)
         .linkDirectionalParticleSpeed(this.linkDirectionalParticleSpeed || 0.01)
         .linkDirectionalArrowLength(this.linkDirectionalArrowLength || 0)
+        .linkDirectionalArrowRelPos(this.linkDirectionalArrowRelPos || 0.5)
         .graphData(this.transformedData(this.graph || {
           nodes: [],
           edges: [],
@@ -99,11 +102,11 @@ export default {
       this.graphDom.graphData(this.transformedData(val));
     },
     paused(val) {
-      if (val) this.graphDom.pauseSimulation();
-      else this.graphDom.resumeSimulation();
+      if (val) this.graphDom.pauseAnimation();
+      else this.graphDom.resumeAnimation();
     },
     zoomToFit() { // cheap workaraound, change zoomToFit to !zoomToFit to zoom (to fit)
-      this.graphDom.zoomToFit();
+      this.graphDom.zoomToFit(500);
     },
   },
   mounted() {

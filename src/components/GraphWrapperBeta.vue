@@ -234,9 +234,10 @@ export default {
   },
   data: () => ({
     colors: {
-      Schlagwort: '#039BE5', // blue darken-1
+      Keyword: '#039BE5', // blue darken-1
       Ethonym: '#00897B', // teal darken-1
-      Eigenname: '#FFB300', // amber darken-1
+      Ethnonym: '#00897B', // teal darken-1
+      Name: '#FFB300', // amber darken-1
       Region: '#43A047', // green darken-1
       Unsicher: 'black',
     },

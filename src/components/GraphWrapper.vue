@@ -30,6 +30,7 @@
       :nodeCanvasObjectMode="() => 'after'"
       :nodeCanvasObject="nodeObject"
       :linkDirectionalArrowLength="3.5"
+      :linkDirectionalArrowRelPos="0.8"
       :height="fullscreen ? undefined : '500'"
       :zoomToFit="zoomToFit"
       :paused="paused"
@@ -123,7 +124,6 @@
           <v-btn
             fab
             small
-            disabled
             @click.stop="paused = !paused"
             v-bind="attrs"
             v-on="on"
@@ -234,9 +234,10 @@ export default {
   },
   data: () => ({
     colors: {
-      Schlagwort: '#039BE5', // blue darken-1
+      Keyword: '#039BE5', // blue darken-1
       Ethonym: '#00897B', // teal darken-1
-      Eigenname: '#FFB300', // amber darken-1
+      Ethnonym: '#00897B', // teal darken-1
+      Name: '#FFB300', // amber darken-1
       Region: '#43A047', // green darken-1
       Unsicher: 'black',
     },
@@ -361,7 +362,6 @@ export default {
       this.graph.nodes.forEach((node) => {
         node.fx = undefined;
         node.fy = undefined;
-        node.val = 1;
       });
       // this.renderKey += 1;
     },
@@ -383,7 +383,8 @@ export default {
       });
       console.log('ret', ret);
       ret.nodes = ret.nodes.map((x) => {
-        x.val = Math.log(x.val) * 3;
+        console.count();
+        x.val = Math.log(x.val || 1) * 5;
         return x;
       });
       return ret;
@@ -443,8 +444,8 @@ export default {
           });
 
           const filters = this.$store.state.searchFilters.keyword;
-          if (filters.name && !filters.phrase) address += '&art=Eigenname';
-          else if (!filters.name && filters.phrase) address += '&art=Schlagwort';
+          if (filters.name && !filters.phrase) address += '&art=Name';
+          else if (!filters.name && filters.phrase) address += '&art=Keyword';
 
           if (query.Keyword) address += `&ids=${query.Keyword.replaceAll('+', ',')}`;
 

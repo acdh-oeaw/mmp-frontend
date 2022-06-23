@@ -42,7 +42,7 @@
                 <template v-slot:item="data">
                   <v-list-item-content v-if="data.item.group === 'Keyword' && data.item.selected_text.includes(',')">
                     <v-list-item-title>
-                      {{ data.item.selected_text.split(',')[0] }}
+                      {{ removeRoot(data.item.selected_text) }}
                       <span v-if="$store.state.completeKeywords.includes(parseInt(data.item.id))">(complete)</span>
                     </v-list-item-title>
                     <v-list-item-subtitle>Keyword ({{ data.item.selected_text.split(',')[1].replace(/\W/g, '') }})</v-list-item-subtitle>
@@ -100,7 +100,7 @@
                   small
                   class="view-picker"
                   :disabled="currentView === 'List'"
-                  :to="{ name: 'List', query }"
+                  :to="{ name: 'List', query: getQueryFromInput($store.state.autocomplete.input) }"
                 >
                   List
                 </v-btn>
@@ -308,8 +308,8 @@ export default {
       if (!this.textInput) return items;
       // console.log('items', items);
       const keywordSheet = {
-        Schlagwort: 'phrase',
-        Eigenname: 'name',
+        Keyword: 'phrase',
+        Name: 'name',
         Region: 'region',
         Ethonym: 'ethnonym',
       };
@@ -373,6 +373,16 @@ export default {
     pushQuery() {
       this.$refs.autocomplete.blur(); // this is the only working solution I found to unfocus autocomplete
       this.tooltip = false;
+      this.autoQuery = false;
+      this.$router.push({
+        name: this.currentView,
+        query: this.getQueryFromInput(this.$store.state.autocomplete.input),
+      });
+      setTimeout(() => {
+        this.autoQuery = true;
+      }, 400); // dont judge me
+    },
+    getQueryFromInput(input) {
       const query = {
         Author: undefined,
         Passage: undefined,
@@ -381,22 +391,14 @@ export default {
         Place: undefined,
       };
       Object.keys(query).forEach((cat) => {
-        query[cat] = this.$store.state.autocomplete.input
+        query[cat] = input
           .filter((x) => x.group === cat)
           .map((x) => x.id)
           .join('+') || undefined;
       });
-
       query.time = Array.isArray(this.range) ? this.range.map((x) => x * 10).join('+') : this.range * 10;
       if (query.time === '400+1200') query.time = undefined;
-      this.autoQuery = false;
-      this.$router.push({
-        name: this.currentView,
-        query,
-      });
-      setTimeout(() => {
-        this.autoQuery = true;
-      }, 400); // dont judge me
+      return query;
     },
     // This function changes the slider from range to point, and creates a new range value fittingly
     toggleSliderComponent(mode) {
