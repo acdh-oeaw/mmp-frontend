@@ -349,7 +349,7 @@ export default {
         this.$router.push({
           name: this.fullscreen ? 'Keyword Detail Fullscreen' : 'Keyword Detail',
           params: { id: q },
-          query: this.usecase ? { 'Use Case': this.usecase } : this.$route.query,
+          query: this.usecase ? this.addParamsToQuery({ 'Use Case': this.usecase }) : this.$route.query,
         });
       } else {
         this.$router.push({

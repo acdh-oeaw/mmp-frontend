@@ -1,11 +1,5 @@
 <template>
-  <v-navigation-drawer
-    permanent
-    fixed
-    right
-    color="#F1F5FA"
-    :width="drawerWidth"
-  >
+  <v-navigation-drawer permanent fixed right color="#F1F5FA" :width="drawerWidth">
     <v-list-item>
       <v-list-item-action>
         <router-link :to="{ name: xPressLinkName, query: $route.query }">
@@ -19,39 +13,28 @@
           </v-list-item-title>
           <v-list-item-subtitle>
             Mentioned in
-            <router-link
-              :to="{
-                name: fullscreen ? 'List Fullscreen' : 'List',
-                query: { Keyword: $route.params.id },
-              }"
-            >
+            <router-link :to="{
+              name: fullscreen ? 'List Fullscreen' : 'List',
+              query: addParamsToQuery({ Keyword: $route.params.id }),
+            }">
               {{ data.passages.count }} passage{{ data.passages.count === 1 ? '' : 's' }}<v-icon small>mdi-link</v-icon>
             </router-link>,
-            <router-link
-              :to="{
-                params: { id: $route.params.id },
-                query: { Keyword: $route.params.id },
-              }"
-            >
+            <router-link :to="{
+              params: { id: $route.params.id },
+              query: addParamsToQuery({ Keyword: $route.params.id }),
+            }">
               show all connections<v-icon small>mdi-link</v-icon>
             </router-link>
           </v-list-item-subtitle>
         </div>
-        <v-skeleton-loader
-          v-else
-          type="heading, text"
-        />
+        <v-skeleton-loader v-else type="heading, text" />
       </v-list-item-content>
     </v-list-item>
     <v-divider />
     <v-container>
       <v-row>
         <v-col>
-          <v-tabs
-            v-model="tab"
-            grow
-            background-color="transparent"
-          >
+          <v-tabs v-model="tab" grow background-color="transparent">
             <v-tab key="Over Time">
               Over Time
             </v-tab>
@@ -61,43 +44,24 @@
           </v-tabs>
           <v-tabs-items v-model="tab" background-color="transparent">
             <v-tab-item key="Over Time">
-              <keyword-over-time
-                v-if="!loading.overtime"
-                :data="data.overtime"
-              />
-              <v-skeleton-loader
-                v-else
-                type="image@2"
-              />
+              <keyword-over-time v-if="!loading.overtime" :data="data.overtime" />
+              <v-skeleton-loader v-else type="image@2" />
             </v-tab-item>
             <v-tab-item key="Geography">
-              <leaflet
-                v-if="!loading.geography"
-                :data="data.geography"
-                height="400"
-              />
-              <v-skeleton-loader
-                v-else
-                type="image@2"
-              />
+              <leaflet v-if="!loading.geography" :data="data.geography" height="400" />
+              <v-skeleton-loader v-else type="image@2" />
             </v-tab-item>
           </v-tabs-items>
         </v-col>
       </v-row>
       <v-row>
         <v-col>
-          <v-expansion-panels
-            v-if="!loading.else"
-            accordion
-            flat
-          >
-            <v-expansion-panel
-              v-for="conn in connections"
-              :key="conn.id"
-            >
+          <v-expansion-panels v-if="!loading.else" accordion flat>
+            <v-expansion-panel v-for="conn in connections" :key="conn.id">
               <v-expansion-panel-header>
                 <span>
-                  {{ data.keywords.map((x) => x.stichwort).join(', ') }} <v-icon small>mdi-arrow-left-right</v-icon> {{ conn.label }}
+                  {{ data.keywords.map((x) => x.stichwort).join(', ') }} <v-icon small>mdi-arrow-left-right</v-icon> {{
+                  conn.label }}
                 </span>
                 <template v-slot:actions>
                   <v-chip small>{{ conn.count }} connections</v-chip>
@@ -105,18 +69,12 @@
                 </template>
               </v-expansion-panel-header>
               <v-expansion-panel-content>
-                <keyword-list-item
-                  :parentNodes="data.keywords.map((x) => getIdFromUrl(x.url))"
-                  :siblingNode="conn.id"
-                />
+                <keyword-list-item :parentNodes="data.keywords.map((x) => getIdFromUrl(x.url))"
+                  :siblingNode="conn.id" />
               </v-expansion-panel-content>
             </v-expansion-panel>
           </v-expansion-panels>
-          <v-skeleton-loader
-            type="list-item@5"
-            class="transparent-skeleton"
-            v-else
-          />
+          <v-skeleton-loader type="list-item@5" class="transparent-skeleton" v-else />
         </v-col>
       </v-row>
       <v-row>
@@ -124,42 +82,27 @@
           <template v-if="!loading.keywords">
             <v-row>
               <v-col>
-                <v-btn
-                  dark
-                  color="#171d3b"
-                  block
-                  class="detail-button"
-                  :to="{
-                    name: fullscreen ? 'List Fullscreen' : 'List',
-                    query: { Keyword: data.keywords.map((x) => x.url.replace(/\D/g, '')).join('+') }
-                  }"
-                >
+                <v-btn dark color="#171d3b" block class="detail-button" :to="{
+                  name: fullscreen ? 'List Fullscreen' : 'List',
+                  query: addParamsToQuery({ Keyword: data.keywords.map((x) => x.url.replace(/\D/g, '')).join('+') })
+                }">
                   {{ shorten(`Show all Passages for ${data.keywords.map((x) => x.stichwort).join(', ')}`, 40) }}
                 </v-btn>
               </v-col>
             </v-row>
             <v-row>
               <v-col>
-                <v-btn
-                  light
-                  outlined
-                  block
-                  class="detail-button"
-                  :to="{
-                    name: fullscreen ? 'Keyword Detail Fullscreen' : 'Keyword Detail',
-                    params: { id: $route.params.id },
-                    query: { Keyword: $route.params.id },
-                  }"
-                >
+                <v-btn light outlined block class="detail-button" :to="{
+                  name: fullscreen ? 'Keyword Detail Fullscreen' : 'Keyword Detail',
+                  params: { id: $route.params.id },
+                  query: addParamsToQuery({ Keyword: $route.params.id }),
+                }">
                   Show all Connections in Graph
                 </v-btn>
               </v-col>
             </v-row>
           </template>
-          <v-skeleton-loader
-            type="button@2"
-            v-else
-          />
+          <v-skeleton-loader type="button@2" v-else />
         </v-col>
       </v-row>
     </v-container>

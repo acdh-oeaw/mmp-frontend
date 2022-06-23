@@ -1,45 +1,31 @@
 <template>
   <div>
-    <v-app-bar
-      fixed
-      flat
-      shrink-on-scroll
-      :color="backgroundColor"
-      class="app-bar"
-      min-height="84px"
-    >
+    <v-app-bar fixed flat shrink-on-scroll :color="backgroundColor" class="app-bar" min-height="84px">
       <v-row justify="center">
         <v-col cols="12" md="2" class="title-wrapper">
-          <v-app-bar-nav-icon @click.stop="$store.commit('toggleDrawer')" class="d-inline d-md-none menu-button" :class="{ 'white--text': isHome }" />
+          <v-app-bar-nav-icon @click.stop="$store.commit('toggleDrawer')" class="d-inline d-md-none menu-button"
+            :class="{ 'white--text': isHome }" />
           <v-toolbar-title class="d-inline fancy-font font-weight-bold text-decoration-none">
-            <router-link
-              :to="{ name: 'Home' }"
-              class="nav-link"
-              :class="{ light: !isHome }"
-            >
+            <router-link :to="{ name: 'Home', query: addParamsToQuery() }" class="nav-link" :class="{ light: !isHome }">
               MMP
             </router-link>
           </v-toolbar-title>
         </v-col>
         <v-col :cols="$route.name.includes('Detail') ? 4 : 8" class="text-right d-none d-md-inline">
           <div :class="{ light: !isHome }">
-            <router-link color="white" :to="{ name: '', params: {} }" class="nav-link">
+            <router-link color="white" :to="{ name: '', params: {}, query: addParamsToQuery() }" class="nav-link">
               About the Project
             </router-link>
-            <span
-              class="non-selectable" :class="{ 'white--text': isHome }"
-            >
+            <span class="non-selectable" :class="{ 'white--text': isHome }">
               &nbsp;&nbsp;&bull;&nbsp;&nbsp;
             </span>
-            <router-link :to="{ name: 'Studies' }" class="nav-link">
+            <router-link :to="{ name: 'Studies', query: addParamsToQuery()  }" class="nav-link">
               Case&nbsp;Studies
             </router-link>
-            <span
-              class="non-selectable" :class="{ 'white--text': isHome }"
-            >
+            <span class="non-selectable" :class="{ 'white--text': isHome }">
               &nbsp;&nbsp;&bull;&nbsp;&nbsp;
             </span>
-            <router-link :to="{ name: $store.state.interface.currentView }" class="nav-link">
+            <router-link :to="{ name: $store.state.interface.currentView, query: addParamsToQuery() }" class="nav-link">
               Explore&nbsp;the&nbsp;Data
             </router-link>
           </div>
@@ -53,9 +39,11 @@
 
 <script>
 import Sidebar from './Sidebar';
+import helpers from '../helpers';
 
 export default {
   name: 'AppBar',
+  mixins: [helpers],
   components: {
     Sidebar,
   },
