@@ -30,6 +30,7 @@
       :nodeCanvasObjectMode="() => 'after'"
       :nodeCanvasObject="nodeObject"
       :linkDirectionalArrowLength="3.5"
+      :linkDirectionalArrowRelPos="0.8"
       :height="fullscreen ? undefined : '500'"
       :zoomToFit="zoomToFit"
       :paused="paused"
@@ -91,6 +92,23 @@
         </template>
         <span>Download node data as .json</span>
       </v-tooltip>
+      <v-tooltip
+        left
+        transition="slide-x-reverse-transition"
+      >
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            fab
+            small
+            @click="getTextData"
+            v-bind="attrs"
+            v-on="on"
+          >
+        <v-icon>mdi-text-box</v-icon>
+      </v-btn>
+        </template>
+        <span>Download node data as .txt</span>
+      </v-tooltip>
     </v-speed-dial>
     <fullscreen-button :usecase="usecase" />
     <v-speed-dial
@@ -123,7 +141,6 @@
           <v-btn
             fab
             small
-            disabled
             @click.stop="paused = !paused"
             v-bind="attrs"
             v-on="on"
@@ -234,9 +251,10 @@ export default {
   },
   data: () => ({
     colors: {
-      Schlagwort: '#039BE5', // blue darken-1
+      Keyword: '#039BE5', // blue darken-1
       Ethonym: '#00897B', // teal darken-1
-      Eigenname: '#FFB300', // amber darken-1
+      Ethnonym: '#00897B', // teal darken-1
+      Name: '#FFB300', // amber darken-1
       Region: '#43A047', // green darken-1
       Unsicher: 'black',
     },
@@ -246,7 +264,7 @@ export default {
     },
     graph: null,
     loading: false,
-    paused: true,
+    paused: false,
     renderKey: 0,
     zoomToFit: true,
   }),
@@ -264,6 +282,27 @@ export default {
       const link = document.createElement('a');
       link.download = 'graph.json';
       link.href = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(this.styledNodes))}`;
+      link.click();
+      link.remove();
+    },
+    getTextData() {
+      const list = this.styledNodes.nodes;
+      const ret = {};
+      list.forEach((node) => {
+        if (ret[node.keyword_type]) ret[node.keyword_type].push(node.label);
+        else ret[node.keyword_type] = [node.label];
+      });
+
+      let retString = '';
+      Object.entries(ret).forEach(([type, labels]) => {
+        retString += `${type}s:\n`;
+        retString += labels.join(',\n');
+        retString += '\n\n';
+      });
+
+      const link = document.createElement('a');
+      link.download = 'graph.txt';
+      link.href = `data:attachment/text,${encodeURI(retString)}`;
       link.click();
       link.remove();
     },
@@ -348,7 +387,7 @@ export default {
         this.$router.push({
           name: this.fullscreen ? 'Keyword Detail Fullscreen' : 'Keyword Detail',
           params: { id: q },
-          query: this.usecase ? { 'Use Case': this.usecase } : this.$route.query,
+          query: this.usecase ? this.addParamsToQuery({ 'Use Case': this.usecase }) : this.$route.query,
         });
       } else {
         this.$router.push({
@@ -361,7 +400,6 @@ export default {
       this.graph.nodes.forEach((node) => {
         node.fx = undefined;
         node.fy = undefined;
-        node.val = 1;
       });
       // this.renderKey += 1;
     },
@@ -383,7 +421,8 @@ export default {
       });
       console.log('ret', ret);
       ret.nodes = ret.nodes.map((x) => {
-        x.val = Math.log(x.val) * 3;
+        // console.count();
+        x.val = Math.log(x.val || 1) * 5;
         return x;
       });
       return ret;
@@ -443,8 +482,8 @@ export default {
           });
 
           const filters = this.$store.state.searchFilters.keyword;
-          if (filters.name && !filters.phrase) address += '&art=Eigenname';
-          else if (!filters.name && filters.phrase) address += '&art=Schlagwort';
+          if (filters.name && !filters.phrase) address += '&art=Name';
+          else if (!filters.name && filters.phrase) address += '&art=Keyword';
 
           if (query.Keyword) address += `&ids=${query.Keyword.replaceAll('+', ',')}`;
 

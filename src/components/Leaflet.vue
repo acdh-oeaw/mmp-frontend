@@ -19,9 +19,8 @@
           small
           :to="{
             name: fullscreen ? 'Map' : 'Map Fullscreen',
-            query: usecase ? {'Use Case': usecase} : $route.query
-          }"
-        >
+            query: usecase ? addParamsToQuery({ 'Use Case': usecase }) : $route.query
+          }">
           <v-icon v-if="fullscreen">mdi-fullscreen-exit</v-icon>
           <v-icon v-else>mdi-fullscreen</v-icon>
         </v-btn>
@@ -33,18 +32,9 @@
         </v-card>
       </l-control>
       <l-control position="topright">
-        <v-menu
-          v-model="menu"
-          :close-on-content-click="false"
-          left
-        >
+        <v-menu v-model="menu" :close-on-content-click="false" left>
           <template v-slot:activator="{ on, attrs }">
-            <v-btn
-              fab
-              small
-              v-bind="attrs"
-              v-on="on"
-            >
+            <v-btn fab small v-bind="attrs" v-on="on">
               <v-icon>mdi-layers-triple</v-icon>
             </v-btn>
           </template>
@@ -64,11 +54,7 @@
                   Spatial&nbsp;Coverage&nbsp;
                   <v-chip color="red darken-1" dark small :disabled="!data[0] || !data[0].count">
                     <template v-if="loading">
-                      <v-progress-circular
-                        indeterminate
-                        :size="15"
-                        :width="2"
-                      />
+                      <v-progress-circular indeterminate :size="15" :width="2" />
                     </template>
                     <template v-else>
                       {{ data[0].count }}
@@ -99,11 +85,7 @@
                   &nbsp;
                   <v-chip color="yellow darken-1" small :disabled="!data[1] || !data[1].count">
                     <template v-if="loading">
-                      <v-progress-circular
-                        indeterminate
-                        :size="15"
-                        :width="2"
-                      />
+                      <v-progress-circular indeterminate :size="15" :width="2" />
                     </template>
                     <template v-else>
                       {{ data[1].count }}
@@ -123,11 +105,7 @@
                   &nbsp;
                   <v-chip color="green lighten-1" dark small :disabled="!data[2] || !data[2].count">
                     <template v-if="loading">
-                      <v-progress-circular
-                        indeterminate
-                        :size="15"
-                        :width="2"
-                      />
+                      <v-progress-circular indeterminate :size="15" :width="2" />
                     </template>
                     <template v-else-if="data[2]">
                       {{ data[2].count }}
@@ -148,18 +126,8 @@
                 <template v-slot:label>
                   Related&nbsp;Places
                   &nbsp;
-                  <v-chip
-                    color="green lighten-1"
-                    dark
-                    small
-                    :disabled="!relatedPlaces.length"
-                  >
-                    <v-progress-circular
-                      v-if="loading"
-                      indeterminate
-                      :size="15"
-                      :width="2"
-                    />
+                  <v-chip color="green lighten-1" dark small :disabled="!relatedPlaces.length">
+                    <v-progress-circular v-if="loading" indeterminate :size="15" :width="2" />
                     <template v-else>
                       {{ relatedPlaces.length }}
                     </template>
@@ -266,16 +234,12 @@
           ref="towns"
         />
       <template v-if="showLayers.relatedPlaces">
-        <l-marker
-          v-for="place in relatedPlaces"
-          :key="place.url"
-          :lat-lng="returnLatLng(place.coords.coordinates)"
+        <l-marker v-for="place in relatedPlaces" :key="place.url" :lat-lng="returnLatLng(place.coords.coordinates)"
           @click="$router.push({
             name: fullscreen ? 'Place Detail Fullscreen' : 'Place Detail',
             query: $route.query,
             params: { id: getIdFromUrl(place.url) },
-          })"
-        >
+          })">
           <l-tooltip>
             <div>Name: {{ place.name }}</div>
             <div v-if="place.name_antik">Ancient Name: {{ place.name_antik }}</div>
@@ -283,20 +247,12 @@
         </l-marker>
       </template>
     </l-map>
-    <v-overlay
-      absolute
-      class="overlay"
-      opacity=".2"
-      :value="loading || !data.some((d) => d.count)"
-    >
+    <v-overlay absolute class="overlay" opacity=".2" :value="loading || !data.some((d) => d.count)">
       <h1 v-if="!loading" class="no-nodes">
         No locations found!
       </h1>
       <h1 v-else>
-        <v-progress-circular
-          indeterminate
-          color="#0F1226"
-        />
+        <v-progress-circular indeterminate color="#0F1226" />
       </h1>
     </v-overlay>
     <router-view />
@@ -469,7 +425,7 @@ export default {
               console.log('click', feature, e);
               this.$router.push({
                 name: this.fullscreen ? 'Spatial Detail Fullscreen' : 'Spatial Detail',
-                query: this.usecase ? { 'Use Case': this.usecase } : this.$route.query,
+                query: this.usecase ? this.addParamsToQuery({ 'Use Case': this.usecase }) : this.$route.query,
                 params: { id: feature.id },
               });
             },
@@ -564,7 +520,7 @@ export default {
               this.$refs.map.mapObject.fitBounds(L.latLngBounds(feature.geometry.polygonCoords));
               this.$router.push({
                 name: this.fullscreen ? 'Spatial Detail Fullscreen' : 'Spatial Detail',
-                query: this.usecase ? { 'Use Case': this.usecase } : this.$route.query,
+                query: this.usecase ? this.addParamsToQuery({ 'Use Case': this.usecase }) : this.$route.query,
                 params: { id: feature.id },
               });
             },
