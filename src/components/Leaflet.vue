@@ -2,7 +2,7 @@
   <div>
     <l-map
       ref="map" :style="`height: ${fullscreen && $route.name !== 'Keyword Detail Fullscreen' ? '100vh' : height + 'px'}; width: 100%; z-index: 4`"
-      :bounds="bounds"
+      :bounds="bounds" @ready="onReady"
     >
       <l-tile-layer
         v-for="tileProvider in tileProviders"
@@ -183,21 +183,21 @@
         </v-menu>
       </l-control>
       <l-geo-json
-        v-if="(data[0] && showLayers.spatial) || (useCaseThree === '3')"
+        v-if="data[0] && showLayers.spatial"
         :geojson="data[0]"
         :options="{ onEachFeature: onEach }"
         :options-style="spatialStyle"
         ref="spatCov"
       />
-      <v-marker-cluster
-      :options="{maxClusterRadius: 30, spiderfyDistanceMultiplier: 7, showCoverageOnHover: false, spiderLegPolylineOptions: { weight: 3, color: '#222' }}" ref="markerCluster">
+      <v-marker-cluster ref="markerCluster"
+      :options="clusterOptions">
         <l-geo-json
           v-if="data[0] && showLayers.spatial && showLayers.labels"
           :geojson="polygonCenters"
           :options="optionsLabels"
           ref="labels"
-          @layerremove="testFunc()"
-          @layeradd="testFunc2()"
+          @layerremove="removeMarkerCluster()"
+          @layeradd="refreshMarkerCluster()"
         />
       </v-marker-cluster>
       <l-geo-json
@@ -286,13 +286,28 @@ import greenMarker2x from '@/assets/recolored_marker_icon_2x.png';
 import kingdomsMid800Geojson from '@/assets/kingdoms_mid_800.geojson';
 import kingdoms800Geojson from '@/assets/kingdoms_800.geojson';
 import romanRoadsGeojson from '@/assets/RomanRoads.geojson';
-import majorTownsGeojson from '@/assets/DARMC_Medieval_World.geojson';
+import majorTownsGeojson from '@/assets/DARMC_Medieval_World_1000.geojson';
 
 import Vue2LeafletMarkercluster from 'vue2-leaflet-markercluster';
 
 export default {
   name: 'Leaflet',
   data: () => ({
+    clusterOptions: {
+      maxClusterRadius: 30,
+      spiderfyDistanceMultiplier: 7,
+      showCoverageOnHover: false,
+      spiderLegPolylineOptions: { weight: 3, color: '#ffffff', opacity: 1 },
+      iconCreateFunction: ((cluster) => {
+        const childCount = cluster.getChildCount();
+        console.log(childCount);
+        return new L.DivIcon({
+          html: '<div>   </div>',
+          className: 'marker-cluster',
+          iconSize: 'auto',
+        });
+      }),
+    },
     polygonCenters: {},
     coneOrigins: {},
     stichworte: {},
@@ -410,6 +425,13 @@ export default {
     },
     onEach() {
       return (feature, layer) => {
+        // eslint-disable-next-line prefer-destructuring
+        this.usecaseThree = window.location.href.split('=')[1];
+        console.log('usecase', this.usecaseThree, (+this.usecaseThree === 3));
+        if (+this.usecaseThree === 3 && feature.properties.cone === undefined) {
+          console.log('usecase AAAA', feature.properties.cone);
+          layer.setStyle({ fillOpacity: 0 });
+        }
         layer
           .bindTooltip(
             `
@@ -532,7 +554,7 @@ export default {
               document.getElementsByClassName(`id_${feature.id} spatCov`)[0].setAttribute('filter', '');
               console.log(feature, layer, 'mouseover');
               let spatCov;
-              if (this.$refs.spatCov) {
+              if (this.$refs.spatCov !== undefined) {
                 // eslint-disable-next-line
                 Object.values(this.$refs.spatCov.mapObject._layers).forEach((i) => {
                   if (i.feature.id === feature.id) { spatCov = i; }
@@ -552,7 +574,7 @@ export default {
                 document.getElementsByClassName(`id_${feature.id} spatCov`)[0].setAttribute('stroke', feature.properties.color);
               }
               let spatCov;
-              if (this.$refs.spatCov) {
+              if (this.$refs.spatCov !== undefined) {
                 // eslint-disable-next-line
                 Object.values(this.$refs.spatCov.mapObject._layers).forEach((i) => {
                   if (i.feature.id === feature.id) { spatCov = i; }
@@ -584,7 +606,8 @@ export default {
                 document.getElementsByClassName(`id_${id} cone`)[0].setAttribute('stroke', '#e8fc05');
                 document.getElementsByClassName(`id_${id} cone`)[0].setAttribute('stroke-width', 3.5);
                 document.getElementsByClassName(`id_${id} cone`)[0].setAttribute('filter', '');
-                if (this.$refs.spatCov) {
+                if (this.$refs.spatCov !== undefined) {
+                  console.log(this.$refs.spatCov);
                   // eslint-disable-next-line
                   Object.values(this.$refs.spatCov.mapObject._layers).forEach((i) => {
                     if (i.feature.id === id) {
@@ -603,7 +626,7 @@ export default {
                 const filter = document.getElementsByClassName(`id_${id}`)[0].classList[0];
                 document.getElementsByClassName(`id_${id} cone`)[0].setAttribute('stroke-width', 0);
                 document.getElementsByClassName(`id_${id} cone`)[0].setAttribute('filter', `url(#${filter})`);
-                if (this.$refs.spatCov) {
+                if (this.$refs.spatCov !== undefined) {
                   // eslint-disable-next-line
                   Object.values(this.$refs.spatCov.mapObject._layers).forEach((i) => {
                     if (i.feature.id === id) { i.bringToBack(); }
@@ -655,8 +678,8 @@ export default {
           dist = distanceLat;
           vert = 'writing-mode:vertical-rl;';
         } else { dist = distanceLng; }
-        if (dist > 8) {
-          dist = 8;
+        if (dist > 15) {
+          dist = 15;
         }
         if (dist < 2) {
           dist = 2;
@@ -682,6 +705,9 @@ export default {
     },
   },
   methods: {
+    onReady() {
+      this.$refs.markerCluster.mapObject.refreshClusters();
+    },
     filterKingdoms(arr) {
       const filteredKingdoms = [];
       const kingdomNames = [];
@@ -793,10 +819,10 @@ export default {
         else i.visible = false;
       });
     },
-    testFunc() {
+    removeMarkerCluster() {
       this.$refs.markerCluster.mapObject.clearLayers();
     },
-    testFunc2() {
+    refreshMarkerCluster() {
       console.log('label add');
       this.$refs.markerCluster.mapObject.addLayer(this.$refs.labels.mapObject);
       this.$refs.map.mapObject.addLayer(this.$refs.markerCluster.mapObject);
@@ -990,7 +1016,11 @@ export default {
 
 <style>
   .marker-cluster div {
-    font: 25px "Helvetica Neue", Arial, Helvetica, sans-serif;
-    text-shadow: 2px 0 0 #fff, -2px 0 0 #fff, 0 2px 0 #fff, 0 -2px 0 #fff, 1px 1px #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff;
+    background: orange;
+    color: white;
+    border-radius: 50%;
+    text-align: center;
+    border-style: solid;
+    padding: 10px;
   }
 </style>
