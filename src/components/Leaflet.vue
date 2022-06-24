@@ -1,19 +1,35 @@
 <template>
   <div>
-    <l-map ref="map"
-      :style="`height: ${fullscreen && $route.name !== 'Keyword Detail Fullscreen' ? '100vh' : height + 'px'}; width: 100%; z-index: 4`"
-      :bounds="bounds">
-      <l-tile-layer v-for="tileProvider in tileProviders" :key="tileProvider.name" :name="tileProvider.name"
-        :visible="tileProvider.visible" :url="tileProvider.url" :attribution="tileProvider.attribution"
-        layer-type="base" :options="tileOptions" />
-      <l-control position="bottomright">
-        <v-btn fab small :to="{
+    <l-map
+      ref="map" :style="`height: ${fullscreen && $route.name !== 'Keyword Detail Fullscreen' ? '100vh' : height + 'px'}; width: 100%; z-index: 4`"
+      :bounds="bounds"
+    >
+      <l-tile-layer
+        v-for="tileProvider in tileProviders"
+        :key="tileProvider.name"
+        :name="tileProvider.name"
+        :visible="tileProvider.visible"
+        :url="tileProvider.url"
+        :attribution="tileProvider.attribution"
+        layer-type="base"
+        :options="tileOptions" />
+      <l-control position="bottomright" @ready="updateFuzzy">
+        <v-btn
+          fab
+          small
+          :to="{
             name: fullscreen ? 'Map' : 'Map Fullscreen',
             query: usecase ? addParamsToQuery({ 'Use Case': usecase }) : $route.query
           }">
           <v-icon v-if="fullscreen">mdi-fullscreen-exit</v-icon>
           <v-icon v-else>mdi-fullscreen</v-icon>
         </v-btn>
+      </l-control>
+      <l-control position="bottomleft">
+        <v-card v-model="kingdomsMid800" v-if="showLayers.caseStudy">
+          <v-card-title class="pt-0 pl-3 pb-0">Kingdoms</v-card-title>
+          <v-card-text v-for="kingdom in filterKingdoms(kingdomsMid800.features)" :key="kingdom.properties.Name" class="pt-0 pl-5 pb-0" :style="`color:${kingdom.properties.color}`"> {{ kingdom.properties.Name }} </v-card-text>
+        </v-card>
       </l-control>
       <l-control position="topright">
         <v-menu v-model="menu" :close-on-content-click="false" left>
@@ -23,13 +39,19 @@
             </v-btn>
           </template>
           <v-card>
-            <v-card-title>Select Layers</v-card-title>
+            <v-card-title class="pt-3 pl-5 pb-0">Select Layers</v-card-title>
             <v-card-text>
-              <v-checkbox v-model="showLayers.spatial" color="red darken-1" dense
-                :disabled="!(data[0] && data[0].count)" v-on:change="uncheckSpatial()">
+              <v-checkbox
+                hide-details
+                class="pa-0"
+                v-model="showLayers.spatial"
+                color="red darken-1"
+                dense
+                :disabled="!(data[0] && data[0].count) || (useCaseThree === '3')"
+                v-on:change="uncheckSpatial()"
+              >
                 <template v-slot:label>
-                  Spatial&nbsp;Coverage
-                  &nbsp;
+                  Spatial&nbsp;Coverage&nbsp;
                   <v-chip color="red darken-1" dark small :disabled="!data[0] || !data[0].count">
                     <template v-if="loading">
                       <v-progress-circular indeterminate :size="15" :width="2" />
@@ -40,15 +62,24 @@
                   </v-chip>
                 </template>
               </v-checkbox>
-              <v-checkbox v-model="showLayers.labels" color="blue darken-1" dense
-                :disabled="!(polygonCenters && polygonCenters.count)">
+              <v-checkbox
+                hide-details
+                v-model="showLayers.labels"
+                color="blue darken-1"
+                dense
+                :disabled="!(polygonCenters && polygonCenters.count)"
+              >
                 <template v-slot:label>
                   Labels
-                  &nbsp;
                 </template>
               </v-checkbox>
-              <v-checkbox v-model="showLayers.cones" color="yellow darken-1" dense
-                :disabled="!(data[1] && data[1].count)">
+              <v-checkbox
+                hide-details
+                v-model="showLayers.cones"
+                color="yellow darken-1"
+                dense
+                :disabled="!(data[1] && data[1].count)"
+              >
                 <template v-slot:label>
                   Cones
                   &nbsp;
@@ -62,8 +93,13 @@
                   </v-chip>
                 </template>
               </v-checkbox>
-              <v-checkbox v-model="showLayers.places" color="green lighten-1" dense
-                :disabled="!(data[2] && data[2].count)">
+              <v-checkbox
+                hide-details
+                v-model="showLayers.places"
+                color="green lighten-1"
+                dense
+                :disabled="!(data[2] && data[2].count)"
+              >
                 <template v-slot:label>
                   Places
                   &nbsp;
@@ -80,8 +116,13 @@
                   </v-chip>
                 </template>
               </v-checkbox>
-              <v-checkbox v-model="showLayers.relatedPlaces" color="green lighten-1" dense
-                :disabled="!relatedPlaces.length">
+              <v-checkbox
+                hide-details
+                v-model="showLayers.relatedPlaces"
+                color="green lighten-1"
+                dense
+                :disabled="!relatedPlaces.length"
+              >
                 <template v-slot:label>
                   Related&nbsp;Places
                   &nbsp;
@@ -93,31 +134,105 @@
                   </v-chip>
                 </template>
               </v-checkbox>
+              <v-card-title class="pt-1 pl-1 pb-0">Select Additional Layers</v-card-title>
+              <v-checkbox
+                  hide-details
+                  v-model="showLayers.caseStudy"
+                  dense
+                >
+                  <template v-slot:label>
+                    Kingdoms
+                  </template>
+                </v-checkbox>
+                <v-checkbox
+                  hide-details
+                  v-model="showLayers.romanRoads"
+                  dense
+                >
+                  <template v-slot:label>
+                    Roman Roads
+                  </template>
+                </v-checkbox>
+                <v-checkbox
+                  hide-details
+                  v-model="showLayers.majorTowns"
+                  dense
+                >
+                >
+                  <template v-slot:label>
+                    Major Towns
+                  </template>
+                </v-checkbox>
+                <v-card-title class="pt-1 pl-1 pb-0">Basemaps</v-card-title>
+                <v-radio-group v-model="radioGroup" class="pa-0" hide-details>
+                  <v-radio class="ma-0 pa-0" v-for="tileProvider in tileProviders" :key="tileProvider.id" :label="tileProvider.name" :value="tileProvider.id" v-on:change="changeBasemap(tileProvider.id)" hide-details>
+                  </v-radio>
+                </v-radio-group>
             </v-card-text>
-            <v-card-title>Select Basemap</v-card-title>
-            <v-card-text>
-              <v-radio-group v-model="radioGroup">
-                <v-radio v-for="tileProvider in tileProviders" :key="tileProvider.id" :label="tileProvider.name"
-                  :value="tileProvider.id" v-on:change="changeBasemap(tileProvider.id)">
-                </v-radio>
-              </v-radio-group>
-            </v-card-text>
-            <v-card-actions>
-              <v-btn @click="menu = false" text small>
+            <v-card-actions class="pt-0 ma-0">
+              <v-btn
+                @click="menu = false"
+                text
+                small
+                hide-details
+              >
                 Close
               </v-btn>
             </v-card-actions>
           </v-card>
         </v-menu>
       </l-control>
-      <l-geo-json v-if="data[0] && showLayers.spatial" :geojson="data[0]" :options="{ onEachFeature: onEach }"
-        :options-style="spatialStyle" />
-      <l-geo-json v-if="data[0] && showLayers.spatial && showLayers.labels" :geojson="polygonCenters"
-        :options="optionsLabels" />
-      <l-geo-json v-if="data[1] && showLayers.cones" :geojson="data[1]" :options="{ onEachFeature: onEach }"
-        :options-style="coneStyle" />
-      <l-geo-json v-if="data[2] && data[2].results && showLayers.places" :geojson="data[2].results"
-        :options="optionsMarkers" />
+      <l-geo-json
+        v-if="(data[0] && showLayers.spatial) || (useCaseThree === '3')"
+        :geojson="data[0]"
+        :options="{ onEachFeature: onEach }"
+        :options-style="spatialStyle"
+        ref="spatCov"
+      />
+      <v-marker-cluster
+      :options="{maxClusterRadius: 30, spiderfyDistanceMultiplier: 7, showCoverageOnHover: false, spiderLegPolylineOptions: { weight: 3, color: '#222' }}" ref="markerCluster">
+        <l-geo-json
+          v-if="data[0] && showLayers.spatial && showLayers.labels"
+          :geojson="polygonCenters"
+          :options="optionsLabels"
+          ref="labels"
+          @layerremove="testFunc()"
+          @layeradd="testFunc2()"
+        />
+      </v-marker-cluster>
+      <l-geo-json
+        v-if="data[1] && showLayers.cones"
+        :geojson="data[1]"
+        :options="{ onEachFeature: onEach }"
+        :options-style="coneStyle"
+      />
+      <l-geo-json
+        v-if="data[1] && showLayers.cones"
+        :geojson="coneOrigins"
+        :options="optionsOrigins"
+        ref="origins"
+      />
+      <l-geo-json
+        v-if="data[2] && data[2].results && showLayers.places"
+        :geojson="data[2].results"
+        :options="optionsMarkers"
+      />
+      <l-geo-json
+        v-if="showLayers.caseStudy"
+        :geojson="kingdomsMid800"
+        :options="optionsCaseStudies"
+      />
+      <l-geo-json
+        v-if="showLayers.romanRoads"
+        :geojson="romanRoads"
+        :options-style="roadsStyle"
+      />
+        <l-geo-json
+          v-if="showLayers.majorTowns"
+          :geojson="majorTowns"
+          :options="optionsTowns"
+          ref="towns"
+        />
       <template v-if="showLayers.relatedPlaces">
         <l-marker v-for="place in relatedPlaces" :key="place.url" :lat-lng="returnLatLng(place.coords.coordinates)"
           @click="$router.push({
@@ -168,12 +283,24 @@ import greenMarker from '@/assets/recolored_marker_icon.png';
 import redMarker from '@/assets/red_marker_icon.png';
 import blueMarker from '@/assets/blue_marker_icon.png';
 import greenMarker2x from '@/assets/recolored_marker_icon_2x.png';
+import kingdomsMid800Geojson from '@/assets/kingdoms_mid_800.geojson';
+import kingdoms800Geojson from '@/assets/kingdoms_800.geojson';
+import romanRoadsGeojson from '@/assets/RomanRoads.geojson';
+import majorTownsGeojson from '@/assets/DARMC_Medieval_World.geojson';
+
+import Vue2LeafletMarkercluster from 'vue2-leaflet-markercluster';
 
 export default {
   name: 'Leaflet',
   data: () => ({
     polygonCenters: {},
+    coneOrigins: {},
     stichworte: {},
+    kingdomsMid800: {},
+    kingdoms800: {},
+    romanRoads: {},
+    majorTowns: {},
+    useCaseThree: window.location.href.split('=')[1],
     bounds: latLngBounds([
       [34.016242, 5.488281],
       [71.663663, 34.667969],
@@ -181,25 +308,25 @@ export default {
     radioGroup: 1,
     url: process.env.BASE_URL,
     tileOptions: {
-      maxZoom: 8,
+      maxZoom: 10,
       minZoom: 4,
     },
     tileProviders: [
       {
-        name: 'OpenStreetMap',
+        name: 'Esri - World Imagery',
         id: 1,
         visible: true,
-        attribution:
-          '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-        url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-      },
-      {
-        name: 'Esri - World Imagery',
-        id: 2,
-        visible: false,
         url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
         attribution:
           'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+      },
+      {
+        name: 'OpenStreetMap',
+        id: 2,
+        visible: false,
+        attribution:
+          '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+        url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
       },
       {
         name: 'Digital Atlas of the Roman Empire',
@@ -209,41 +336,9 @@ export default {
         attribution:
           '© Johan Åhlfeldt, Centre for Digital Humanities, University of Gothenburg 2019. Contact: johan.ahlfeldt@lir.gu.se',
       },
-      {
-        name: 'Humanitarian OpenStreetMap',
-        id: 4,
-        visible: false,
-        url: 'https://a.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
-        attribution:
-          '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-      },
-      {
-        name: 'OpenTopoMap',
-        id: 5,
-        visible: false,
-        url: 'https://a.tile.opentopomap.org/{z}/{x}/{y}.png',
-        attribution:
-          '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-      },
-      {
-        name: 'TestTiles',
-        id: 6,
-        visible: false,
-        url: 'http://127.0.0.1:8887/{z}/{x}/{y}.png',
-        tms: false,
-        attribution:
-          '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-      },
     ],
     menu: false,
     relatedPlaces: [],
-    showLayers: {
-      spatial: true,
-      labels: true,
-      cones: true,
-      places: true,
-      relatedPlaces: true,
-    },
   }),
   props: {
     data: {
@@ -258,6 +353,27 @@ export default {
     usecase: {
       default: '',
     },
+    showLayers: {
+      default: {
+        spatial: true,
+        labels: true,
+        cones: true,
+        places: true,
+        relatedPlaces: true,
+        caseStudy: false,
+        romanRoads: false,
+        majorTowns: false,
+      },
+    },
+    origins: {
+      default: {},
+    },
+    kingdoms: {
+      default: {},
+    },
+    cluster: {
+      default: {},
+    },
   },
   mixins: [helpers],
   components: {
@@ -267,22 +383,29 @@ export default {
     LControl,
     LMarker,
     LTooltip,
+    'v-marker-cluster': Vue2LeafletMarkercluster,
   },
   computed: {
     coneStyle() {
       return (feature) => ({
-        color: '#FDD835',
-        fillOpacity: 0.6,
-        weight: 1.5,
-        className: `blur${feature.properties.fuzzyness} blurred`,
+        color: feature.properties.color,
+        fillOpacity: feature.properties.fillOpacity,
+        weight: feature.properties.weight,
+        className: `blur${feature.properties.fuzzyness} blurred id_${feature.id} cone`,
       });
     },
     spatialStyle() {
       return (feature) => ({
         color: feature.properties.color,
-        fillOpacity: 0.6,
+        fillOpacity: 0.4,
         weight: 0,
-        className: `blur${feature.properties.fuzzyness} blurred id_${feature.id}`,
+        className: `blur${feature.properties.fuzzyness} blurred id_${feature.id} spatCov`,
+      });
+    },
+    roadsStyle() {
+      return () => ({
+        color: 'red',
+        weight: 1.25,
       });
     },
     onEach() {
@@ -292,7 +415,7 @@ export default {
             `
             <div>Keyword: ${feature.properties.key_word.stichwort}</div>
             <div>Passages: ${feature.properties.stelle.length}</div>
-            <div>Certainty: ${11 - feature.properties.fuzzyness} / 10</div>
+            <div>Certainty: ${feature.properties.fuzzyness}</div>
             `,
             { permanent: false, sticky: true },
           )
@@ -309,10 +432,46 @@ export default {
           });
       };
     },
+    onEachCase() {
+      return (feature, layer) => {
+        // eslint-disable-next-line prefer-destructuring
+        const type = feature.geometry.type;
+        console.log('kingdom', feature);
+        if (type === 'MultiPolygon') {
+          layer.setStyle({
+            fillOpacity: 0.15,
+            color: `${feature.properties.color}`,
+          });
+          if (feature.properties.Dashed === 'true') {
+            layer.setStyle({
+              dashArray: '10 10',
+            });
+          }
+        }
+      };
+    },
     optionsLabels() {
       return {
         pointToLayer: this.pointToLabel,
         onEachFeature: this.onEachLabel,
+      };
+    },
+    optionsOrigins() {
+      return {
+        pointToLayer: this.pointToTown,
+        onEachFeature: this.onEachOrigin,
+      };
+    },
+    optionsTowns() {
+      return {
+        pointToLayer: this.pointToTown,
+        onEachFeature: this.onEachTown,
+      };
+    },
+    optionsCaseStudies() {
+      return {
+        pointToLayer: this.pointToCase,
+        onEachFeature: this.onEachCase,
       };
     },
     optionsMarkers() {
@@ -351,7 +510,7 @@ export default {
             `
             <div>Keyword: ${feature.properties.key_word.stichwort}</div>
             <div>Passages: ${feature.properties.stelle.length}</div>
-            <div>Certainty: ${11 - feature.properties.fuzzyness} / 10</div>
+            <div>Certainty: ${feature.properties.fuzzyness}</div>
             `,
             { permanent: false, sticky: true },
           )
@@ -368,22 +527,96 @@ export default {
           })
           .on({
             mouseover: () => {
-              document.getElementsByClassName(`id_${feature.id}`)[0].setAttribute('stroke', '#00ff51');
-              document.getElementsByClassName(`id_${feature.id}`)[0].setAttribute('stroke-width', 2.5);
-              document.getElementsByClassName(`id_${feature.id}`)[0].setAttribute('filter', '');
+              document.getElementsByClassName(`id_${feature.id} spatCov`)[0].setAttribute('stroke', '#ff00e8');
+              document.getElementsByClassName(`id_${feature.id} spatCov`)[0].setAttribute('stroke-width', 3.5);
+              document.getElementsByClassName(`id_${feature.id} spatCov`)[0].setAttribute('filter', '');
+              console.log(feature, layer, 'mouseover');
+              let spatCov;
+              if (this.$refs.spatCov) {
+                // eslint-disable-next-line
+                Object.values(this.$refs.spatCov.mapObject._layers).forEach((i) => {
+                  if (i.feature.id === feature.id) { spatCov = i; }
+                });
+              }
+              spatCov.bringToFront();
             },
           })
           .on({
             mouseout: () => {
-              const filter = document.getElementsByClassName(`id_${feature.id}`)[0].classList[0];
-              document.getElementsByClassName(`id_${feature.id}`)[0].setAttribute('stroke-width', 0);
-              document.getElementsByClassName(`id_${feature.id}`)[0].setAttribute('filter', `url(#${filter})`);
+              const filter = document.getElementsByClassName(`id_${feature.id} spatCov`)[0].classList[0];
+              document.getElementsByClassName(`id_${feature.id} spatCov`)[0].setAttribute('stroke-width', 0);
+              if (filter !== 'blur1') {
+                document.getElementsByClassName(`id_${feature.id} spatCov`)[0].setAttribute('filter', `url(#${filter})`);
+              } else {
+                document.getElementsByClassName(`id_${feature.id} spatCov`)[0].setAttribute('stroke-width', 1.5);
+                document.getElementsByClassName(`id_${feature.id} spatCov`)[0].setAttribute('stroke', feature.properties.color);
+              }
+              let spatCov;
+              if (this.$refs.spatCov) {
+                // eslint-disable-next-line
+                Object.values(this.$refs.spatCov.mapObject._layers).forEach((i) => {
+                  if (i.feature.id === feature.id) { spatCov = i; }
+                });
+              }
+              spatCov.bringToBack();
+            },
+          });
+      };
+    },
+    onEachTown() {
+      return (feature, layer) => {
+        layer
+          .bindTooltip(
+            `<div>Town: ${feature.properties.Name}</div>`,
+          );
+      };
+    },
+    onEachOrigin() {
+      return (feature, layer) => {
+        layer
+          .bindTooltip(
+            `<div>Town: ${feature.properties.Name}</div>`,
+          )
+          .on({
+            mouseover: () => {
+              if (typeof feature.id === 'number') { feature.id = [feature.id]; }
+              feature.id.forEach((id) => {
+                document.getElementsByClassName(`id_${id} cone`)[0].setAttribute('stroke', '#e8fc05');
+                document.getElementsByClassName(`id_${id} cone`)[0].setAttribute('stroke-width', 3.5);
+                document.getElementsByClassName(`id_${id} cone`)[0].setAttribute('filter', '');
+                if (this.$refs.spatCov) {
+                  // eslint-disable-next-line
+                  Object.values(this.$refs.spatCov.mapObject._layers).forEach((i) => {
+                    if (i.feature.id === id) {
+                      i.bringToFront();
+                    } else {
+                      i.bringToBack();
+                    }
+                  });
+                }
+              });
+            },
+          })
+          .on({
+            mouseout: () => {
+              feature.id.forEach((id) => {
+                const filter = document.getElementsByClassName(`id_${id}`)[0].classList[0];
+                document.getElementsByClassName(`id_${id} cone`)[0].setAttribute('stroke-width', 0);
+                document.getElementsByClassName(`id_${id} cone`)[0].setAttribute('filter', `url(#${filter})`);
+                if (this.$refs.spatCov) {
+                  // eslint-disable-next-line
+                  Object.values(this.$refs.spatCov.mapObject._layers).forEach((i) => {
+                    if (i.feature.id === id) { i.bringToBack(); }
+                  });
+                }
+              });
             },
           });
       };
     },
     pointToLayer() {
       return (feature, latlng) => {
+        console.log(feature, 'API');
         const featCat = feature.properties.kategorie.match(/\d+/g)[0];
         const icon = new L.Icon({ iconUrl: blueMarker, iconSize: [16, 26] });
 
@@ -392,31 +625,84 @@ export default {
         return L.marker(latlng, { icon: icon });
       };
     },
+    pointToTown() {
+      return (feature, latlng) => {
+        let circleMarker;
+        if (latlng.lat !== 0 && latlng.lng !== 0) {
+          if (feature.properties.cone === 'cone') {
+            circleMarker = L.circleMarker(latlng, {
+              radius: 7,
+              color: 'red',
+              fillOpacity: 1,
+              fillColor: 'red',
+            });
+          } else {
+            circleMarker = L.circleMarker(latlng, { radius: 5 });
+          }
+        }
+        return circleMarker;
+      };
+    },
     pointToLabel() {
       return (feature, latlng) => {
         const nE = L.latLngBounds(feature.geometry.polygonCoords).getNorthEast();
         const sW = L.latLngBounds(feature.geometry.polygonCoords).getSouthWest();
-        let distanceLat = nE.lat - sW.lat;
-        let distanceLng = nE.lng - sW.lng;
-        if (distanceLat > 8) {
-          distanceLat = 8;
-          distanceLng = 8;
+        const distanceLat = nE.lat - sW.lat;
+        const distanceLng = nE.lng - sW.lng;
+        let dist;
+        let vert = '';
+        if (distanceLat > distanceLng) {
+          dist = distanceLat;
+          vert = 'writing-mode:vertical-rl;';
+        } else { dist = distanceLng; }
+        if (dist > 8) {
+          dist = 8;
         }
-        if (distanceLat < 1.5) {
-          distanceLat = 1.5;
-          distanceLng = 1.5;
+        if (dist < 2) {
+          dist = 2;
         }
         const labelIcon = new L.DivIcon({
-          html: `<div style="font-size:${distanceLat * 8}px;text-shadow: 2px 0 0 #fff, -2px 0 0 #fff, 0 2px 0 #fff, 0 -2px 0 #fff, 1px 1px #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff; color: ${feature.properties.color};">${feature.properties.key_word.stichwort}</div>`,
+          html: `<div class="labelText" style="position:relative;transform:translate(-50%,-50%);${vert}font-size:${dist * 5}px;text-shadow: 2px 0 0 #fff, -2px 0 0 #fff, 0 2px 0 #fff, 0 -2px 0 #fff, 1px 1px #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff; color: ${feature.properties.color};">${feature.properties.key_word.stichwort}</div>`,
           iconSize: 'auto',
           className: 'label',
-          iconAnchor: [distanceLat * 9, distanceLng * 9],
+        });
+        return L.marker(latlng, { icon: labelIcon });
+      };
+    },
+    pointToCase() {
+      return (feature, latlng) => {
+        const labelIcon = new L.DivIcon({
+          html: `<div style="font-size:15px;text-shadow: 2px 0 0 #fff, -2px 0 0 #fff, 0 2px 0 #fff, 0 -2px 0 #fff, 1px 1px #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff;text-align: center;">${feature.properties.Name}</div>`,
+          iconSize: 'auto',
+          className: 'label',
+          iconAnchor: [15, 15],
         });
         return L.marker(latlng, { icon: labelIcon });
       };
     },
   },
   methods: {
+    filterKingdoms(arr) {
+      const filteredKingdoms = [];
+      const kingdomNames = [];
+      let counter = 1;
+      arr.forEach((feature) => {
+        if (feature.geometry.type === 'MultiPolygon' && !kingdomNames.includes(feature.properties.Name)) {
+          kingdomNames.push(feature.properties.Name);
+          filteredKingdoms.push(feature);
+        }
+        if (feature.properties.color === undefined) {
+          if (!Object.keys(this.kingdoms).includes(feature.properties.Name)) {
+            const hue = counter * 137.508;
+            // eslint-disable-next-line prefer-template
+            this.kingdoms[feature.properties.Name] = `hsl(${hue},50%,75%)`;
+            counter += 1;
+          }
+          feature.properties.color = this.kingdoms[feature.properties.Name];
+        }
+      });
+      return filteredKingdoms;
+    },
     getBounds(coordArr) {
       console.log('getBounds', coordArr);
       if (!coordArr.length) {
@@ -461,11 +747,12 @@ export default {
         svgFilter.setAttribute('height', '500%');
 
         let scale = this.$refs.map.mapObject.getZoom() / 5;
+        console.log('map', this.$refs.map);
 
         // Set deviation attribute of blur
-        let blurring = (11 - fuzzyness) * scale;
+        let blurring = (fuzzyness) * scale;
         svgBlur.setAttribute('class', 'feGaussianBlur');
-        svgBlur.setAttribute('stdDeviation', `${blurring} ${blurring}`);
+        svgBlur.setAttribute('stdDeviation', `${blurring}`);
 
         // Append blur element to filter element
         svgFilter.appendChild(svgBlur);
@@ -489,15 +776,41 @@ export default {
         });
       }
     },
+    updateFuzzy() {
+      const list = document.getElementsByClassName('blurred');
+      for (let j = 0; j < list.length; j += 1) {
+        this.alterSvg(list[j].classList[0]);
+        if (list[j].classList[0] !== 'blur1') {
+          list[j].setAttribute('filter', `url(#${list[j].classList[0]})`);
+        } else {
+          list[j].setAttribute('stroke-width', 1.5);
+        }
+      }
+    },
     changeBasemap(id) {
       this.tileProviders.forEach((i) => {
         if (i.id === id) i.visible = true;
         else i.visible = false;
       });
     },
+    testFunc() {
+      this.$refs.markerCluster.mapObject.clearLayers();
+    },
+    testFunc2() {
+      console.log('label add');
+      this.$refs.markerCluster.mapObject.addLayer(this.$refs.labels.mapObject);
+      this.$refs.map.mapObject.addLayer(this.$refs.markerCluster.mapObject);
+    },
     uncheckSpatial() {
-      console.log('unchecked', this.showLayers);
       if (this.showLayers.spatial === false) { this.showLayers.labels = false; }
+    },
+    townsToFront() {
+      if (typeof this.$refs.towns !== 'undefined' && typeof this.$refs.towns.mapObject !== 'undefined') {
+        this.$refs.towns.mapObject.bringToFront();
+      }
+      if (typeof this.$refs.origins !== 'undefined' && typeof this.$refs.origins.mapObject !== 'undefined') {
+        this.$refs.origins.mapObject.bringToFront();
+      }
     },
     // foundLocations() {
     //   return this.entries.length && !this.entries.count && this.entries.features.length;
@@ -506,18 +819,23 @@ export default {
   watch: {
     data: {
       handler(to) {
+        console.log('to', to, this.useCaseThree);
         console.log('to', to, this.data);
-        console.log('stichworte bevor', this.stichworte);
         to[0].features.forEach((feature) => {
-          if (!Object.keys(this.stichworte).includes(feature.properties.key_word.stichwort)) {
-            // eslint-disable-next-line prefer-template
-            this.stichworte[feature.properties.key_word.stichwort] = '#' + (0x1000000 + Math.random() * 0xffffff).toString(16).substr(1, 6);
+          if (feature.properties.color === undefined) {
+            if (!Object.keys(this.stichworte).includes(feature.properties.key_word.stichwort)) {
+              const max = 50;
+              const min = 200;
+              const orange = Math.floor(Math.random() * (max - min + 1)) + min;
+              // eslint-disable-next-line prefer-template
+              this.stichworte[feature.properties.key_word.stichwort] = `rgb(255,${orange},0)`;
+              /* random colors:
+              this.stichworte[feature.properties.key_word.stichwort] = '#' + (0x1000000 + Math.random() * 0xffffff).toString(16).substr(1, 6);
+              */
+            }
+            feature.properties.color = this.stichworte[feature.properties.key_word.stichwort];
           }
         });
-        to[0].features.forEach((feature) => {
-          feature.properties.color = this.stichworte[feature.properties.key_word.stichwort];
-        });
-        console.log('stichworte danach', this.stichworte);
         if (to.length) {
           let allCoords = to[0].features
             .concat(to[1].features)
@@ -531,7 +849,6 @@ export default {
           allCoords = allCoords.filter((x) => x);
 
           console.log('allCoords', allCoords);
-
           const places = {
             texts: {
               spatial: [],
@@ -549,6 +866,11 @@ export default {
           this.relatedPlaces = this.removeDuplicates(allPlaces, ['url']);
           const relatedCoords = this.relatedPlaces.map((x) => x.coords.coordinates);
           this.bounds = this.getBounds(allCoords.concat(relatedCoords));
+
+          this.kingdomsMid800 = JSON.parse(JSON.stringify(kingdomsMid800Geojson));
+          this.kingdoms800 = JSON.parse(JSON.stringify(kingdoms800Geojson));
+          this.romanRoads = JSON.parse(JSON.stringify(romanRoadsGeojson));
+          this.majorTowns = JSON.parse(JSON.stringify(majorTownsGeojson));
 
           // eslint-disable-next-line prefer-destructuring
           this.polygonCenters = JSON.parse(JSON.stringify(to[0]));
@@ -569,6 +891,80 @@ export default {
               type: 'Point',
             };
           });
+
+          this.coneOrigins = JSON.parse(JSON.stringify(to[1]));
+          this.coneOrigins.features.forEach((feature) => {
+            let lat = 0;
+            let lng = 0;
+            feature.properties.texts.forEach((text) => {
+              if (text.places.length > 0) {
+                lng = text.places[0].lat;
+                lat = text.places[0].lng;
+                feature.properties.Name = text.places[0].name;
+                feature.properties.cone = 'cone';
+              }
+            });
+            feature.geometry = {
+              coordinates: [lat, lng],
+              type: 'Point',
+            };
+          });
+          const coordsOrigins = {};
+          let a;
+          this.coneOrigins.features.forEach((feature) => {
+            if (JSON.stringify(feature.geometry.coordinates) !== '[null,null]') { a = feature.geometry.coordinates; } else { a = [0, 0]; }
+            let count = 0;
+            if (Object.keys(coordsOrigins).length === 0) { coordsOrigins[a] = [feature.id]; }
+            Object.keys(coordsOrigins).forEach((coord) => {
+              if (L.latLng(a).distanceTo(coord.split(',')) > 0) {
+                count += 1;
+              }
+            });
+            if (count === Object.keys(coordsOrigins).length) {
+              coordsOrigins[a] = [feature.id];
+            } else {
+              const arr = Object.values(coordsOrigins[a]);
+              if (!arr.includes(feature.id)) { arr.push(feature.id); }
+              coordsOrigins[a] = arr;
+            }
+            Object.keys(coordsOrigins).forEach((coord) => {
+              if (L.latLng(a).distanceTo(coord.split(',')) === 0) {
+                feature.id = coordsOrigins[coord];
+              }
+            });
+            if (feature.properties.color === undefined) {
+              if (!Object.keys(this.origins).includes(feature.properties.Name)) {
+                const max1 = 65;
+                const min1 = 45;
+                const hue = Math.floor(Math.random() * (max1 - min1 + 1)) + min1;
+                const max2 = 80;
+                const min2 = 50;
+                const x = Math.floor(Math.random() * (max2 - min2 + 1)) + min2;
+                // eslint-disable-next-line prefer-template
+                this.origins[feature.properties.Name] = `hsl(${hue},100%,${x}%)`;
+              }
+            }
+            if (feature.properties.texts[0].places.length > 0) {
+              feature.properties.color = this.origins[feature.properties.texts[0].places[0].name];
+            }
+          });
+          const allCoordsOrigins = [];
+          Object.values(coordsOrigins).forEach((ar) => {
+            allCoordsOrigins.push(...ar);
+          });
+          console.log(this.coneOrigins, allCoordsOrigins, 'coneOrigins');
+          to[1].features.forEach((feature) => {
+            feature.properties.cone = 'cone';
+            feature.properties.texts.forEach((text) => {
+              if (text.places.length > 0) {
+                feature.properties.color = this.origins[text.places[0].name];
+                if (text.places[0].lat !== null && text.places[0].lng !== null) {
+                  feature.properties.fillOpacity = 0.4;
+                  feature.properties.weight = 1.5;
+                }
+              }
+            });
+          });
         }
       },
       deep: true,
@@ -586,11 +982,15 @@ export default {
     });
   },
   updated() {
-    const list = document.getElementsByClassName('blurred');
-    for (let j = 0; j < list.length; j += 1) {
-      this.alterSvg(list[j].classList[0]);
-      list[j].setAttribute('filter', `url(#${list[j].classList[0]})`);
-    }
+    this.updateFuzzy();
+    this.townsToFront();
   },
 };
 </script>
+
+<style>
+  .marker-cluster div {
+    font: 25px "Helvetica Neue", Arial, Helvetica, sans-serif;
+    text-shadow: 2px 0 0 #fff, -2px 0 0 #fff, 0 2px 0 #fff, 0 -2px 0 #fff, 1px 1px #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff;
+  }
+</style>
