@@ -5,6 +5,8 @@
 <script>
 import ForceGraph from 'force-graph';
 
+const d3 = require('d3'); // import wasnt working here
+
 export default {
   name: 'Visualization',
   data: () => ({
@@ -17,7 +19,6 @@ export default {
       default: null,
     },
     graph: Object,
-    highlightedNodeIds: Set, // TODO
     linkDirectionalArrowLength: Number,
     linkDirectionalArrowRelPos: Number,
     linkDirectionalParticles: Number,
@@ -48,10 +49,10 @@ export default {
   methods: {
     transformedData(obj) {
       const sorted = {
-        nodes: obj.nodes.sort((a, b) => a.val - b.val),
+        nodes: obj.nodes,
         links: obj.edges,
       };
-      console.log('transformedData', obj, sorted.nodes.map((x) => x.val));
+      // console.log('transformedData', obj, sorted.nodes.map((x) => x.val));
       return sorted;
     },
     addColorAndType(arr, typeArr) {
@@ -67,6 +68,7 @@ export default {
       return retArr;
     },
     setCanvas() {
+      console.log('Setting Canvas');
       this.graphDom
         .nodeLabel('label')
         .height(this.height || undefined)
@@ -91,6 +93,7 @@ export default {
             edges: [],
           },
         }))
+        .d3Force('collide', d3.forceCollide().radius((d) => d.val + 20).iterations(3))
         .nodeRelSize(this.nodeRelSize || 4)
         .nodeCanvasObject(this.nodeCanvasObject)
         .nodeCanvasObjectMode(this.nodeCanvasObjectMode)
@@ -113,6 +116,8 @@ export default {
     console.log('Graph mounted, data:', this.graph);
     this.graphDom = ForceGraph()(this.$refs.visWrapper);
     this.setCanvas();
+
+    console.log('d3', d3);
   },
 };
 </script>

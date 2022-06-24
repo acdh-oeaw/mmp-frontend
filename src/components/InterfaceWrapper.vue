@@ -16,11 +16,21 @@
               </v-menu>
             </v-col>
             <v-col :cols="$vuetify.breakpoint.mobile ? 12 : 10">
-              <v-autocomplete v-model="$store.state.autocomplete.input" multiple clearable item-text="selected_text"
-                return-object no-filter autofocus ref="autocomplete"
+              <v-autocomplete
+                v-model="$store.state.autocomplete.input"
+                multiple
+                clearable
+                item-text="selected_text"
+                return-object
+                no-filter
+                autofocus
+                ref="autocomplete"
                 placeholder="Search for Authors, Passages, Keywords, Case Studies or Places"
-                :items="filteredSearchedSorted" :search-input.sync="textInput" @change="textInput = ''"
-                @keyup.enter="pushQuery" :loading="loading">
+                :items="filteredSearchedSorted"
+                :search-input.sync="textInput"
+                @change="textInput = ''"
+                @keyup.enter="pushQuery"
+                :loading="loading">
                 <template v-slot:item="data">
                   <v-list-item-content v-if="data.item.group === 'Keyword' && data.item.selected_text.includes(',')">
                     <v-list-item-title>
@@ -67,7 +77,7 @@
                   small
                   class="view-picker"
                   :disabled="currentView === 'List'"
-                  :to="{ name: 'List', query: addParamsToQuery(getQueryFromInput($store.state.autocomplete.input)) }"
+                  :to="{ name: 'List', query: addParamsToQuery(getQueryFromInput($store.state.autocomplete.input))}"
                 >
                   List
                 </v-btn>
@@ -321,13 +331,10 @@ export default {
       query.time = Array.isArray(this.range) ? this.range.map((x) => x * 10).join('+') : this.range * 10;
       if (query.time === '400+1200') query.time = undefined;
       this.autoQuery = false;
-      this.$router.push({
-        name: this.currentView,
-        query: this.addParamsToQuery(query),
-      });
       setTimeout(() => {
         this.autoQuery = true;
       }, 400); // dont judge me
+      return query;
     },
     // This function changes the slider from range to point, and creates a new range value fittingly
     toggleSliderComponent(mode) {
