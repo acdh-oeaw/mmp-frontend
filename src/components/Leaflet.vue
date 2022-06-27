@@ -26,9 +26,9 @@
         </v-btn>
       </l-control>
       <l-control position="bottomleft">
-        <v-card v-model="kingdomsMid800" v-if="showLayers.caseStudy">
+        <v-card v-model="kingdoms800" v-if="showLayers.caseStudy">
           <v-card-title class="pt-0 pl-3 pb-0">Kingdoms</v-card-title>
-          <v-card-text v-for="kingdom in filterKingdoms(kingdomsMid800.features)" :key="kingdom.properties.Name" class="pt-0 pl-5 pb-0" :style="`color:${kingdom.properties.color}`"> {{ kingdom.properties.Name }} </v-card-text>
+          <v-card-text v-for="kingdom in filterKingdoms(kingdoms800.features)" :key="kingdom.properties.Name" class="pt-0 pl-5 pb-0" :style="`color:${kingdom.properties.color}`"> {{ kingdom.properties.Name }} </v-card-text>
         </v-card>
       </l-control>
       <l-control position="topright">
@@ -219,7 +219,7 @@
       />
       <l-geo-json
         v-if="showLayers.caseStudy"
-        :geojson="kingdomsMid800"
+        :geojson="kingdoms800"
         :options="optionsCaseStudies"
       />
       <l-geo-json
@@ -296,6 +296,7 @@ export default {
     clusterOptions: {
       maxClusterRadius: 30,
       spiderfyDistanceMultiplier: 7,
+      disableClusteringAtZoom: 9,
       showCoverageOnHover: false,
       spiderLegPolylineOptions: { weight: 3, color: '#ffffff', opacity: 1 },
       iconCreateFunction: ((cluster) => {
@@ -425,13 +426,6 @@ export default {
     },
     onEach() {
       return (feature, layer) => {
-        // eslint-disable-next-line prefer-destructuring
-        this.usecaseThree = window.location.href.split('=')[1];
-        console.log('usecase', this.usecaseThree, (+this.usecaseThree === 3));
-        if (+this.usecaseThree === 3 && feature.properties.cone === undefined) {
-          console.log('usecase AAAA', feature.properties.cone);
-          layer.setStyle({ fillOpacity: 0 });
-        }
         layer
           .bindTooltip(
             `
@@ -452,6 +446,14 @@ export default {
               });
             },
           });
+        // eslint-disable-next-line prefer-destructuring
+        this.usecaseThree = window.location.href.split('=')[1];
+        console.log('usecase', this.usecaseThree, (+this.usecaseThree === 3));
+        if (+this.usecaseThree === 3 && feature.properties.cone === undefined) {
+          console.log('usecase AAAA', feature.properties.cone);
+          layer.setStyle({ fillOpacity: 0 });
+          layer.unbindTooltip();
+        }
       };
     },
     onEachCase() {
@@ -678,11 +680,12 @@ export default {
           dist = distanceLat;
           vert = 'writing-mode:vertical-rl;';
         } else { dist = distanceLng; }
+        console.log(dist, 'dist');
         if (dist > 15) {
           dist = 15;
         }
-        if (dist < 2) {
-          dist = 2;
+        if (dist < 4) {
+          dist = 4;
         }
         const labelIcon = new L.DivIcon({
           html: `<div class="labelText" style="position:relative;transform:translate(-50%,-50%);${vert}font-size:${dist * 5}px;text-shadow: 2px 0 0 #fff, -2px 0 0 #fff, 0 2px 0 #fff, 0 -2px 0 #fff, 1px 1px #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff; color: ${feature.properties.color};">${feature.properties.key_word.stichwort}</div>`,
