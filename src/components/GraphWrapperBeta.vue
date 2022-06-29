@@ -91,6 +91,23 @@
         </template>
         <span>Download node data as .json</span>
       </v-tooltip>
+      <v-tooltip
+        left
+        transition="slide-x-reverse-transition"
+      >
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            fab
+            small
+            @click="getTextData"
+            v-bind="attrs"
+            v-on="on"
+          >
+        <v-icon>mdi-text-box</v-icon>
+      </v-btn>
+        </template>
+        <span>Download node data as .txt</span>
+      </v-tooltip>
     </v-speed-dial>
     <fullscreen-button :usecase="usecase" />
     <v-speed-dial
@@ -265,6 +282,27 @@ export default {
       const link = document.createElement('a');
       link.download = 'graph.json';
       link.href = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(this.graph))}`;
+      link.click();
+      link.remove();
+    },
+    getTextData() {
+      const list = this.styledNodes.nodes;
+      const ret = {};
+      list.forEach((node) => {
+        if (ret[node.keyword_type]) ret[node.keyword_type].push(node.label);
+        else ret[node.keyword_type] = [node.label];
+      });
+
+      let retString = '';
+      Object.entries(ret).forEach(([type, labels]) => {
+        retString += `${type}s:\n`;
+        retString += labels.join(',\n');
+        retString += '\n\n';
+      });
+
+      const link = document.createElement('a');
+      link.download = 'graph.txt';
+      link.href = `data:attachment/text,${encodeURI(retString)}`;
       link.click();
       link.remove();
     },
