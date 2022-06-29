@@ -401,7 +401,7 @@ export default {
         node.fx = undefined;
         node.fy = undefined;
       });
-      // this.renderKey += 1;
+      this.renderKey += 1;
     },
   },
   computed: {

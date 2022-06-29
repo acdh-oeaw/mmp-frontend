@@ -111,6 +111,11 @@ export default {
     zoomToFit() { // cheap workaraound, change zoomToFit to !zoomToFit to zoom (to fit)
       this.graphDom.zoomToFit(500);
     },
+    '$route.name': {
+      handler() {
+        this.graphDom.resumeAnimation();
+      },
+    },
   },
   mounted() {
     console.log('Graph mounted, data:', this.graph);
