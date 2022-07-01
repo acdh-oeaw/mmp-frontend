@@ -2,7 +2,7 @@
   <div>
     <l-map
       ref="map" :style="`height: ${fullscreen && $route.name !== 'Keyword Detail Fullscreen' ? '100vh' : height + 'px'}; width: 100%; z-index: 4`"
-      :bounds="bounds" @ready="onReady"
+      :bounds="bounds" @ready="onReady" @click="mapClick"
     >
       <l-tile-layer
         v-for="tileProvider in tileProviders"
@@ -19,8 +19,9 @@
           small
           :to="{
             name: fullscreen ? 'Map' : 'Map Fullscreen',
-            query: usecase ? addParamsToQuery({ 'Use Case': usecase }) : $route.query
-          }">
+            query: usecase ? {'Use Case': usecase} : $route.query
+          }"
+        >
           <v-icon v-if="fullscreen">mdi-fullscreen-exit</v-icon>
           <v-icon v-else>mdi-fullscreen</v-icon>
         </v-btn>
@@ -32,9 +33,18 @@
         </v-card>
       </l-control>
       <l-control position="topright">
-        <v-menu v-model="menu" :close-on-content-click="false" left>
+        <v-menu
+          v-model="menu"
+          :close-on-content-click="false"
+          left
+        >
           <template v-slot:activator="{ on, attrs }">
-            <v-btn fab small v-bind="attrs" v-on="on">
+            <v-btn
+              fab
+              small
+              v-bind="attrs"
+              v-on="on"
+            >
               <v-icon>mdi-layers-triple</v-icon>
             </v-btn>
           </template>
@@ -54,7 +64,11 @@
                   Spatial&nbsp;Coverage&nbsp;
                   <v-chip color="red darken-1" dark small :disabled="!data[0] || !data[0].count">
                     <template v-if="loading">
-                      <v-progress-circular indeterminate :size="15" :width="2" />
+                      <v-progress-circular
+                        indeterminate
+                        :size="15"
+                        :width="2"
+                      />
                     </template>
                     <template v-else>
                       {{ data[0].count }}
@@ -85,7 +99,11 @@
                   &nbsp;
                   <v-chip color="yellow darken-1" small :disabled="!data[1] || !data[1].count">
                     <template v-if="loading">
-                      <v-progress-circular indeterminate :size="15" :width="2" />
+                      <v-progress-circular
+                        indeterminate
+                        :size="15"
+                        :width="2"
+                      />
                     </template>
                     <template v-else>
                       {{ data[1].count }}
@@ -105,7 +123,11 @@
                   &nbsp;
                   <v-chip color="green lighten-1" dark small :disabled="!data[2] || !data[2].count">
                     <template v-if="loading">
-                      <v-progress-circular indeterminate :size="15" :width="2" />
+                      <v-progress-circular
+                        indeterminate
+                        :size="15"
+                        :width="2"
+                      />
                     </template>
                     <template v-else-if="data[2]">
                       {{ data[2].count }}
@@ -126,8 +148,18 @@
                 <template v-slot:label>
                   Related&nbsp;Places
                   &nbsp;
-                  <v-chip color="green lighten-1" dark small :disabled="!relatedPlaces.length">
-                    <v-progress-circular v-if="loading" indeterminate :size="15" :width="2" />
+                  <v-chip
+                    color="green lighten-1"
+                    dark
+                    small
+                    :disabled="!relatedPlaces.length"
+                  >
+                    <v-progress-circular
+                      v-if="loading"
+                      indeterminate
+                      :size="15"
+                      :width="2"
+                    />
                     <template v-else>
                       {{ relatedPlaces.length }}
                     </template>
@@ -183,14 +215,14 @@
         </v-menu>
       </l-control>
       <l-geo-json
-        v-if="data[0] && showLayers.spatial"
+        v-if="(data[0] && showLayers.spatial) || (useCaseThree === '3')"
         :geojson="data[0]"
         :options="{ onEachFeature: onEach }"
         :options-style="spatialStyle"
         ref="spatCov"
       />
       <v-marker-cluster ref="markerCluster"
-      :options="clusterOptions">
+      :options="clusterOptions" @animationend="resetSpatCov(cluster)">
         <l-geo-json
           v-if="data[0] && showLayers.spatial && showLayers.labels"
           :geojson="polygonCenters"
@@ -205,6 +237,7 @@
         :geojson="data[1]"
         :options="{ onEachFeature: onEach }"
         :options-style="coneStyle"
+        ref="cones"
       />
       <l-geo-json
         v-if="data[1] && showLayers.cones"
@@ -234,12 +267,16 @@
           ref="towns"
         />
       <template v-if="showLayers.relatedPlaces">
-        <l-marker v-for="place in relatedPlaces" :key="place.url" :lat-lng="returnLatLng(place.coords.coordinates)"
+        <l-marker
+          v-for="place in relatedPlaces"
+          :key="place.url"
+          :lat-lng="returnLatLng(place.coords.coordinates)"
           @click="$router.push({
             name: fullscreen ? 'Place Detail Fullscreen' : 'Place Detail',
             query: $route.query,
             params: { id: getIdFromUrl(place.url) },
-          })">
+          })"
+        >
           <l-tooltip>
             <div>Name: {{ place.name }}</div>
             <div v-if="place.name_antik">Ancient Name: {{ place.name_antik }}</div>
@@ -247,12 +284,20 @@
         </l-marker>
       </template>
     </l-map>
-    <v-overlay absolute class="overlay" opacity=".2" :value="loading || !data.some((d) => d.count)">
+    <v-overlay
+      absolute
+      class="overlay"
+      opacity=".2"
+      :value="loading || !data.some((d) => d.count)"
+    >
       <h1 v-if="!loading" class="no-nodes">
         No locations found!
       </h1>
       <h1 v-else>
-        <v-progress-circular indeterminate color="#0F1226" />
+        <v-progress-circular
+          indeterminate
+          color="#0F1226"
+        />
       </h1>
     </v-overlay>
     <router-view />
@@ -275,6 +320,7 @@ import {
   LMarker,
   LTooltip,
 } from 'vue2-leaflet';
+import * as turf from 'turf';
 
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 
@@ -296,7 +342,7 @@ export default {
     clusterOptions: {
       maxClusterRadius: 30,
       spiderfyDistanceMultiplier: 7,
-      disableClusteringAtZoom: 9,
+      disableClusteringAtZoom: 8,
       showCoverageOnHover: false,
       spiderLegPolylineOptions: { weight: 3, color: '#ffffff', opacity: 1 },
       iconCreateFunction: ((cluster) => {
@@ -311,6 +357,7 @@ export default {
     },
     polygonCenters: {},
     coneOrigins: {},
+    cones: {},
     stichworte: {},
     kingdomsMid800: {},
     kingdoms800: {},
@@ -441,16 +488,14 @@ export default {
               console.log('click', feature, e);
               this.$router.push({
                 name: this.fullscreen ? 'Spatial Detail Fullscreen' : 'Spatial Detail',
-                query: this.usecase ? this.addParamsToQuery({ 'Use Case': this.usecase }) : this.$route.query,
+                query: this.usecase ? { 'Use Case': this.usecase } : this.$route.query,
                 params: { id: feature.id },
               });
             },
           });
         // eslint-disable-next-line prefer-destructuring
         this.usecaseThree = window.location.href.split('=')[1];
-        console.log('usecase', this.usecaseThree, (+this.usecaseThree === 3));
         if (+this.usecaseThree === 3 && feature.properties.cone === undefined) {
-          console.log('usecase AAAA', feature.properties.cone);
           layer.setStyle({ fillOpacity: 0 });
           layer.unbindTooltip();
         }
@@ -544,45 +589,19 @@ export default {
               this.$refs.map.mapObject.fitBounds(L.latLngBounds(feature.geometry.polygonCoords));
               this.$router.push({
                 name: this.fullscreen ? 'Spatial Detail Fullscreen' : 'Spatial Detail',
-                query: this.usecase ? this.addParamsToQuery({ 'Use Case': this.usecase }) : this.$route.query,
+                query: this.usecase ? { 'Use Case': this.usecase } : this.$route.query,
                 params: { id: feature.id },
               });
             },
           })
           .on({
             mouseover: () => {
-              document.getElementsByClassName(`id_${feature.id} spatCov`)[0].setAttribute('stroke', '#ff00e8');
-              document.getElementsByClassName(`id_${feature.id} spatCov`)[0].setAttribute('stroke-width', 3.5);
-              document.getElementsByClassName(`id_${feature.id} spatCov`)[0].setAttribute('filter', '');
-              console.log(feature, layer, 'mouseover');
-              let spatCov;
-              if (this.$refs.spatCov !== undefined) {
-                // eslint-disable-next-line
-                Object.values(this.$refs.spatCov.mapObject._layers).forEach((i) => {
-                  if (i.feature.id === feature.id) { spatCov = i; }
-                });
-              }
-              spatCov.bringToFront();
+              this.highlightPoly(feature, 'cone', '#f6fa07');
             },
           })
           .on({
             mouseout: () => {
-              const filter = document.getElementsByClassName(`id_${feature.id} spatCov`)[0].classList[0];
-              document.getElementsByClassName(`id_${feature.id} spatCov`)[0].setAttribute('stroke-width', 0);
-              if (filter !== 'blur1') {
-                document.getElementsByClassName(`id_${feature.id} spatCov`)[0].setAttribute('filter', `url(#${filter})`);
-              } else {
-                document.getElementsByClassName(`id_${feature.id} spatCov`)[0].setAttribute('stroke-width', 1.5);
-                document.getElementsByClassName(`id_${feature.id} spatCov`)[0].setAttribute('stroke', feature.properties.color);
-              }
-              let spatCov;
-              if (this.$refs.spatCov !== undefined) {
-                // eslint-disable-next-line
-                Object.values(this.$refs.spatCov.mapObject._layers).forEach((i) => {
-                  if (i.feature.id === feature.id) { spatCov = i; }
-                });
-              }
-              spatCov.bringToBack();
+              this.playdownPoly(feature, 'cone');
             },
           });
       };
@@ -591,7 +610,7 @@ export default {
       return (feature, layer) => {
         layer
           .bindTooltip(
-            `<div>Town: ${feature.properties.Name}</div>`,
+            `<div>Origin: ${feature.properties.Name}</div>`,
           );
       };
     },
@@ -609,7 +628,7 @@ export default {
                 document.getElementsByClassName(`id_${id} cone`)[0].setAttribute('stroke-width', 3.5);
                 document.getElementsByClassName(`id_${id} cone`)[0].setAttribute('filter', '');
                 if (this.$refs.spatCov !== undefined) {
-                  console.log(this.$refs.spatCov);
+                  console.log(this.$refs.cones);
                   // eslint-disable-next-line
                   Object.values(this.$refs.spatCov.mapObject._layers).forEach((i) => {
                     if (i.feature.id === id) {
@@ -674,6 +693,8 @@ export default {
         const sW = L.latLngBounds(feature.geometry.polygonCoords).getSouthWest();
         const distanceLat = nE.lat - sW.lat;
         const distanceLng = nE.lng - sW.lng;
+        // const seeArea = GeometryUtil.geodesicArea(L.latLngBounds(feature.geometry.polygonCoords));
+        console.log(L.latLngBounds(feature.geometry.polygonCoords), 'dist1');
         let dist;
         let vert = '';
         if (distanceLat > distanceLng) {
@@ -681,8 +702,8 @@ export default {
           vert = 'writing-mode:vertical-rl;';
         } else { dist = distanceLng; }
         console.log(dist, 'dist');
-        if (dist > 15) {
-          dist = 15;
+        if (dist > 12) {
+          dist = 12;
         }
         if (dist < 4) {
           dist = 4;
@@ -710,6 +731,88 @@ export default {
   methods: {
     onReady() {
       this.$refs.markerCluster.mapObject.refreshClusters();
+    },
+    mapClick(e) {
+      const { lat, lng } = e.latlng;
+      const point = turf.point([lng, lat]);
+      this.cones.features.forEach((p) => {
+        if (turf.booleanPointInPolygon(point, p)) {
+          /* do whatever you want with your clicked polygon */
+          console.log(p, 'clicki');
+          this.$router.push({
+            name: this.fullscreen ? 'Spatial Detail Fullscreen' : 'Spatial Detail',
+            query: this.usecase ? { 'Use Case': this.usecase } : this.$route.query,
+            params: { id: p.id },
+          });
+        }
+      });
+    },
+    highlightPoly(feature, type, color) {
+      document.getElementsByClassName(`id_${feature.id} ${type}`)[0].setAttribute('stroke', color);
+      document.getElementsByClassName(`id_${feature.id} ${type}`)[0].setAttribute('stroke-width', 3.5);
+      document.getElementsByClassName(`id_${feature.id} ${type}`)[0].setAttribute('filter', '');
+      let spatCov;
+      let layers;
+      if (type === 'spatCov') {
+        layers = this.$refs.spatCov;
+      } else if (type === 'cone') { layers = this.$refs.cones; }
+      if (layers !== undefined) {
+        // eslint-disable-next-line
+         Object.values(layers.mapObject._layers).forEach((i) => {
+          const classNames = i.options.className.split(' ');
+          if ((i.feature.id === feature.id) && (classNames[classNames.length - 1] === type)) {
+            spatCov = i;
+          }
+        });
+      }
+      if (spatCov !== undefined) {
+        spatCov.bringToFront();
+      }
+      // eslint-disable-next-line
+      const origins = this.$refs.origins.mapObject._layers;
+      Object.values(origins).forEach((origin) => {
+        console.log(origin.feature.id, 'spatCov');
+        if (origin.feature.id.includes(feature.id)) {
+          console.log(origin, 'spatCov2');
+          origin.openTooltip();
+        }
+      });
+    },
+    playdownPoly(feature, type) {
+      const filter = document.getElementsByClassName(`id_${feature.id} ${type}`)[0].classList[0];
+      document.getElementsByClassName(`id_${feature.id} ${type}`)[0].setAttribute('stroke-width', 0);
+      if (filter !== 'blur1') {
+        document.getElementsByClassName(`id_${feature.id} ${type}`)[0].setAttribute('filter', `url(#${filter})`);
+      } else {
+        document.getElementsByClassName(`id_${feature.id} ${type}`)[0].setAttribute('stroke-width', 1.5);
+        document.getElementsByClassName(`id_${feature.id} ${type}`)[0].setAttribute('stroke', feature.properties.color);
+      }
+      let spatCov;
+      let layers;
+      if (type === 'spatCov') {
+        layers = this.$refs.spatCov;
+      } else if (type === 'cone') { layers = this.$refs.cones; }
+      if (layers !== undefined) {
+        // eslint-disable-next-line
+        Object.values(layers.mapObject._layers).forEach((i) => {
+          const classNames = i.options.className.split(' ');
+          if ((i.feature.id === feature.id) && (classNames[classNames.length - 1] === type)) {
+            spatCov = i;
+          }
+        });
+      }
+      if (spatCov !== undefined) {
+        spatCov.bringToBack();
+      }
+      // eslint-disable-next-line
+      const origins = this.$refs.origins.mapObject._layers;
+      Object.values(origins).forEach((origin) => {
+        console.log(origin.feature.id, 'spatCov');
+        if (origin.feature.id.includes(feature.id)) {
+          console.log(origin, 'spatCov2');
+          origin.closeTooltip();
+        }
+      });
     },
     filterKingdoms(arr) {
       const filteredKingdoms = [];
@@ -825,6 +928,21 @@ export default {
     removeMarkerCluster() {
       this.$refs.markerCluster.mapObject.clearLayers();
     },
+    resetSpatCov() {
+      const list = document.getElementsByClassName('cone');
+      Array.from(list).forEach((spatCov) => {
+        const filter = spatCov.classList[0];
+        // eslint-disable-next-line
+        const color = spatCov.attributes.stroke.nodeValue;
+        spatCov.setAttribute('stroke-width', 0);
+        if (filter !== 'blur1') {
+          spatCov.setAttribute('filter', `url(#${filter})`);
+        } else {
+          spatCov.setAttribute('stroke-width', 1.5);
+          spatCov.setAttribute('stroke', color);
+        }
+      });
+    },
     refreshMarkerCluster() {
       console.log('label add');
       this.$refs.markerCluster.mapObject.addLayer(this.$refs.labels.mapObject);
@@ -850,6 +968,7 @@ export default {
       handler(to) {
         console.log('to', to, this.useCaseThree);
         console.log('to', to, this.data);
+        this.cones = JSON.parse(JSON.stringify(to[1]));
         to[0].features.forEach((feature) => {
           if (feature.properties.color === undefined) {
             if (!Object.keys(this.stichworte).includes(feature.properties.key_word.stichwort)) {
@@ -919,6 +1038,7 @@ export default {
               coordinates: [centerCoords.lat, centerCoords.lng],
               type: 'Point',
             };
+            feature.properties.cone = 'spatCov';
           });
 
           this.coneOrigins = JSON.parse(JSON.stringify(to[1]));
@@ -967,7 +1087,7 @@ export default {
                 const min1 = 45;
                 const hue = Math.floor(Math.random() * (max1 - min1 + 1)) + min1;
                 const max2 = 80;
-                const min2 = 50;
+                const min2 = 60;
                 const x = Math.floor(Math.random() * (max2 - min2 + 1)) + min2;
                 // eslint-disable-next-line prefer-template
                 this.origins[feature.properties.Name] = `hsl(${hue},100%,${x}%)`;

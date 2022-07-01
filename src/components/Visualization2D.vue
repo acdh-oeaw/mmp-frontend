@@ -5,6 +5,7 @@
 <script>
 import ForceGraph from 'force-graph';
 
+// eslint-disable-next-line
 const d3 = require('d3'); // import wasnt working here
 
 export default {
