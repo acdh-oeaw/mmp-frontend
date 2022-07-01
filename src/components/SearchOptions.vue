@@ -120,7 +120,7 @@
         <v-radio
           label="Include everything"
           color="teal lighten-2"
-          value="if you can read this have a nice day :^)"
+          value="don"
         />
       </v-radio-group>
       <v-divider />

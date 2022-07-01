@@ -4,51 +4,28 @@
       <v-col cols="12" xl="8">
         <template v-if="!loading">
           <p class="text-h7 grey--text">
-            <v-btn
-              icon
-              plain
-              :to="{ name: 'Studies' }"
-            >
+            <v-btn icon plain :to="{ name: 'Studies' }">
               <v-icon>mdi-chevron-left</v-icon>
             </v-btn>
-            CASE STUDY<span v-if="study.principal_investigator">&nbsp;&nbsp;&bull;&nbsp;&nbsp;{{ study.principal_investigator }}</span>
+            CASE STUDY<span v-if="study.principal_investigator">&nbsp;&nbsp;&bull;&nbsp;&nbsp;{{
+            study.principal_investigator }}</span>
           </p>
           <p class="text-h4">{{ study.title }}</p>
           <p v-if="study.description">{{ study.description }}</p>
-          <v-tabs
-            fixed-tabs
-            show-arrows
-            background-color="transparent"
-          >
-            <v-tab
-              exact
-              :to="{ query: { tab: 'timeline' }}"
-            >
+          <v-tabs fixed-tabs show-arrows background-color="transparent">
+            <v-tab exact :to="{ query: addParamsToQuery({ tab: 'timeline' })}">
               Timeline
             </v-tab>
-            <v-tab
-              exact
-              v-if="study.story_map"
-              :to="{ query: { tab: 'story' }}"
-            >
+            <v-tab exact v-if="study.story_map" :to="{ query: addParamsToQuery({ tab: 'story' })}">
               Story Map
             </v-tab>
-            <v-tab
-              exact
-              :to="{ query: { tab: 'graph' }}"
-            >
+            <v-tab exact :to="{ query: addParamsToQuery({ tab: 'graph' })}">
               Graph
             </v-tab>
-            <v-tab
-              exact
-              :to="{ query: { tab: 'map' }}"
-            >
+            <v-tab exact :to="{ query: addParamsToQuery({ tab: 'map' })}">
               Map
             </v-tab>
-            <v-tab
-              exact
-              :to="{ query: { tab: 'cloud' }}"
-            >
+            <v-tab exact :to="{ query: addParamsToQuery({ tab: 'cloud' })}">
               Word Cloud
             </v-tab>
           </v-tabs>
@@ -56,53 +33,32 @@
           <v-tabs-items :value="$route.query.tab || 'timeline'">
             <v-tab-item value="timeline">
               <v-timeline :dense="$vuetify.breakpoint.mobile">
-                <v-timeline-item
-                  v-for="(event, i) in events"
-                  :key="`${event.id}&${i}`"
-                  large
-                  :icon="getIconFromType(event.ent_type).icon"
-                  :color="getIconFromType(event.ent_type).color"
-                  :class="{ 'text-right': i%2 == 1 && !$vuetify.breakpoint.mobile }"
-                >
-                  <span
-                    class="font-weight-medium"
-                    slot="opposite"
-                  >
+                <v-timeline-item v-for="(event, i) in events" :key="`${event.id}&${i}`" large
+                  :icon="getIconFromType(event.ent_type).icon" :color="getIconFromType(event.ent_type).color"
+                  :class="{ 'text-right': i%2 == 1 && !$vuetify.breakpoint.mobile }">
+                  <span class="font-weight-medium" slot="opposite">
                     {{ renderDates(event.start_date, event.end_date) }}
                   </span>
-                  <span
-                    class="font-weight-medium"
-                    v-if="$vuetify.breakpoint.mobile"
-                  >
+                  <span class="font-weight-medium" v-if="$vuetify.breakpoint.mobile">
                     {{ renderDates(event.start_date, event.end_date) }}: <br />
                   </span>
-                  <router-link
-                    class="font-weight-medium"
-                    v-if="event.ent_type === 'autor'"
-                    :to="{
-                      name: 'List',
-                      query: { Author: event.id }
-                    }"
-                  >
+                  <router-link class="font-weight-medium" v-if="event.ent_type === 'autor'" :to="{
+                    name: 'List',
+                    query: addParamsToQuery({ Author: event.id })
+                  }">
                     {{ event.ent_description }}
                     &nbsp;
                     <v-icon>mdi-chevron-right</v-icon>
                   </router-link>
-                  <span
-                    v-else
-                    :class="{
-                      'font-weight-medium': event.ent_type != 'event'
-                    }"
-                  >
+                  <span v-else :class="{
+                    'font-weight-medium': event.ent_type != 'event'
+                  }">
                     {{ event.ent_description }}
                   </span>
                 </v-timeline-item>
               </v-timeline>
             </v-tab-item>
-            <v-tab-item
-              v-if="study.story_map"
-              value="story"
-            >
+            <v-tab-item v-if="study.story_map" value="story">
               <v-card color="transparent" v-html="study.story_map" />
             </v-tab-item>
             <v-tab-item value="graph">
@@ -120,10 +76,7 @@
             </v-tab-item>
           </v-tabs-items>
         </template>
-        <v-skeleton-loader
-          v-else
-          type="text, heading, text@11"
-        />
+        <v-skeleton-loader v-else type="text, heading, text@11" />
       </v-col>
     </v-row>
   </v-container>
@@ -134,9 +87,11 @@
 import Graph from './GraphWrapper';
 import MapWrapper from './MapWrapper';
 import WordCloudWrapper from './WordCloudWrapper';
+import helpers from '../helpers';
 
 export default {
   name: 'Studies',
+  mixins: [helpers],
   data: () => ({
     study: {},
     events: [],

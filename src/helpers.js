@@ -3,6 +3,49 @@ export default {
     debug: (message, name) => {
       console.debug('debug', name, message);
     },
+    addParamsToQuery(obj) {
+      const ret = obj || {};
+      const entries = Object.entries(this.$store.state.searchFilters);
+      const { apiParams } = this.$store.state;
+
+      const dict = {
+        author: 'searchAuthors',
+        passage: 'searchPassages',
+        usecase: 'searchUsecases',
+      };
+      const subDict = {
+        ethnonym: 'searchEthnonyms',
+        name: 'searchNames',
+        phrase: 'searchPhrases',
+        region: 'searchRegions',
+        author: 'searchPlaceAuthors',
+        passage: 'searchPlacePassages',
+        text: 'searchPlaceTexts',
+      };
+
+      entries.forEach((entry) => {
+        if (typeof entry[1] === 'object') {
+          Object.entries(entry[1]).forEach((subEntry) => {
+            if (!subEntry[1]) {
+              console.log('subentry', subEntry);
+              ret[subDict[subEntry[0]]] = 'false';
+            } else delete ret[subDict[subEntry[0]]];
+          });
+        } else if (!entry[1]) {
+          console.log('entry bool', entry);
+          ret[dict[entry[0]]] = 'false';
+        } else delete ret[dict[entry[0]]];
+      });
+      if (apiParams.hasUsecase !== 'true') ret.hasUsecase = apiParams.hasUsecase;
+      else delete ret.hasUsecase;
+      if (!apiParams.intersect) ret.intersect = 'false';
+      else delete ret.intersect;
+      if (apiParams.slider !== 'passage') ret.slider = apiParams.hasUsecase;
+      else delete ret.slider;
+
+      console.log('addParams', entries, ret);
+      return ret;
+    },
     displayTimeRange: (start, end) => (start || end ? `${start || 'unknown'} - ${end || 'unknown'}` : 'unknown'),
     getOptimalName: (obj) => obj.name_en || obj.name_antik || obj.name_lat || obj.name || obj.name_fr || obj.name_it || obj.name_gr,
     getIdFromUrl: (url) => url.replace(/\D/g, ''),

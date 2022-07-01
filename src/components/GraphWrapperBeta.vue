@@ -21,7 +21,7 @@
         />
       </h1>
     </v-overlay>
-    <visualization-beta
+    <visualization
       id="visId"
       :key="renderKey"
       :graph="weightedGraph"
@@ -32,7 +32,7 @@
       :zoomToFit="zoomToFit"
       :linkDirectionalArrowLength="2"
       :paused="paused"
-      :nodeRelSize="1"
+      :nodeRelSize="4"
     />
     <router-view />
     <v-speed-dial
@@ -90,6 +90,23 @@
       </v-btn>
         </template>
         <span>Download node data as .json</span>
+      </v-tooltip>
+      <v-tooltip
+        left
+        transition="slide-x-reverse-transition"
+      >
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            fab
+            small
+            @click="getTextData"
+            v-bind="attrs"
+            v-on="on"
+          >
+        <v-icon>mdi-text-box</v-icon>
+      </v-btn>
+        </template>
+        <span>Download node data as .txt</span>
       </v-tooltip>
     </v-speed-dial>
     <fullscreen-button :usecase="usecase" />
@@ -223,20 +240,21 @@
 </template>
 <script>
 import helpers from '@/helpers';
-import VisualizationBeta from './Visualization2DBeta';
+import Visualization from './Visualization2D';
 import FullscreenButton from './FullscreenButton';
 
 export default {
-  name: 'NetworkGraph',
+  name: 'NetworkGraphBeta',
   components: {
-    VisualizationBeta,
+    Visualization,
     FullscreenButton,
   },
   data: () => ({
     colors: {
-      Schlagwort: '#039BE5', // blue darken-1
+      Keyword: '#039BE5', // blue darken-1
       Ethonym: '#00897B', // teal darken-1
-      Eigenname: '#FFB300', // amber darken-1
+      Ethnonym: '#00897B', // teal darken-1
+      Name: '#FFB300', // amber darken-1
       Region: '#43A047', // green darken-1
       Unsicher: 'black',
     },
@@ -264,6 +282,27 @@ export default {
       const link = document.createElement('a');
       link.download = 'graph.json';
       link.href = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(this.graph))}`;
+      link.click();
+      link.remove();
+    },
+    getTextData() {
+      const list = this.styledNodes.nodes;
+      const ret = {};
+      list.forEach((node) => {
+        if (ret[node.keyword_type]) ret[node.keyword_type].push(node.label);
+        else ret[node.keyword_type] = [node.label];
+      });
+
+      let retString = '';
+      Object.entries(ret).forEach(([type, labels]) => {
+        retString += `${type}s:\n`;
+        retString += labels.join(',\n');
+        retString += '\n\n';
+      });
+
+      const link = document.createElement('a');
+      link.download = 'graph.txt';
+      link.href = `data:attachment/text,${encodeURI(retString)}`;
       link.click();
       link.remove();
     },
@@ -306,12 +345,24 @@ export default {
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
 
-      ctx.fillStyle = this.colors[node.keyword_type] || 'grey';
-      ctx.strokeStyle = '#F1F5FA';
-      ctx.lineWidth = 0.5 / globalScale;
+      const typeColor = this.colors[node.keyword_type] || 'grey';
+
+      if (this.$route.params.id?.toString(10).split('+').includes(node.id.replace(/\D/g, ''))) {
+        ctx.shadowColor = typeColor;
+        ctx.shadowBlur = 15;
+        ctx.fillStyle = '#F1F5FA';
+        ctx.strokeStyle = typeColor;
+        ctx.lineWidth = 2 / globalScale;
+      } else {
+        ctx.fillStyle = typeColor;
+        ctx.strokeStyle = '#F1F5FA';
+        ctx.lineWidth = 1.7 / globalScale;
+      }
 
       ctx.strokeText(label, node.x, node.y);
       ctx.fillText(label, node.x, node.y);
+
+      ctx.shadowBlur = 0;
     },
     nodeClick(node) {
       console.log('node clicked', node);
@@ -332,13 +383,13 @@ export default {
 
       if (q) {
         this.$router.push({
-          name: this.fullscreen ? 'Keyword Detail Fullscreen' : 'Keyword Detail',
+          name: this.fullscreen ? 'Keyword Detail Beta Fullscreen' : 'Keyword Detail Beta',
           params: { id: q },
           query: this.usecase ? { 'Use Case': this.usecase } : this.$route.query,
         });
       } else {
         this.$router.push({
-          name: this.fullscreen ? 'Network Graph Fullscreen' : 'Network Graph',
+          name: this.fullscreen ? 'Network Graph Beta Fullscreen' : 'Network Graph Beta',
           query: this.$route.query,
         });
       }

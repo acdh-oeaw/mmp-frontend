@@ -5,6 +5,9 @@
 <script>
 import ForceGraph from 'force-graph';
 
+// eslint-disable-next-line
+const d3 = require('d3'); // import wasnt working here
+
 export default {
   name: 'Visualization',
   data: () => ({
@@ -17,8 +20,8 @@ export default {
       default: null,
     },
     graph: Object,
-    highlightedNodeIds: Set, // TODO
     linkDirectionalArrowLength: Number,
+    linkDirectionalArrowRelPos: Number,
     linkDirectionalParticles: Number,
     linkDirectionalParticleSpeed: Number,
     linkWidth: String,
@@ -46,10 +49,12 @@ export default {
   },
   methods: {
     transformedData(obj) {
-      return {
+      const sorted = {
         nodes: obj.nodes,
         links: obj.edges,
       };
+      // console.log('transformedData', obj, sorted.nodes.map((x) => x.val));
+      return sorted;
     },
     addColorAndType(arr, typeArr) {
       // console.log('typeArr', typeArr, 'arr', arr);
@@ -64,6 +69,7 @@ export default {
       return retArr;
     },
     setCanvas() {
+      console.log('Setting Canvas');
       this.graphDom
         .nodeLabel('label')
         .height(this.height || undefined)
@@ -79,6 +85,7 @@ export default {
         .linkDirectionalParticles(this.linkDirectionalParticles || 0)
         .linkDirectionalParticleSpeed(this.linkDirectionalParticleSpeed || 0.01)
         .linkDirectionalArrowLength(this.linkDirectionalArrowLength || 0)
+        .linkDirectionalArrowRelPos(this.linkDirectionalArrowRelPos || 0.5)
         .graphData(this.transformedData(this.graph || {
           nodes: [],
           edges: [],
@@ -87,6 +94,8 @@ export default {
             edges: [],
           },
         }))
+        .d3Force('collide', d3.forceCollide().radius((d) => d.val + 20).iterations(3))
+        .nodeRelSize(this.nodeRelSize || 4)
         .nodeCanvasObject(this.nodeCanvasObject)
         .nodeCanvasObjectMode(this.nodeCanvasObjectMode)
         .nodePointerAreaPaint(this.nodePointerAreaPaint);
@@ -97,17 +106,24 @@ export default {
       this.graphDom.graphData(this.transformedData(val));
     },
     paused(val) {
-      if (val) this.graphDom.pauseSimulation();
-      else this.graphDom.resumeSimulation();
+      if (val) this.graphDom.pauseAnimation();
+      else this.graphDom.resumeAnimation();
     },
     zoomToFit() { // cheap workaraound, change zoomToFit to !zoomToFit to zoom (to fit)
-      this.graphDom.zoomToFit();
+      this.graphDom.zoomToFit(500);
+    },
+    '$route.name': {
+      handler() {
+        this.graphDom.resumeAnimation();
+      },
     },
   },
   mounted() {
     console.log('Graph mounted, data:', this.graph);
     this.graphDom = ForceGraph()(this.$refs.visWrapper);
     this.setCanvas();
+
+    console.log('d3', d3);
   },
 };
 </script>

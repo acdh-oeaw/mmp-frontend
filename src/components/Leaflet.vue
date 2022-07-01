@@ -628,7 +628,7 @@ export default {
                 document.getElementsByClassName(`id_${id} cone`)[0].setAttribute('stroke-width', 3.5);
                 document.getElementsByClassName(`id_${id} cone`)[0].setAttribute('filter', '');
                 if (this.$refs.spatCov !== undefined) {
-                  console.log(this.$refs.spatCov);
+                  console.log(this.$refs.cones);
                   // eslint-disable-next-line
                   Object.values(this.$refs.spatCov.mapObject._layers).forEach((i) => {
                     if (i.feature.id === id) {
