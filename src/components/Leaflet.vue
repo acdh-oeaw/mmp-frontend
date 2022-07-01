@@ -19,7 +19,7 @@
           small
           :to="{
             name: fullscreen ? 'Map' : 'Map Fullscreen',
-            query: usecase ? {'Use Case': usecase} : $route.query
+            query: usecase ? addParamsToQuery({ 'Use Case': usecase }) : $route.query
           }"
         >
           <v-icon v-if="fullscreen">mdi-fullscreen-exit</v-icon>
@@ -30,6 +30,9 @@
         <v-card v-model="kingdoms800" v-if="showLayers.caseStudy">
           <v-card-title class="pt-0 pl-3 pb-0">Kingdoms</v-card-title>
           <v-card-text v-for="kingdom in filterKingdoms(kingdoms800.features)" :key="kingdom.properties.Name" class="pt-0 pl-5 pb-0" :style="`color:${kingdom.properties.color}`"> {{ kingdom.properties.Name }} </v-card-text>
+          <v-card-text>Source: Direction scientifique Thomas Lienhard (Paris 1, LaMOP),<br>
+          Production et classement des données, développements informatiques par Pierre Brochard<br>
+          (CNRS, LaMOP), Mathieu Beaud (Paris 1, LaMOP).</v-card-text>
         </v-card>
       </l-control>
       <l-control position="topright">
@@ -342,7 +345,6 @@ export default {
     clusterOptions: {
       maxClusterRadius: 30,
       spiderfyDistanceMultiplier: 7,
-      disableClusteringAtZoom: 8,
       showCoverageOnHover: false,
       spiderLegPolylineOptions: { weight: 3, color: '#ffffff', opacity: 1 },
       iconCreateFunction: ((cluster) => {
@@ -488,7 +490,7 @@ export default {
               console.log('click', feature, e);
               this.$router.push({
                 name: this.fullscreen ? 'Spatial Detail Fullscreen' : 'Spatial Detail',
-                query: this.usecase ? { 'Use Case': this.usecase } : this.$route.query,
+                query: this.usecase ? this.addParamsToQuery({ 'Use Case': this.usecase }) : this.$route.query,
                 params: { id: feature.id },
               });
             },
@@ -589,7 +591,7 @@ export default {
               this.$refs.map.mapObject.fitBounds(L.latLngBounds(feature.geometry.polygonCoords));
               this.$router.push({
                 name: this.fullscreen ? 'Spatial Detail Fullscreen' : 'Spatial Detail',
-                query: this.usecase ? { 'Use Case': this.usecase } : this.$route.query,
+                query: this.usecase ? this.addParamsToQuery({ 'Use Case': this.usecase }) : this.$route.query,
                 params: { id: feature.id },
               });
             },
