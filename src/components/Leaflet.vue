@@ -347,9 +347,8 @@ export default {
       spiderfyDistanceMultiplier: 7,
       showCoverageOnHover: false,
       spiderLegPolylineOptions: { weight: 3, color: '#ffffff', opacity: 1 },
-      iconCreateFunction: ((cluster) => {
-        const childCount = cluster.getChildCount();
-        console.log(childCount);
+      // eslint-disable-next-line
+      iconCreateFunction: (() => {
         return new L.DivIcon({
           html: '<div>   </div>',
           className: 'marker-cluster',
@@ -360,6 +359,7 @@ export default {
     polygonCenters: {},
     coneOrigins: {},
     cones: {},
+    spatial: {},
     stichworte: {},
     kingdomsMid800: {},
     kingdoms800: {},
@@ -485,9 +485,8 @@ export default {
             { permanent: false, sticky: true },
           )
           .on({
-            click: (e) => {
+            click: () => {
               this.$refs.map.mapObject.fitBounds(layer.getBounds());
-              console.log('click', feature, e);
               this.$router.push({
                 name: this.fullscreen ? 'Spatial Detail Fullscreen' : 'Spatial Detail',
                 query: this.usecase ? this.addParamsToQuery({ 'Use Case': this.usecase }) : this.$route.query,
@@ -507,7 +506,6 @@ export default {
       return (feature, layer) => {
         // eslint-disable-next-line prefer-destructuring
         const type = feature.geometry.type;
-        console.log('kingdom', feature);
         if (type === 'MultiPolygon') {
           layer.setStyle({
             fillOpacity: 0.15,
@@ -563,7 +561,6 @@ export default {
           )
           .on({
             click: () => {
-              console.log('click', feature);
               // features.properties.id doesn't exist yet
               this.$router.push({
                 name: this.fullscreen ? 'Place Detail Fullscreen' : 'Place Detail',
@@ -586,8 +583,7 @@ export default {
             { permanent: false, sticky: true },
           )
           .on({
-            click: (e) => {
-              console.log('click', feature, e);
+            click: () => {
               this.$refs.map.mapObject.fitBounds(L.latLngBounds(feature.geometry.polygonCoords));
               this.$router.push({
                 name: this.fullscreen ? 'Spatial Detail Fullscreen' : 'Spatial Detail',
@@ -630,7 +626,6 @@ export default {
                 document.getElementsByClassName(`id_${id} cone`)[0].setAttribute('stroke-width', 3.5);
                 document.getElementsByClassName(`id_${id} cone`)[0].setAttribute('filter', '');
                 if (this.$refs.spatCov !== undefined) {
-                  console.log(this.$refs.cones);
                   // eslint-disable-next-line
                   Object.values(this.$refs.spatCov.mapObject._layers).forEach((i) => {
                     if (i.feature.id === id) {
@@ -662,7 +657,6 @@ export default {
     },
     pointToLayer() {
       return (feature, latlng) => {
-        console.log(feature, 'API');
         const featCat = feature.properties.kategorie.match(/\d+/g)[0];
         const icon = new L.Icon({ iconUrl: blueMarker, iconSize: [16, 26] });
 
@@ -696,14 +690,12 @@ export default {
         const distanceLat = nE.lat - sW.lat;
         const distanceLng = nE.lng - sW.lng;
         // const seeArea = GeometryUtil.geodesicArea(L.latLngBounds(feature.geometry.polygonCoords));
-        console.log(L.latLngBounds(feature.geometry.polygonCoords), 'dist1');
         let dist;
         let vert = '';
         if (distanceLat > distanceLng) {
           dist = distanceLat;
           vert = 'writing-mode:vertical-rl;';
         } else { dist = distanceLng; }
-        console.log(dist, 'dist');
         if (dist > 12) {
           dist = 12;
         }
@@ -737,17 +729,37 @@ export default {
     mapClick(e) {
       const { lat, lng } = e.latlng;
       const point = turf.point([lng, lat]);
-      this.cones.features.forEach((p) => {
-        if (turf.booleanPointInPolygon(point, p)) {
-          /* do whatever you want with your clicked polygon */
-          console.log(p, 'clicki');
-          this.$router.push({
-            name: this.fullscreen ? 'Spatial Detail Fullscreen' : 'Spatial Detail',
-            query: this.usecase ? { 'Use Case': this.usecase } : this.$route.query,
-            params: { id: p.id },
-          });
-        }
-      });
+      const arr = [];
+      console.log(this.showLayers, 'clickiclicki');
+      if (this.showLayers.cones === true) {
+        this.cones.features.forEach((p) => {
+          if (turf.booleanPointInPolygon(point, p)) {
+            /* do whatever you want with your clicked polygon */
+            arr.push(p.id);
+          }
+        });
+      } else if (this.showLayers.spatial === true) {
+        this.spatial.features.forEach((p) => {
+          if (turf.booleanPointInPolygon(point, p)) {
+            /* do whatever you want with your clicked polygon */
+            arr.push(p.id);
+          }
+        });
+      }
+      if (arr.length > 1) {
+        const popup = L.popup()
+          .setLatLng([lat, lng])
+          .setContent(`Clicked here: ${lat.toFixed(2)}, ${lng.toFixed(2)}`)
+          .openOn(this.$refs.map.mapObject);
+        console.log(popup);
+      }
+      if (arr.length > 0) {
+        this.$router.push({
+          name: this.fullscreen ? 'Spatial Detail Fullscreen' : 'Spatial Detail',
+          query: this.usecase ? this.addParamsToQuery({ 'Use Case': this.usecase }) : this.$route.query,
+          params: { id: JSON.stringify(arr) },
+        });
+      }
     },
     highlightPoly(feature, type, color) {
       document.getElementsByClassName(`id_${feature.id} ${type}`)[0].setAttribute('stroke', color);
@@ -773,9 +785,7 @@ export default {
       // eslint-disable-next-line
       const origins = this.$refs.origins.mapObject._layers;
       Object.values(origins).forEach((origin) => {
-        console.log(origin.feature.id, 'spatCov');
         if (origin.feature.id.includes(feature.id)) {
-          console.log(origin, 'spatCov2');
           origin.openTooltip();
         }
       });
@@ -809,9 +819,7 @@ export default {
       // eslint-disable-next-line
       const origins = this.$refs.origins.mapObject._layers;
       Object.values(origins).forEach((origin) => {
-        console.log(origin.feature.id, 'spatCov');
         if (origin.feature.id.includes(feature.id)) {
-          console.log(origin, 'spatCov2');
           origin.closeTooltip();
         }
       });
@@ -881,7 +889,6 @@ export default {
         svgFilter.setAttribute('height', '500%');
 
         let scale = this.$refs.map.mapObject.getZoom() / 5;
-        console.log('map', this.$refs.map);
 
         // Set deviation attribute of blur
         let blurring = (fuzzyness) * scale;
@@ -946,7 +953,6 @@ export default {
       });
     },
     refreshMarkerCluster() {
-      console.log('label add');
       this.$refs.markerCluster.mapObject.addLayer(this.$refs.labels.mapObject);
       this.$refs.map.mapObject.addLayer(this.$refs.markerCluster.mapObject);
     },
@@ -968,8 +974,8 @@ export default {
   watch: {
     data: {
       handler(to) {
-        console.log('to', to, this.useCaseThree);
         console.log('to', to, this.data);
+        this.spatial = JSON.parse(JSON.stringify(to[0]));
         this.cones = JSON.parse(JSON.stringify(to[1]));
         to[0].features.forEach((feature) => {
           if (feature.properties.color === undefined) {
@@ -1103,7 +1109,6 @@ export default {
           Object.values(coordsOrigins).forEach((ar) => {
             allCoordsOrigins.push(...ar);
           });
-          console.log(this.coneOrigins, allCoordsOrigins, 'coneOrigins');
           to[1].features.forEach((feature) => {
             feature.properties.cone = 'cone';
             feature.properties.texts.forEach((text) => {
