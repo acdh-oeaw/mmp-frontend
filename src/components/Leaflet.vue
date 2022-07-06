@@ -338,14 +338,27 @@ import romanRoadsGeojson from '@/assets/RomanRoads.geojson';
 import majorTownsGeojson from '@/assets/DARMC_Medieval_World_1000.geojson';
 
 import Vue2LeafletMarkercluster from 'vue2-leaflet-markercluster';
+import 'leaflet.markercluster.placementstrategies';
 
 export default {
   name: 'Leaflet',
   data: () => ({
     clusterOptions: {
       maxClusterRadius: 30,
-      spiderfyDistanceMultiplier: 7,
+      spiderfyDistanceMultiplier: 2,
+      spiderfyDistanceSurplus: 50,
+      firstCircleElements: 0.1,
+      elementsMultiplier: 100,
       showCoverageOnHover: false,
+      clockHelpingCircleOptions: {
+        weight: 0.7,
+        opacity: 1,
+        color: 'black',
+        fillOpacity: 0,
+        dashArray: '10 5',
+      },
+      elementsPlacementStrategy: 'clock',
+      helpingCircles: false,
       spiderLegPolylineOptions: { weight: 3, color: '#ffffff', opacity: 1 },
       // eslint-disable-next-line
       iconCreateFunction: (() => {
