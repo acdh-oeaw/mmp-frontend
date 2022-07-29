@@ -29,6 +29,7 @@
       :onNodeDragEnd="nodeDragEnd"
       :nodeCanvasObjectMode="() => 'after'"
       :nodeCanvasObject="nodeObject"
+      :linkDirectionalParticles="2"
       :linkDirectionalArrowLength="3.5"
       :linkDirectionalArrowRelPos="0.8"
       :height="fullscreen ? undefined : '500'"

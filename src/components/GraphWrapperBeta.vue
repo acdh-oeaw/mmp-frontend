@@ -341,6 +341,7 @@ export default {
       const label = this.removeRoot(node.label);
       const fontSize = ((node.val || 1) / 5 + 18) / globalScale;
       ctx.font = `${fontSize}px Sans-Serif`;
+      node.val = 1;
 
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';

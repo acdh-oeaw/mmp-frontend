@@ -1,5 +1,8 @@
 <template>
-  <div ref="visWrapper" class="visualization" />
+  <div>
+    <v-btn @click="logSize()">Log Size</v-btn>
+    <div ref="visWrapper" class="visualization" />
+  </div>
 </template>
 
 <script>
@@ -50,10 +53,10 @@ export default {
   methods: {
     transformedData(obj) {
       const sorted = {
-        nodes: obj.nodes,
+        nodes: [...obj.nodes].sort((a, b) => b.val - a.val),
         links: obj.edges,
       };
-      // console.log('transformedData', obj, sorted.nodes.map((x) => x.val));
+      console.log('transformedData', obj, sorted.nodes.map((x) => x.val));
       return sorted;
     },
     addColorAndType(arr, typeArr) {
@@ -99,6 +102,18 @@ export default {
         .nodeCanvasObject(this.nodeCanvasObject)
         .nodeCanvasObjectMode(this.nodeCanvasObjectMode)
         .nodePointerAreaPaint(this.nodePointerAreaPaint);
+
+      console.log('speed', this.graphDom.linkDirectionalParticleSpeed());
+    },
+    logSize() {
+      console.log('ref', this.$refs.visWrapper.clientWidth);
+    },
+  },
+  computed: {
+    windowSize() {
+      const ref = this.$refs?.visWrapper?.clientWidth;
+      console.log('ref size', ref);
+      return ref;
     },
   },
   watch: {
