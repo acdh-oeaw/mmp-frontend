@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="parentDiv">
     <div ref="visWrapper" class="visualization" />
   </div>
 </template>
@@ -76,7 +76,7 @@ export default {
       this.graphDom
         .nodeLabel('label')
         .height(this.height || undefined)
-        .width(this.width || this.$refs.visWrapper.clientWidth)
+        .width(this.width || undefined)
         .backgroundColor(this.backgroundColor || null)
         .dagMode(this.dagMode)
         .onNodeClick(this.onNodeClick)
@@ -133,13 +133,30 @@ export default {
         this.graphDom.resumeAnimation();
       },
     },
+    '$refs.visWrapper': {
+      handler(val) {
+        console.log('width', val);
+      },
+      deep: true,
+      immediate: true,
+    },
   },
   mounted() {
     console.log('Graph mounted, data:', this.graph);
     this.graphDom = ForceGraph()(this.$refs.visWrapper);
     this.setCanvas();
 
-    console.log('d3', d3);
+    console.log('d3', d3, this.$refs.visWrapper.clientWidth);
+
+    const sizeOberserver = new ResizeObserver((entries) => {
+      const rect = entries[0].contentRect;
+      console.log('resize detected', rect.width, rect.height);
+      this.graphDom
+        .width(rect.width)
+        .height(rect.height);
+    });
+
+    sizeOberserver.observe(this.$refs.visWrapper);
   },
 };
 </script>
