@@ -1,4 +1,22 @@
 export default {
+  data: () => ({
+    keyColors: {
+      graph: {
+        Keyword: '#039BE5', // blue darken-1
+        Ethnonym: '#00897B', // teal darken-1
+        Name: '#FFB300', // amber darken-1
+        Region: '#43A047', // green darken-1
+        Unsicher: 'grey',
+      },
+      chips: {
+        Keyword: 'blue lighten-4',
+        Ethnonym: 'teal lighten-4',
+        Name: 'amber lighten-4',
+        Region: 'green lighten-4',
+        Unsicher: 'grey',
+      },
+    },
+  }),
   methods: {
     debug: (message, name) => {
       console.debug('debug', name, message);

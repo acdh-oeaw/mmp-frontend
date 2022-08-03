@@ -52,15 +52,15 @@
       <template v-slot:[`item.keywords`]="{ item }">
         <div
           class="keyword-chip"
-          v-for="(keyword, i) in item.key_word.map((x) => x.stichwort)"
-          :key="keyword"
+          v-for="(keyword) in item.key_word"
+          :key="keyword.stichwort"
         >
           <v-chip
             small
-            color="blue lighten-4"
-            @click="addKeywordToInput(item.key_word[i])"
+            :color="keyColors.chips[keyword.art]"
+            @click="addKeywordToInput(keyword)"
           >
-            {{ keyword }}
+            {{ keyword.stichwort }}
           </v-chip>
         </div>
       </template>

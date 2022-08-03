@@ -84,7 +84,7 @@
               </v-col>
               <v-col>
                 <v-btn text block small class="view-picker" :disabled="currentView === 'Graph'"
-                  :to="{ name: 'Network Graph', query: addParamsToQuery(query) }">
+                  :to="{ name: 'Network Graph Beta', query: addParamsToQuery(query) }">
                   Network Graph
                 </v-btn>
               </v-col>

@@ -26,7 +26,7 @@
     <v-divider />
     <v-container>
       <div class="keyword-chip" v-for="keyword in keywords.results" :key="keyword.url">
-        <v-chip color="blue lighten-4" small
+        <v-chip :color="keyColors.chips[keyword.art]" small
           @click="$store.commit('addToItemsAndInput', { id: keyword.url.replace(/\D/g, ''), selected_text: keyword.stichwort, group: 'Keyword' })">
           {{ keyword.stichwort }}
         </v-chip>

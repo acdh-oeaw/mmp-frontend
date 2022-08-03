@@ -1,6 +1,5 @@
 <template>
   <div>
-    <v-btn @click="logSize()">Log Size</v-btn>
     <div ref="visWrapper" class="visualization" />
   </div>
 </template>
@@ -27,6 +26,7 @@ export default {
     linkDirectionalArrowRelPos: Number,
     linkDirectionalParticles: Number,
     linkDirectionalParticleSpeed: Number,
+    linkDirectionalParticleWidth: Number,
     linkWidth: String,
     nodeCanvasObject: Function,
     nodeCanvasObjectMode: Function,
@@ -87,6 +87,7 @@ export default {
         .linkWidth(parseFloat(this.linkWidth) || 1)
         .linkDirectionalParticles(this.linkDirectionalParticles || 0)
         .linkDirectionalParticleSpeed(this.linkDirectionalParticleSpeed || 0.01)
+        .linkDirectionalParticleWidth(this.linkDirectionalParticleWidth || 4)
         .linkDirectionalArrowLength(this.linkDirectionalArrowLength || 0)
         .linkDirectionalArrowRelPos(this.linkDirectionalArrowRelPos || 0.5)
         .graphData(this.transformedData(this.graph || {
