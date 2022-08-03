@@ -29,6 +29,7 @@
       :onNodeDragEnd="nodeDragEnd"
       :nodeCanvasObjectMode="() => 'after'"
       :nodeCanvasObject="nodeObject"
+      :linkDirectionalParticles="2"
       :linkDirectionalArrowLength="3.5"
       :linkDirectionalArrowRelPos="0.8"
       :height="fullscreen ? undefined : '500'"
@@ -222,7 +223,7 @@
         >
           <v-list-item-icon style="margin: 0">
             <v-icon
-              :color="colors[type]"
+              :color="keyColors.graph[type]"
               small
             >
               mdi-square
@@ -250,14 +251,6 @@ export default {
     FullscreenButton,
   },
   data: () => ({
-    colors: {
-      Keyword: '#039BE5', // blue darken-1
-      Ethonym: '#00897B', // teal darken-1
-      Ethnonym: '#00897B', // teal darken-1
-      Name: '#FFB300', // amber darken-1
-      Region: '#43A047', // green darken-1
-      Unsicher: 'black',
-    },
     fab: {
       download: false,
       control: false,
@@ -342,7 +335,7 @@ export default {
 
       ctx.arc(node.x, node.y, node.val, 0, 2 * Math.PI, false);
       ctx.stroke();
-      ctx.fillStyle = this.colors[node.keyword_type] || 'grey';
+      ctx.fillStyle = this.keyColors.graph[node.keyword_type] || 'grey';
       const rectProps = [node.x - bckgDimensions[0] / 2, node.y - bckgDimensions[1] / 2, ...bckgDimensions];
       ctx.fillRect(...rectProps);
 
@@ -414,7 +407,7 @@ export default {
       console.log('graph', this.graph);
       ret.edges.forEach((x) => {
         const targetNode = ret.nodes.filter((node) => node.id === x.source.id)[0];
-        x.color = this.colors[targetNode?.keyword_type] || 'grey';
+        x.color = this.keyColors.graph[targetNode?.keyword_type] || 'grey';
 
         if (targetNode?.val) targetNode.val += 1;
         else if (targetNode) targetNode.val = 2;

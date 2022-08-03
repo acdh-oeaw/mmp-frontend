@@ -67,7 +67,7 @@ const routes = [
         ],
       },
       {
-        path: 'graph',
+        path: 'graph-legacy',
         name: 'Network Graph',
         component: Graph,
         children: [
@@ -79,7 +79,7 @@ const routes = [
         ],
       },
       {
-        path: 'graph-beta',
+        path: 'graph',
         name: 'Network Graph Beta',
         component: GraphBeta,
         children: [
@@ -142,7 +142,7 @@ const routes = [
         ],
       },
       {
-        path: 'graph',
+        path: 'graph-legacy',
         name: 'Network Graph Fullscreen',
         component: Graph,
         children: [
@@ -154,7 +154,7 @@ const routes = [
         ],
       },
       {
-        path: 'graph-beta',
+        path: 'graph',
         name: 'Network Graph Beta Fullscreen',
         component: GraphBeta,
         children: [

@@ -1,5 +1,7 @@
 <template>
-  <div ref="visWrapper" class="visualization" />
+  <div id="parentDiv">
+    <div ref="visWrapper" class="visualization" />
+  </div>
 </template>
 
 <script>
@@ -24,6 +26,7 @@ export default {
     linkDirectionalArrowRelPos: Number,
     linkDirectionalParticles: Number,
     linkDirectionalParticleSpeed: Number,
+    linkDirectionalParticleWidth: Number,
     linkWidth: String,
     nodeCanvasObject: Function,
     nodeCanvasObjectMode: Function,
@@ -50,10 +53,10 @@ export default {
   methods: {
     transformedData(obj) {
       const sorted = {
-        nodes: obj.nodes,
+        nodes: [...obj.nodes].sort((a, b) => b.val - a.val),
         links: obj.edges,
       };
-      // console.log('transformedData', obj, sorted.nodes.map((x) => x.val));
+      console.log('transformedData', obj, sorted.nodes.map((x) => x.val));
       return sorted;
     },
     addColorAndType(arr, typeArr) {
@@ -73,7 +76,7 @@ export default {
       this.graphDom
         .nodeLabel('label')
         .height(this.height || undefined)
-        .width(this.width || this.$refs.visWrapper.clientWidth)
+        .width(this.width || undefined)
         .backgroundColor(this.backgroundColor || null)
         .dagMode(this.dagMode)
         .onNodeClick(this.onNodeClick)
@@ -84,6 +87,7 @@ export default {
         .linkWidth(parseFloat(this.linkWidth) || 1)
         .linkDirectionalParticles(this.linkDirectionalParticles || 0)
         .linkDirectionalParticleSpeed(this.linkDirectionalParticleSpeed || 0.01)
+        .linkDirectionalParticleWidth(this.linkDirectionalParticleWidth || 4)
         .linkDirectionalArrowLength(this.linkDirectionalArrowLength || 0)
         .linkDirectionalArrowRelPos(this.linkDirectionalArrowRelPos || 0.5)
         .graphData(this.transformedData(this.graph || {
@@ -99,6 +103,18 @@ export default {
         .nodeCanvasObject(this.nodeCanvasObject)
         .nodeCanvasObjectMode(this.nodeCanvasObjectMode)
         .nodePointerAreaPaint(this.nodePointerAreaPaint);
+
+      console.log('speed', this.graphDom.linkDirectionalParticleSpeed());
+    },
+    logSize() {
+      console.log('ref', this.$refs.visWrapper.clientWidth);
+    },
+  },
+  computed: {
+    windowSize() {
+      const ref = this.$refs?.visWrapper?.clientWidth;
+      console.log('ref size', ref);
+      return ref;
     },
   },
   watch: {
@@ -117,13 +133,30 @@ export default {
         this.graphDom.resumeAnimation();
       },
     },
+    '$refs.visWrapper': {
+      handler(val) {
+        console.log('width', val);
+      },
+      deep: true,
+      immediate: true,
+    },
   },
   mounted() {
     console.log('Graph mounted, data:', this.graph);
     this.graphDom = ForceGraph()(this.$refs.visWrapper);
     this.setCanvas();
 
-    console.log('d3', d3);
+    console.log('d3', d3, this.$refs.visWrapper.clientWidth);
+
+    const sizeOberserver = new ResizeObserver((entries) => {
+      const rect = entries[0].contentRect;
+      console.log('resize detected', rect.width, rect.height);
+      this.graphDom
+        .width(rect.width)
+        .height(rect.height);
+    });
+
+    sizeOberserver.observe(this.$refs.visWrapper);
   },
 };
 </script>

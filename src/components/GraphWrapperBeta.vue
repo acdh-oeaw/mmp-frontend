@@ -23,9 +23,9 @@
     </v-overlay>
     <visualization
       id="visId"
-      :key="renderKey"
       :graph="weightedGraph"
       :onNodeClick="nodeClick"
+      :onNodeDragEnd="nodeDragEnd"
       :nodeCanvasObject="nodeObject"
       :nodeCanvasObjectMode="() => 'replace'"
       :height="fullscreen ? undefined : '500'"
@@ -140,7 +140,6 @@
           <v-btn
             fab
             small
-            disabled
             @click.stop="paused = !paused"
             v-bind="attrs"
             v-on="on"
@@ -180,31 +179,10 @@
             v-bind="attrs"
             v-on="on"
           >
-            <v-icon>mdi-refresh</v-icon>
+            <v-icon>mdi-pin-off</v-icon>
           </v-btn>
         </template>
-        <span>Refresh Graph, unpin all nodes</span>
-      </v-tooltip>
-      <v-tooltip
-        right
-        transition="slide-x-transition"
-      >
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn
-            fab
-            small
-            :to="{
-              name: 'Network Graph',
-              query: $route.query,
-              params: $route.params,
-            }"
-            v-bind="attrs"
-            v-on="on"
-          >
-            <v-icon>mdi-test-tube-empty</v-icon>
-          </v-btn>
-        </template>
-        <span>Normal Graph</span>
+        <span>Unpin all nodes</span>
       </v-tooltip>
     </v-speed-dial>
     <div
@@ -222,7 +200,7 @@
         >
           <v-list-item-icon style="margin: 0">
             <v-icon
-              :color="colors[type]"
+              :color="keyColors.graph[type]"
               small
             >
               mdi-square
@@ -250,14 +228,6 @@ export default {
     FullscreenButton,
   },
   data: () => ({
-    colors: {
-      Keyword: '#039BE5', // blue darken-1
-      Ethonym: '#00897B', // teal darken-1
-      Ethnonym: '#00897B', // teal darken-1
-      Name: '#FFB300', // amber darken-1
-      Region: '#43A047', // green darken-1
-      Unsicher: 'black',
-    },
     fab: {
       download: false,
       control: false,
@@ -341,11 +311,12 @@ export default {
       const label = this.removeRoot(node.label);
       const fontSize = ((node.val || 1) / 5 + 18) / globalScale;
       ctx.font = `${fontSize}px Sans-Serif`;
+      node.val = 1;
 
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
 
-      const typeColor = this.colors[node.keyword_type] || 'grey';
+      const typeColor = this.keyColors.graph[node.keyword_type] || 'grey';
 
       if (this.$route.params.id?.toString(10).split('+').includes(node.id.replace(/\D/g, ''))) {
         ctx.shadowColor = typeColor;
@@ -394,6 +365,11 @@ export default {
         });
       }
     },
+    nodeDragEnd(node, translate) {
+      console.log('nodeDrag', node, translate);
+      node.fx = node.x;
+      node.fy = node.y;
+    },
     refresh() {
       this.graph.nodes.forEach((node) => {
         node.fx = undefined;
@@ -412,7 +388,7 @@ export default {
       console.log('weightedGraph', ret);
       ret.edges.forEach((edge) => {
         const targetNode = ret.nodes.filter((node) => node.id === edge.source.id)[0];
-        edge.color = this.lightenColor3(this.colors[targetNode?.keyword_type], 0.3) || '#D5D5D5';
+        edge.color = this.lightenColor3(this.keyColors.graph[targetNode?.keyword_type], 0.3) || '#D5D5D5';
 
         if (targetNode?.val) targetNode.val += 1;
         else if (targetNode) targetNode.val = 2;
@@ -420,7 +396,7 @@ export default {
 
       ret.nodes.map((node) => {
         const retNode = node;
-        retNode.color = this.colors[node.keyword_type];
+        retNode.color = this.keyColors.graph[node.keyword_type];
         return retNode;
       });
       return ret;
