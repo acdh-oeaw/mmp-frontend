@@ -25,7 +25,7 @@
                 no-filter
                 autofocus
                 auto-select-first
-                no-data-text="No passages found"
+                no-data-text="No data found"
                 ref="autocomplete"
                 placeholder="Search for Authors, Passages, Keywords, Case Studies or Places"
                 :items="filteredSearchedSorted"
