@@ -11,6 +11,7 @@
       :server-items-length="pagination.count"
       disable-sort
       disable-filtering
+      no-data-text="No passages found"
       @update:page="updateOffset"
       @update:items-per-page="updateLimit"
       :footer-props="{
