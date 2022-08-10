@@ -14,7 +14,7 @@
     <v-divider />
     <v-list v-model="data" v-if="!loading">
       <v-list v-for="d in data" :key="d.id">
-        <v-list-item>
+        <v-list-item v-on:mouseover="highlightSpatCov(d.id)" v-on:mouseout="playdownSpatCov(d.id)">
           <v-list-item-content>
             <template v-if="!loading">
               <v-list-item-title class="text-h5">
@@ -83,6 +83,7 @@ export default {
   data: () => ({
     loading: false,
     data: [],
+    strokeColor: '',
   }),
   mixins: [helpers],
   watch: {
@@ -96,11 +97,9 @@ export default {
         console.log('place params', params, typeof params, arr, typeof arr);
         this.data = [];
         arr.forEach((param) => {
-          console.log(param, 'ahoy arr');
           this.loading = true;
           const address = `https://mmp.acdh-dev.oeaw.ac.at/api/spatialcoverage/${param}`;
           const prefetched = this.$store.state.fetchedResults[address];
-          console.log(address, 'addressss');
           if (prefetched) {
             this.data.push(prefetched);
             this.loading = false;
@@ -110,7 +109,6 @@ export default {
               .then((jsonRes) => {
                 this.data.push(jsonRes);
                 this.$store.commit('addToResults', { req: address, res: jsonRes });
-                console.log('spatial res', jsonRes);
               })
               .catch((err) => {
                 console.error(err);
@@ -123,6 +121,26 @@ export default {
       },
       deep: true,
       immediate: true,
+    },
+  },
+  methods: {
+    highlightSpatCov(id) {
+      this.strokeColor = document.getElementsByClassName(`id_${id}`)[0].attributes.stroke.nodeValue;
+      console.log('test, mouseover', document.getElementsByClassName(`id_${id}`)[0].attributes);
+      document.getElementsByClassName(`id_${id}`)[0].setAttribute('stroke', '#f6fa07');
+      document.getElementsByClassName(`id_${id}`)[0].setAttribute('stroke-width', 3.5);
+      document.getElementsByClassName(`id_${id}`)[0].setAttribute('filter', '');
+      // const type = document.getElementsByClassName(`id_${id}`)[0].attributes.class.nodeValue.split(' ')[3];
+    },
+    playdownSpatCov(id) {
+      const filter = document.getElementsByClassName(`id_${id}`)[0].classList[0];
+      document.getElementsByClassName(`id_${id}`)[0].setAttribute('stroke-width', 0);
+      if (filter !== 'blur1') {
+        document.getElementsByClassName(`id_${id}`)[0].setAttribute('filter', `url(#${filter})`);
+      } else {
+        document.getElementsByClassName(`id_${id}`)[0].setAttribute('stroke-width', 1.5);
+        document.getElementsByClassName(`id_${id}`)[0].setAttribute('stroke', this.strokeColor);
+      }
     },
   },
 };
