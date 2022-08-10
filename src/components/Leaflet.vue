@@ -786,7 +786,6 @@ export default {
       const { lat, lng } = e.latlng;
       const point = turf.point([lng, lat]);
       const arr = [];
-      console.log(this.showLayers, 'clickiclicki');
       if (this.showLayers.cones === true) {
         this.cones.features.forEach((p) => {
           if (turf.booleanPointInPolygon(point, p)) {
@@ -1205,6 +1204,7 @@ export default {
     },
   },
   created() {
+    this.$root.$refs.map = this;
     // this is a fix for missing marker icons that was provided on the vue-leaflet documentation, i changed it up for custom icons
     // eslint-disable-next-line no-underscore-dangle
     delete Icon.Default.prototype._getIconUrl;
