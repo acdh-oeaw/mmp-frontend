@@ -125,12 +125,34 @@ export default {
   },
   methods: {
     highlightSpatCov(id) {
+      console.log(this.$root.$refs.map.$refs, 'map1');
       this.strokeColor = document.getElementsByClassName(`id_${id}`)[0].attributes.stroke.nodeValue;
-      console.log('test, mouseover', document.getElementsByClassName(`id_${id}`)[0].attributes);
       document.getElementsByClassName(`id_${id}`)[0].setAttribute('stroke', '#f6fa07');
       document.getElementsByClassName(`id_${id}`)[0].setAttribute('stroke-width', 3.5);
       document.getElementsByClassName(`id_${id}`)[0].setAttribute('filter', '');
+      console.log(this, 'map1');
       // const type = document.getElementsByClassName(`id_${id}`)[0].attributes.class.nodeValue.split(' ')[3];
+      let spatCov;
+      // eslint-disable-next-line
+      if (this.$root.$refs.map.$refs.spatCov.mapObject !== undefined) {
+        // eslint-disable-next-line
+        Object.values(this.$root.$refs.map.$refs.spatCov.mapObject._layers).forEach((i) => {
+          if (i.feature.id === id) {
+            spatCov = i;
+          }
+        });
+      // eslint-disable-next-line
+      } else if (this.$root.$refs.map.$refs.cones.mapObject !== undefined) {
+        // eslint-disable-next-line
+        Object.values(this.$root.$refs.map.$refs.cones.mapObject._layers).forEach((i) => {
+          if (i.feature.id === id) {
+            spatCov = i;
+          }
+        });
+      }
+      if (spatCov !== undefined) {
+        spatCov.bringToFront();
+      }
     },
     playdownSpatCov(id) {
       const filter = document.getElementsByClassName(`id_${id}`)[0].classList[0];
@@ -140,6 +162,27 @@ export default {
       } else {
         document.getElementsByClassName(`id_${id}`)[0].setAttribute('stroke-width', 1.5);
         document.getElementsByClassName(`id_${id}`)[0].setAttribute('stroke', this.strokeColor);
+      }
+      let spatCov;
+      // eslint-disable-next-line
+      if (this.$root.$refs.map.$refs.spatCov.mapObject !== undefined) {
+        // eslint-disable-next-line
+        Object.values(this.$root.$refs.map.$refs.spatCov.mapObject._layers).forEach((i) => {
+          if (i.feature.id === id) {
+            spatCov = i;
+          }
+        });
+      // eslint-disable-next-line
+      } else if (this.$root.$refs.map.$refs.cones.mapObject !== undefined) {
+        // eslint-disable-next-line
+        Object.values(this.$root.$refs.map.$refs.cones.mapObject._layers).forEach((i) => {
+          if (i.feature.id === id) {
+            spatCov = i;
+          }
+        });
+      }
+      if (spatCov !== undefined) {
+        spatCov.bringToBack();
       }
     },
   },
