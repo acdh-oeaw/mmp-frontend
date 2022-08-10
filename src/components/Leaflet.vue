@@ -2,7 +2,8 @@
   <div>
     <l-map
       ref="map" :style="`height: ${fullscreen && $route.name !== 'Keyword Detail Fullscreen' ? '100vh' : height + 'px'}; width: 100%; z-index: 4`"
-      :bounds="bounds" @ready="onReady" @click="mapClick"
+      :bounds="bounds" @ready="onReady" @click="mapClick" @zoomend="setZoomLevel"
+      :options="{zoomControl: false}"
     >
       <l-tile-layer
         v-for="tileProvider in tileProviders"
@@ -27,12 +28,9 @@
         </v-btn>
       </l-control>
       <l-control position="bottomleft">
-        <v-card v-model="kingdoms800" v-if="showLayers.caseStudy">
-          <v-card-title class="pt-0 pl-3 pb-0">Kingdoms</v-card-title>
-          <v-card-text v-for="kingdom in filterKingdoms(kingdoms800.features)" :key="kingdom.properties.Name" class="pt-0 pl-5 pb-0" :style="`color:${kingdom.properties.color}`"> {{ kingdom.properties.Name }} </v-card-text>
-          <v-card-text>Source: Direction scientifique Thomas Lienhard (Paris 1, LaMOP),<br>
-          Production et classement des données, développements informatiques par Pierre Brochard<br>
-          (CNRS, LaMOP), Mathieu Beaud (Paris 1, LaMOP).</v-card-text>
+        <v-card v-model="kingdomsLayer" v-if="showLayers.caseStudy && $route.query['Use Case']">
+          <v-card-title class="pt-0 pl-3 pb-0">Legend: Kingdoms</v-card-title>
+          <v-card-text v-for="kingdom in filterKingdoms(kingdomsLayer.features)" :key="kingdom.properties.Name" class="pt-0 pl-5 pb-0" :style="`color:${kingdom.properties.color}`"> {{ kingdom.properties.Name }} </v-card-text>
         </v-card>
       </l-control>
       <l-control position="topright">
@@ -61,7 +59,6 @@
                 color="red darken-1"
                 dense
                 :disabled="!(data[0] && data[0].count) || (useCaseThree === '3')"
-                v-on:change="uncheckSpatial()"
               >
                 <template v-slot:label>
                   Spatial&nbsp;Coverage&nbsp;
@@ -174,6 +171,7 @@
                   hide-details
                   v-model="showLayers.caseStudy"
                   dense
+                  :disabled="!$route.query['Use Case']"
                 >
                   <template v-slot:label>
                     Kingdoms
@@ -192,6 +190,7 @@
                   hide-details
                   v-model="showLayers.majorTowns"
                   dense
+                  :disabled="!$route.query['Use Case']"
                 >
                 >
                   <template v-slot:label>
@@ -227,7 +226,7 @@
       <v-marker-cluster ref="markerCluster"
       :options="clusterOptions" @animationend="resetSpatCov(cluster)">
         <l-geo-json
-          v-if="data[0] && showLayers.spatial && showLayers.labels"
+          v-if="data[0] && showLayers.labels"
           :geojson="polygonCenters"
           :options="optionsLabels"
           ref="labels"
@@ -254,8 +253,8 @@
         :options="optionsMarkers"
       />
       <l-geo-json
-        v-if="showLayers.caseStudy"
-        :geojson="kingdoms800"
+        v-if="showLayers.caseStudy && $route.query['Use Case']"
+        :geojson="kingdomsLayer"
         :options="optionsCaseStudies"
       />
       <l-geo-json
@@ -286,6 +285,25 @@
           </l-tooltip>
         </l-marker>
       </template>
+      <l-control position="topleft">
+        <v-slider
+          v-model="zoom"
+          min="4"
+          max="10"
+          vertical
+          track-color="white"
+          color="grey"
+          ticks="always"
+          tick-size="4"
+          style="position:absolute;z-index:1001;"
+          append-icon="mdi-magnify-plus-outline"
+          prepend-icon="mdi-magnify-minus-outline"
+          @click:append="zoomIn"
+          @click:prepend="zoomOut"
+          thumb-label="always"
+          @change="changeZoomLevel"
+          />
+      </l-control>
     </l-map>
     <v-overlay
       absolute
@@ -304,6 +322,15 @@
       </h1>
     </v-overlay>
     <router-view />
+    <v-expansion-panels>
+      <v-expansion-panel>
+        <v-expansion-panel-header>
+          Layer sources
+        </v-expansion-panel-header>
+        <v-expansion-panel-content class="ma-2" v-html="sources">
+        </v-expansion-panel-content>
+      </v-expansion-panel>
+    </v-expansion-panels>
   </div>
 </template>
 
@@ -335,7 +362,8 @@ import greenMarker2x from '@/assets/recolored_marker_icon_2x.png';
 import kingdomsMid800Geojson from '@/assets/kingdoms_mid_800.geojson';
 import kingdoms800Geojson from '@/assets/kingdoms_800.geojson';
 import romanRoadsGeojson from '@/assets/RomanRoads.geojson';
-import majorTownsGeojson from '@/assets/DARMC_Medieval_World_1000.geojson';
+import majorTowns800 from '@/assets/DARMC_Medieval_World_814.geojson';
+import majorTowns1000 from '@/assets/DARMC_Medieval_World_1000.geojson';
 
 import Vue2LeafletMarkercluster from 'vue2-leaflet-markercluster';
 import 'leaflet.markercluster.placementstrategies';
@@ -343,6 +371,7 @@ import 'leaflet.markercluster.placementstrategies';
 export default {
   name: 'Leaflet',
   data: () => ({
+    zoom: 10,
     clusterOptions: {
       maxClusterRadius: 30,
       spiderfyDistanceMultiplier: 2,
@@ -374,8 +403,8 @@ export default {
     cones: {},
     spatial: {},
     stichworte: {},
-    kingdomsMid800: {},
-    kingdoms800: {},
+    kingdomsLayer: {},
+    sources: '',
     romanRoads: {},
     majorTowns: {},
     useCaseThree: window.location.href.split('=')[1],
@@ -621,7 +650,7 @@ export default {
       return (feature, layer) => {
         layer
           .bindTooltip(
-            `<div>Origin: ${feature.properties.Name}</div>`,
+            `<div>Town: ${feature.properties.Name}</div>`,
           );
       };
     },
@@ -629,7 +658,7 @@ export default {
       return (feature, layer) => {
         layer
           .bindTooltip(
-            `<div>Town: ${feature.properties.Name}</div>`,
+            `<div>Origin: ${feature.properties.Name}</div>`,
           )
           .on({
             mouseover: () => {
@@ -638,9 +667,9 @@ export default {
                 document.getElementsByClassName(`id_${id} cone`)[0].setAttribute('stroke', '#e8fc05');
                 document.getElementsByClassName(`id_${id} cone`)[0].setAttribute('stroke-width', 3.5);
                 document.getElementsByClassName(`id_${id} cone`)[0].setAttribute('filter', '');
-                if (this.$refs.spatCov !== undefined) {
+                if (this.$refs.cones !== undefined) {
                   // eslint-disable-next-line
-                  Object.values(this.$refs.spatCov.mapObject._layers).forEach((i) => {
+                  Object.values(this.$refs.cones.mapObject._layers).forEach((i) => {
                     if (i.feature.id === id) {
                       i.bringToFront();
                     } else {
@@ -736,8 +765,22 @@ export default {
     },
   },
   methods: {
+    zoomOut() {
+      this.zoom = (this.zoom - 1) || 4;
+      this.$refs.map.mapObject.setZoom(this.zoom);
+    },
+    zoomIn() {
+      this.zoom = (this.zoom + 1) || 10;
+      this.$refs.map.mapObject.setZoom(this.zoom);
+    },
+    changeZoomLevel() {
+      this.$refs.map.mapObject.setZoom(this.zoom);
+    },
     onReady() {
       this.$refs.markerCluster.mapObject.refreshClusters();
+    },
+    setZoomLevel() {
+      this.zoom = this.$refs.map.mapObject.getZoom();
     },
     mapClick(e) {
       const { lat, lng } = e.latlng;
@@ -969,9 +1012,6 @@ export default {
       this.$refs.markerCluster.mapObject.addLayer(this.$refs.labels.mapObject);
       this.$refs.map.mapObject.addLayer(this.$refs.markerCluster.mapObject);
     },
-    uncheckSpatial() {
-      if (this.showLayers.spatial === false) { this.showLayers.labels = false; }
-    },
     townsToFront() {
       if (typeof this.$refs.towns !== 'undefined' && typeof this.$refs.towns.mapObject !== 'undefined') {
         this.$refs.towns.mapObject.bringToFront();
@@ -1036,10 +1076,7 @@ export default {
           const relatedCoords = this.relatedPlaces.map((x) => x.coords.coordinates);
           this.bounds = this.getBounds(allCoords.concat(relatedCoords));
 
-          this.kingdomsMid800 = JSON.parse(JSON.stringify(kingdomsMid800Geojson));
-          this.kingdoms800 = JSON.parse(JSON.stringify(kingdoms800Geojson));
           this.romanRoads = JSON.parse(JSON.stringify(romanRoadsGeojson));
-          this.majorTowns = JSON.parse(JSON.stringify(majorTownsGeojson));
 
           // eslint-disable-next-line prefer-destructuring
           this.polygonCenters = JSON.parse(JSON.stringify(to[0]));
@@ -1135,6 +1172,33 @@ export default {
             });
           });
         }
+        const study = this.$route.query['Use Case'];
+        console.log(this.$store.state, this.$route.query['Use Case'], 'study');
+        if (study) {
+          const url = `https://mmp.acdh-dev.oeaw.ac.at/api/usecase/${study}?format=json`;
+          fetch(url)
+            .then((res) => res.json())
+            .then((jsonRes) => {
+              const layer = jsonRes.custom_layer;
+              if (layer === '800') {
+                this.kingdomsLayer = JSON.parse(JSON.stringify(kingdoms800Geojson));
+                this.majorTowns = JSON.parse(JSON.stringify(majorTowns800));
+                this.sources = 'Kingdoms:<br> Scientific direction Thomas Lienhard (Paris 1, LaMOP),<br> Production and classification of data, computer developments by Pierre Brochard (CNRS, LaMOP), Mathieu Beaud (Paris 1, LaMOP).<br><br> Roman Roads & Major Towns:<br> Michael McCormick et al. (eds.), The Digital Atlas of Roman and Medieval Civilizations, Cambridge (Massachusetts), 2007.';
+              } else if (layer === '850') {
+                this.kingdomsLayer = JSON.parse(JSON.stringify(kingdomsMid800Geojson));
+                this.majorTowns = JSON.parse(JSON.stringify(majorTowns1000));
+                this.sources = 'Kingdoms:<br> Scientific direction Thomas Lienhard (Paris 1, LaMOP),<br> Production and classification of data, computer developments by Pierre Brochard (CNRS, LaMOP), Mathieu Beaud (Paris 1, LaMOP).<br><br> Roman Roads & Major Towns:<br> Michael McCormick et al. (eds.), The Digital Atlas of Roman and Medieval Civilizations, Cambridge (Massachusetts), 2007.';
+              }
+            })
+            .catch((err) => {
+              console.error(err);
+            })
+            .finally(() => {
+              this.loading = false;
+            });
+        } else {
+          this.sources = 'Roman Roads:<br> Michael McCormick et al. (eds.), The Digital Atlas of Roman and Medieval Civilizations, Cambridge (Massachusetts), 2007.';
+        }
       },
       deep: true,
       immediate: true,
@@ -1165,5 +1229,11 @@ export default {
     text-align: center;
     border-style: solid;
     padding: 10px;
+  }
+  .leaflet-left {
+    left: 2%;
+  }
+  .v-icon.v-icon.v-icon--link{
+    color:white;
   }
 </style>
