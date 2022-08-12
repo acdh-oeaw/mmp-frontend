@@ -372,8 +372,11 @@ export default {
   name: 'Leaflet',
   data: () => ({
     zoom: 10,
+    spatCovToAdd: {},
+    strokeColor: '',
     clusterOptions: {
-      maxClusterRadius: 30,
+      maxClusterRadius: 10,
+      disableClusteringAtZoom: 8,
       spiderfyDistanceMultiplier: 2,
       spiderfyDistanceSurplus: 50,
       firstCircleElements: 0.1,
@@ -636,12 +639,12 @@ export default {
           })
           .on({
             mouseover: () => {
-              this.highlightPoly(feature, 'cone', '#f6fa07');
+              this.highlightPoly(feature.id, 'cone', '#f6fa07');
             },
           })
           .on({
             mouseout: () => {
-              this.playdownPoly(feature, 'cone');
+              this.playdownPoly(feature.id, 'cone');
             },
           });
       };
@@ -745,7 +748,7 @@ export default {
           dist = 4;
         }
         const labelIcon = new L.DivIcon({
-          html: `<div class="labelText" style="position:relative;transform:translate(-50%,-50%);${vert}font-size:${dist * 5}px;text-shadow: 2px 0 0 #fff, -2px 0 0 #fff, 0 2px 0 #fff, 0 -2px 0 #fff, 1px 1px #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff; color: ${feature.properties.color};">${feature.properties.key_word.stichwort}</div>`,
+          html: `<div class="labelText ${feature.id}" style="position:relative;transform:translate(-50%,-50%);${vert}font-size:${dist * 5}px;text-shadow: 2px 0 0 #fff, -2px 0 0 #fff, 0 2px 0 #fff, 0 -2px 0 #fff, 1px 1px #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff; color: ${feature.properties.color};">${feature.properties.key_word.stichwort}</div>`,
           iconSize: 'auto',
           className: 'label',
         });
@@ -816,68 +819,94 @@ export default {
         });
       }
     },
-    highlightPoly(feature, type, color) {
-      document.getElementsByClassName(`id_${feature.id} ${type}`)[0].setAttribute('stroke', color);
-      document.getElementsByClassName(`id_${feature.id} ${type}`)[0].setAttribute('stroke-width', 3.5);
-      document.getElementsByClassName(`id_${feature.id} ${type}`)[0].setAttribute('filter', '');
-      let spatCov;
-      let layers;
-      if (type === 'spatCov') {
-        layers = this.$refs.spatCov;
-      } else if (type === 'cone') { layers = this.$refs.cones; }
-      if (layers !== undefined) {
-        // eslint-disable-next-line
-         Object.values(layers.mapObject._layers).forEach((i) => {
-          const classNames = i.options.className.split(' ');
-          if ((i.feature.id === feature.id) && (classNames[classNames.length - 1] === type)) {
-            spatCov = i;
-          }
-        });
-      }
-      if (spatCov !== undefined) {
-        spatCov.bringToFront();
-      }
-      // eslint-disable-next-line
-      const origins = this.$refs.origins.mapObject._layers;
-      Object.values(origins).forEach((origin) => {
-        if (origin.feature.id.includes(feature.id)) {
-          origin.openTooltip();
+    highlightPoly(id, type, color) {
+      if (document.getElementsByClassName(`id_${id} ${type}`)[0] !== undefined) {
+        this.strokeColor = document.getElementsByClassName(`id_${id}`)[0].attributes.stroke.nodeValue;
+        document.getElementsByClassName(`id_${id} ${type}`)[0].setAttribute('stroke', color);
+        document.getElementsByClassName(`id_${id} ${type}`)[0].setAttribute('stroke-width', 3.5);
+        document.getElementsByClassName(`id_${id} ${type}`)[0].setAttribute('filter', '');
+        let spatCov;
+        let layers;
+        if (type === 'spatCov') {
+          layers = this.$refs.spatCov;
+        } else if (type === 'cone') { layers = this.$refs.cones; }
+        if (layers !== undefined) {
+          // eslint-disable-next-line
+          Object.values(layers.mapObject._layers).forEach((i) => {
+            const classNames = i.options.className.split(' ');
+            if ((i.feature.id === id) && (classNames[classNames.length - 1] === type)) {
+              spatCov = i;
+            }
+          });
         }
-      });
+        if (spatCov !== undefined) {
+          spatCov.bringToFront();
+        }
+        if (this.$refs.origins !== undefined) {
+          // eslint-disable-next-line
+          const origins = this.$refs.origins.mapObject._layers;
+          Object.values(origins).forEach((origin) => {
+            if (origin.feature.id.includes(id)) {
+              origin.openTooltip();
+            }
+          });
+        }
+      }
     },
-    playdownPoly(feature, type) {
-      const filter = document.getElementsByClassName(`id_${feature.id} ${type}`)[0].classList[0];
-      document.getElementsByClassName(`id_${feature.id} ${type}`)[0].setAttribute('stroke-width', 0);
-      if (filter !== 'blur1') {
-        document.getElementsByClassName(`id_${feature.id} ${type}`)[0].setAttribute('filter', `url(#${filter})`);
-      } else {
-        document.getElementsByClassName(`id_${feature.id} ${type}`)[0].setAttribute('stroke-width', 1.5);
-        document.getElementsByClassName(`id_${feature.id} ${type}`)[0].setAttribute('stroke', feature.properties.color);
+    playdownPoly(id, type) {
+      if (document.getElementsByClassName(`id_${id} ${type}`)[0] !== undefined) {
+        const filter = document.getElementsByClassName(`id_${id} ${type}`)[0].classList[0];
+        document.getElementsByClassName(`id_${id} ${type}`)[0].setAttribute('stroke-width', 0);
+        if (filter !== 'blur1') {
+          document.getElementsByClassName(`id_${id} ${type}`)[0].setAttribute('filter', `url(#${filter})`);
+        } else {
+          document.getElementsByClassName(`id_${id} ${type}`)[0].setAttribute('stroke-width', 1.5);
+          document.getElementsByClassName(`id_${id} ${type}`)[0].setAttribute('stroke', this.strokeColor);
+        }
+        let spatCov;
+        let layers;
+        if (type === 'spatCov') {
+          layers = this.$refs.spatCov;
+        } else if (type === 'cone') { layers = this.$refs.cones; }
+        if (layers !== undefined) {
+          // eslint-disable-next-line
+          Object.values(layers.mapObject._layers).forEach((i) => {
+            const classNames = i.options.className.split(' ');
+            if ((i.feature.id === id) && (classNames[classNames.length - 1] === type)) {
+              spatCov = i;
+            }
+          });
+        }
+        if (spatCov !== undefined) {
+          spatCov.bringToBack();
+        }
+        if (this.$refs.origins !== undefined) {
+          // eslint-disable-next-line
+          const origins = this.$refs.origins.mapObject._layers;
+          Object.values(origins).forEach((origin) => {
+            if (origin.feature.id.includes(id)) {
+              origin.closeTooltip();
+            }
+          });
+        }
       }
-      let spatCov;
-      let layers;
-      if (type === 'spatCov') {
-        layers = this.$refs.spatCov;
-      } else if (type === 'cone') { layers = this.$refs.cones; }
-      if (layers !== undefined) {
-        // eslint-disable-next-line
-        Object.values(layers.mapObject._layers).forEach((i) => {
-          const classNames = i.options.className.split(' ');
-          if ((i.feature.id === feature.id) && (classNames[classNames.length - 1] === type)) {
-            spatCov = i;
-          }
-        });
-      }
-      if (spatCov !== undefined) {
-        spatCov.bringToBack();
-      }
-      // eslint-disable-next-line
-      const origins = this.$refs.origins.mapObject._layers;
-      Object.values(origins).forEach((origin) => {
-        if (origin.feature.id.includes(feature.id)) {
-          origin.closeTooltip();
+    },
+    enableSpatCov(id) {
+      const spatCovLayer = JSON.parse(JSON.stringify(this.data[0]));
+      spatCovLayer.features = [];
+      this.data[0].features.forEach((f) => {
+        if (id === f.id) {
+          spatCovLayer.features.push(f);
         }
       });
+      const geojsonStyle = {
+        color: '#ff7800',
+      };
+      this.spatCovToAdd = L.geoJSON(spatCovLayer, { style: geojsonStyle });
+      this.spatCovToAdd.addTo(this.$refs.map.mapObject);
+    },
+    disableSpatCov() {
+      this.spatCovToAdd.remove();
     },
     filterKingdoms(arr) {
       const filteredKingdoms = [];
@@ -1032,11 +1061,11 @@ export default {
         to[0].features.forEach((feature) => {
           if (feature.properties.color === undefined) {
             if (!Object.keys(this.stichworte).includes(feature.properties.key_word.stichwort)) {
-              const max = 50;
-              const min = 200;
-              const orange = Math.floor(Math.random() * (max - min + 1)) + min;
+              const r = Math.floor(Math.random() * (255 - 200 + 1)) + 200;
+              const g = Math.floor(Math.random() * (200 - 50 + 1)) + 50;
+              const b = Math.floor(Math.random() * (255 - 0 + 1)) + 0;
               // eslint-disable-next-line prefer-template
-              this.stichworte[feature.properties.key_word.stichwort] = `rgb(255,${orange},0)`;
+              this.stichworte[feature.properties.key_word.stichwort] = `rgb(${r},${g},${b})`;
               /* random colors:
               this.stichworte[feature.properties.key_word.stichwort] = '#' + (0x1000000 + Math.random() * 0xffffff).toString(16).substr(1, 6);
               */
