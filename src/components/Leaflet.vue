@@ -372,8 +372,11 @@ export default {
   name: 'Leaflet',
   data: () => ({
     zoom: 10,
+    spatCovToAdd: {},
+    strokeColor: '',
     clusterOptions: {
-      maxClusterRadius: 30,
+      maxClusterRadius: 15,
+      disableClusteringAtZoom: 8,
       spiderfyDistanceMultiplier: 2,
       spiderfyDistanceSurplus: 50,
       firstCircleElements: 0.1,
@@ -636,12 +639,12 @@ export default {
           })
           .on({
             mouseover: () => {
-              this.highlightPoly(feature, 'cone', '#f6fa07');
+              this.highlightPoly(feature.id, 'cone', '#f6fa07');
             },
           })
           .on({
             mouseout: () => {
-              this.playdownPoly(feature, 'cone');
+              this.playdownPoly(feature.id, 'cone');
             },
           });
       };
@@ -683,6 +686,7 @@ export default {
           .on({
             mouseout: () => {
               feature.id.forEach((id) => {
+                console.log('map3', document.getElementsByClassName(`id_${id}`));
                 const filter = document.getElementsByClassName(`id_${id}`)[0].classList[0];
                 document.getElementsByClassName(`id_${id} cone`)[0].setAttribute('stroke-width', 0);
                 document.getElementsByClassName(`id_${id} cone`)[0].setAttribute('filter', `url(#${filter})`);
@@ -745,7 +749,7 @@ export default {
           dist = 4;
         }
         const labelIcon = new L.DivIcon({
-          html: `<div class="labelText" style="position:relative;transform:translate(-50%,-50%);${vert}font-size:${dist * 5}px;text-shadow: 2px 0 0 #fff, -2px 0 0 #fff, 0 2px 0 #fff, 0 -2px 0 #fff, 1px 1px #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff; color: ${feature.properties.color};">${feature.properties.key_word.stichwort}</div>`,
+          html: `<div class="labelText ${feature.id}" style="position:relative;transform:translate(-50%,-50%);${vert}font-size:${dist * 5}px;text-shadow: 2px 0 0 #fff, -2px 0 0 #fff, 0 2px 0 #fff, 0 -2px 0 #fff, 1px 1px #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff; color: ${feature.properties.color};">${feature.properties.key_word.stichwort}</div>`,
           iconSize: 'auto',
           className: 'label',
         });
@@ -816,10 +820,11 @@ export default {
         });
       }
     },
-    highlightPoly(feature, type, color) {
-      document.getElementsByClassName(`id_${feature.id} ${type}`)[0].setAttribute('stroke', color);
-      document.getElementsByClassName(`id_${feature.id} ${type}`)[0].setAttribute('stroke-width', 3.5);
-      document.getElementsByClassName(`id_${feature.id} ${type}`)[0].setAttribute('filter', '');
+    highlightPoly(id, type, color) {
+      this.strokeColor = document.getElementsByClassName(`id_${id}`)[0].attributes.stroke.nodeValue;
+      document.getElementsByClassName(`id_${id} ${type}`)[0].setAttribute('stroke', color);
+      document.getElementsByClassName(`id_${id} ${type}`)[0].setAttribute('stroke-width', 3.5);
+      document.getElementsByClassName(`id_${id} ${type}`)[0].setAttribute('filter', '');
       let spatCov;
       let layers;
       if (type === 'spatCov') {
@@ -827,9 +832,9 @@ export default {
       } else if (type === 'cone') { layers = this.$refs.cones; }
       if (layers !== undefined) {
         // eslint-disable-next-line
-         Object.values(layers.mapObject._layers).forEach((i) => {
+        Object.values(layers.mapObject._layers).forEach((i) => {
           const classNames = i.options.className.split(' ');
-          if ((i.feature.id === feature.id) && (classNames[classNames.length - 1] === type)) {
+          if ((i.feature.id === id) && (classNames[classNames.length - 1] === type)) {
             spatCov = i;
           }
         });
@@ -840,19 +845,20 @@ export default {
       // eslint-disable-next-line
       const origins = this.$refs.origins.mapObject._layers;
       Object.values(origins).forEach((origin) => {
-        if (origin.feature.id.includes(feature.id)) {
+        if (origin.feature.id.includes(id)) {
           origin.openTooltip();
         }
       });
     },
-    playdownPoly(feature, type) {
-      const filter = document.getElementsByClassName(`id_${feature.id} ${type}`)[0].classList[0];
-      document.getElementsByClassName(`id_${feature.id} ${type}`)[0].setAttribute('stroke-width', 0);
+    playdownPoly(id, type) {
+      console.log('map3', document.getElementsByClassName(`id_${id} ${type}`));
+      const filter = document.getElementsByClassName(`id_${id} ${type}`)[0].classList[0];
+      document.getElementsByClassName(`id_${id} ${type}`)[0].setAttribute('stroke-width', 0);
       if (filter !== 'blur1') {
-        document.getElementsByClassName(`id_${feature.id} ${type}`)[0].setAttribute('filter', `url(#${filter})`);
+        document.getElementsByClassName(`id_${id} ${type}`)[0].setAttribute('filter', `url(#${filter})`);
       } else {
-        document.getElementsByClassName(`id_${feature.id} ${type}`)[0].setAttribute('stroke-width', 1.5);
-        document.getElementsByClassName(`id_${feature.id} ${type}`)[0].setAttribute('stroke', feature.properties.color);
+        document.getElementsByClassName(`id_${id} ${type}`)[0].setAttribute('stroke-width', 1.5);
+        document.getElementsByClassName(`id_${id} ${type}`)[0].setAttribute('stroke', this.strokeColor);
       }
       let spatCov;
       let layers;
@@ -863,7 +869,7 @@ export default {
         // eslint-disable-next-line
         Object.values(layers.mapObject._layers).forEach((i) => {
           const classNames = i.options.className.split(' ');
-          if ((i.feature.id === feature.id) && (classNames[classNames.length - 1] === type)) {
+          if ((i.feature.id === id) && (classNames[classNames.length - 1] === type)) {
             spatCov = i;
           }
         });
@@ -874,10 +880,27 @@ export default {
       // eslint-disable-next-line
       const origins = this.$refs.origins.mapObject._layers;
       Object.values(origins).forEach((origin) => {
-        if (origin.feature.id.includes(feature.id)) {
+        if (origin.feature.id.includes(id)) {
           origin.closeTooltip();
         }
       });
+    },
+    enableSpatCov(id) {
+      const spatCovLayer = JSON.parse(JSON.stringify(this.data[0]));
+      spatCovLayer.features = [];
+      this.data[0].features.forEach((f) => {
+        if (id === f.id) {
+          spatCovLayer.features.push(f);
+        }
+      });
+      const geojsonStyle = {
+        color: '#ff7800',
+      };
+      this.spatCovToAdd = L.geoJSON(spatCovLayer, { style: geojsonStyle });
+      this.spatCovToAdd.addTo(this.$refs.map.mapObject);
+    },
+    disableSpatCov() {
+      this.spatCovToAdd.remove();
     },
     filterKingdoms(arr) {
       const filteredKingdoms = [];

@@ -125,64 +125,34 @@ export default {
   },
   methods: {
     highlightSpatCov(id) {
-      console.log(this.$root.$refs.map.$refs, 'map1');
-      this.strokeColor = document.getElementsByClassName(`id_${id}`)[0].attributes.stroke.nodeValue;
-      document.getElementsByClassName(`id_${id}`)[0].setAttribute('stroke', '#f6fa07');
-      document.getElementsByClassName(`id_${id}`)[0].setAttribute('stroke-width', 3.5);
-      document.getElementsByClassName(`id_${id}`)[0].setAttribute('filter', '');
-      console.log(this, 'map1');
-      // const type = document.getElementsByClassName(`id_${id}`)[0].attributes.class.nodeValue.split(' ')[3];
-      let spatCov;
-      // eslint-disable-next-line
-      if (this.$root.$refs.map.$refs.spatCov.mapObject !== undefined) {
-        // eslint-disable-next-line
-        Object.values(this.$root.$refs.map.$refs.spatCov.mapObject._layers).forEach((i) => {
-          if (i.feature.id === id) {
-            spatCov = i;
-          }
-        });
-      // eslint-disable-next-line
-      } else if (this.$root.$refs.map.$refs.cones.mapObject !== undefined) {
-        // eslint-disable-next-line
-        Object.values(this.$root.$refs.map.$refs.cones.mapObject._layers).forEach((i) => {
-          if (i.feature.id === id) {
-            spatCov = i;
-          }
-        });
+      if (this.$root.$refs.map.$refs.spatCov !== undefined) {
+        this.$root.$refs.map.highlightPoly(id, 'spatCov', '#ffa500');
+      } else {
+        this.$root.$refs.map.enableSpatCov(id);
       }
-      if (spatCov !== undefined) {
-        spatCov.bringToFront();
+      if (document.getElementsByClassName(`labelText ${id}`)[0]) {
+        const colour = 'rgb(255,255,0)';
+        // eslint-disable-next-line
+        for (let label of document.getElementsByClassName('labelText')) {
+          label.style.opacity = 0.3;
+        }
+        document.getElementsByClassName(`labelText ${id}`)[0].style.textShadow = `0px 0px, ${colour} -2px 0px 0px, ${colour} 0px 2px 0px, ${colour} 0px -2px 0px, ${colour} 1px 1px, ${colour} -1px -1px 0px, ${colour} 1px -1px 0px, ${colour} -1px 1px 0px`;
+        document.getElementsByClassName(`labelText ${id}`)[0].style.opacity = 1;
       }
     },
     playdownSpatCov(id) {
-      const filter = document.getElementsByClassName(`id_${id}`)[0].classList[0];
-      document.getElementsByClassName(`id_${id}`)[0].setAttribute('stroke-width', 0);
-      if (filter !== 'blur1') {
-        document.getElementsByClassName(`id_${id}`)[0].setAttribute('filter', `url(#${filter})`);
+      if (this.$root.$refs.map.$refs.spatCov !== undefined) {
+        this.$root.$refs.map.playdownPoly(id, 'spatCov');
       } else {
-        document.getElementsByClassName(`id_${id}`)[0].setAttribute('stroke-width', 1.5);
-        document.getElementsByClassName(`id_${id}`)[0].setAttribute('stroke', this.strokeColor);
+        this.$root.$refs.map.disableSpatCov();
       }
-      let spatCov;
-      // eslint-disable-next-line
-      if (this.$root.$refs.map.$refs.spatCov.mapObject !== undefined) {
+      if (document.getElementsByClassName(`labelText ${id}`)[0]) {
+        const colour = 'rgb(255,255,255)';
+        document.getElementsByClassName(`labelText ${id}`)[0].style.textShadow = `0px 0px, ${colour} -2px 0px 0px, ${colour} 0px 2px 0px, ${colour} 0px -2px 0px, ${colour} 1px 1px, ${colour} -1px -1px 0px, ${colour} 1px -1px 0px, ${colour} -1px 1px 0px`;
         // eslint-disable-next-line
-        Object.values(this.$root.$refs.map.$refs.spatCov.mapObject._layers).forEach((i) => {
-          if (i.feature.id === id) {
-            spatCov = i;
-          }
-        });
-      // eslint-disable-next-line
-      } else if (this.$root.$refs.map.$refs.cones.mapObject !== undefined) {
-        // eslint-disable-next-line
-        Object.values(this.$root.$refs.map.$refs.cones.mapObject._layers).forEach((i) => {
-          if (i.feature.id === id) {
-            spatCov = i;
-          }
-        });
-      }
-      if (spatCov !== undefined) {
-        spatCov.bringToBack();
+        for (let label of document.getElementsByClassName('labelText')) {
+          label.style.opacity = 1;
+        }
       }
     },
   },
