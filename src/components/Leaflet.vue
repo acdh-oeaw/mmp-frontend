@@ -375,7 +375,7 @@ export default {
     spatCovToAdd: {},
     strokeColor: '',
     clusterOptions: {
-      maxClusterRadius: 15,
+      maxClusterRadius: 10,
       disableClusteringAtZoom: 8,
       spiderfyDistanceMultiplier: 2,
       spiderfyDistanceSurplus: 50,
@@ -686,7 +686,6 @@ export default {
           .on({
             mouseout: () => {
               feature.id.forEach((id) => {
-                console.log('map3', document.getElementsByClassName(`id_${id}`));
                 const filter = document.getElementsByClassName(`id_${id}`)[0].classList[0];
                 document.getElementsByClassName(`id_${id} cone`)[0].setAttribute('stroke-width', 0);
                 document.getElementsByClassName(`id_${id} cone`)[0].setAttribute('filter', `url(#${filter})`);
@@ -821,69 +820,76 @@ export default {
       }
     },
     highlightPoly(id, type, color) {
-      this.strokeColor = document.getElementsByClassName(`id_${id}`)[0].attributes.stroke.nodeValue;
-      document.getElementsByClassName(`id_${id} ${type}`)[0].setAttribute('stroke', color);
-      document.getElementsByClassName(`id_${id} ${type}`)[0].setAttribute('stroke-width', 3.5);
-      document.getElementsByClassName(`id_${id} ${type}`)[0].setAttribute('filter', '');
-      let spatCov;
-      let layers;
-      if (type === 'spatCov') {
-        layers = this.$refs.spatCov;
-      } else if (type === 'cone') { layers = this.$refs.cones; }
-      if (layers !== undefined) {
-        // eslint-disable-next-line
-        Object.values(layers.mapObject._layers).forEach((i) => {
-          const classNames = i.options.className.split(' ');
-          if ((i.feature.id === id) && (classNames[classNames.length - 1] === type)) {
-            spatCov = i;
-          }
-        });
-      }
-      if (spatCov !== undefined) {
-        spatCov.bringToFront();
-      }
-      // eslint-disable-next-line
-      const origins = this.$refs.origins.mapObject._layers;
-      Object.values(origins).forEach((origin) => {
-        if (origin.feature.id.includes(id)) {
-          origin.openTooltip();
+      if (document.getElementsByClassName(`id_${id} ${type}`)[0] !== undefined) {
+        this.strokeColor = document.getElementsByClassName(`id_${id}`)[0].attributes.stroke.nodeValue;
+        document.getElementsByClassName(`id_${id} ${type}`)[0].setAttribute('stroke', color);
+        document.getElementsByClassName(`id_${id} ${type}`)[0].setAttribute('stroke-width', 3.5);
+        document.getElementsByClassName(`id_${id} ${type}`)[0].setAttribute('filter', '');
+        let spatCov;
+        let layers;
+        if (type === 'spatCov') {
+          layers = this.$refs.spatCov;
+        } else if (type === 'cone') { layers = this.$refs.cones; }
+        if (layers !== undefined) {
+          // eslint-disable-next-line
+          Object.values(layers.mapObject._layers).forEach((i) => {
+            const classNames = i.options.className.split(' ');
+            if ((i.feature.id === id) && (classNames[classNames.length - 1] === type)) {
+              spatCov = i;
+            }
+          });
         }
-      });
+        if (spatCov !== undefined) {
+          spatCov.bringToFront();
+        }
+        if (this.$refs.origins !== undefined) {
+          // eslint-disable-next-line
+          const origins = this.$refs.origins.mapObject._layers;
+          Object.values(origins).forEach((origin) => {
+            if (origin.feature.id.includes(id)) {
+              origin.openTooltip();
+            }
+          });
+        }
+      }
     },
     playdownPoly(id, type) {
-      console.log('map3', document.getElementsByClassName(`id_${id} ${type}`));
-      const filter = document.getElementsByClassName(`id_${id} ${type}`)[0].classList[0];
-      document.getElementsByClassName(`id_${id} ${type}`)[0].setAttribute('stroke-width', 0);
-      if (filter !== 'blur1') {
-        document.getElementsByClassName(`id_${id} ${type}`)[0].setAttribute('filter', `url(#${filter})`);
-      } else {
-        document.getElementsByClassName(`id_${id} ${type}`)[0].setAttribute('stroke-width', 1.5);
-        document.getElementsByClassName(`id_${id} ${type}`)[0].setAttribute('stroke', this.strokeColor);
-      }
-      let spatCov;
-      let layers;
-      if (type === 'spatCov') {
-        layers = this.$refs.spatCov;
-      } else if (type === 'cone') { layers = this.$refs.cones; }
-      if (layers !== undefined) {
-        // eslint-disable-next-line
-        Object.values(layers.mapObject._layers).forEach((i) => {
-          const classNames = i.options.className.split(' ');
-          if ((i.feature.id === id) && (classNames[classNames.length - 1] === type)) {
-            spatCov = i;
-          }
-        });
-      }
-      if (spatCov !== undefined) {
-        spatCov.bringToBack();
-      }
-      // eslint-disable-next-line
-      const origins = this.$refs.origins.mapObject._layers;
-      Object.values(origins).forEach((origin) => {
-        if (origin.feature.id.includes(id)) {
-          origin.closeTooltip();
+      if (document.getElementsByClassName(`id_${id} ${type}`)[0] !== undefined) {
+        const filter = document.getElementsByClassName(`id_${id} ${type}`)[0].classList[0];
+        document.getElementsByClassName(`id_${id} ${type}`)[0].setAttribute('stroke-width', 0);
+        if (filter !== 'blur1') {
+          document.getElementsByClassName(`id_${id} ${type}`)[0].setAttribute('filter', `url(#${filter})`);
+        } else {
+          document.getElementsByClassName(`id_${id} ${type}`)[0].setAttribute('stroke-width', 1.5);
+          document.getElementsByClassName(`id_${id} ${type}`)[0].setAttribute('stroke', this.strokeColor);
         }
-      });
+        let spatCov;
+        let layers;
+        if (type === 'spatCov') {
+          layers = this.$refs.spatCov;
+        } else if (type === 'cone') { layers = this.$refs.cones; }
+        if (layers !== undefined) {
+          // eslint-disable-next-line
+          Object.values(layers.mapObject._layers).forEach((i) => {
+            const classNames = i.options.className.split(' ');
+            if ((i.feature.id === id) && (classNames[classNames.length - 1] === type)) {
+              spatCov = i;
+            }
+          });
+        }
+        if (spatCov !== undefined) {
+          spatCov.bringToBack();
+        }
+        if (this.$refs.origins !== undefined) {
+          // eslint-disable-next-line
+          const origins = this.$refs.origins.mapObject._layers;
+          Object.values(origins).forEach((origin) => {
+            if (origin.feature.id.includes(id)) {
+              origin.closeTooltip();
+            }
+          });
+        }
+      }
     },
     enableSpatCov(id) {
       const spatCovLayer = JSON.parse(JSON.stringify(this.data[0]));
@@ -1055,11 +1061,11 @@ export default {
         to[0].features.forEach((feature) => {
           if (feature.properties.color === undefined) {
             if (!Object.keys(this.stichworte).includes(feature.properties.key_word.stichwort)) {
-              const max = 50;
-              const min = 200;
-              const orange = Math.floor(Math.random() * (max - min + 1)) + min;
+              const r = Math.floor(Math.random() * (255 - 200 + 1)) + 200;
+              const g = Math.floor(Math.random() * (200 - 50 + 1)) + 50;
+              const b = Math.floor(Math.random() * (255 - 0 + 1)) + 0;
               // eslint-disable-next-line prefer-template
-              this.stichworte[feature.properties.key_word.stichwort] = `rgb(255,${orange},0)`;
+              this.stichworte[feature.properties.key_word.stichwort] = `rgb(${r},${g},${b})`;
               /* random colors:
               this.stichworte[feature.properties.key_word.stichwort] = '#' + (0x1000000 + Math.random() * 0xffffff).toString(16).substr(1, 6);
               */
