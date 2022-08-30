@@ -61,7 +61,7 @@ export default {
       if (apiParams.slider !== 'passage') ret.slider = apiParams.hasUsecase;
       else delete ret.slider;
 
-      console.log('addParams', entries, ret);
+      // console.log('addParams', entries, ret);
       return ret;
     },
     displayTimeRange: (start, end) => (start || end ? `${start || 'unknown'} - ${end || 'unknown'}` : 'unknown'),

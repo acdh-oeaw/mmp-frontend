@@ -102,9 +102,9 @@ export default {
 
             if (query.time.toString().includes('+')) {
               const times = query.time.split('+');
-              urls = urls.map((url) => `${url}&${startKey}=${times[0]}&${startKey}_lookup=lt&${endKey}=${times[1]}&${endKey}_lookup=gt`);
+              urls = urls.map((url) => `${url}&${startKey}=${times[0]}&${startKey}_lookup=gt&${endKey}=${times[1]}&${endKey}_lookup=lt`);
             } else {
-              urls = urls.map((url) => `${url}&${startKey}=${query.time - 5}&${startKey}_lookup=lt&${endKey}=${query.time + 4}&${endKey}_lookup=g`);
+              urls = urls.map((url) => `${url}&${startKey}=${query.time - 5}&${startKey}_lookup=gt&${endKey}=${query.time + 4}&${endKey}_lookup=g`);
             }
           }
           if (query.Place) {

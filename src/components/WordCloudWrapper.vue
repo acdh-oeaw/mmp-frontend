@@ -403,9 +403,9 @@ export default {
           if (query.time) {
             if (query.time.toString().includes('+')) {
               const times = query.time.split('+');
-              urls = urls.map((x) => `${x}&start_date=${times[0]}&start_date_lookup=lt&end_date=${times[1]}&end_date_lookup=gt`);
+              urls = urls.map((x) => `${x}&start_date=${times[0]}&start_date_lookup=gt&end_date=${times[1]}&end_date_lookup=lt`);
             } else {
-              urls = urls.map((x) => `${x}&start_date=${query.time - 5}&start_date_lookup=lt&end_date=${query.time + 4}&end_date_lookup=gt`);
+              urls = urls.map((x) => `${x}&start_date=${query.time - 5}&start_date_lookup=gt&end_date=${query.time + 4}&end_date_lookup=lt`);
             }
           }
           console.log('urls', urls);

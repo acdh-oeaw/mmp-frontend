@@ -485,11 +485,11 @@ export default {
             const key = this.$store.state.slider === 'passage' ? 'rvn_stelle_key_word_keyword' : 'rvn_stelle_key_word_keyword__text';
             if (query.time.toString().includes('+')) {
               const times = query.time.split('+');
-              address += `&${key}__start_date=${times[0]}&${key}__start_date_lookup=lt`;
-              address += `&${key}__end_date=${times[1]}&${key}__end_date_lookup=gt`;
+              address += `&${key}__start_date=${times[0]}&${key}__start_date_lookup=gt`;
+              address += `&${key}__end_date=${times[1]}&${key}__end_date_lookup=lt`;
             } else {
-              address += `&${key}__start_date=${query.time - 5}&${key}__start_date_lookup=lt`;
-              address += `&${key}__end_date=${query.time + 4}&${key}__end_date_lookup=gt`;
+              address += `&${key}__start_date=${query.time - 5}&${key}__start_date_lookup=gt`;
+              address += `&${key}__end_date=${query.time + 4}&${key}__end_date_lookup=lt`;
             }
           }
         }

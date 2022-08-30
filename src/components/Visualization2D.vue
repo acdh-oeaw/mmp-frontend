@@ -37,6 +37,11 @@ export default {
     onSimulationEnd: Function,
     onSimulationTick: Function,
     paused: Boolean,
+    refresh: Number,
+    autoPauseRedraw: {
+      type: Boolean,
+      default: true,
+    },
     selectedNodeIds: Set, // TODO
     showNeighborsOnly: {
       type: Boolean,
@@ -84,6 +89,7 @@ export default {
         .onNodeDragEnd(this.onNodeDragEnd)
         .onEngineStop(this.onSimulationEnd)
         .onEngineTick(this.onEngineEnd)
+        .autoPauseRedraw(this.autoPauseRedraw)
         .linkWidth(parseFloat(this.linkWidth) || 1)
         .linkDirectionalParticles(this.linkDirectionalParticles || 0)
         .linkDirectionalParticleSpeed(this.linkDirectionalParticleSpeed || 0.01)
@@ -110,35 +116,16 @@ export default {
       console.log('ref', this.$refs.visWrapper.clientWidth);
     },
   },
-  computed: {
-    windowSize() {
-      const ref = this.$refs?.visWrapper?.clientWidth;
-      console.log('ref size', ref);
-      return ref;
-    },
-  },
   watch: {
     graph(val) {
       this.graphDom.graphData(this.transformedData(val));
     },
-    paused(val) {
-      if (val) this.graphDom.pauseAnimation();
-      else this.graphDom.resumeAnimation();
+    refresh() {
+      console.log('refresh called');
+      this.graphDom.d3ReheatSimulation();
     },
     zoomToFit() { // cheap workaraound, change zoomToFit to !zoomToFit to zoom (to fit)
       this.graphDom.zoomToFit(500);
-    },
-    '$route.name': {
-      handler() {
-        this.graphDom.resumeAnimation();
-      },
-    },
-    '$refs.visWrapper': {
-      handler(val) {
-        console.log('width', val);
-      },
-      deep: true,
-      immediate: true,
     },
   },
   mounted() {
@@ -146,11 +133,10 @@ export default {
     this.graphDom = ForceGraph()(this.$refs.visWrapper);
     this.setCanvas();
 
-    console.log('d3', d3, this.$refs.visWrapper.clientWidth);
-
+    // resize canvas on div resize
     const sizeOberserver = new ResizeObserver((entries) => {
       const rect = entries[0].contentRect;
-      console.log('resize detected', rect.width, rect.height);
+      // console.log('resize detected', rect.width, rect.height);
       this.graphDom
         .width(rect.width)
         .height(rect.height);

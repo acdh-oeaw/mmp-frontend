@@ -169,11 +169,11 @@ export default {
           const key = this.$store.state.slider === 'passage' ? '' : 'text__';
           if (query.time.toString().includes('+')) {
             const times = query.time.split('+');
-            address += `&${key}start_date=${times[0]}&${key}start_date_lookup=lt`;
-            address += `&${key}end_date=${times[1]}&${key}end_date_lookup=gt`;
+            address += `&${key}start_date=${times[0]}&${key}start_date_lookup=gt`;
+            address += `&${key}end_date=${times[1]}&${key}end_date_lookup=lt`;
           } else {
-            address += `&${key}start_date=${query.time - 5}&${key}start_date_lookup=lt`;
-            address += `&${key}end_date=${query.time + 4}&${key}end_date_lookup=gt`;
+            address += `&${key}start_date=${query.time - 5}&${key}start_date_lookup=gt`;
+            address += `&${key}end_date=${query.time + 4}&${key}end_date_lookup=lt`;
           }
         }
       }
