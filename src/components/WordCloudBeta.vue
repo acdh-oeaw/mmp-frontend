@@ -38,7 +38,7 @@ export default {
       return {
         chart: {
           backgroundColor: 'transparent',
-          height: '500px',
+          height: '460px',
           type: 'wordcloud',
         },
         tooltip: {

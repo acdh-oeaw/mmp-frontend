@@ -311,7 +311,8 @@ export default {
       this.words = words.map((x) => x.sort(this.sortWords));
       console.log('this.words', this.words);
       for (let i = 0; i < words.length; i += 1) {
-        for (let j = 1; words[i].length > 75; j += 1) words[i] = words[i].filter((entry) => entry[1] > j); // improves performance by a lot
+        for (let j = 1; words[i].length > 75; j += 1) words[i] = words[i].filter((entry) => entry[1] > j); // improves performance by a lot, removing unused words
+        words[i] = words[i].map((word) => [word[0].split(' (')[0], word[1]]); // removes unecessary tags
       }
       console.log('words', words);
 

@@ -2,7 +2,8 @@
   <v-btn
     absolute
     bottom
-    right
+    :left="left !== undefined"
+    :right="left === undefined"
     depressed
     icon
     @click="press"
@@ -17,7 +18,7 @@ import helpers from '@/helpers';
 
 export default {
   name: 'FullscreenButton',
-  props: ['usecase'],
+  props: ['usecase', 'left'],
   data() {
     return {
       back: null,
@@ -44,6 +45,9 @@ export default {
       };
       return components[tab];
     },
+  },
+  mounted() {
+    console.log('left', this.left);
   },
 };
 </script>

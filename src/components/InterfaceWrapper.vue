@@ -145,7 +145,7 @@
           <v-row v-else>
             <router-view />
           </v-row>
-          <v-row>
+          <v-row v-show="!['Network Graph', 'Network Graph Beta', 'Word Cloud'].includes($route.name)">
             <v-col>
               <component :disabled="disabledSlider" :is="sliderComponent" v-model="range" class="slider"
                 thumb-label="always" light thumb-size="50" track-color="#d5d5d5"
@@ -263,7 +263,7 @@ export default {
       let fuse = new Fuse(filterArr, { keys: ['selected_text'] });
       fuse = fuse.search(this.textInput);
       fuse = fuse.map((res) => res.item);
-      // console.log('searched, sorted, filtered', fuse);
+      console.log('searched, sorted, filtered', fuse);
 
       return fuse;
     },

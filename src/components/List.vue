@@ -70,7 +70,7 @@
         {{ (item.text ? displayTimeRange(item.text.start_date, item.text.end_date) : 'unknown') }}
       </template>
       <template v-slot:[`footer.prepend`]>
-        <fullscreen-button />
+        <fullscreen-button left />
       </template>
     </v-data-table>
     <router-view />
@@ -121,9 +121,9 @@ export default {
     },
     fetchList(query) {
       const terms = {
-        Author: 'text__autor',
+        Author: this.$store.state.apiParams.intersect ? 'text__autor' : 'text__autor_and',
         // Passage: 'id', // not used anymore
-        Keyword: this.$store.state.apiParams.intersect ? 'key_word_and' : 'key_word',
+        Keyword: this.$store.state.apiParams.intersect ? 'key_word' : 'key_word_and',
         'Use Case': 'use_case',
         Place: 'ort',
       };
