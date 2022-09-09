@@ -22,35 +22,37 @@
         No words found!
       </h1>
     </v-overlay>
-    <v-row
-      no-gutters
-      v-if="type === 'cloud'"
-    >
-      <template v-for="filtered, i in filteredWords">
-        <v-col v-if="showWords[i] && filtered.length"  :key="JSON.stringify(filtered) + i">
-          <word-cloud
-            :words="filtered"
-            :animation-duration="500"
-            :spacing=".08"
-            font-family="'Roboto', sans-serif"
-            @update:progress="updateProgress($event, i)"
-            :rotation="crossRotate"
-            :color="colorWords"
-            class="word-cloud"
-            :class="{ 'full-height': fullscreen }"
-          >
-            <!-- this would show word occurences when hovering over a specific word, but it looks bad -->
-            <!-- <template slot-scope="{ text, weight }">
-              <div :title="weight" class="word">
-                {{ text }}
-              </div>
-              <div class="wordHover">{{ text }}: {{ weight }}</div>
-            </template> -->
-          </word-cloud>
-        </v-col>
-      </template>
-    </v-row>
-    <v-row v-else-if="type === 'pie'">
+    <!--
+      <v-row
+        no-gutters
+        v-if="type === 'cloud'"
+      >
+        <template v-for="filtered, i in filteredWords">
+          <v-col v-if="showWords[i] && filtered.length"  :key="JSON.stringify(filtered) + i">
+            <word-cloud
+              :words="filtered"
+              :animation-duration="500"
+              :spacing=".08"
+              font-family="'Roboto', sans-serif"
+              @update:progress="updateProgress($event, i)"
+              :rotation="crossRotate"
+              :color="colorWords"
+              class="word-cloud"
+              :class="{ 'full-height': fullscreen }"
+            >
+              <!- - this would show word occurences when hovering over a specific word, but it looks bad - ->
+              <!- - <template slot-scope="{ text, weight }">
+                <div :title="weight" class="word">
+                  {{ text }}
+                </div>
+                <div class="wordHover">{{ text }}: {{ weight }}</div>
+              </template> - ->
+            </word-cloud>
+          </v-col>
+        </template>
+      </v-row>
+    -->
+    <v-row v-if="type === 'pie'">
       <template v-for="filtered, i in filteredWords">
         <v-col
           v-if="showWords[i]"
@@ -216,30 +218,12 @@
         </template>
         <span>Pie Chart</span>
       </v-tooltip>
-      <v-tooltip
-        right
-        transition="slide-x-transition"
-      >
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn
-            color="secondary"
-            fab
-            small
-            @click="type = 'beta'"
-            v-bind="attrs"
-            v-on="on"
-          >
-            <v-icon>mdi-cloud-alert</v-icon>
-          </v-btn>
-        </template>
-        <span>Word Cloud Beta</span>
-      </v-tooltip>
     </v-speed-dial>
   </v-card>
 </template>
 <script>
 import Gradient from 'javascript-color-gradient';
-import WordCloud from 'vuewordcloud';
+// import WordCloud from 'vuewordcloud';
 
 import helpers from '@/helpers';
 import PieChart from './PieChart';
@@ -249,7 +233,10 @@ import FullscreenButton from './FullscreenButton';
 export default {
   name: 'WordCloudWrapper',
   components: {
-    WordCloud, FullscreenButton, PieChart, WordCloudBeta,
+    // WordCloud,
+    FullscreenButton,
+    PieChart,
+    WordCloudBeta,
   },
   props: ['usecase', 'keyword', 'author', 'passage', 'place', 'height'],
   data: () => ({
@@ -311,7 +298,8 @@ export default {
       this.words = words.map((x) => x.sort(this.sortWords));
       console.log('this.words', this.words);
       for (let i = 0; i < words.length; i += 1) {
-        for (let j = 1; words[i].length > 75; j += 1) words[i] = words[i].filter((entry) => entry[1] > j); // improves performance by a lot
+        for (let j = 1; words[i].length > 75; j += 1) words[i] = words[i].filter((entry) => entry[1] > j); // improves performance by a lot, removing unused words
+        words[i] = words[i].map((word) => [word[0].split(' (')[0], word[1]]); // removes unecessary tags
       }
       console.log('words', words);
 
@@ -403,9 +391,9 @@ export default {
           if (query.time) {
             if (query.time.toString().includes('+')) {
               const times = query.time.split('+');
-              urls = urls.map((x) => `${x}&start_date=${times[0]}&start_date_lookup=lt&end_date=${times[1]}&end_date_lookup=gt`);
+              urls = urls.map((x) => `${x}&start_date=${times[0]}&start_date_lookup=gt&end_date=${times[1]}&end_date_lookup=lt`);
             } else {
-              urls = urls.map((x) => `${x}&start_date=${query.time - 5}&start_date_lookup=lt&end_date=${query.time + 4}&end_date_lookup=gt`);
+              urls = urls.map((x) => `${x}&start_date=${query.time - 5}&start_date_lookup=gt&end_date=${query.time + 4}&end_date_lookup=lt`);
             }
           }
           console.log('urls', urls);

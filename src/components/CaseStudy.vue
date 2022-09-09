@@ -84,7 +84,7 @@
 
 <script>
 /* eslint-disable prefer-destructuring */
-import Graph from './GraphWrapper';
+import Graph from './GraphWrapperBeta';
 import MapWrapper from './MapWrapper';
 import WordCloudWrapper from './WordCloudWrapper';
 import helpers from '../helpers';

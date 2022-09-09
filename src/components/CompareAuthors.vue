@@ -5,7 +5,7 @@
     width="100%"
     height="100%"
   >
-    <v-overlay
+    <!-- <v-overlay
       absolute
       class="overlay"
       opacity=".2"
@@ -23,18 +23,17 @@
     </v-overlay>
     <visualization
       id="visId"
-      :key="renderKey"
-      :graph="styledNodes"
+      :graph="weightedGraph"
       :onNodeClick="nodeClick"
       :onNodeDragEnd="nodeDragEnd"
-      :nodeCanvasObjectMode="() => 'after'"
       :nodeCanvasObject="nodeObject"
-      :linkDirectionalParticles="2"
-      :linkDirectionalArrowLength="3.5"
-      :linkDirectionalArrowRelPos="0.8"
+      :nodeCanvasObjectMode="() => 'replace'"
       :height="fullscreen ? undefined : '500'"
       :zoomToFit="zoomToFit"
-      :paused="paused"
+      :linkDirectionalArrowLength="2"
+      :refresh="this.renderKey"
+      :autoPauseRedraw="false"
+      :nodeRelSize="4"
     />
     <router-view />
     <v-speed-dial
@@ -181,31 +180,10 @@
             v-bind="attrs"
             v-on="on"
           >
-            <v-icon>mdi-refresh</v-icon>
+            <v-icon>mdi-pin-off</v-icon>
           </v-btn>
         </template>
-        <span>Refresh Graph, unpin all nodes</span>
-      </v-tooltip>
-      <v-tooltip
-        right
-        transition="slide-x-transition"
-      >
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn
-            fab
-            small
-            :to="{
-              name: 'Network Graph Beta',
-              query: $route.query,
-              params: $route.params,
-            }"
-            v-bind="attrs"
-            v-on="on"
-          >
-            <v-icon>mdi-test-tube</v-icon>
-          </v-btn>
-        </template>
-        <span>Beta Graph</span>
+        <span>Unpin all nodes</span>
       </v-tooltip>
     </v-speed-dial>
     <div
@@ -236,19 +214,20 @@
           </v-list-item-content>
         </v-list-item>
       </v-list>
-    </div>
+    </div> -->
+    theres something happening here..
   </v-card>
 </template>
 <script>
 import helpers from '@/helpers';
-import Visualization from './Visualization2D';
-import FullscreenButton from './FullscreenButton';
+// import Visualization from './Visualization2D';
+// import FullscreenButton from './FullscreenButton';
 
 export default {
-  name: 'NetworkGraph',
+  name: 'NetworkGraphBeta',
   components: {
-    Visualization,
-    FullscreenButton,
+    // Visualization,
+    // FullscreenButton,
   },
   data: () => ({
     fab: {
@@ -257,7 +236,7 @@ export default {
     },
     graph: null,
     loading: false,
-    paused: false,
+    paused: true,
     renderKey: 0,
     zoomToFit: true,
   }),
@@ -274,7 +253,7 @@ export default {
     getJsonData() {
       const link = document.createElement('a');
       link.download = 'graph.json';
-      link.href = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(this.styledNodes))}`;
+      link.href = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(this.graph))}`;
       link.click();
       link.remove();
     },
@@ -299,65 +278,64 @@ export default {
       link.click();
       link.remove();
     },
-    nodeDragEnd(node, translate) {
-      console.log('nodeDrag', node, translate);
-      node.fx = node.x;
-      node.fy = node.y;
+    lightenColor(color, amount) {
+      if (!color) return color;
+
+      let numArray = color.replace('#', '').match(/.{2}/g).map((hex) => parseInt(hex, 16));
+      let revArray = numArray.map((num) => 255 - num);
+
+      const max = Math.max(...revArray);
+      const scale = (max - amount) / max;
+
+      revArray = revArray.map((num) => Math.round(num * scale));
+      numArray = revArray.map((num) => 255 - num);
+
+      const ret = `#${numArray.map((num) => num.toString(16).padStart(2, '0')).join('')}`;
+      console.log(color, ret, numArray, max, scale);
+      return ret;
+    },
+    lightenColor2(color, percent) {
+      if (!color) return color;
+      let numArray = color.replace('#', '').match(/.{2}/g).map((hex) => parseInt(hex, 16));
+      numArray = numArray.map((num) => Math.min(Math.round(num * (1 + percent / 100)), 255));
+
+      const ret = `#${numArray.map((num) => num.toString(16).padStart(2, '0')).join('')}`;
+      console.log(color, ret, numArray, percent);
+      return ret;
+    },
+    lightenColor3(color, fade) {
+      if (!color) return color;
+      const numArray = color.replace('#', '').match(/.{2}/g).map((hex) => parseInt(hex, 16));
+      return `rgba(${numArray.join(',')}, ${fade})`;
     },
     nodeObject(node, ctx, globalScale) {
+      ctx.beginPath();
       const label = this.removeRoot(node.label);
-      const fontSize = 15 / globalScale;
+      const fontSize = ((node.val || 1) / 5 + 18) / globalScale;
       ctx.font = `${fontSize}px Sans-Serif`;
-
-      let textWidth;
-      let textHeight;
-
-      if (label.includes(' ')) {
-        const labelLines = label.split(/\s/);
-        textHeight = labelLines.length * fontSize;
-        textWidth = Math.max(...labelLines.map((x) => ctx.measureText(x).width)); // get max width of lienes
-      } else {
-        textWidth = ctx.measureText(label).width;
-        textHeight = fontSize;
-      }
-
-      const bckgDimensions = [textWidth, textHeight].map((n) => n + fontSize * 0.2);
-
-      const isSelected = this.$route.params.id?.toString(10).split('+').includes(node.id.replace(/\D/g, ''));
-
-      if (isSelected) {
-        ctx.lineWidth = 8 / globalScale;
-        ctx.strokeStyle = 'black';
-      } else {
-        ctx.lineWidth = 1.3 / globalScale;
-        ctx.strokeStyle = '#F1F5FA';
-      }
-
-      ctx.arc(node.x, node.y, node.val, 0, 2 * Math.PI, false);
-      ctx.stroke();
-      ctx.fillStyle = this.keyColors.graph[node.keyword_type] || 'grey';
-      const rectProps = [node.x - bckgDimensions[0] / 2, node.y - bckgDimensions[1] / 2, ...bckgDimensions];
-      ctx.fillRect(...rectProps);
-
-      if (isSelected) {
-        ctx.lineWidth = 2 / globalScale;
-        ctx.strokeRect(...rectProps);
-      } else {
-        ctx.lineWidth = 1.3 / globalScale;
-        ctx.strokeRect(...rectProps);
-      }
-
-      ctx.fill();
+      node.val = 1;
 
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillStyle = 'white';
-      if (label.includes(' ')) {
-        const labelLines = label.split(/\s/);
-        labelLines.forEach((line, i) => {
-          ctx.fillText(line, node.x, node.y - fontSize * ((labelLines.length - 1) / 2 - i));
-        });
-      } else ctx.fillText(label, node.x, node.y);
+
+      const typeColor = this.keyColors.graph[node.keyword_type] || 'grey';
+
+      if (this.$route.params.id?.toString(10).split('+').includes(node.id.replace(/\D/g, ''))) {
+        ctx.shadowColor = typeColor;
+        ctx.shadowBlur = 15;
+        ctx.fillStyle = '#F1F5FA';
+        ctx.strokeStyle = typeColor;
+        ctx.lineWidth = 2 / globalScale;
+      } else {
+        ctx.fillStyle = typeColor;
+        ctx.strokeStyle = '#F1F5FA';
+        ctx.lineWidth = 1.7 / globalScale;
+      }
+
+      ctx.strokeText(label, node.x, node.y);
+      ctx.fillText(label, node.x, node.y);
+
+      ctx.shadowBlur = 0;
     },
     nodeClick(node) {
       console.log('node clicked', node);
@@ -378,16 +356,21 @@ export default {
 
       if (q) {
         this.$router.push({
-          name: this.fullscreen ? 'Keyword Detail Fullscreen' : 'Keyword Detail',
+          name: this.fullscreen ? 'Keyword Detail Beta Fullscreen' : 'Keyword Detail Beta',
           params: { id: q },
-          query: this.usecase ? this.addParamsToQuery({ 'Use Case': this.usecase }) : this.$route.query,
+          query: this.usecase ? { 'Use Case': this.usecase } : this.$route.query,
         });
       } else {
         this.$router.push({
-          name: this.fullscreen ? 'Network Graph Fullscreen' : 'Network Graph',
+          name: this.fullscreen ? 'Network Graph Beta Fullscreen' : 'Network Graph Beta',
           query: this.$route.query,
         });
       }
+    },
+    nodeDragEnd(node, translate) {
+      console.log('nodeDrag', node, translate);
+      node.fx = node.x;
+      node.fy = node.y;
     },
     refresh() {
       this.graph.nodes.forEach((node) => {
@@ -395,28 +378,29 @@ export default {
         node.fy = undefined;
       });
       this.renderKey += 1;
+      console.log('nodes unpinned', this.renderKey);
     },
   },
   computed: {
     nodeCount() {
       return this.graph?.nodes?.length;
     },
-    styledNodes() {
+    weightedGraph() {
+      if (!this.graph) return null;
       const ret = this.graph;
-      if (!ret) return ret;
-      console.log('graph', this.graph);
-      ret.edges.forEach((x) => {
-        const targetNode = ret.nodes.filter((node) => node.id === x.source.id)[0];
-        x.color = this.keyColors.graph[targetNode?.keyword_type] || 'grey';
+      console.log('weightedGraph', ret);
+      ret.edges.forEach((edge) => {
+        const targetNode = ret.nodes.filter((node) => node.id === edge.source.id)[0];
+        edge.color = this.lightenColor3(this.keyColors.graph[targetNode?.keyword_type], 0.3) || '#D5D5D5';
 
         if (targetNode?.val) targetNode.val += 1;
         else if (targetNode) targetNode.val = 2;
       });
-      console.log('ret', ret);
-      ret.nodes = ret.nodes.map((x) => {
-        // console.count();
-        x.val = Math.log(x.val || 1) * 5;
-        return x;
+
+      ret.nodes.map((node) => {
+        const retNode = node;
+        retNode.color = this.keyColors.graph[node.keyword_type];
+        return retNode;
       });
       return ret;
     },
@@ -475,8 +459,8 @@ export default {
           });
 
           const filters = this.$store.state.searchFilters.keyword;
-          if (filters.name && !filters.phrase) address += '&art=Name';
-          else if (!filters.name && filters.phrase) address += '&art=Keyword';
+          if (filters.name && !filters.phrase) address += '&art=Eigenname';
+          else if (!filters.name && filters.phrase) address += '&art=Schlagwort';
 
           if (query.Keyword) address += `&ids=${query.Keyword.replaceAll('+', ',')}`;
 

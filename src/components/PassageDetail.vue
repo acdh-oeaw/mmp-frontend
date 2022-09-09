@@ -89,7 +89,11 @@ export default {
           value: res.key_word,
         },
         {
-          key: 'Quote',
+          key: 'Translation',
+          value: res.translation,
+        },
+        {
+          key: 'Original quote',
           value: res.zitat,
         },
         {
@@ -119,10 +123,6 @@ export default {
         {
           key: 'Text written in',
           value: this.title.written,
-        },
-        {
-          key: 'Translation',
-          value: res.translation,
         },
         {
           key: 'Comment',

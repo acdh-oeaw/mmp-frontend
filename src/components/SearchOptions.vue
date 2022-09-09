@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card class="option-card">
     <v-card-title>Search Options</v-card-title>
     <v-card-subtitle>Change your preferred filters</v-card-subtitle>
     <v-card-text>
@@ -224,3 +224,9 @@ export default {
   },
 };
 </script>
+<style scoped>
+  .option-card {
+    max-height: 50vh;
+    overflow-y: scroll;
+  }
+</style>
