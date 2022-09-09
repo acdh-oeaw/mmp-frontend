@@ -1,73 +1,55 @@
 <template>
-  <div class="pieWrapper">
-    <chart :options="cloudOptions" />
+  <div class="cloud-wrapper" ref="cloudRel">
+    <h3 class="text-center">{{ title }}</h3>
+    <cloud
+      :key="renderKey"
+      :data="words"
+      :fontSizeMapper="sizeFunction"
+      :width="width"
+      :height="height"
+      padding="2"
+    />
   </div>
 </template>
 <script>
-import { Chart } from 'highcharts-vue';
-import highcharts from 'highcharts';
-import wordcloud from 'highcharts/modules/wordcloud';
-
-import Gradient from 'javascript-color-gradient';
-
-wordcloud(highcharts);
+import cloud from 'vue-d3-cloud';
 
 export default {
   name: 'WordCloudBeta',
   data: () => ({
     renderKey: 0,
+    width: 500,
+    height: 500,
   }),
   props: ['data', 'title'],
-  components: { Chart },
+  components: { cloud },
   computed: {
-    cloudOptions() {
+    words() {
       console.log(this.renderKey);
-
-      const colors = [
-        '#a91a1a',
-        '#3a8d86',
-        '#0c76ce',
-        '#c09000',
-        '#3b823e',
-      ];
-      const colorGradient = new Gradient();
-      colorGradient.setGradient(...colors);
-
-      colorGradient.setMidpoint(50);
-
-      return {
-        chart: {
-          backgroundColor: 'transparent',
-          height: '460px',
-          type: 'wordcloud',
-        },
-        tooltip: {
-          pointFormat: 'Occurences: {point.occ}',
-        },
-        title: {
-          text: this.title || false,
-        },
-        credits: {
-          enabled: false,
-        },
-        series: {
-          name: 'Occurrences',
-          data: this.data.map((x) => ({
-            name: x[0],
-            weight: x[1] ** (3 / 4),
-            occ: x[1],
-            color: colorGradient.getColor(Math.floor((50 * x[1]) / this.maxOccurence)),
-          })),
-        },
-      };
+      return this.data.map(([text, value]) => ({ text, value }));
     },
-    maxOccurence() {
-      return Math.max(...this.data.map((x) => x[1]));
+    maxOccurences() {
+      return Math.max(...this.words.map((word) => word.value));
+    },
+  },
+  methods: {
+    sizeFunction(word) {
+      return Math.log2(word.value) * 10;
     },
   },
   mounted() {
     console.log('cloudbeta mounted', this.data);
     this.renderKey -= -1; // this makes this component work, i dont know why
+
+    // resize canvas on div resize
+    const sizeOberserver = new ResizeObserver((entries) => {
+      console.log('oberserver', entries);
+      this.width = entries[0].contentRect.width;
+      this.height = entries[0].contentRect.height;
+      this.renderKey += 1;
+    });
+
+    sizeOberserver.observe(this.$refs.cloudRel);
   },
 };
 </script>
@@ -75,5 +57,8 @@ export default {
 text.highcharts-point {
   font-family: 'Roboto', sans-serif !important;
   scale: 1.3;
+}
+.cloud-wrapper {
+  height: 460px;
 }
 </style>

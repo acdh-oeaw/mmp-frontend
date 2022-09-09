@@ -7,6 +7,7 @@ import Studies from '@/components/Studies';
 import CaseStudy from '@/components/CaseStudy';
 import Graph from '@/components/GraphWrapper';
 import GraphBeta from '@/components/GraphWrapperBeta';
+import CompareAuthors from '@/components/CompareAuthors';
 import Map from '@/components/MapWrapper';
 import List from '@/components/List';
 import WordCloudWrapper from '@/components/WordCloudWrapper';
@@ -91,6 +92,18 @@ const routes = [
         ],
       },
       {
+        path: 'compare',
+        name: 'Compare Authors',
+        component: CompareAuthors,
+        children: [
+          {
+            path: 'detail/:id',
+            name: 'Compare Authors Detail',
+            component: KeywordDetail,
+          },
+        ],
+      },
+      {
         path: 'list',
         name: 'List',
         component: List,
@@ -161,6 +174,18 @@ const routes = [
           {
             path: 'detail/:id',
             name: 'Keyword Detail Beta Fullscreen',
+            component: KeywordDetail,
+          },
+        ],
+      },
+      {
+        path: 'compare',
+        name: 'Compare Authors Fullscreen',
+        component: GraphBeta,
+        children: [
+          {
+            path: 'detail/:id',
+            name: 'Compare Authors Detail Fullscreen',
             component: KeywordDetail,
           },
         ],

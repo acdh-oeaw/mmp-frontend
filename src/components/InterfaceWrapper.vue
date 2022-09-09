@@ -85,10 +85,33 @@
                 </v-btn>
               </v-col>
               <v-col>
-                <v-btn text block small class="view-picker" :disabled="currentView === 'Graph'"
-                  :to="{ name: 'Network Graph Beta', query: addParamsToQuery(query) }">
-                  Network Graph
-                </v-btn>
+                <v-btn-toggle background-color="transparent" borderless>
+                  <v-btn text small class="view-picker" :disabled="currentView === 'Graph'"
+                    :to="{ name: 'Network Graph Beta', query: addParamsToQuery(query) }">
+                    Network Graph
+                  </v-btn>
+                  <v-menu offset-y left>
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-btn
+                        icon
+                        text
+                        small
+                        class="view-picker"
+                        v-bind="attrs"
+                        v-on="on">
+                        <v-icon>mdi-chevron-down</v-icon>
+                      </v-btn>
+                    </template>
+                    <v-list>
+                      <v-list-item :to="{ name: 'Network Graph Beta', query: addParamsToQuery(query) }">
+                        <v-list-item-title>Graph</v-list-item-title>
+                      </v-list-item>
+                      <v-list-item :to="{ name: 'Compare Authors', query: addParamsToQuery(query) }">
+                        <v-list-item-title>Compare Authors</v-list-item-title>
+                      </v-list-item>
+                    </v-list>
+                  </v-menu>
+                </v-btn-toggle>
               </v-col>
               <v-col>
                 <v-btn text block small class="view-picker" :disabled="currentView === 'Map'"

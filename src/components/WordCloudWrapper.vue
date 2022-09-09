@@ -22,35 +22,37 @@
         No words found!
       </h1>
     </v-overlay>
-    <v-row
-      no-gutters
-      v-if="type === 'cloud'"
-    >
-      <template v-for="filtered, i in filteredWords">
-        <v-col v-if="showWords[i] && filtered.length"  :key="JSON.stringify(filtered) + i">
-          <word-cloud
-            :words="filtered"
-            :animation-duration="500"
-            :spacing=".08"
-            font-family="'Roboto', sans-serif"
-            @update:progress="updateProgress($event, i)"
-            :rotation="crossRotate"
-            :color="colorWords"
-            class="word-cloud"
-            :class="{ 'full-height': fullscreen }"
-          >
-            <!-- this would show word occurences when hovering over a specific word, but it looks bad -->
-            <!-- <template slot-scope="{ text, weight }">
-              <div :title="weight" class="word">
-                {{ text }}
-              </div>
-              <div class="wordHover">{{ text }}: {{ weight }}</div>
-            </template> -->
-          </word-cloud>
-        </v-col>
-      </template>
-    </v-row>
-    <v-row v-else-if="type === 'pie'">
+    <!--
+      <v-row
+        no-gutters
+        v-if="type === 'cloud'"
+      >
+        <template v-for="filtered, i in filteredWords">
+          <v-col v-if="showWords[i] && filtered.length"  :key="JSON.stringify(filtered) + i">
+            <word-cloud
+              :words="filtered"
+              :animation-duration="500"
+              :spacing=".08"
+              font-family="'Roboto', sans-serif"
+              @update:progress="updateProgress($event, i)"
+              :rotation="crossRotate"
+              :color="colorWords"
+              class="word-cloud"
+              :class="{ 'full-height': fullscreen }"
+            >
+              <!- - this would show word occurences when hovering over a specific word, but it looks bad - ->
+              <!- - <template slot-scope="{ text, weight }">
+                <div :title="weight" class="word">
+                  {{ text }}
+                </div>
+                <div class="wordHover">{{ text }}: {{ weight }}</div>
+              </template> - ->
+            </word-cloud>
+          </v-col>
+        </template>
+      </v-row>
+    -->
+    <v-row v-if="type === 'pie'">
       <template v-for="filtered, i in filteredWords">
         <v-col
           v-if="showWords[i]"
@@ -216,30 +218,12 @@
         </template>
         <span>Pie Chart</span>
       </v-tooltip>
-      <v-tooltip
-        right
-        transition="slide-x-transition"
-      >
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn
-            color="secondary"
-            fab
-            small
-            @click="type = 'beta'"
-            v-bind="attrs"
-            v-on="on"
-          >
-            <v-icon>mdi-cloud-alert</v-icon>
-          </v-btn>
-        </template>
-        <span>Word Cloud Beta</span>
-      </v-tooltip>
     </v-speed-dial>
   </v-card>
 </template>
 <script>
 import Gradient from 'javascript-color-gradient';
-import WordCloud from 'vuewordcloud';
+// import WordCloud from 'vuewordcloud';
 
 import helpers from '@/helpers';
 import PieChart from './PieChart';
@@ -249,7 +233,10 @@ import FullscreenButton from './FullscreenButton';
 export default {
   name: 'WordCloudWrapper',
   components: {
-    WordCloud, FullscreenButton, PieChart, WordCloudBeta,
+    // WordCloud,
+    FullscreenButton,
+    PieChart,
+    WordCloudBeta,
   },
   props: ['usecase', 'keyword', 'author', 'passage', 'place', 'height'],
   data: () => ({
