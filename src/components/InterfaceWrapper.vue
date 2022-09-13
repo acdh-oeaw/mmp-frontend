@@ -128,7 +128,7 @@
             </template>
             <template v-else>
               <v-col cols="12">
-                <v-select v-model="currentView" :items="['List', 'Network Graph', 'Map', 'Word Cloud']"
+                <v-select v-model="currentView" :items="['List', 'Graph', 'Map', 'Word Cloud']"
                   label="View as" />
               </v-col>
             </template>
@@ -268,7 +268,7 @@ export default {
         Keyword: 'phrase',
         Name: 'name',
         Region: 'region',
-        Ethonym: 'ethnonym',
+        Ethnonym: 'ethnonym',
       };
 
       const filterArr = items.filter((item) => {

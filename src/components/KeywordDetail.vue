@@ -176,13 +176,8 @@ export default {
       // return retArr;
     },
     xPressLinkName() {
-      const beta = this.$route.name.includes('Beta');
-      if (this.fullscreen) {
-        if (beta) return 'Network Graph Beta Fullscreen';
-        return 'Network Graph Fullscreen';
-      }
-      if (beta) return 'Network Graph Beta';
-      return 'Network Graph';
+      if (this.fullscreen) return 'Network Graph Beta Fullscreen';
+      return 'Network Graph Beta';
     },
   },
   watch: {
