@@ -6,7 +6,8 @@ export default {
         Ethnonym: '#00897B', // teal darken-1
         Name: '#FFB300', // amber darken-1
         Region: '#43A047', // green darken-1
-        Unsicher: 'grey',
+        Author: '#FF0000', // red
+        Unsicher: '#808080', // grey
       },
       chips: {
         Keyword: 'blue lighten-4',
@@ -67,6 +68,11 @@ export default {
     displayTimeRange: (start, end) => (start || end ? `${start || 'unknown'} - ${end || 'unknown'}` : 'unknown'),
     getOptimalName: (obj) => obj.name_en || obj.name_antik || obj.name_lat || obj.name || obj.name_fr || obj.name_it || obj.name_gr,
     getIdFromUrl: (url) => url.replace(/\D/g, ''),
+    lightenColor(color, fade) {
+      if (!color) return color;
+      const numArray = color.replace('#', '').match(/.{2}/g).map((hex) => parseInt(hex, 16));
+      return `rgba(${numArray.join(',')}, ${fade})`;
+    },
     // this worked first try please clap
     removeDuplicates: (arr, keys) => {
       let newKeys;

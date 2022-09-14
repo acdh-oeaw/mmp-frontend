@@ -5,14 +5,14 @@
     width="100%"
     height="100%"
   >
-    <!-- <v-overlay
+    <v-overlay
       absolute
       class="overlay"
       opacity=".2"
-      :value="!nodeCount || loading"
+      :value="!nodeCount || loading || !selectedAuthors.length"
     >
       <h1 v-if="!loading" class="no-nodes">
-        No nodes found!
+        Select two or more authors!
       </h1>
       <h1 v-else class="no-nodes">
         <v-progress-circular
@@ -214,20 +214,19 @@
           </v-list-item-content>
         </v-list-item>
       </v-list>
-    </div> -->
-    theres something happening here..
+    </div>
   </v-card>
 </template>
 <script>
 import helpers from '@/helpers';
-// import Visualization from './Visualization2D';
-// import FullscreenButton from './FullscreenButton';
+import Visualization from './Visualization2D';
+import FullscreenButton from './FullscreenButton';
 
 export default {
   name: 'NetworkGraphBeta',
   components: {
-    // Visualization,
-    // FullscreenButton,
+    Visualization,
+    FullscreenButton,
   },
   data: () => ({
     fab: {
@@ -239,6 +238,7 @@ export default {
     paused: true,
     renderKey: 0,
     zoomToFit: true,
+    selectedAuthors: [],
   }),
   props: ['usecase', 'keyword', 'passage', 'author', 'place'],
   mixins: [helpers],
@@ -277,36 +277,6 @@ export default {
       link.href = `data:attachment/text,${encodeURI(retString)}`;
       link.click();
       link.remove();
-    },
-    lightenColor(color, amount) {
-      if (!color) return color;
-
-      let numArray = color.replace('#', '').match(/.{2}/g).map((hex) => parseInt(hex, 16));
-      let revArray = numArray.map((num) => 255 - num);
-
-      const max = Math.max(...revArray);
-      const scale = (max - amount) / max;
-
-      revArray = revArray.map((num) => Math.round(num * scale));
-      numArray = revArray.map((num) => 255 - num);
-
-      const ret = `#${numArray.map((num) => num.toString(16).padStart(2, '0')).join('')}`;
-      console.log(color, ret, numArray, max, scale);
-      return ret;
-    },
-    lightenColor2(color, percent) {
-      if (!color) return color;
-      let numArray = color.replace('#', '').match(/.{2}/g).map((hex) => parseInt(hex, 16));
-      numArray = numArray.map((num) => Math.min(Math.round(num * (1 + percent / 100)), 255));
-
-      const ret = `#${numArray.map((num) => num.toString(16).padStart(2, '0')).join('')}`;
-      console.log(color, ret, numArray, percent);
-      return ret;
-    },
-    lightenColor3(color, fade) {
-      if (!color) return color;
-      const numArray = color.replace('#', '').match(/.{2}/g).map((hex) => parseInt(hex, 16));
-      return `rgba(${numArray.join(',')}, ${fade})`;
     },
     nodeObject(node, ctx, globalScale) {
       ctx.beginPath();
@@ -391,7 +361,7 @@ export default {
       console.log('weightedGraph', ret);
       ret.edges.forEach((edge) => {
         const targetNode = ret.nodes.filter((node) => node.id === edge.source.id)[0];
-        edge.color = this.lightenColor3(this.keyColors.graph[targetNode?.keyword_type], 0.3) || '#D5D5D5';
+        edge.color = this.lightenColor(this.keyColors.graph[targetNode?.keyword_type], 0.3) || '#D5D5D5';
 
         if (targetNode?.val) targetNode.val += 1;
         else if (targetNode) targetNode.val = 2;
@@ -413,92 +383,47 @@ export default {
   watch: {
     '$route.query': {
       handler(query) {
-        let address = `https://mmp.acdh-dev.oeaw.ac.at/archiv/keyword-data/?has_usecase=${this.hasUsecase}`;
-        const terms = {
-          Author: 'rvn_stelle_key_word_keyword__text__autor',
-          Passage: 'rvn_stelle_key_word_keyword',
-          // Keyword: 'id', // has been replaced with new multiple id functionality
-          'Use Case': 'rvn_stelle_key_word_keyword__use_case',
-          Place: 'rvn_stelle_key_word_keyword__text__autor__ort',
-        };
-
-        const props = [
-          this.author,
-          this.passage,
-          this.keyword,
-          this.usecase,
-          this.place,
-        ];
-
-        console.log('map props', props);
-
-        if (props.some((x) => x)) {
-          console.debug('cloud props detected!');
-          let j;
-          props.forEach((prop, i) => {
-            if (prop && prop !== '0') {
-              console.debug('cloud prop', prop);
-              if (i === 2) { // keyword
-                address += `&ids=${prop.toString().split('+').join(',')}`;
-              } else {
-                if (i > 2) j = i - 1; // because terms is missing an element
-                else j = i;
-                address += `&${terms[Object.keys(terms)[j]]}=${prop}`;
-              }
-            }
-          });
-        } else {
-          console.log('query', query);
-          Object.keys(terms).forEach((cat) => {
-            if (query[cat] && cat !== 'time') {
-              const arr = query[cat].split('+');
-              arr.forEach((val) => {
-                address += `&${terms[cat]}=${val}`;
-              });
-            }
-          });
-
-          const filters = this.$store.state.searchFilters.keyword;
-          if (filters.name && !filters.phrase) address += '&art=Eigenname';
-          else if (!filters.name && filters.phrase) address += '&art=Schlagwort';
-
-          if (query.Keyword) address += `&ids=${query.Keyword.replaceAll('+', ',')}`;
-
-          console.log('query.time', query.time);
-          if (query.time) {
-            const key = this.$store.state.slider === 'passage' ? 'rvn_stelle_key_word_keyword' : 'rvn_stelle_key_word_keyword__text';
-            if (query.time.toString().includes('+')) {
-              const times = query.time.split('+');
-              address += `&${key}__start_date=${times[0]}&${key}__start_date_lookup=gt`;
-              address += `&${key}__end_date=${times[1]}&${key}__end_date_lookup=lt`;
-            } else {
-              address += `&${key}__start_date=${query.time - 5}&${key}__start_date_lookup=gt`;
-              address += `&${key}__end_date=${query.time + 4}&${key}__end_date_lookup=lt`;
-            }
-          }
-        }
-
-        console.log('address', address);
-
-        const prefetched = this.$store.state.fetchedResults[address];
-        if (prefetched) {
-          this.graph = prefetched;
-        } else {
-          this.loading = true;
-          fetch(address)
-            .then((res) => res.json())
+        const authors = query.Author.split('+');
+        if (authors.length >= 2) {
+          this.selectedAuthors = authors;
+          Promise.all(authors.map((x) => fetch(`https://mmp.acdh-dev.oeaw.ac.at/archiv/keyword-data/?has_usecase=${this.hasUsecase}&rvn_stelle_key_word_keyword__text__autor=${x}`)))
             .then((res) => {
-              console.log('node-data', res);
-              this.$store.commit('addToResults', { req: address, res });
-              this.graph = res;
-            })
-            .catch((err) => {
-              console.error(err);
-            })
-            .finally(() => {
-              this.loading = false;
+              Promise.all(res.map((x) => x.json()))
+                .then((jsonRes) => {
+                  console.log('Author Graph Results', jsonRes);
+                  const allNodes = [];
+                  const allEdges = [];
+                  jsonRes.forEach((json, i) => {
+                    allNodes.push({
+                      id: `author_${authors[i]}`,
+                      label: `Author ${i + 1}`,
+                      keyword_type: 'Author',
+                    });
+                    json.nodes.forEach((node, j) => {
+                      allEdges.push({
+                        id: `custom_edge_${j}`,
+                        target: node.id,
+                        source: `author_${authors[i]}`,
+                      });
+                    });
+                    allNodes.push(...json.nodes);
+                    allEdges.push(...json.edges);
+
+                    this.graph = {
+                      edges: allEdges,
+                      nodes: this.removeDuplicates(allNodes, 'id'),
+                    };
+                    console.log('New Graph', this.graph);
+                  });
+                })
+                .catch((err) => {
+                  console.error(err);
+                })
+                .finally(() => {
+                  this.loading = false;
+                });
             });
-        }
+        } else this.selectedAuthors = [];
       },
       deep: true,
       immediate: true,

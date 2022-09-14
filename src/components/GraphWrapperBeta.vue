@@ -277,36 +277,6 @@ export default {
       link.click();
       link.remove();
     },
-    lightenColor(color, amount) {
-      if (!color) return color;
-
-      let numArray = color.replace('#', '').match(/.{2}/g).map((hex) => parseInt(hex, 16));
-      let revArray = numArray.map((num) => 255 - num);
-
-      const max = Math.max(...revArray);
-      const scale = (max - amount) / max;
-
-      revArray = revArray.map((num) => Math.round(num * scale));
-      numArray = revArray.map((num) => 255 - num);
-
-      const ret = `#${numArray.map((num) => num.toString(16).padStart(2, '0')).join('')}`;
-      console.log(color, ret, numArray, max, scale);
-      return ret;
-    },
-    lightenColor2(color, percent) {
-      if (!color) return color;
-      let numArray = color.replace('#', '').match(/.{2}/g).map((hex) => parseInt(hex, 16));
-      numArray = numArray.map((num) => Math.min(Math.round(num * (1 + percent / 100)), 255));
-
-      const ret = `#${numArray.map((num) => num.toString(16).padStart(2, '0')).join('')}`;
-      console.log(color, ret, numArray, percent);
-      return ret;
-    },
-    lightenColor3(color, fade) {
-      if (!color) return color;
-      const numArray = color.replace('#', '').match(/.{2}/g).map((hex) => parseInt(hex, 16));
-      return `rgba(${numArray.join(',')}, ${fade})`;
-    },
     nodeObject(node, ctx, globalScale) {
       ctx.beginPath();
       const label = this.removeRoot(node.label);
@@ -390,7 +360,7 @@ export default {
       console.log('weightedGraph', ret);
       ret.edges.forEach((edge) => {
         const targetNode = ret.nodes.filter((node) => node.id === edge.source.id)[0];
-        edge.color = this.lightenColor3(this.keyColors.graph[targetNode?.keyword_type], 0.3) || '#D5D5D5';
+        edge.color = this.lightenColor(this.keyColors.graph[targetNode?.keyword_type], 0.3) || '#D5D5D5';
 
         if (targetNode?.val) targetNode.val += 1;
         else if (targetNode) targetNode.val = 2;
