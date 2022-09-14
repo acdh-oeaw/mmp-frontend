@@ -347,7 +347,7 @@ export default {
           // Passage: 'id', // not used anymore
           Keyword: 'key_word',
           'Use Case': 'use_case',
-          Place: 'ort',
+          Place: 'text__ort',
         };
 
         const props = [

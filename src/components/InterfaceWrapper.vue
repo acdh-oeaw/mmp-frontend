@@ -18,8 +18,8 @@
             <v-col :cols="$vuetify.breakpoint.mobile ? 12 : 10">
               <v-autocomplete
                 v-model="$store.state.autocomplete.input"
+                color="primary"
                 multiple
-                clearable
                 item-text="selected_text"
                 return-object
                 no-filter
@@ -53,6 +53,13 @@
                     @click:close="$store.commit('removeItemFromInput', data.item)">
                     {{ shorten(data.item.selected_text, 30) }}
                   </v-chip>
+                </template>
+                <template v-slot:append>
+                  <v-icon
+                    color="primary"
+                    @click="$store.commit('clearInput')"
+                    v-if="$store.state.autocomplete.input.length"
+                  >mdi-close</v-icon>
                 </template>
                 <template v-slot:prepend-inner>
                   <v-skeleton-loader type="chip" v-for="n in skeletonChips" :key="n" />
@@ -128,8 +135,10 @@
             </template>
             <template v-else>
               <v-col cols="12">
-                <v-select v-model="currentView" :items="['List', 'Graph', 'Map', 'Word Cloud']"
-                  label="View as" />
+                <v-select
+                  v-model="currentView" :items="['List', 'Graph', '', 'Map', 'Word Cloud']"
+                  label="View as"
+                />
               </v-col>
             </template>
             <v-col :class="{ 'text-right': !$vuetify.breakpoint.mobile, 'text-center': $vuetify.breakpoint.mobile }">
