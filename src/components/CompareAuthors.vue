@@ -383,9 +383,23 @@ export default {
   watch: {
     '$route.query': {
       handler(query) {
+        this.loading = 2;
         const authors = query.Author.split('+');
         if (authors.length >= 2) {
           this.selectedAuthors = authors;
+          let authorData = [];
+          fetch(`https://mmp.acdh-dev.oeaw.ac.at/api/autor/?format=json&ids=${authors.join(',')}`)
+            .then((res) => res.json())
+            .then((jsonRes) => {
+              authorData = jsonRes.results;
+              console.log('Author Data', authorData);
+            })
+            .catch((err) => {
+              console.error(err);
+            })
+            .finally(() => {
+              this.loading -= 1;
+            });
           Promise.all(authors.map((x) => fetch(`https://mmp.acdh-dev.oeaw.ac.at/archiv/keyword-data/?has_usecase=${this.hasUsecase}&rvn_stelle_key_word_keyword__text__autor=${x}`)))
             .then((res) => {
               Promise.all(res.map((x) => x.json()))
@@ -393,11 +407,36 @@ export default {
                   console.log('Author Graph Results', jsonRes);
                   const allNodes = [];
                   const allEdges = [];
+                  let coords = [];
+                  switch (jsonRes.length) {
+                    case 2:
+                      coords = [[-1, -1], [1, 1]];
+                      break;
+                    case 3:
+                      coords = [[-1, -1], [1, -1], [0, 1]];
+                      break;
+                    case 4:
+                      coords = [[-1, -1], [1, -1], [-1, 1], [1, 1]];
+                      break;
+                    default:
+                      break;
+                  }
                   jsonRes.forEach((json, i) => {
+                    console.log('coords pre', coords);
+                    if (coords.length === i) {
+                      const rad = (i / jsonRes.length) * 2 * Math.PI;
+                      coords.push([Math.cos(rad), Math.sin(rad)]);
+                    }
+                    console.log('author label data', this.getIdFromUrl(authorData[i].url),
+                      authors[i],
+                      authorData.filter((author) => this.getIdFromUrl(author.url) === authors[i])[0]);
+
                     allNodes.push({
                       id: `author_${authors[i]}`,
-                      label: `Author ${i + 1}`,
+                      label: this.getOptimalName(authorData.filter((author) => this.getIdFromUrl(author.url) === authors[i])[0]),
                       keyword_type: 'Author',
+                      fx: coords[i][0] * 500,
+                      fy: coords[i][1] * 250,
                     });
                     json.nodes.forEach((node, j) => {
                       allEdges.push({
@@ -415,12 +454,13 @@ export default {
                     };
                     console.log('New Graph', this.graph);
                   });
+                  console.log('coords post', coords);
                 })
                 .catch((err) => {
                   console.error(err);
                 })
                 .finally(() => {
-                  this.loading = false;
+                  this.loading -= 1;
                 });
             });
         } else this.selectedAuthors = [];
