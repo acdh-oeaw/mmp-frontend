@@ -405,7 +405,8 @@ export default {
               Promise.all(res.map((x) => x.json()))
                 .then((jsonRes) => {
                   console.log('Author Graph Results', jsonRes);
-                  const allNodes = [];
+                  let intersectedNodes = [];
+                  const authorNodes = [];
                   const allEdges = [];
                   let coords = [];
                   switch (jsonRes.length) {
@@ -431,7 +432,7 @@ export default {
                       authors[i],
                       authorData.filter((author) => this.getIdFromUrl(author.url) === authors[i])[0]);
 
-                    allNodes.push({
+                    authorNodes.push({
                       id: `author_${authors[i]}`,
                       label: this.getOptimalName(authorData.filter((author) => this.getIdFromUrl(author.url) === authors[i])[0]),
                       keyword_type: 'Author',
@@ -445,16 +446,20 @@ export default {
                         source: `author_${authors[i]}`,
                       });
                     });
-                    allNodes.push(...json.nodes);
                     allEdges.push(...json.edges);
-
-                    this.graph = {
-                      edges: allEdges,
-                      nodes: this.removeDuplicates(allNodes, 'id'),
-                    };
-                    console.log('New Graph', this.graph);
+                    if (i === 0) intersectedNodes = json.nodes;
+                    else intersectedNodes = this.intersectArrays(intersectedNodes, json.nodes);
+                    console.log('intersections', intersectedNodes);
                   });
-                  console.log('coords post', coords);
+                  const allNodes = [...authorNodes, ...intersectedNodes];
+                  const nodeIds = allNodes.map((x) => x.id);
+                  const filteredEdges = allEdges.filter((edge) => nodeIds.includes(edge.target) && nodeIds.includes(edge.source));
+                  console.log('filters', nodeIds, allNodes, filteredEdges);
+
+                  this.graph = {
+                    edges: filteredEdges,
+                    nodes: allNodes,
+                  };
                 })
                 .catch((err) => {
                   console.error(err);

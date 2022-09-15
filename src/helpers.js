@@ -92,6 +92,7 @@ export default {
         return !newKeys.some(uneq);
       }));
     },
+    intersectArrays: (arr1, arr2, key) => arr1.filter((x) => arr2.some((y) => x[key] === y[key])),
     removeRoot: (label) => label.split(', [')[0],
     shorten: (str, n) => (str.length > n ? `${str.substring(0, n)}...` : str),
   },
