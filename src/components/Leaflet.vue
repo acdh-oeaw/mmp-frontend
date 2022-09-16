@@ -375,7 +375,7 @@ export default {
     spatCovToAdd: {},
     strokeColor: '',
     clusterOptions: {
-      maxClusterRadius: 10,
+      maxClusterRadius: 40,
       disableClusteringAtZoom: 8,
       spiderfyDistanceMultiplier: 2,
       spiderfyDistanceSurplus: 50,
@@ -531,7 +531,7 @@ export default {
           )
           .on({
             click: () => {
-              this.$refs.map.mapObject.fitBounds(layer.getBounds());
+              // this.$refs.map.mapObject.fitBounds(layer.getBounds());
               this.$router.push({
                 name: this.fullscreen ? 'Spatial Detail Fullscreen' : 'Spatial Detail',
                 query: this.usecase ? this.addParamsToQuery({ 'Use Case': this.usecase }) : this.$route.query,
@@ -629,12 +629,19 @@ export default {
           )
           .on({
             click: () => {
-              this.$refs.map.mapObject.fitBounds(L.latLngBounds(feature.geometry.polygonCoords));
               this.$router.push({
                 name: this.fullscreen ? 'Spatial Detail Fullscreen' : 'Spatial Detail',
                 query: this.usecase ? this.addParamsToQuery({ 'Use Case': this.usecase }) : this.$route.query,
                 params: { id: feature.id },
               });
+              // this.$refs.map.mapObject.fitBounds(L.latLngBounds(feature.geometry.polygonCoords));
+              console.log(this.spatCovToAdd);
+              if (this.spatCovToAdd.options) {
+                this.disableSpatCov();
+              }
+              this.enableSpatCov(feature.id);
+              this.spatCovToAdd.bringToFront();
+              console.log(feature.id, this.spatCovToAdd, 'test');
             },
           })
           .on({
@@ -645,6 +652,9 @@ export default {
           .on({
             mouseout: () => {
               this.playdownPoly(feature.id, 'cone');
+              if (this.spatCovToAdd.options) {
+                this.disableSpatCov();
+              }
             },
           });
       };
@@ -752,7 +762,7 @@ export default {
           iconSize: 'auto',
           className: 'label',
         });
-        return L.marker(latlng, { icon: labelIcon });
+        return L.marker(latlng, { icon: labelIcon, autoPanOnFocus: false, riseOnHover: true });
       };
     },
     pointToCase() {
@@ -902,7 +912,9 @@ export default {
       const geojsonStyle = {
         color: '#ff7800',
       };
-      this.spatCovToAdd = L.geoJSON(spatCovLayer, { style: geojsonStyle });
+      console.log(spatCovLayer, 'spatCov');
+      this.$refs.map.mapObject.createPane('polygonsPane');
+      this.spatCovToAdd = L.geoJSON(spatCovLayer, { pane: 'polygonsPane', style: geojsonStyle });
       this.spatCovToAdd.addTo(this.$refs.map.mapObject);
     },
     disableSpatCov() {
