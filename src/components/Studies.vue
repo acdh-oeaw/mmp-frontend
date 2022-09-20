@@ -1,5 +1,12 @@
 <template>
   <v-container>
+    <!--
+    <v-row justify="center">
+      <v-col class="grey-bg" cols="10" xl="6">
+        <v-autocomplete placeholder="Search for case studies by authors or keywords" />
+      </v-col>
+    </v-row>
+    -->
     <v-row justify="center">
       <v-col cols="12" xl="8">
         <v-card class="study-card" v-for="study in studies" :key="study.url">

@@ -125,7 +125,7 @@ export default {
         // Passage: 'id', // not used anymore
         Keyword: this.$store.state.apiParams.intersect ? 'key_word' : 'key_word_and',
         'Use Case': 'use_case',
-        Place: 'ort',
+        Place: 'text__ort',
       };
 
       let address = `https://mmp.acdh-dev.oeaw.ac.at/api/stelle/?format=json&limit=${this.pagination.limit}&offset=${this.pagination.offset}&has_usecase=${this.hasUsecase}`;

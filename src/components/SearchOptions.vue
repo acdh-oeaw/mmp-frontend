@@ -73,34 +73,9 @@
       <v-divider />
       <v-checkbox
         label="Place"
-        v-model="place.model"
-        :indeterminate="place.indeterminate"
-        @change="changeSubCats($event, 'place')"
+        v-model="filters.place"
+        @change="changeValue($event, 'place')"
         color="green lighten-1"
-      />
-      <v-checkbox
-        label="Related to Text"
-        v-model="filters.place.text"
-        @change="changeValue($event, 'place.text')"
-        color="green lighten-1"
-        prepend-icon="mdi-chevron-right"
-        dense
-      />
-      <v-checkbox
-        label="Related to Passage"
-        v-model="filters.place.passage"
-        @change="changeValue($event, 'place.passage')"
-        color="green lighten-1"
-        prepend-icon="mdi-chevron-right"
-        dense
-      />
-      <v-checkbox
-        label="Related to Author related to Text"
-        v-model="filters.place.author"
-        @change="changeValue($event, 'place.author')"
-        color="green lighten-1"
-        prepend-icon="mdi-chevron-right"
-        dense
       />
       <v-divider />
       <v-radio-group
@@ -148,10 +123,6 @@ export default {
   name: 'SearchOptionDialog',
   data: () => ({
     all: {
-      model: true,
-      indeterminate: false,
-    },
-    place: {
       model: true,
       indeterminate: false,
     },
@@ -209,7 +180,6 @@ export default {
     filters: {
       handler(val) {
         this.handleCategories('keyword', Object.values(this.filters.keyword));
-        this.handleCategories('place', Object.values(this.filters.place));
 
         let allArray = [];
         Object.entries(val).forEach((entry) => {

@@ -443,7 +443,7 @@ export default {
       if (filters.passage) urls.Passage = `https://mmp.acdh-dev.oeaw.ac.at/archiv-ac/stelle-autocomplete/?q=${val}`;
       if (Object.values(filters.keyword).some((x) => x)) urls.Keyword = `https://mmp.acdh-dev.oeaw.ac.at/archiv-ac/keyword-autocomplete/?q=${val}`;
       if (filters.usecase) urls['Use Case'] = `https://mmp.acdh-dev.oeaw.ac.at/archiv-ac/usecase-autocomplete/?q=${val}`;
-      if (Object.values(filters.place).some((x) => x)) urls.Place = `https://mmp.acdh-dev.oeaw.ac.at/archiv-ac/ort-autocomplete/?q=${val}`;
+      if (filters.place) urls.Place = `https://mmp.acdh-dev.oeaw.ac.at/archiv-ac/ort-autocomplete/?q=${val}`;
 
       const labels = ['Author', 'Passage', 'Keyword', 'Use Case', 'Place'];
       const prefetched = this.$store.state.fetchedResults[JSON.stringify(urls)];
