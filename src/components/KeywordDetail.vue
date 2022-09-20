@@ -93,7 +93,7 @@
             <v-row>
               <v-col>
                 <v-btn light outlined block class="detail-button" :to="{
-                  name: fullscreen ? 'Keyword Detail Fullscreen' : 'Keyword Detail',
+                  name: fullscreen ? 'Keyword Detail Beta Fullscreen' : 'Keyword Detail Beta',
                   params: { id: $route.params.id },
                   query: addParamsToQuery({ Keyword: $route.params.id }),
                 }">
