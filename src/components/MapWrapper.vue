@@ -148,5 +148,8 @@ export default {
       immediate: true,
     },
   },
+  created() {
+    this.$root.$refs.mapWrap = this;
+  },
 };
 </script>

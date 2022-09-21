@@ -58,7 +58,7 @@
                 v-model="showLayers.spatial"
                 color="red darken-1"
                 dense
-                :disabled="!(data[0] && data[0].count) || (useCaseThree === '3')"
+                :disabled="!(data[0] && data[0].count) || (this.$root.$refs.mapWrap.$route.query['Use Case'] === '3')"
               >
                 <template v-slot:label>
                   Spatial&nbsp;Coverage&nbsp;
@@ -217,7 +217,7 @@
         </v-menu>
       </l-control>
       <l-geo-json
-        v-if="(data[0] && showLayers.spatial) || (useCaseThree === '3')"
+        v-if="(data[0] && showLayers.spatial) || (this.$root.$refs.mapWrap.$route.query['Use Case'] !== '3')"
         :geojson="data[0]"
         :options="{ onEachFeature: onEach }"
         :options-style="spatialStyle"
@@ -267,6 +267,12 @@
           :geojson="majorTowns"
           :options="optionsTowns"
           ref="towns"
+        />
+        <l-geo-json
+          :geojson="langobardenPoints"
+          :options="optionsLangobarden"
+          ref="langobarden"
+          v-if="showLayers.langobardenPoints"
         />
       <template v-if="showLayers.relatedPlaces">
         <l-marker
@@ -364,6 +370,7 @@ import kingdoms800Geojson from '@/assets/kingdoms_800.geojson';
 import romanRoadsGeojson from '@/assets/RomanRoads.geojson';
 import majorTowns800 from '@/assets/DARMC_Medieval_World_814.geojson';
 import majorTowns1000 from '@/assets/DARMC_Medieval_World_1000.geojson';
+import langobarden from '@/assets/langobarden_karte.geojson';
 
 import Vue2LeafletMarkercluster from 'vue2-leaflet-markercluster';
 import 'leaflet.markercluster.placementstrategies';
@@ -391,7 +398,7 @@ export default {
       },
       elementsPlacementStrategy: 'clock',
       helpingCircles: false,
-      spiderLegPolylineOptions: { weight: 3, color: '#ffffff', opacity: 1 },
+      spiderLegPolylineOptions: { weight: 5, color: '#ffffff', opacity: 1 },
       // eslint-disable-next-line
       iconCreateFunction: (() => {
         return new L.DivIcon({
@@ -410,7 +417,7 @@ export default {
     sources: '',
     romanRoads: {},
     majorTowns: {},
-    useCaseThree: window.location.href.split('=')[1],
+    langobardenPoints: JSON.parse(JSON.stringify(langobarden)),
     bounds: latLngBounds([
       [34.016242, 5.488281],
       [71.663663, 34.667969],
@@ -473,6 +480,7 @@ export default {
         caseStudy: false,
         romanRoads: false,
         majorTowns: false,
+        langobardenPoints: false,
       },
     },
     origins: {
@@ -539,9 +547,7 @@ export default {
               });
             },
           });
-        // eslint-disable-next-line prefer-destructuring
-        this.usecaseThree = window.location.href.split('=')[1];
-        if (+this.usecaseThree === 3 && feature.properties.cone === undefined) {
+        if (this.$root.$refs.mapWrap.$route.query['Use Case'] === '3' && feature.properties.cone === undefined) {
           layer.setStyle({ fillOpacity: 0 });
           layer.unbindTooltip();
         }
@@ -592,6 +598,12 @@ export default {
       return {
         pointToLayer: this.pointToLayer,
         onEachFeature: this.onEachPlace,
+      };
+    },
+    optionsLangobarden() {
+      return {
+        pointToLayer: this.pointToLango,
+        onEachFeature: this.onEachLango,
       };
     },
     onEachPlace() {
@@ -667,6 +679,16 @@ export default {
           );
       };
     },
+    onEachLango() {
+      return (feature, layer) => {
+        layer
+          .bindTooltip(
+            `<div>Location: ${feature.properties['Location (Location)']}</div>
+             <div>Findings: ${feature.properties.Findings}</div>
+             <div>No burials total (SUM): ${feature.properties['No burials total (SUM)']}</div>`,
+          );
+      };
+    },
     onEachOrigin() {
       return (feature, layer) => {
         layer
@@ -735,6 +757,12 @@ export default {
             circleMarker = L.circleMarker(latlng, { radius: 5 });
           }
         }
+        return circleMarker;
+      };
+    },
+    pointToLango() {
+      return (feature, latlng) => {
+        const circleMarker = L.circleMarker(latlng, { radius: 5, color: 'white' });
         return circleMarker;
       };
     },
@@ -1212,8 +1240,12 @@ export default {
             });
           });
         }
-        const study = this.$route.query['Use Case'];
+
+        console.log(this.$root.$refs.mapWrap.$route.query['Use Case'] === '15', this.$root.$refs.mapWrap.$route.query['Use Case'] === '3', this.$root.$refs.mapWrap.$route.query['Use Case'], 'hereee');
+
         console.log(this.$store.state, this.$route.query['Use Case'], 'study');
+
+        const study = this.$route.query['Use Case'];
         if (study) {
           const url = `https://mmp.acdh-dev.oeaw.ac.at/api/usecase/${study}?format=json`;
           fetch(url)
@@ -1258,6 +1290,7 @@ export default {
   updated() {
     this.updateFuzzy();
     this.townsToFront();
+    this.showLayers.langobardenPoints = (this.$root.$refs.mapWrap.$route.query['Use Case'] === '15');
   },
 };
 </script>
