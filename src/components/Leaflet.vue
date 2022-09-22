@@ -378,12 +378,12 @@ import 'leaflet.markercluster.placementstrategies';
 export default {
   name: 'Leaflet',
   data: () => ({
-    zoom: 10,
+    zoom: 4,
     spatCovToAdd: {},
     strokeColor: '',
     clusterOptions: {
       maxClusterRadius: 40,
-      disableClusteringAtZoom: 8,
+      disableClusteringAtZoom: 5,
       spiderfyDistanceMultiplier: 2,
       spiderfyDistanceSurplus: 50,
       firstCircleElements: 0.1,
@@ -720,9 +720,9 @@ export default {
                 const filter = document.getElementsByClassName(`id_${id}`)[0].classList[0];
                 document.getElementsByClassName(`id_${id} cone`)[0].setAttribute('stroke-width', 0);
                 document.getElementsByClassName(`id_${id} cone`)[0].setAttribute('filter', `url(#${filter})`);
-                if (this.$refs.spatCov !== undefined) {
+                if (this.$refs.cones !== undefined) {
                   // eslint-disable-next-line
-                  Object.values(this.$refs.spatCov.mapObject._layers).forEach((i) => {
+                  Object.values(this.$refs.cones.mapObject._layers).forEach((i) => {
                     if (i.feature.id === id) { i.bringToBack(); }
                   });
                 }
