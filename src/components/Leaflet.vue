@@ -58,7 +58,7 @@
                 v-model="showLayers.spatial"
                 color="red darken-1"
                 dense
-                :disabled="!(data[0] && data[0].count) || (this.$root.$refs.mapWrap.$route.query['Use Case'] === '3')"
+                :disabled="!(data[0] && data[0].count) || (this.$route.query['Use Case'] === '3')"
               >
                 <template v-slot:label>
                   Spatial&nbsp;Coverage&nbsp;
@@ -539,7 +539,6 @@ export default {
           )
           .on({
             click: () => {
-              // this.$refs.map.mapObject.fitBounds(layer.getBounds());
               this.$router.push({
                 name: this.fullscreen ? 'Spatial Detail Fullscreen' : 'Spatial Detail',
                 query: this.usecase ? this.addParamsToQuery({ 'Use Case': this.usecase }) : this.$route.query,
@@ -547,7 +546,7 @@ export default {
               });
             },
           });
-        if (this.$root.$refs.mapWrap.$route.query['Use Case'] === '3' && feature.properties.cone === undefined) {
+        if (this.$route.query['Use Case'] === '3' && feature.properties.cone === undefined) {
           layer.setStyle({ fillOpacity: 0 });
           layer.unbindTooltip();
         }
@@ -1241,7 +1240,7 @@ export default {
           });
         }
 
-        console.log(this.$root.$refs.mapWrap.$route.query['Use Case'] === '15', this.$root.$refs.mapWrap.$route.query['Use Case'] === '3', this.$root.$refs.mapWrap.$route.query['Use Case'], 'hereee');
+        console.log(this.$route.query['Use Case'], 'hereee');
 
         console.log(this.$store.state, this.$route.query['Use Case'], 'study');
 
@@ -1290,7 +1289,7 @@ export default {
   updated() {
     this.updateFuzzy();
     this.townsToFront();
-    this.showLayers.langobardenPoints = (this.$root.$refs.mapWrap.$route.query['Use Case'] === '15');
+    this.showLayers.langobardenPoints = (this.$route.query['Use Case'] === '15');
   },
 };
 </script>
