@@ -326,16 +326,6 @@ export default {
       // eslint-disable-next-line no-alert
       alert(':^)');
     },
-    getChipColorFromGroup(group) {
-      const colors = {
-        Author: 'red lighten-3',
-        Passage: 'teal lighten-4',
-        Keyword: 'blue lighten-4',
-        'Use Case': 'amber lighten-3',
-        Place: 'green lighten-3',
-      };
-      return colors[group];
-    },
     pushQuery() {
       this.$refs.autocomplete.blur(); // this is the only working solution I found to unfocus autocomplete
       this.tooltip = false;
@@ -383,7 +373,7 @@ export default {
     '$route.query': {
       handler(val) {
         const filteredParams = Object.fromEntries(Object.entries(val)
-          .filter((entry) => ['Author', 'Passage', 'Keyword', 'Use Case', 'Place', 'time'].includes(entry[0])));
+          .filter(([key]) => ['Author', 'Passage', 'Keyword', 'Use Case', 'Place', 'time'].includes(key)));
         if (this.autoQuery) { // you can disable this process
           console.log('route', this.$route);
           console.log('query', filteredParams, val);
@@ -399,7 +389,8 @@ export default {
           };
 
           Object.keys(filteredParams).forEach((cat) => {
-            if (cat === 'time') {
+            if (cat === 'time' && filteredParams[cat]) {
+              console.log('time debug', cat, filteredParams);
               this.range = filteredParams[cat].split('+').map((x) => parseInt(x, 10) / 10);
             } else if (filteredParams[cat]) {
               console.log('cat', cat, apiParams[cat]);

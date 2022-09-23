@@ -356,7 +356,7 @@ export default {
     },
     weightedGraph() {
       if (!this.graph) return null;
-      const ret = this.graph;
+      const ret = { ...this.graph };
       console.log('weightedGraph', ret);
 
       // filter types

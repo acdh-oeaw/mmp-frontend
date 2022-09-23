@@ -357,8 +357,22 @@ export default {
     },
     weightedGraph() {
       if (!this.graph) return null;
-      const ret = this.graph;
+      const ret = { ...this.graph };
       console.log('weightedGraph', ret);
+
+      // filter types
+      const blacklist = [];
+      ret.nodes = ret.nodes.filter((node) => {
+        if (this.typefilters[node.keyword_type]) return true;
+        blacklist.push(node.id);
+        return false;
+      });
+
+      console.log('blacklist', blacklist);
+
+      ret.edges = ret.edges.filter((edge) => !blacklist.includes(edge.target.id) && !blacklist.includes(edge.source.id));
+
+      // assign weight
       ret.edges.forEach((edge) => {
         const targetNode = ret.nodes.filter((node) => node.id === edge.source.id)[0];
         edge.color = this.lightenColor(this.keyColors.graph[targetNode?.keyword_type], 0.3) || '#D5D5D5';

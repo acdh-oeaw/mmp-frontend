@@ -31,41 +31,49 @@ export default {
         author: 'searchAuthors',
         passage: 'searchPassages',
         usecase: 'searchUsecases',
+        place: 'searchPlaces',
       };
       const subDict = {
         ethnonym: 'searchEthnonyms',
         name: 'searchNames',
         phrase: 'searchPhrases',
         region: 'searchRegions',
-        author: 'searchPlaceAuthors',
-        passage: 'searchPlacePassages',
-        text: 'searchPlaceTexts',
       };
 
-      entries.forEach((entry) => {
-        if (typeof entry[1] === 'object') {
-          Object.entries(entry[1]).forEach((subEntry) => {
-            if (!subEntry[1]) {
-              console.log('subentry', subEntry);
-              ret[subDict[subEntry[0]]] = 'false';
-            } else delete ret[subDict[subEntry[0]]];
+      entries.forEach(([key, val]) => {
+        if (typeof val === 'object') {
+          Object.entries(val).forEach(([subKey, subVal]) => {
+            if (!subVal) {
+              console.log('subentry', subKey, subVal);
+              ret[subDict[subKey]] = 'false';
+            } else delete ret[subDict[subKey]];
           });
-        } else if (!entry[1]) {
-          console.log('entry bool', entry);
-          ret[dict[entry[0]]] = 'false';
-        } else delete ret[dict[entry[0]]];
+        } else if (!val) {
+          console.log('entry bool', key, val);
+          ret[dict[key]] = 'false';
+        } else delete ret[dict[key]];
       });
       if (apiParams.hasUsecase !== 'true') ret.hasUsecase = apiParams.hasUsecase;
       else delete ret.hasUsecase;
       if (!apiParams.intersect) ret.intersect = 'false';
       else delete ret.intersect;
-      if (apiParams.slider !== 'passage') ret.slider = apiParams.hasUsecase;
+      if (apiParams.slider !== 'passage') ret.slider = 'text';
       else delete ret.slider;
 
       // console.log('addParams', entries, ret);
       return ret;
     },
     displayTimeRange: (start, end) => (start || end ? `${start || 'unknown'} - ${end || 'unknown'}` : 'unknown'),
+    getChipColorFromGroup(group) {
+      const colors = {
+        Author: 'red lighten-3',
+        Passage: 'teal lighten-4',
+        Keyword: 'blue lighten-4',
+        'Use Case': 'amber lighten-3',
+        Place: 'green lighten-3',
+      };
+      return colors[group];
+    },
     getOptimalName: (obj) => obj.name_en || obj.name_antik || obj.name_lat || obj.name || obj.name_fr || obj.name_it || obj.name_gr,
     getIdFromUrl: (url) => url.replace(/\D/g, ''),
     lightenColor(color, fade) {
