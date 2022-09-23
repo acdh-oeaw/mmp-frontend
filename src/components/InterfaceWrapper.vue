@@ -206,8 +206,8 @@
                         </v-btn>
                         <v-divider />
                         <v-radio-group label="Timeslider should filter for:" v-model="slideOption">
-                          <v-radio label="Passages" color="teal lighten-2" value="passage" />
-                          <v-radio label="Texts" color="red darken-4" value="text" />
+                          <v-radio label="Temporal Coverage" color="teal lighten-2" value="passage" />
+                          <v-radio label="Time of composition" color="red darken-4" value="text" />
                         </v-radio-group>
                       </v-card-text>
                     </v-card>
