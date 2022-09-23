@@ -17,8 +17,10 @@
               name: fullscreen ? 'List Fullscreen' : 'List',
               query: addParamsToQuery({ Keyword: $route.params.id }),
             }">
-              {{ data.passages.count }} passage{{ data.passages && data.passages.count === 1 ? '' : 's' }}<v-icon small>mdi-link</v-icon>
-            </router-link>,
+              <span v-if="data.passages">
+                {{ data.passages.count }} passage{{ data.passages.count === 1 ? '' : 's' }}<v-icon small>mdi-link</v-icon>,
+              </span>
+            </router-link>
             <router-link :to="{
               params: { id: $route.params.id },
               query: addParamsToQuery({ Keyword: $route.params.id }),
@@ -93,7 +95,7 @@
             <v-row>
               <v-col>
                 <v-btn light outlined block class="detail-button" :to="{
-                  name: fullscreen ? 'Keyword Detail Fullscreen' : 'Keyword Detail',
+                  name: fullscreen ? 'Keyword Detail Beta Fullscreen' : 'Keyword Detail Beta',
                   params: { id: $route.params.id },
                   query: addParamsToQuery({ Keyword: $route.params.id }),
                 }">

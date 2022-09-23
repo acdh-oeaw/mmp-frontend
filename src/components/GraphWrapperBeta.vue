@@ -31,7 +31,7 @@
       :height="fullscreen ? undefined : '500'"
       :zoomToFit="zoomToFit"
       :linkDirectionalArrowLength="2"
-      :refresh="this.renderKey"
+      :refresh="renderKey"
       :autoPauseRedraw="false"
       :nodeRelSize="4"
     />
@@ -199,19 +199,13 @@
           dense
           style="min-height: unset"
         >
-          <v-list-item-icon style="margin: 0">
-            <v-icon
-              :color="keyColors.graph[type]"
-              small
-            >
-              mdi-square
-            </v-icon>
-          </v-list-item-icon>
-          <v-list-item-content style="padding: 0">
-            <v-list-item-title>
-              {{ type }}
-            </v-list-item-title>
-          </v-list-item-content>
+          <v-checkbox
+            v-model="typefilters[type]"
+            :color="keyColors.graph[type]"
+            :label="type"
+            dense
+            hide-details
+          />
         </v-list-item>
       </v-list>
     </div>
@@ -236,6 +230,12 @@ export default {
     graph: null,
     loading: false,
     paused: true,
+    typefilters: {
+      Region: true,
+      Ethnonym: true,
+      Keyword: true,
+      Name: true,
+    },
     renderKey: 0,
     zoomToFit: true,
   }),
@@ -356,8 +356,22 @@ export default {
     },
     weightedGraph() {
       if (!this.graph) return null;
-      const ret = this.graph;
+      const ret = { ...this.graph };
       console.log('weightedGraph', ret);
+
+      // filter types
+      const blacklist = [];
+      ret.nodes = ret.nodes.filter((node) => {
+        if (this.typefilters[node.keyword_type]) return true;
+        blacklist.push(node.id);
+        return false;
+      });
+
+      console.log('blacklist', blacklist);
+
+      ret.edges = ret.edges.filter((edge) => !blacklist.includes(edge.target.id) && !blacklist.includes(edge.source.id));
+
+      // assign weight
       ret.edges.forEach((edge) => {
         const targetNode = ret.nodes.filter((node) => node.id === edge.source.id)[0];
         edge.color = this.lightenColor(this.keyColors.graph[targetNode?.keyword_type], 0.3) || '#D5D5D5';
@@ -366,7 +380,7 @@ export default {
         else if (targetNode) targetNode.val = 2;
       });
 
-      ret.nodes.map((node) => {
+      ret.nodes = ret.nodes.map((node) => {
         const retNode = node;
         retNode.color = this.keyColors.graph[node.keyword_type];
         return retNode;
@@ -472,6 +486,12 @@ export default {
       deep: true,
       immediate: true,
     },
+    typefilters: {
+      handler() {
+        this.renderKey += 1;
+      },
+      deep: true,
+    },
   },
 };
 </script>
@@ -484,5 +504,8 @@ export default {
     width: min-content;
     position: absolute;
     bottom: 0;
+  }
+  div.v-input--selection-controls__input {
+    height: 0px;
   }
 </style>

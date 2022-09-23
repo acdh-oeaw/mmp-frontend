@@ -181,7 +181,7 @@ const routes = [
       {
         path: 'compare',
         name: 'Compare Authors Fullscreen',
-        component: GraphBeta,
+        component: CompareAuthors,
         children: [
           {
             path: 'detail/:id',

@@ -357,8 +357,22 @@ export default {
     },
     weightedGraph() {
       if (!this.graph) return null;
-      const ret = this.graph;
+      const ret = { ...this.graph };
       console.log('weightedGraph', ret);
+
+      // filter types
+      const blacklist = [];
+      ret.nodes = ret.nodes.filter((node) => {
+        if (this.typefilters[node.keyword_type]) return true;
+        blacklist.push(node.id);
+        return false;
+      });
+
+      console.log('blacklist', blacklist);
+
+      ret.edges = ret.edges.filter((edge) => !blacklist.includes(edge.target.id) && !blacklist.includes(edge.source.id));
+
+      // assign weight
       ret.edges.forEach((edge) => {
         const targetNode = ret.nodes.filter((node) => node.id === edge.source.id)[0];
         edge.color = this.lightenColor(this.keyColors.graph[targetNode?.keyword_type], 0.3) || '#D5D5D5';
@@ -383,21 +397,61 @@ export default {
   watch: {
     '$route.query': {
       handler(query) {
+        this.loading = 2;
         const authors = query.Author.split('+');
         if (authors.length >= 2) {
           this.selectedAuthors = authors;
+          let authorData = [];
+          fetch(`https://mmp.acdh-dev.oeaw.ac.at/api/autor/?format=json&ids=${authors.join(',')}`)
+            .then((res) => res.json())
+            .then((jsonRes) => {
+              authorData = jsonRes.results;
+              console.log('Author Data', authorData);
+            })
+            .catch((err) => {
+              console.error(err);
+            })
+            .finally(() => {
+              this.loading -= 1;
+            });
           Promise.all(authors.map((x) => fetch(`https://mmp.acdh-dev.oeaw.ac.at/archiv/keyword-data/?has_usecase=${this.hasUsecase}&rvn_stelle_key_word_keyword__text__autor=${x}`)))
             .then((res) => {
               Promise.all(res.map((x) => x.json()))
                 .then((jsonRes) => {
                   console.log('Author Graph Results', jsonRes);
-                  const allNodes = [];
+                  let intersectedNodes = [];
+                  const authorNodes = [];
                   const allEdges = [];
+                  let coords = [];
+                  switch (jsonRes.length) {
+                    case 2:
+                      coords = [[-1, -1], [1, 1]];
+                      break;
+                    case 3:
+                      coords = [[-1, -1], [1, -1], [0, 1]];
+                      break;
+                    case 4:
+                      coords = [[-1, -1], [1, -1], [-1, 1], [1, 1]];
+                      break;
+                    default:
+                      break;
+                  }
                   jsonRes.forEach((json, i) => {
-                    allNodes.push({
+                    console.log('coords pre', coords);
+                    if (coords.length === i) {
+                      const rad = (i / jsonRes.length) * 2 * Math.PI;
+                      coords.push([Math.cos(rad), Math.sin(rad)]);
+                    }
+                    console.log('author label data', this.getIdFromUrl(authorData[i].url),
+                      authors[i],
+                      authorData.filter((author) => this.getIdFromUrl(author.url) === authors[i])[0]);
+
+                    authorNodes.push({
                       id: `author_${authors[i]}`,
-                      label: `Author ${i + 1}`,
+                      label: this.getOptimalName(authorData.filter((author) => this.getIdFromUrl(author.url) === authors[i])[0]),
                       keyword_type: 'Author',
+                      fx: coords[i][0] * 500,
+                      fy: coords[i][1] * 250,
                     });
                     json.nodes.forEach((node, j) => {
                       allEdges.push({
@@ -406,21 +460,26 @@ export default {
                         source: `author_${authors[i]}`,
                       });
                     });
-                    allNodes.push(...json.nodes);
                     allEdges.push(...json.edges);
-
-                    this.graph = {
-                      edges: allEdges,
-                      nodes: this.removeDuplicates(allNodes, 'id'),
-                    };
-                    console.log('New Graph', this.graph);
+                    if (i === 0) intersectedNodes = json.nodes;
+                    else intersectedNodes = this.intersectArrays(intersectedNodes, json.nodes);
+                    console.log('intersections', intersectedNodes);
                   });
+                  const allNodes = [...authorNodes, ...intersectedNodes];
+                  const nodeIds = allNodes.map((x) => x.id);
+                  const filteredEdges = allEdges.filter((edge) => nodeIds.includes(edge.target) && nodeIds.includes(edge.source));
+                  console.log('filters', nodeIds, allNodes, filteredEdges);
+
+                  this.graph = {
+                    edges: filteredEdges,
+                    nodes: allNodes,
+                  };
                 })
                 .catch((err) => {
                   console.error(err);
                 })
                 .finally(() => {
-                  this.loading = false;
+                  this.loading -= 1;
                 });
             });
         } else this.selectedAuthors = [];

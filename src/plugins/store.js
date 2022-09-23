@@ -30,11 +30,7 @@ export default new Vuex.Store({
         region: true,
       },
       usecase: true,
-      place: {
-        text: true,
-        passage: true,
-        author: true,
-      },
+      place: true,
     },
     apiParams: {
       hasUsecase: 'true', // theres three options so I cant use true booleans // ok i could but I dont want to and it doesnt matter

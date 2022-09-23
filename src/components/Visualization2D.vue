@@ -117,8 +117,11 @@ export default {
     },
   },
   watch: {
-    graph(val) {
-      this.graphDom.graphData(this.transformedData(val));
+    graph: {
+      handler(val) {
+        this.graphDom.graphData(this.transformedData(val));
+      },
+      deep: true,
     },
     refresh() {
       console.log('refresh called');
