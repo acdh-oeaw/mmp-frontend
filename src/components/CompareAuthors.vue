@@ -11,15 +11,15 @@
       opacity=".2"
       :value="!nodeCount || loading || !selectedAuthors.length"
     >
-      <h1 v-if="!loading" class="no-nodes">
-        Select two or more authors!
-      </h1>
-      <h1 v-else class="no-nodes">
-        <v-progress-circular
-          indeterminate
-          color="#0F1226"
-        />
-      </h1>
+    <h1 v-if="loading" class="no-nodes">
+      <v-progress-circular
+      indeterminate
+      color="#0F1226"
+      />
+    </h1>
+    <h1 v-if="!loading" class="no-nodes">
+      Select two or more authors!
+    </h1>
     </v-overlay>
     <visualization
       id="visId"
@@ -199,19 +199,13 @@
           dense
           style="min-height: unset"
         >
-          <v-list-item-icon style="margin: 0">
-            <v-icon
-              :color="keyColors.graph[type]"
-              small
-            >
-              mdi-square
-            </v-icon>
-          </v-list-item-icon>
-          <v-list-item-content style="padding: 0">
-            <v-list-item-title>
-              {{ type }}
-            </v-list-item-title>
-          </v-list-item-content>
+          <v-checkbox
+            v-model="typefilters[type]"
+            :color="keyColors.graph[type]"
+            :label="type"
+            dense
+            hide-details
+          />
         </v-list-item>
       </v-list>
     </div>
@@ -236,6 +230,13 @@ export default {
     graph: null,
     loading: false,
     paused: true,
+    typefilters: {
+      Author: true,
+      Region: true,
+      Ethnonym: true,
+      Keyword: true,
+      Name: true,
+    },
     renderKey: 0,
     zoomToFit: true,
     selectedAuthors: [],
@@ -288,7 +289,8 @@ export default {
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
 
-      const typeColor = this.keyColors.graph[node.keyword_type] || 'grey';
+      let typeColor = this.keyColors.graph[node.keyword_type] || 'grey';
+      if (!node.isConnected) typeColor = this.lightenColor(typeColor, 0.3);
 
       if (this.$route.params.id?.toString(10).split('+').includes(node.id.replace(/\D/g, ''))) {
         ctx.shadowColor = typeColor;
@@ -325,14 +327,22 @@ export default {
       } else q = id;
 
       if (q) {
-        this.$router.push({
-          name: this.fullscreen ? 'Keyword Detail Beta Fullscreen' : 'Keyword Detail Beta',
-          params: { id: q },
-          query: this.usecase ? { 'Use Case': this.usecase } : this.$route.query,
-        });
+        if (node.type === 'Author') {
+          this.$router.push({
+            name: this.fullscreen ? 'Compare Authors Author Detail Fullscreen' : 'Compare Authors Author Detail',
+            params: { id: q },
+            query: this.usecase ? { 'Use Case': this.usecase } : this.$route.query,
+          });
+        } else {
+          this.$router.push({
+            name: this.fullscreen ? 'Compare Authors Detail Fullscreen' : 'Compare Authors Detail',
+            params: { id: q },
+            query: this.usecase ? { 'Use Case': this.usecase } : this.$route.query,
+          });
+        }
       } else {
         this.$router.push({
-          name: this.fullscreen ? 'Network Graph Beta Fullscreen' : 'Network Graph Beta',
+          name: this.fullscreen ? 'Compare Authors Detail Fullscreen' : 'Compare Authors Detail',
           query: this.$route.query,
         });
       }
@@ -383,6 +393,13 @@ export default {
 
       ret.nodes.map((node) => {
         const retNode = node;
+        const authorIds = [...new Set(
+          ret.edges
+            .filter((edge) => edge.target === node.id && edge.source.includes('author'))
+            .map((edge) => edge.source),
+        )];
+        retNode.isConnected = authorIds.length === this.selectedAuthors.length;
+
         retNode.color = this.keyColors.graph[node.keyword_type];
         return retNode;
       });
@@ -398,7 +415,8 @@ export default {
     '$route.query': {
       handler(query) {
         this.loading = 2;
-        const authors = query.Author.split('+');
+
+        const authors = query.Author?.split('+') || [];
         if (authors.length >= 2) {
           this.selectedAuthors = authors;
           let authorData = [];
@@ -442,7 +460,7 @@ export default {
                       const rad = (i / jsonRes.length) * 2 * Math.PI;
                       coords.push([Math.cos(rad), Math.sin(rad)]);
                     }
-                    console.log('author label data', this.getIdFromUrl(authorData[i].url),
+                    console.log('author label data', authorData[i]?.url,
                       authors[i],
                       authorData.filter((author) => this.getIdFromUrl(author.url) === authors[i])[0]);
 
@@ -482,7 +500,10 @@ export default {
                   this.loading -= 1;
                 });
             });
-        } else this.selectedAuthors = [];
+        } else {
+          this.selectedAuthors = [];
+          this.loading = false;
+        }
       },
       deep: true,
       immediate: true,

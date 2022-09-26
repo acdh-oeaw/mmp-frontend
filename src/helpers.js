@@ -74,7 +74,7 @@ export default {
       };
       return colors[group];
     },
-    getOptimalName: (obj) => obj.name_en || obj.name_antik || obj.name_lat || obj.name || obj.name_fr || obj.name_it || obj.name_gr,
+    getOptimalName: (obj) => obj?.name_en || obj?.name_antik || obj?.name_lat || obj?.name || obj?.name_fr || obj?.name_it || obj?.name_gr,
     getIdFromUrl: (url) => url.replace(/\D/g, ''),
     lightenColor(color, fade) {
       if (!color) return color;
