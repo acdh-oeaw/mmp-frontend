@@ -217,7 +217,7 @@
         </v-menu>
       </l-control>
       <l-geo-json
-        v-if="(data[0] && showLayers.spatial) || (this.$root.$refs.mapWrap.$route.query['Use Case'] !== '3')"
+        v-if="(data[0] && showLayers.spatial) && (this.$root.$refs.mapWrap.$route.query['Use Case'] !== '3')"
         :geojson="data[0]"
         :options="{ onEachFeature: onEach }"
         :options-style="spatialStyle"
@@ -382,20 +382,13 @@ export default {
     spatCovToAdd: {},
     strokeColor: '',
     clusterOptions: {
-      maxClusterRadius: 40,
-      disableClusteringAtZoom: 5,
+      maxClusterRadius: 30,
+      disableClusteringAtZoom: 7,
       spiderfyDistanceMultiplier: 2,
       spiderfyDistanceSurplus: 50,
       firstCircleElements: 0.1,
       elementsMultiplier: 100,
       showCoverageOnHover: false,
-      clockHelpingCircleOptions: {
-        weight: 0.7,
-        opacity: 1,
-        color: 'black',
-        fillOpacity: 0,
-        dashArray: '10 5',
-      },
       elementsPlacementStrategy: 'clock',
       helpingCircles: false,
       spiderLegPolylineOptions: { weight: 5, color: '#ffffff', opacity: 1 },
