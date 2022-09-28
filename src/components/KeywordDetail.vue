@@ -179,11 +179,11 @@ export default {
     },
     xPressLinkName() {
       if (this.$route.name.includes('compare')) {
-        if (this.fullscreen) return 'Network Graph Beta Fullscreen';
-        return 'Network Graph Beta';
+        if (this.fullscreen) return 'Compare Authors Fullscreen';
+        return 'Compare Authors';
       }
-      if (this.fullscreen) return 'Compare Authors Fullscreen';
-      return 'Compare Authors';
+      if (this.fullscreen) return 'Network Graph Beta Fullscreen';
+      return 'Network Graph Beta';
     },
   },
   watch: {

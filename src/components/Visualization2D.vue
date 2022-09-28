@@ -61,7 +61,7 @@ export default {
         nodes: [...obj.nodes].sort((a, b) => b.val - a.val),
         links: obj.edges,
       };
-      console.log('transformedData', obj, sorted.nodes.map((x) => x.val));
+      // console.log('transformedData', obj, sorted.nodes.map((x) => x.val));
       return sorted;
     },
     addColorAndType(arr, typeArr) {
