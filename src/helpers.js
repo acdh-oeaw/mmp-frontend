@@ -74,7 +74,7 @@ export default {
       };
       return colors[group];
     },
-    getOptimalName: (obj) => obj.name_en || obj.name_antik || obj.name_lat || obj.name || obj.name_fr || obj.name_it || obj.name_gr,
+    getOptimalName: (obj) => obj?.name_en || obj?.name_antik || obj?.name_lat || obj?.name || obj?.name_fr || obj?.name_it || obj?.name_gr,
     getIdFromUrl: (url) => url.replace(/\D/g, ''),
     lightenColor(color, fade) {
       if (!color) return color;
@@ -101,7 +101,7 @@ export default {
       }));
     },
     intersectArrays: (arr1, arr2, key) => arr1.filter((x) => arr2.some((y) => x[key] === y[key])),
-    removeRoot: (label) => label.split(', [')[0],
+    removeRoot: (label) => label.split(/, (\[|<)/)[0],
     shorten: (str, n) => (str.length > n ? `${str.substring(0, n)}...` : str),
   },
   computed: {

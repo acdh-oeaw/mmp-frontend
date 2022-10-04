@@ -101,6 +101,11 @@ const routes = [
             name: 'Compare Authors Detail',
             component: KeywordDetail,
           },
+          {
+            path: 'author/:id',
+            name: 'Compare Authors Author Detail',
+            component: AuthorDetail,
+          },
         ],
       },
       {
@@ -187,6 +192,11 @@ const routes = [
             path: 'detail/:id',
             name: 'Compare Authors Detail Fullscreen',
             component: KeywordDetail,
+          },
+          {
+            path: 'author/:id',
+            name: 'Compare Authors Author Detail Fullscreen',
+            component: AuthorDetail,
           },
         ],
       },

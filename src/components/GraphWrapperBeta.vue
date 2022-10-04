@@ -27,6 +27,7 @@
       :onNodeClick="nodeClick"
       :onNodeDragEnd="nodeDragEnd"
       :nodeCanvasObject="nodeObject"
+      :nodePointerAreaPaint="areaPaint"
       :nodeCanvasObjectMode="() => 'replace'"
       :height="fullscreen ? undefined : '500'"
       :zoomToFit="zoomToFit"
@@ -280,8 +281,9 @@ export default {
     nodeObject(node, ctx, globalScale) {
       ctx.beginPath();
       const label = this.removeRoot(node.label);
+
       const fontSize = ((node.val || 1) / 5 + 18) / globalScale;
-      ctx.font = `${fontSize}px Sans-Serif`;
+      ctx.font = `${fontSize}px Roboto, Sans-Serif`;
       node.val = 1;
 
       ctx.textAlign = 'center';
@@ -305,6 +307,13 @@ export default {
       ctx.fillText(label, node.x, node.y);
 
       ctx.shadowBlur = 0;
+
+      node.area = [ctx.measureText(label).width, fontSize].map((n) => n + fontSize * 0.2); // for areapaint
+    },
+    areaPaint(node, color, ctx) {
+      ctx.fillStyle = color;
+      const bckgDimensions = node.area;
+      return bckgDimensions && ctx.fillRect(node.x - bckgDimensions[0] / 2, node.y - bckgDimensions[1] / 2, ...bckgDimensions);
     },
     nodeClick(node) {
       console.log('node clicked', node);
@@ -357,23 +366,40 @@ export default {
     weightedGraph() {
       if (!this.graph) return null;
       const ret = { ...this.graph };
-      console.log('weightedGraph', ret);
+      console.log('weightedGraph', ret.edges.map((edge) => edge.target));
+
+      const blacklist = [];
+
+      // filter by connection to selected keyword
+      if (this.$route.params.id) {
+        const neighborNodes = this.$route.params.id.split('+').map((nodeId) => `archiv__keyword__${nodeId}`);
+        console.log(neighborNodes);
+
+        if (neighborNodes.length && this.$route.query.showNeighborsOnly) {
+          ret.nodes = ret.nodes
+            .filter((node) => {
+              if (ret.edges.filter((edge) => (edge.source === node.id || edge.target === node.id)
+                && (neighborNodes.includes(edge.source) || neighborNodes.includes(edge.target))).length) return true;
+              blacklist.push(node.id);
+              return false;
+            });
+        }
+      }
 
       // filter types
-      const blacklist = [];
       ret.nodes = ret.nodes.filter((node) => {
         if (this.typefilters[node.keyword_type]) return true;
         blacklist.push(node.id);
         return false;
       });
 
-      console.log('blacklist', blacklist);
+      console.log('blacklist, filtered', blacklist, ret.edges, ret.nodes);
 
-      ret.edges = ret.edges.filter((edge) => !blacklist.includes(edge.target.id) && !blacklist.includes(edge.source.id));
+      ret.edges = ret.edges.filter((edge) => !blacklist.includes(edge.target) && !blacklist.includes(edge.source));
 
       // assign weight
       ret.edges.forEach((edge) => {
-        const targetNode = ret.nodes.filter((node) => node.id === edge.source.id)[0];
+        const targetNode = ret.nodes.filter((node) => node.id === edge.source)[0];
         edge.color = this.lightenColor(this.keyColors.graph[targetNode?.keyword_type], 0.3) || '#D5D5D5';
 
         if (targetNode?.val) targetNode.val += 1;
