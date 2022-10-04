@@ -8,6 +8,8 @@
       :width="width"
       :height="height"
       padding="2"
+      :onWordClick="() => null"
+      font="Roboto, sans-serif"
     />
   </div>
 </template>
@@ -34,7 +36,7 @@ export default {
   },
   methods: {
     sizeFunction(word) {
-      return Math.log2(word.value) * 10;
+      return (word.value * 400) / this.words.length;
     },
   },
   mounted() {
@@ -54,10 +56,6 @@ export default {
 };
 </script>
 <style>
-text.highcharts-point {
-  font-family: 'Roboto', sans-serif !important;
-  scale: 1.3;
-}
 .cloud-wrapper {
   height: 460px;
 }

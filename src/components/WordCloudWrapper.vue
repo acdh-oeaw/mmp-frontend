@@ -5,53 +5,20 @@
     :height="fullscreen ? 'calc(100vh - 4px)' : 500"
   >
     <v-overlay
-      v-if="false"
       absolute
       opacity=".2"
-      :value="loading || avgProgress < 100 || !filteredWords.some((x) => x.length)"
+      :value="loading"
     >
-      <h1 v-if="avgProgress < 100 && filteredWords.some((x) => x.length)" class="no-nodes">
+      <h1 class="no-nodes" v-if="loading">
         <v-progress-circular
-          :value="avgProgress"
-          :indeterminate="loading"
-          :active="avgProgress < 100 || loading"
+          indeterminate
           color="#0F1226"
         />
       </h1>
-      <h1 v-if="!loading && !filteredWords.some((x) => x.length)" class="no-nodes">
+      <h1 v-else class="no-nodes">
         No words found!
       </h1>
     </v-overlay>
-    <!--
-      <v-row
-        no-gutters
-        v-if="type === 'cloud'"
-      >
-        <template v-for="filtered, i in filteredWords">
-          <v-col v-if="showWords[i] && filtered.length"  :key="JSON.stringify(filtered) + i">
-            <word-cloud
-              :words="filtered"
-              :animation-duration="500"
-              :spacing=".08"
-              font-family="'Roboto', sans-serif"
-              @update:progress="updateProgress($event, i)"
-              :rotation="crossRotate"
-              :color="colorWords"
-              class="word-cloud"
-              :class="{ 'full-height': fullscreen }"
-            >
-              <!- - this would show word occurences when hovering over a specific word, but it looks bad - ->
-              <!- - <template slot-scope="{ text, weight }">
-                <div :title="weight" class="word">
-                  {{ text }}
-                </div>
-                <div class="wordHover">{{ text }}: {{ weight }}</div>
-              </template> - ->
-            </word-cloud>
-          </v-col>
-        </template>
-      </v-row>
-    -->
     <v-row v-if="type === 'pie'">
       <template v-for="filtered, i in filteredWords">
         <v-col
@@ -223,7 +190,6 @@
 </template>
 <script>
 import Gradient from 'javascript-color-gradient';
-// import WordCloud from 'vuewordcloud';
 
 import helpers from '@/helpers';
 import PieChart from './PieChart';
@@ -298,11 +264,13 @@ export default {
       this.words = words.map((x) => x.sort(this.sortWords));
       console.log('this.words', this.words);
       for (let i = 0; i < words.length; i += 1) {
-        for (let j = 1; words[i].length > 75; j += 1) words[i] = words[i].filter((entry) => entry[1] > j); // improves performance by a lot, removing unused words
+        for (let j = 1; words[i].length > 75; j += 1) {
+          words[i] = words[i].filter((entry) => entry[0].match(/\w+/g) && entry[1] > j);
+        } // improves performance by a lot, removing unused and non words
         words[i] = words[i].map((word) => [word[0].split(' (')[0], word[1]]); // removes unecessary tags
       }
       console.log('words', words);
-
+      this.loading -= 1;
       this.filteredWords = words;
     },
     sortWords(a, b) { // sorts after occurences, then alphabetically
@@ -311,13 +279,6 @@ export default {
       if (a[0] > b[0]) return 1;
       if (a[0] < b[0]) return -1;
       return 0;
-    },
-    updateProgress(obj, i) {
-      if (obj) {
-        this.progress[i] = Math.floor((100 * obj.completedWords) / obj.totalWords);
-        this.avgProgress = Math.floor((this.progress[0] + this.progress[1]) / this.progress.filter((x) => x.length).length);
-        // console.log('progress', this.progress, this.filteredWords.length, obj);
-      }
     },
   },
   computed: {
@@ -335,7 +296,7 @@ export default {
   watch: {
     '$route.query': {
       handler(query) {
-        this.loading = true;
+        this.loading = 2;
         this.words = [];
         let urls = [
           'https://mmp.acdh-dev.oeaw.ac.at/archiv/nlp-data/?',
@@ -415,7 +376,7 @@ export default {
                   console.error(err);
                 })
                 .finally(() => {
-                  this.loading = false;
+                  this.loading -= 1;
                 });
             })
             .catch((err) => {

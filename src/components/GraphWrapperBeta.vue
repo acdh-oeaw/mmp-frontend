@@ -27,6 +27,7 @@
       :onNodeClick="nodeClick"
       :onNodeDragEnd="nodeDragEnd"
       :nodeCanvasObject="nodeObject"
+      :nodePointerAreaPaint="areaPaint"
       :nodeCanvasObjectMode="() => 'replace'"
       :height="fullscreen ? undefined : '500'"
       :zoomToFit="zoomToFit"
@@ -282,7 +283,7 @@ export default {
       const label = this.removeRoot(node.label);
 
       const fontSize = ((node.val || 1) / 5 + 18) / globalScale;
-      ctx.font = `${fontSize}px Sans-Serif`;
+      ctx.font = `${fontSize}px Roboto, Sans-Serif`;
       node.val = 1;
 
       ctx.textAlign = 'center';
@@ -306,6 +307,13 @@ export default {
       ctx.fillText(label, node.x, node.y);
 
       ctx.shadowBlur = 0;
+
+      node.area = [ctx.measureText(label).width, fontSize].map((n) => n + fontSize * 0.2); // for areapaint
+    },
+    areaPaint(node, color, ctx) {
+      ctx.fillStyle = color;
+      const bckgDimensions = node.area;
+      return bckgDimensions && ctx.fillRect(node.x - bckgDimensions[0] / 2, node.y - bckgDimensions[1] / 2, ...bckgDimensions);
     },
     nodeClick(node) {
       console.log('node clicked', node);
