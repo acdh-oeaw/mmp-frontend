@@ -28,6 +28,7 @@
       :onNodeDragEnd="nodeDragEnd"
       :nodeCanvasObject="nodeObject"
       :nodeCanvasObjectMode="() => 'replace'"
+      :nodePointerAreaPaint="areaPaint"
       :height="fullscreen ? undefined : '500'"
       :zoomToFit="zoomToFit"
       :linkDirectionalArrowLength="2"
@@ -289,8 +290,8 @@ export default {
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
 
-      let typeColor = this.keyColors.graph[node.keyword_type] || 'grey';
-      if (!node.isConnected) typeColor = this.lightenColor(typeColor, 0.3);
+      const typeColor = this.keyColors.graph[node.keyword_type] || 'grey';
+      // if (!node.isConnected) typeColor = this.lightenColor(typeColor, 0.3);
 
       if (this.$route.params.id?.toString(10).split('+').includes(node.id.replace(/\D/g, ''))) {
         ctx.shadowColor = typeColor;
@@ -308,6 +309,13 @@ export default {
       ctx.fillText(label, node.x, node.y);
 
       ctx.shadowBlur = 0;
+
+      node.area = [ctx.measureText(label).width, fontSize].map((n) => n + fontSize * 0.2); // for areapaint
+    },
+    areaPaint(node, color, ctx) {
+      ctx.fillStyle = color;
+      const bckgDimensions = node.area;
+      return bckgDimensions && ctx.fillRect(node.x - bckgDimensions[0] / 2, node.y - bckgDimensions[1] / 2, ...bckgDimensions);
     },
     nodeClick(node) {
       console.log('node clicked', node);
