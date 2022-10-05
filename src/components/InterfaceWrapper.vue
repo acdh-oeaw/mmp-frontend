@@ -86,6 +86,7 @@
                   small
                   class="view-picker"
                   :disabled="currentView === 'List'"
+                  :class="{ active: currentView === 'List' }"
                   :to="{ name: 'List', query: addParamsToQuery(getQueryFromInput($store.state.autocomplete.input))}"
                 >
                   List
@@ -93,8 +94,14 @@
               </v-col>
               <v-col>
                 <v-btn-toggle background-color="transparent" borderless>
-                  <v-btn text small class="view-picker" :disabled="currentView === 'Graph'"
-                    :to="{ name: 'Network Graph Beta', query: addParamsToQuery(query) }">
+                  <v-btn
+                    text
+                    small
+                    class="view-picker"
+                    :disabled="currentView === 'Network Graph Beta'"
+                    :class="{ active: currentView === 'Network Graph Beta' }"
+                    :to="{ name: 'Network Graph Beta', query: addParamsToQuery(query) }"
+                  >
                     Network Graph
                   </v-btn>
                   <v-menu offset-y left>
@@ -110,10 +117,18 @@
                       </v-btn>
                     </template>
                     <v-list>
-                      <v-list-item :to="{ name: 'Network Graph Beta', query: addParamsToQuery(query) }">
+                      <v-list-item
+                        :disabled="currentView === 'Network Graph Beta'"
+                        :class="{ active: currentView === 'Network Graph Beta' }"
+                        :to="{ name: 'Network Graph Beta', query: addParamsToQuery(query) }"
+                      >
                         <v-list-item-title>Graph</v-list-item-title>
                       </v-list-item>
-                      <v-list-item :to="{ name: 'Compare Authors', query: addParamsToQuery(query) }">
+                      <v-list-item
+                        :disabled="currentView === 'Compare Authors'"
+                        :class="{ active: currentView === 'Compare Authors' }"
+                        :to="{ name: 'Compare Authors', query: addParamsToQuery(query) }"
+                      >
                         <v-list-item-title>Compare Authors</v-list-item-title>
                       </v-list-item>
                     </v-list>
@@ -121,13 +136,21 @@
                 </v-btn-toggle>
               </v-col>
               <v-col>
-                <v-btn text block small class="view-picker" :disabled="currentView === 'Map'"
-                  :to="{ name: 'Map', query: addParamsToQuery(query) }">
+                <v-btn
+                  text
+                  block
+                  small
+                  class="view-picker"
+                  :disabled="currentView === 'Map'"
+                  :class="{ active: currentView === 'Map' }"
+                  :to="{ name: 'Map', query: addParamsToQuery(query) }"
+                >
                   Map
                 </v-btn>
               </v-col>
               <v-col>
                 <v-btn text block small class="view-picker" :disabled="currentView === 'Word Cloud'"
+                  :class="{ active: currentView === 'Word Cloud' }"
                   :to="{ name: 'Word Cloud', query: addParamsToQuery(query) }">
                   Word Cloud
                 </v-btn>
@@ -476,7 +499,6 @@ export default {
 <style>
   div.row a.view-picker.theme--light.v-btn.v-btn--disabled {
     color: rgba(0, 0, 0, .87) !important;
-    background-color: #fff !important;
   }
   img.icon {
     height: 100%;
@@ -485,6 +507,9 @@ export default {
   /* makes elements read-only */
   .disable-events {
     pointer-events: none
+  }
+  .active {
+    background-color: #E5E7EB !important;
   }
   .grey-bg {
     background-color: #e8ebf0;

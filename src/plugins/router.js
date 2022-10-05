@@ -5,7 +5,6 @@ import Home from '@/components/Home';
 import Interface from '@/components/InterfaceWrapper';
 import Studies from '@/components/Studies';
 import CaseStudy from '@/components/CaseStudy';
-import Graph from '@/components/GraphWrapper';
 import GraphBeta from '@/components/GraphWrapperBeta';
 import CompareAuthors from '@/components/CompareAuthors';
 import Map from '@/components/MapWrapper';
@@ -64,18 +63,6 @@ const routes = [
             path: 'place/:id',
             name: 'Place Detail',
             component: PlaceDetail,
-          },
-        ],
-      },
-      {
-        path: 'graph-legacy',
-        name: 'Network Graph',
-        component: Graph,
-        children: [
-          {
-            path: 'detail/:id',
-            name: 'Keyword Detail',
-            component: KeywordDetail,
           },
         ],
       },
@@ -156,18 +143,6 @@ const routes = [
             path: 'place/:id',
             name: 'Place Detail Fullscreen',
             component: PlaceDetail,
-          },
-        ],
-      },
-      {
-        path: 'graph-legacy',
-        name: 'Network Graph Fullscreen',
-        component: Graph,
-        children: [
-          {
-            path: 'detail/:id',
-            name: 'Keyword Detail Fullscreen',
-            component: KeywordDetail,
           },
         ],
       },
