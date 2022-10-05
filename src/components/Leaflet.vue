@@ -58,7 +58,7 @@
                 v-model="showLayers.spatial"
                 color="red darken-1"
                 dense
-                :disabled="!(data[0] && data[0].count) || (useCaseThree === '3')"
+                :disabled="!(data[0] && data[0].count) || (this.$route.query['Use Case'] === '3')"
               >
                 <template v-slot:label>
                   Spatial&nbsp;Coverage&nbsp;
@@ -217,7 +217,7 @@
         </v-menu>
       </l-control>
       <l-geo-json
-        v-if="(data[0] && showLayers.spatial) || (useCaseThree === '3')"
+        v-if="(data[0] && showLayers.spatial) && (this.$root.$refs.mapWrap.$route.query['Use Case'] !== '3')"
         :geojson="data[0]"
         :options="{ onEachFeature: onEach }"
         :options-style="spatialStyle"
@@ -267,6 +267,12 @@
           :geojson="majorTowns"
           :options="optionsTowns"
           ref="towns"
+        />
+        <l-geo-json
+          :geojson="langobardenPoints"
+          :options="optionsLangobarden"
+          ref="langobarden"
+          v-if="showLayers.langobardenPoints"
         />
       <template v-if="showLayers.relatedPlaces">
         <l-marker
@@ -364,6 +370,7 @@ import kingdoms800Geojson from '@/assets/kingdoms_800.geojson';
 import romanRoadsGeojson from '@/assets/RomanRoads.geojson';
 import majorTowns800 from '@/assets/DARMC_Medieval_World_814.geojson';
 import majorTowns1000 from '@/assets/DARMC_Medieval_World_1000.geojson';
+import langobarden from '@/assets/langobarden_karte.geojson';
 
 import Vue2LeafletMarkercluster from 'vue2-leaflet-markercluster';
 import 'leaflet.markercluster.placementstrategies';
@@ -371,27 +378,20 @@ import 'leaflet.markercluster.placementstrategies';
 export default {
   name: 'Leaflet',
   data: () => ({
-    zoom: 10,
+    zoom: 4,
     spatCovToAdd: {},
     strokeColor: '',
     clusterOptions: {
-      maxClusterRadius: 10,
-      disableClusteringAtZoom: 8,
+      maxClusterRadius: 30,
+      disableClusteringAtZoom: 7,
       spiderfyDistanceMultiplier: 2,
       spiderfyDistanceSurplus: 50,
       firstCircleElements: 0.1,
       elementsMultiplier: 100,
       showCoverageOnHover: false,
-      clockHelpingCircleOptions: {
-        weight: 0.7,
-        opacity: 1,
-        color: 'black',
-        fillOpacity: 0,
-        dashArray: '10 5',
-      },
       elementsPlacementStrategy: 'clock',
       helpingCircles: false,
-      spiderLegPolylineOptions: { weight: 3, color: '#ffffff', opacity: 1 },
+      spiderLegPolylineOptions: { weight: 5, color: '#ffffff', opacity: 1 },
       // eslint-disable-next-line
       iconCreateFunction: (() => {
         return new L.DivIcon({
@@ -410,7 +410,7 @@ export default {
     sources: '',
     romanRoads: {},
     majorTowns: {},
-    useCaseThree: window.location.href.split('=')[1],
+    langobardenPoints: JSON.parse(JSON.stringify(langobarden)),
     bounds: latLngBounds([
       [34.016242, 5.488281],
       [71.663663, 34.667969],
@@ -473,6 +473,7 @@ export default {
         caseStudy: false,
         romanRoads: false,
         majorTowns: false,
+        langobardenPoints: false,
       },
     },
     origins: {
@@ -531,7 +532,6 @@ export default {
           )
           .on({
             click: () => {
-              this.$refs.map.mapObject.fitBounds(layer.getBounds());
               this.$router.push({
                 name: this.fullscreen ? 'Spatial Detail Fullscreen' : 'Spatial Detail',
                 query: this.usecase ? this.addParamsToQuery({ 'Use Case': this.usecase }) : this.$route.query,
@@ -539,9 +539,7 @@ export default {
               });
             },
           });
-        // eslint-disable-next-line prefer-destructuring
-        this.usecaseThree = window.location.href.split('=')[1];
-        if (+this.usecaseThree === 3 && feature.properties.cone === undefined) {
+        if (this.$route.query['Use Case'] === '3' && feature.properties.cone === undefined) {
           layer.setStyle({ fillOpacity: 0 });
           layer.unbindTooltip();
         }
@@ -594,6 +592,12 @@ export default {
         onEachFeature: this.onEachPlace,
       };
     },
+    optionsLangobarden() {
+      return {
+        pointToLayer: this.pointToLango,
+        onEachFeature: this.onEachLango,
+      };
+    },
     onEachPlace() {
       return (feature, layer) => {
         layer
@@ -629,12 +633,19 @@ export default {
           )
           .on({
             click: () => {
-              this.$refs.map.mapObject.fitBounds(L.latLngBounds(feature.geometry.polygonCoords));
               this.$router.push({
                 name: this.fullscreen ? 'Spatial Detail Fullscreen' : 'Spatial Detail',
                 query: this.usecase ? this.addParamsToQuery({ 'Use Case': this.usecase }) : this.$route.query,
                 params: { id: feature.id },
               });
+              // this.$refs.map.mapObject.fitBounds(L.latLngBounds(feature.geometry.polygonCoords));
+              console.log(this.spatCovToAdd);
+              if (this.spatCovToAdd.options) {
+                this.disableSpatCov();
+              }
+              this.enableSpatCov(feature.id);
+              this.spatCovToAdd.bringToFront();
+              console.log(feature.id, this.spatCovToAdd, 'test');
             },
           })
           .on({
@@ -645,6 +656,9 @@ export default {
           .on({
             mouseout: () => {
               this.playdownPoly(feature.id, 'cone');
+              if (this.spatCovToAdd.options) {
+                this.disableSpatCov();
+              }
             },
           });
       };
@@ -654,6 +668,16 @@ export default {
         layer
           .bindTooltip(
             `<div>Town: ${feature.properties.Name}</div>`,
+          );
+      };
+    },
+    onEachLango() {
+      return (feature, layer) => {
+        layer
+          .bindTooltip(
+            `<div>Location: ${feature.properties['Location (Location)']}</div>
+             <div>Findings: ${feature.properties.Findings}</div>
+             <div>No burials total (SUM): ${feature.properties['No burials total (SUM)']}</div>`,
           );
       };
     },
@@ -689,9 +713,9 @@ export default {
                 const filter = document.getElementsByClassName(`id_${id}`)[0].classList[0];
                 document.getElementsByClassName(`id_${id} cone`)[0].setAttribute('stroke-width', 0);
                 document.getElementsByClassName(`id_${id} cone`)[0].setAttribute('filter', `url(#${filter})`);
-                if (this.$refs.spatCov !== undefined) {
+                if (this.$refs.cones !== undefined) {
                   // eslint-disable-next-line
-                  Object.values(this.$refs.spatCov.mapObject._layers).forEach((i) => {
+                  Object.values(this.$refs.cones.mapObject._layers).forEach((i) => {
                     if (i.feature.id === id) { i.bringToBack(); }
                   });
                 }
@@ -728,6 +752,12 @@ export default {
         return circleMarker;
       };
     },
+    pointToLango() {
+      return (feature, latlng) => {
+        const circleMarker = L.circleMarker(latlng, { radius: 5, color: 'white' });
+        return circleMarker;
+      };
+    },
     pointToLabel() {
       return (feature, latlng) => {
         const nE = L.latLngBounds(feature.geometry.polygonCoords).getNorthEast();
@@ -752,7 +782,7 @@ export default {
           iconSize: 'auto',
           className: 'label',
         });
-        return L.marker(latlng, { icon: labelIcon });
+        return L.marker(latlng, { icon: labelIcon, autoPanOnFocus: false, riseOnHover: true });
       };
     },
     pointToCase() {
@@ -902,7 +932,9 @@ export default {
       const geojsonStyle = {
         color: '#ff7800',
       };
-      this.spatCovToAdd = L.geoJSON(spatCovLayer, { style: geojsonStyle });
+      console.log(spatCovLayer, 'spatCov');
+      this.$refs.map.mapObject.createPane('polygonsPane');
+      this.spatCovToAdd = L.geoJSON(spatCovLayer, { pane: 'polygonsPane', style: geojsonStyle });
       this.spatCovToAdd.addTo(this.$refs.map.mapObject);
     },
     disableSpatCov() {
@@ -1200,8 +1232,12 @@ export default {
             });
           });
         }
-        const study = this.$route.query['Use Case'];
+
+        console.log(this.$route.query['Use Case'], 'hereee');
+
         console.log(this.$store.state, this.$route.query['Use Case'], 'study');
+
+        const study = this.$route.query['Use Case'];
         if (study) {
           const url = `https://mmp.acdh-dev.oeaw.ac.at/api/usecase/${study}?format=json`;
           fetch(url)
@@ -1246,6 +1282,7 @@ export default {
   updated() {
     this.updateFuzzy();
     this.townsToFront();
+    this.showLayers.langobardenPoints = (this.$route.query['Use Case'] === '15');
   },
 };
 </script>
