@@ -100,7 +100,7 @@ g<template>
 <script>
 import WordCloudWrapper from './WordCloudWrapper';
 import List from './List';
-import Graph from './GraphWrapper';
+import Graph from './GraphWrapperBeta';
 import MapWrapper from './MapWrapper';
 
 export default {

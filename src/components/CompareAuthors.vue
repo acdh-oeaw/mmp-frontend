@@ -27,12 +27,12 @@
       :onNodeClick="nodeClick"
       :onNodeDragEnd="nodeDragEnd"
       :nodeCanvasObject="nodeObject"
-      :nodeCanvasObjectMode="() => 'replace'"
       :nodePointerAreaPaint="areaPaint"
+      :nodeCanvasObjectMode="() => 'replace'"
       :height="fullscreen ? undefined : '500'"
       :zoomToFit="zoomToFit"
       :linkDirectionalArrowLength="2"
-      :refresh="this.renderKey"
+      :refresh="renderKey"
       :autoPauseRedraw="false"
       :nodeRelSize="4"
     />
@@ -283,15 +283,15 @@ export default {
     nodeObject(node, ctx, globalScale) {
       ctx.beginPath();
       const label = this.removeRoot(node.label);
-      const fontSize = ((node.val || 1) / 5 + 18) / globalScale;
-      ctx.font = `${fontSize}px Sans-Serif`;
-      node.val = 1;
+
+      const fontSize = ((Math.log2(node.val) || 1) + 18) / globalScale;
+      ctx.font = `${fontSize}px Roboto, Sans-Serif`;
 
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
 
-      const typeColor = this.keyColors.graph[node.keyword_type] || 'grey';
-      // if (!node.isConnected) typeColor = this.lightenColor(typeColor, 0.3);
+      let typeColor = this.keyColors.graph[node.keyword_type] || 'grey';
+      if (!node.isConnected && node.keyword_type !== 'Author') typeColor = this.lightenColor(typeColor, 0.3);
 
       if (this.$route.params.id?.toString(10).split('+').includes(node.id.replace(/\D/g, ''))) {
         ctx.shadowColor = typeColor;
@@ -393,7 +393,8 @@ export default {
       // assign weight
       ret.edges.forEach((edge) => {
         const targetNode = ret.nodes.filter((node) => node.id === edge.source.id)[0];
-        edge.color = this.lightenColor(this.keyColors.graph[targetNode?.keyword_type], 0.3) || '#D5D5D5';
+        console.log('target', targetNode);
+        edge.color = targetNode?.keyword_type === 'Author' ? '#F85' : '#D5D5D5';
 
         if (targetNode?.val) targetNode.val += 1;
         else if (targetNode) targetNode.val = 2;
@@ -403,10 +404,12 @@ export default {
         const retNode = node;
         const authorIds = [...new Set(
           ret.edges
-            .filter((edge) => edge.target === node.id && edge.source.includes('author'))
+            .filter((edge) => edge.target.id === node.id && edge.source.id.includes('author'))
             .map((edge) => edge.source),
         )];
+
         retNode.isConnected = authorIds.length === this.selectedAuthors.length;
+        console.log('authorIds', authorIds, node.isConnected);
 
         retNode.color = this.keyColors.graph[node.keyword_type];
         return retNode;
@@ -427,86 +430,85 @@ export default {
         const authors = query.Author?.split('+') || [];
         if (authors.length >= 2) {
           this.selectedAuthors = authors;
-          let authorData = [];
           fetch(`https://mmp.acdh-dev.oeaw.ac.at/api/autor/?format=json&ids=${authors.join(',')}`)
             .then((res) => res.json())
-            .then((jsonRes) => {
-              authorData = jsonRes.results;
+            .then((authorJsonRes) => {
+              const authorData = authorJsonRes.results;
               console.log('Author Data', authorData);
+              Promise.all(authors.map((x) => fetch(`https://mmp.acdh-dev.oeaw.ac.at/archiv/keyword-data/?has_usecase=${this.hasUsecase}&rvn_stelle_key_word_keyword__text__autor=${x}`)))
+                .then((res) => {
+                  Promise.all(res.map((x) => x.json()))
+                    .then((jsonRes) => {
+                      console.log('Author Graph Results', jsonRes);
+                      let intersectedNodes = [];
+                      const authorNodes = [];
+                      const allEdges = [];
+                      let coords = [];
+                      switch (jsonRes.length) {
+                        case 2:
+                          coords = [[-1, -1], [1, 1]];
+                          break;
+                        case 3:
+                          coords = [[-1, -1], [1, -1], [0, 1]];
+                          break;
+                        case 4:
+                          coords = [[-1, -1], [1, -1], [-1, 1], [1, 1]];
+                          break;
+                        default:
+                          break;
+                      }
+                      jsonRes.forEach((json, i) => {
+                        console.log('coords pre', coords);
+                        if (coords.length === i) {
+                          const rad = (i / jsonRes.length) * 2 * Math.PI;
+                          coords.push([Math.cos(rad), Math.sin(rad)]);
+                        }
+                        console.log('author label data', authorData[i]?.url,
+                          authors[i],
+                          authorData.filter((author) => this.getIdFromUrl(author.url) === authors[i])[0]);
+
+                        authorNodes.push({
+                          id: `author_${authors[i]}`,
+                          label: this.getOptimalName(authorData.filter((author) => this.getIdFromUrl(author.url) === authors[i])[0]),
+                          keyword_type: 'Author',
+                          fx: coords[i][0] * 450,
+                          fy: coords[i][1] * 200,
+                        });
+                        json.nodes.forEach((node, j) => {
+                          allEdges.push({
+                            id: `custom_edge_${j}`,
+                            target: node.id,
+                            source: `author_${authors[i]}`,
+                          });
+                        });
+                        allEdges.push(...json.edges);
+                        if (i === 0) intersectedNodes = json.nodes;
+                        else intersectedNodes = this.intersectArrays(intersectedNodes, json.nodes);
+                        console.log('intersections', intersectedNodes);
+                      });
+                      const allNodes = [...authorNodes, ...intersectedNodes];
+                      const nodeIds = allNodes.map((x) => x.id);
+                      const filteredEdges = allEdges.filter((edge) => nodeIds.includes(edge.target) && nodeIds.includes(edge.source));
+                      console.log('filters', nodeIds, allNodes, filteredEdges);
+
+                      this.graph = {
+                        edges: filteredEdges,
+                        nodes: allNodes,
+                      };
+                    })
+                    .catch((err) => {
+                      console.error(err);
+                    })
+                    .finally(() => {
+                      this.loading -= 1;
+                    });
+                });
             })
             .catch((err) => {
               console.error(err);
             })
             .finally(() => {
               this.loading -= 1;
-            });
-          Promise.all(authors.map((x) => fetch(`https://mmp.acdh-dev.oeaw.ac.at/archiv/keyword-data/?has_usecase=${this.hasUsecase}&rvn_stelle_key_word_keyword__text__autor=${x}`)))
-            .then((res) => {
-              Promise.all(res.map((x) => x.json()))
-                .then((jsonRes) => {
-                  console.log('Author Graph Results', jsonRes);
-                  let intersectedNodes = [];
-                  const authorNodes = [];
-                  const allEdges = [];
-                  let coords = [];
-                  switch (jsonRes.length) {
-                    case 2:
-                      coords = [[-1, -1], [1, 1]];
-                      break;
-                    case 3:
-                      coords = [[-1, -1], [1, -1], [0, 1]];
-                      break;
-                    case 4:
-                      coords = [[-1, -1], [1, -1], [-1, 1], [1, 1]];
-                      break;
-                    default:
-                      break;
-                  }
-                  jsonRes.forEach((json, i) => {
-                    console.log('coords pre', coords);
-                    if (coords.length === i) {
-                      const rad = (i / jsonRes.length) * 2 * Math.PI;
-                      coords.push([Math.cos(rad), Math.sin(rad)]);
-                    }
-                    console.log('author label data', authorData[i]?.url,
-                      authors[i],
-                      authorData.filter((author) => this.getIdFromUrl(author.url) === authors[i])[0]);
-
-                    authorNodes.push({
-                      id: `author_${authors[i]}`,
-                      label: this.getOptimalName(authorData.filter((author) => this.getIdFromUrl(author.url) === authors[i])[0]),
-                      keyword_type: 'Author',
-                      fx: coords[i][0] * 500,
-                      fy: coords[i][1] * 250,
-                    });
-                    json.nodes.forEach((node, j) => {
-                      allEdges.push({
-                        id: `custom_edge_${j}`,
-                        target: node.id,
-                        source: `author_${authors[i]}`,
-                      });
-                    });
-                    allEdges.push(...json.edges);
-                    if (i === 0) intersectedNodes = json.nodes;
-                    else intersectedNodes = this.intersectArrays(intersectedNodes, json.nodes);
-                    console.log('intersections', intersectedNodes);
-                  });
-                  const allNodes = [...authorNodes, ...intersectedNodes];
-                  const nodeIds = allNodes.map((x) => x.id);
-                  const filteredEdges = allEdges.filter((edge) => nodeIds.includes(edge.target) && nodeIds.includes(edge.source));
-                  console.log('filters', nodeIds, allNodes, filteredEdges);
-
-                  this.graph = {
-                    edges: filteredEdges,
-                    nodes: allNodes,
-                  };
-                })
-                .catch((err) => {
-                  console.error(err);
-                })
-                .finally(() => {
-                  this.loading -= 1;
-                });
             });
         } else {
           this.selectedAuthors = [];
@@ -528,5 +530,8 @@ export default {
     width: min-content;
     position: absolute;
     bottom: 0;
+  }
+  div.v-input--selection-controls__input {
+    height: 0px;
   }
 </style>

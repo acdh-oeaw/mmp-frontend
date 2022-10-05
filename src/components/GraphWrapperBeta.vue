@@ -282,9 +282,8 @@ export default {
       ctx.beginPath();
       const label = this.removeRoot(node.label);
 
-      const fontSize = ((node.val || 1) / 5 + 18) / globalScale;
+      const fontSize = ((Math.log2(node.val) || 1) + 18) / globalScale;
       ctx.font = `${fontSize}px Roboto, Sans-Serif`;
-      node.val = 1;
 
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
@@ -395,11 +394,11 @@ export default {
 
       console.log('blacklist, filtered', blacklist, ret.edges, ret.nodes);
 
-      ret.edges = ret.edges.filter((edge) => !blacklist.includes(edge.target) && !blacklist.includes(edge.source));
+      ret.edges = ret.edges.filter((edge) => !blacklist.includes(edge.target.id) && !blacklist.includes(edge.source.id));
 
       // assign weight
       ret.edges.forEach((edge) => {
-        const targetNode = ret.nodes.filter((node) => node.id === edge.source)[0];
+        const targetNode = ret.nodes.filter((node) => node.id === edge.source.id)[0];
         edge.color = this.lightenColor(this.keyColors.graph[targetNode?.keyword_type], 0.3) || '#D5D5D5';
 
         if (targetNode?.val) targetNode.val += 1;
@@ -511,12 +510,6 @@ export default {
       },
       deep: true,
       immediate: true,
-    },
-    typefilters: {
-      handler() {
-        this.renderKey += 1;
-      },
-      deep: true,
     },
   },
 };

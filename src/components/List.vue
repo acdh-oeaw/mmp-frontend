@@ -69,6 +69,10 @@
         <!-- displays unkown if neither start nor end date are defined -->
         {{ (item.text ? displayTimeRange(item.text.start_date, item.text.end_date) : 'unknown') }}
       </template>
+      <template v-slot:[`item.coverage`]="{ item }">
+        <!-- displays nothing if neither start nor end date are defined -->
+        {{ displayTimeRange(item.start_date, item.end_date) }}
+      </template>
       <template v-slot:[`footer.prepend`]>
         <fullscreen-button left />
       </template>
@@ -91,6 +95,7 @@ export default {
       { text: 'Label', value: 'display_label' },
       { text: 'Keywords', value: 'keywords' },
       { text: 'Time Frame', value: 'written', width: '100px' },
+      { text: 'Coverage', value: 'coverage', width: '100px' },
     ],
     items: [],
     loading: false,

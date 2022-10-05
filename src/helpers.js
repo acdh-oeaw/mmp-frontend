@@ -63,7 +63,11 @@ export default {
       // console.log('addParams', entries, ret);
       return ret;
     },
-    displayTimeRange: (start, end) => (start || end ? `${start || 'unknown'} - ${end || 'unknown'}` : 'unknown'),
+    displayTimeRange: (start, end) => {
+      if (!start && !end) return 'unknown';
+      if (start === end) return start;
+      return `${start || 'unknown'} - ${end || 'unknown'}`;
+    },
     getChipColorFromGroup(group) {
       const colors = {
         Author: 'red lighten-3',
