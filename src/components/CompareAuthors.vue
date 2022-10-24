@@ -31,10 +31,12 @@
       :nodeCanvasObjectMode="() => 'replace'"
       :height="fullscreen ? undefined : '500'"
       :zoomToFit="zoomToFit"
-      :linkDirectionalArrowLength="2"
+      :linkDirectionalArrowLength="1.3"
       :refresh="renderKey"
       :autoPauseRedraw="false"
       :nodeRelSize="4"
+      :forceCenter="() => null"
+      :forceLink="linkForces"
     />
     <router-view />
     <v-speed-dial
@@ -284,7 +286,7 @@ export default {
       ctx.beginPath();
       const label = this.removeRoot(node.label);
 
-      const fontSize = ((Math.log2(node.val) || 1) + 18) / globalScale;
+      const fontSize = ((Math.log2(node.conns) || 1) + 18) / globalScale;
       ctx.font = `${fontSize}px Roboto, Sans-Serif`;
 
       ctx.textAlign = 'center';
@@ -368,6 +370,12 @@ export default {
       this.renderKey += 1;
       console.log('nodes unpinned', this.renderKey);
     },
+    linkForces() {
+      // eslint-disable-next-line global-require
+      const d3 = require('d3');
+      return d3.forceLink()
+        .strength((link) => (link.source.id.includes('author') ? 2 : 0));
+    },
   },
   computed: {
     nodeCount() {
@@ -393,11 +401,11 @@ export default {
       // assign weight
       ret.edges.forEach((edge) => {
         const targetNode = ret.nodes.filter((node) => node.id === edge.source.id)[0];
-        console.log('target', targetNode);
-        edge.color = targetNode?.keyword_type === 'Author' ? '#F85' : '#D5D5D5';
+        // console.log('target', targetNode);
+        edge.color = targetNode?.keyword_type === 'Author' ? '#F85' : '#CCC';
 
-        if (targetNode?.val) targetNode.val += 1;
-        else if (targetNode) targetNode.val = 2;
+        if (targetNode?.conns) targetNode.conns += 1;
+        else if (targetNode) targetNode.conns = 2;
       });
 
       ret.nodes.map((node) => {
@@ -409,7 +417,7 @@ export default {
         )];
 
         retNode.isConnected = authorIds.length === this.selectedAuthors.length;
-        console.log('authorIds', authorIds, node.isConnected);
+        // console.log('authorIds', authorIds, node.isConnected);
 
         retNode.color = this.keyColors.graph[node.keyword_type];
         return retNode;
@@ -474,19 +482,22 @@ export default {
                           fx: coords[i][0] * 450,
                           fy: coords[i][1] * 200,
                         });
+                        allEdges.push(...json.edges.map((edge) => {
+                          edge.id = `${i}_${edge.id}`;
+                          return edge;
+                        }));
                         json.nodes.forEach((node, j) => {
                           allEdges.push({
-                            id: `custom_edge_${j}`,
+                            id: `custom_edge_${i}_${j}`,
                             target: node.id,
                             source: `author_${authors[i]}`,
                           });
                         });
-                        allEdges.push(...json.edges);
                         if (i === 0) intersectedNodes = json.nodes;
-                        else intersectedNodes = this.intersectArrays(intersectedNodes, json.nodes);
+                        else intersectedNodes = this.removeDuplicates([...intersectedNodes, ...json.nodes], 'id');
                         console.log('intersections', intersectedNodes);
                       });
-                      const allNodes = [...authorNodes, ...intersectedNodes];
+                      const allNodes = [...intersectedNodes, ...authorNodes];
                       const nodeIds = allNodes.map((x) => x.id);
                       const filteredEdges = allEdges.filter((edge) => nodeIds.includes(edge.target) && nodeIds.includes(edge.source));
                       console.log('filters', nodeIds, allNodes, filteredEdges);

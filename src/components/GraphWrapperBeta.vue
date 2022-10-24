@@ -28,6 +28,7 @@
       :onNodeDragEnd="nodeDragEnd"
       :nodeCanvasObject="nodeObject"
       :nodePointerAreaPaint="areaPaint"
+      :collisionForce="collision"
       :nodeCanvasObjectMode="() => 'replace'"
       :height="fullscreen ? undefined : '500'"
       :zoomToFit="zoomToFit"
@@ -231,6 +232,8 @@
 </template>
 <script>
 import helpers from '@/helpers';
+import rectCollide from '@/plugins/rectCollide';
+
 import Visualization from './Visualization2D';
 import FullscreenButton from './FullscreenButton';
 
@@ -359,6 +362,9 @@ export default {
       ctx.fillStyle = color;
       const bckgDimensions = node.area;
       return bckgDimensions && ctx.fillRect(node.x - bckgDimensions[0] / 2, node.y - bckgDimensions[1] / 2, ...bckgDimensions);
+    },
+    collision() {
+      return rectCollide;
     },
     nodeClick(node) {
       console.log('node clicked', node);
