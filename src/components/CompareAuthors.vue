@@ -90,8 +90,8 @@
             v-bind="attrs"
             v-on="on"
           >
-        <v-icon>mdi-code-json</v-icon>
-      </v-btn>
+            <v-icon>mdi-code-json</v-icon>
+          </v-btn>
         </template>
         <span>Download node data as .json</span>
       </v-tooltip>
@@ -107,10 +107,27 @@
             v-bind="attrs"
             v-on="on"
           >
-        <v-icon>mdi-text-box</v-icon>
-      </v-btn>
+            <v-icon>mdi-text-box</v-icon>
+          </v-btn>
         </template>
         <span>Download node data as .txt</span>
+      </v-tooltip>
+      <v-tooltip
+        left
+        transition="slide-x-reverse-transition"
+      >
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            fab
+            small
+            @click="getCsvData"
+            v-bind="attrs"
+            v-on="on"
+          >
+            <v-icon>mdi-file-delimited-outline</v-icon>
+          </v-btn>
+        </template>
+        <span>Download node data as .csv</span>
       </v-tooltip>
     </v-speed-dial>
     <fullscreen-button :usecase="usecase" />
@@ -259,6 +276,42 @@ export default {
       const link = document.createElement('a');
       link.download = 'graph.json';
       link.href = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(this.graph))}`;
+      link.click();
+      link.remove();
+    },
+    getCsvData() {
+      let csvContent = 'ID,Keyword,Authors,Type,Sources,Targets\r\n';
+      const toCsv = this.weightedGraph.nodes.map((node) => {
+        const csvObj = {
+          ID: this.getIdFromUrl(node.id),
+          Keyword: node.label.replace(',', ''),
+          Authors: [],
+          Type: node.keyword_type,
+          Sources: [],
+          Targets: [],
+        };
+        if (!node.keyword_type.includes('author')) {
+          this.weightedGraph.edges.forEach((edge) => {
+            if (edge.source.id === node.id) csvObj.Targets.push(this.removeRoot(edge.target.label));
+            else if (edge.target.id === node.id) {
+              if (edge.source.keyword_type === 'Author') csvObj.Authors.push(edge.source.label);
+              else csvObj.Sources.push(this.removeRoot(edge.source.label));
+            }
+          });
+        }
+        csvObj.Targets = [...new Set(csvObj.Targets)].join('/');
+        csvObj.Sources = [...new Set(csvObj.Sources)].join('/');
+        csvObj.Authors = [...new Set(csvObj.Authors)].join('/');
+        return csvObj;
+      });
+
+      toCsv.forEach((node) => {
+        csvContent += `${Object.values(node).join(',')}\r\n`;
+      });
+
+      const link = document.createElement('a');
+      link.download = 'graph.csv';
+      link.href = `data:text/csv;charset=utf-8,${csvContent}`;
       link.click();
       link.remove();
     },

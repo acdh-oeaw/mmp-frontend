@@ -88,8 +88,8 @@
             v-bind="attrs"
             v-on="on"
           >
-        <v-icon>mdi-code-json</v-icon>
-      </v-btn>
+            <v-icon>mdi-code-json</v-icon>
+          </v-btn>
         </template>
         <span>Download node data as .json</span>
       </v-tooltip>
@@ -105,8 +105,8 @@
             v-bind="attrs"
             v-on="on"
           >
-        <v-icon>mdi-text-box-outline</v-icon>
-      </v-btn>
+            <v-icon>mdi-text-box-outline</v-icon>
+          </v-btn>
         </template>
         <span>Download node data as .txt</span>
       </v-tooltip>
@@ -122,8 +122,8 @@
             v-bind="attrs"
             v-on="on"
           >
-        <v-icon>mdi-file-delimited-outline</v-icon>
-      </v-btn>
+            <v-icon>mdi-file-delimited-outline</v-icon>
+          </v-btn>
         </template>
         <span>Download node data as .csv</span>
       </v-tooltip>
