@@ -1,38 +1,39 @@
 # MMP Frontend
 
-> A frontend component for [MMP](https://github.com/acdh-oeaw/mmp) written in VueJS
+A frontend component for [MMP](https://github.com/acdh-oeaw/mmp) written in VueJS.
 
-This Repo is live at [acdh-oeaw.github.io/mmp-frontend/](https://acdh-oeaw.github.io/mmp-frontend/)
+Deployed at [acdh-oeaw.github.io/mmp-frontend/](https://acdh-oeaw.github.io/mmp-frontend/).
 
 ## Project setup
-```
+
+```bash
 npm install
 ```
 
-### Compiles and hot-reloads for development
-```
-npm run serve
+### Compile and hot-reload for development
+
+```bash
+npm run dev
 ```
 
-### Compiles and minifies for production
-```
+### Compile and minify for production
+
+```bash
 npm run build
 ```
 
-### Run your unit tests
-```
-npm run test:unit
+### Format files
+
+```bash
+npm run format:fix
 ```
 
-### Run your end-to-end tests
-```
-npm run test:e2e
-```
+### Lint and fix JavaScript and CSS files
 
-### Lints and fixes files
-```
-npm run lint
+```bash
+npm run lint:fix
 ```
 
 ### Customize configuration
+
 See [Configuration Reference](https://cli.vuejs.org/config/).

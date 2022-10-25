@@ -1,70 +1,227 @@
 {
-  "name": "mmp-frontend",
+  "name": "@acdh-ch/mmp-frontend",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
   "scripts": {
-    "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "test:unit": "vue-cli-service test:unit",
-    "test:e2e": "vue-cli-service test:e2e",
-    "lint": "vue-cli-service lint",
-    "i18n:report": "vue-cli-service i18n:report --src \"./src/**/*.?(js|vue)\" --locales \"./src/locales/**/*.json\""
+    "dev": "npm run serve",
+    "format": "prettier . --cache --check --ignore-path .gitignore",
+    "format:fix": "npm run format -- --write",
+    "lint": "run-p lint:*:check",
+    "lint:fix": "run-p lint:*:fix",
+    "lint:code:check": "eslint . --cache --ext cjs,js,mjs,ts,vue --ignore-path .gitignore",
+    "lint:code:fix": "npm run lint:code:check -- --fix",
+    "lint:styles:check": "stylelint \"**/*.@(css|html|vue)\" --cache --ignore-path .gitignore",
+    "lint:styles:fix": "npm run lint:styles:check -- --fix",
+    "prepare": "npm run setup",
+    "setup": "simple-git-hooks || exit 0",
+    "serve": "vue-cli-service serve",
+    "validate": "run-s format lint"
+  },
+  "engines": {
+    "node": "16.x",
+    "npm": "8.x"
   },
   "dependencies": {
     "@turf/turf": "^6.5.0",
     "core-js": "^3.6.5",
     "d3": "^7.4.4",
-    "d3-force": "^3.0.0",
-    "d3-quadtree": "^3.0.1",
     "force-graph": "^1.42.2",
     "fuse.js": "^6.4.6",
     "highcharts": "^9.3.2",
     "highcharts-vue": "^1.4.0",
     "javascript-color-gradient": "^2.4.4",
     "json-loader": "^0.5.7",
-    "leaflet": "^1.7.1",
-    "leaflet.markercluster.placementstrategies": "^0.2.1",
-    "turf": "^7.0.0-alpha.1",
-    "vue": "^2.6.11",
+    "leaflet": "1.7.1",
+    "leaflet.markercluster": "1.5.3",
+    "leaflet.markercluster.placementstrategies": "0.2.1",
+    "vue": "^2.7.10",
     "vue-d3-cloud": "^0.2.0",
-    "vue-router": "^3.2.0",
+    "vue-router": "^3.6.5",
     "vue2-leaflet": "^2.7.1",
     "vue2-leaflet-markercluster": "^3.1.0",
-    "vuetify": "^2.4.0",
-    "vuewordcloud": "^18.7.12",
-    "vuex": "^3.4.0"
+    "vuetify": "^2.6.10",
+    "vuex": "^3.6.2"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "~4.5.0",
-    "@vue/cli-plugin-e2e-nightwatch": "~4.5.0",
-    "@vue/cli-plugin-eslint": "~4.5.0",
-    "@vue/cli-plugin-router": "~4.5.0",
-    "@vue/cli-plugin-unit-jest": "~4.5.0",
-    "@vue/cli-plugin-vuex": "~4.5.0",
-    "@vue/cli-service": "~4.5.0",
-    "@vue/eslint-config-airbnb": "^5.0.2",
-    "@vue/test-utils": "^1.0.3",
-    "babel-eslint": "^10.1.0",
-    "chromedriver": "92",
-    "eslint": "^6.7.2",
-    "eslint-plugin-import": "^2.20.2",
-    "eslint-plugin-vue": "^6.2.2",
-    "geckodriver": "^1.20.0",
-    "lint-staged": "^9.5.0",
+    "@types/d3": "^7.4.0",
+    "@types/leaflet": "1.7.11",
+    "@types/leaflet.markercluster": "1.5.1",
+    "@typescript-eslint/eslint-plugin": "^5.38.1",
+    "@typescript-eslint/parser": "^5.38.1",
+    "@vue/cli-plugin-babel": "^5.0.8",
+    "@vue/cli-plugin-router": "^5.0.8",
+    "@vue/cli-plugin-typescript": "~5.0.0",
+    "@vue/cli-plugin-vuex": "^5.0.8",
+    "@vue/cli-service": "^5.0.8",
+    "autoprefixer": "^10.4.12",
+    "eslint": "^8.24.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-import-resolver-typescript": "^3.5.1",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-simple-import-sort": "^8.0.0",
+    "eslint-plugin-vue": "^9.5.1",
+    "lint-staged": "^13.0.3",
+    "npm-run-all": "^4.1.5",
+    "postcss": "^8.4.16",
+    "postcss-html": "^1.5.0",
+    "prettier": "^2.7.1",
     "sass": "~1.32.0",
     "sass-loader": "^10.0.0",
-    "vue-cli-plugin-i18n": "~2.1.2",
-    "vue-cli-plugin-vuetify": "~2.4.2",
-    "vue-template-compiler": "^2.6.11",
-    "vuetify-loader": "^1.7.0"
+    "simple-git-hooks": "^2.8.0",
+    "stylelint": "^14.13.0",
+    "stylelint-config-html": "^1.1.0",
+    "stylelint-config-prettier": "^9.0.3",
+    "stylelint-config-standard": "^28.0.0",
+    "typescript": "^4.8.4",
+    "vue-cli-plugin-vuetify": "~2.5.8",
+    "vue-template-compiler": "^2.7.10",
+    "vuetify-loader": "^1.9.2"
   },
-  "gitHooks": {
-    "pre-commit": "lint-staged"
+  "babel": {
+    "presets": [
+      "@vue/cli-plugin-babel/preset"
+    ]
+  },
+  "browserslist": [
+    "> 1%",
+    "not dead",
+    "not op_mini all"
+  ],
+  "eslintConfig": {
+    "root": true,
+    "reportUnusedDisableDirectives": true,
+    "env": {
+      "browser": true,
+      "es6": true,
+      "node": true
+    },
+    "extends": [
+      "eslint:recommended",
+      "plugin:@typescript-eslint/recommended",
+      "plugin:import/recommended",
+      "plugin:vue/recommended",
+      "prettier"
+    ],
+    "plugins": [
+      "simple-import-sort"
+    ],
+    "parserOptions": {
+      "ecmaVersion": 2022,
+      "extraFileExtensions": [
+        ".vue"
+      ],
+      "parser": "@typescript-eslint/parser",
+      "project": "tsconfig.json"
+    },
+    "rules": {
+      "no-param-reassign": [
+        "error",
+        {
+          "props": false
+        }
+      ],
+      "no-console": [
+        "warn",
+        {
+          "allow": [
+            "warn",
+            "error"
+          ]
+        }
+      ],
+      "no-debugger": "warn",
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          "varsIgnorePattern": "^_"
+        }
+      ],
+      "@typescript-eslint/consistent-type-exports": "error",
+      "@typescript-eslint/consistent-type-imports": "error",
+      "import/first": "error",
+      "import/newline-after-import": "error",
+      "import/no-duplicates": "error",
+      "import/no-named-as-default-member": "off",
+      "simple-import-sort/exports": "error",
+      "simple-import-sort/imports": "error",
+      "vue/multi-word-component-names": "off",
+      "vue/no-mutating-props": "off",
+      "vue/no-v-text-v-html-on-component": "off",
+      "vue/require-default-prop": "off",
+      "vue/require-prop-types": "off",
+      "vue/valid-v-slot": "off"
+    },
+    "settings": {
+      "import/resolver": {
+        "typescript": {
+          "extensions": [
+            ".js",
+            ".mjs",
+            ".ts",
+            ".vue"
+          ],
+          "project": "tsconfig.json"
+        }
+      }
+    },
+    "overrides": [
+      {
+        "files": [
+          "vue.config.mjs"
+        ],
+        "rules": {
+          "import/extensions": "off",
+          "import/no-extraneous-dependencies": "off"
+        }
+      }
+    ]
   },
   "lint-staged": {
-    "*.{js,jsx,vue}": [
-      "vue-cli-service lint",
-      "git add"
+    "*.@(cjs|js|mjs|ts)": [
+      "eslint --cache --fix",
+      "prettier --cache --write"
+    ],
+    "*.@(json|md|yml)": "prettier --cache --write",
+    "*.@(css|html)": [
+      "stylelint --cache --fix",
+      "prettier --cache --write"
+    ],
+    "*.vue": [
+      "eslint --cache --fix",
+      "stylelint --cache --fix",
+      "prettier --cache --write"
     ]
+  },
+  "postcss": {
+    "plugins": {
+      "postcss-html": {},
+      "autoprefixer": {}
+    }
+  },
+  "prettier": {
+    "printWidth": 100,
+    "proseWrap": "always",
+    "semi": true,
+    "singleQuote": true
+  },
+  "simple-git-hooks": {
+    "pre-commit": "npx lint-staged"
+  },
+  "stylelint": {
+    "reportNeedlessDisables": true,
+    "extends": [
+      "stylelint-config-standard",
+      "stylelint-config-prettier",
+      "stylelint-config-html/html",
+      "stylelint-config-html/vue"
+    ],
+    "rules": {
+      "selector-class-pattern": null
+    }
+  },
+  "volta": {
+    "node": "16.18.0"
   }
 }
