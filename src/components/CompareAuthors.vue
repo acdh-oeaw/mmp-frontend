@@ -215,6 +215,7 @@
   </v-card>
 </template>
 <script>
+import { forceLink } from 'd3';
 import helpers from '@/helpers';
 import Visualization from './Visualization2D';
 import FullscreenButton from './FullscreenButton';
@@ -303,7 +304,7 @@ export default {
         ctx.lineWidth = 2 / globalScale;
       } else {
         ctx.fillStyle = typeColor;
-        ctx.strokeStyle = '#F1F5FA';
+        ctx.strokeStyle = node.isConnected ? '#F1F5FA' : this.lightenColor('#F1F5FA', 0.3);
         ctx.lineWidth = 1.7 / globalScale;
       }
 
@@ -371,10 +372,7 @@ export default {
       console.log('nodes unpinned', this.renderKey);
     },
     linkForces() {
-      // eslint-disable-next-line global-require
-      const d3 = require('d3');
-      return d3.forceLink()
-        .strength((link) => (link.source.id.includes('author') ? 2 : 0));
+      return forceLink().strength((link) => (link.source.id.includes('author') ? 0.2 : 0));
     },
   },
   computed: {
@@ -383,7 +381,7 @@ export default {
     },
     weightedGraph() {
       if (!this.graph) return null;
-      const ret = { ...this.graph };
+      const ret = JSON.parse(JSON.stringify(this.graph));
       console.log('weightedGraph', ret);
 
       // filter types
@@ -396,11 +394,11 @@ export default {
 
       console.log('blacklist', blacklist);
 
-      ret.edges = ret.edges.filter((edge) => !blacklist.includes(edge.target.id) && !blacklist.includes(edge.source.id));
+      ret.edges = ret.edges.filter((edge) => !blacklist.includes(edge.target) && !blacklist.includes(edge.source));
 
       // assign weight
       ret.edges.forEach((edge) => {
-        const targetNode = ret.nodes.filter((node) => node.id === edge.source.id)[0];
+        const targetNode = ret.nodes.filter((node) => node.id === edge.source)[0];
         // console.log('target', targetNode);
         edge.color = targetNode?.keyword_type === 'Author' ? '#F85' : '#CCC';
 
@@ -412,7 +410,7 @@ export default {
         const retNode = node;
         const authorIds = [...new Set(
           ret.edges
-            .filter((edge) => edge.target.id === node.id && edge.source.id.includes('author'))
+            .filter((edge) => edge.target === node.id && edge.source.includes('author'))
             .map((edge) => edge.source),
         )];
 
@@ -422,6 +420,7 @@ export default {
         retNode.color = this.keyColors.graph[node.keyword_type];
         return retNode;
       });
+
       return ret;
     },
     types() {
@@ -431,6 +430,11 @@ export default {
     },
   },
   watch: {
+    weightedGraph() {
+      setTimeout(() => {
+        this.zoomToFit = !this.zoomToFit;
+      }, 2000);
+    },
     '$route.query': {
       handler(query) {
         this.loading = 2;
@@ -479,8 +483,8 @@ export default {
                           id: `author_${authors[i]}`,
                           label: this.getOptimalName(authorData.filter((author) => this.getIdFromUrl(author.url) === authors[i])[0]),
                           keyword_type: 'Author',
-                          fx: coords[i][0] * 450,
-                          fy: coords[i][1] * 200,
+                          fx: coords[i][0] * 150,
+                          fy: coords[i][1] * 66,
                         });
                         allEdges.push(...json.edges.map((edge) => {
                           edge.id = `${i}_${edge.id}`;
@@ -499,7 +503,7 @@ export default {
                       });
                       const allNodes = [...intersectedNodes, ...authorNodes];
                       const nodeIds = allNodes.map((x) => x.id);
-                      const filteredEdges = allEdges.filter((edge) => nodeIds.includes(edge.target) && nodeIds.includes(edge.source));
+                      const filteredEdges = this.removeDuplicates(allEdges.filter((edge) => nodeIds.includes(edge.target) && nodeIds.includes(edge.source)), ['source', 'target']);
                       console.log('filters', nodeIds, allNodes, filteredEdges);
 
                       this.graph = {

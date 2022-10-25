@@ -22,8 +22,8 @@ export default {
       default: null,
     },
     graph: Object,
-    forceCenter: [Function, Number],
-    forceLink: [Function, Number],
+    forceCenter: Function,
+    forceLink: Function,
     forceCollision: Function,
     linkDirectionalArrowLength: Number,
     linkDirectionalArrowRelPos: Number,
@@ -107,7 +107,7 @@ export default {
             edges: [],
           },
         }))
-        // .d3Force('collide', this.forceCollision() || d3.forceCollide().radius((d) => d.val + 20).iterations(3)
+        // .d3Force('collide', d3.forceCollide().radius((d) => d.val + 20).iterations(3))
         .nodeRelSize(this.nodeRelSize || 1)
         .nodeCanvasObject(this.nodeCanvasObject)
         .nodeCanvasObjectMode(this.nodeCanvasObjectMode)
