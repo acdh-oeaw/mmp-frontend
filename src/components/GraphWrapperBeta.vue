@@ -71,7 +71,7 @@
             v-bind="attrs"
             v-on="on"
           >
-            <v-icon>mdi-image</v-icon>
+            <v-icon>mdi-image-outline</v-icon>
           </v-btn>
         </template>
         <span>Download canvas as .png</span>
@@ -88,8 +88,8 @@
             v-bind="attrs"
             v-on="on"
           >
-        <v-icon>mdi-code-json</v-icon>
-      </v-btn>
+            <v-icon>mdi-code-json</v-icon>
+          </v-btn>
         </template>
         <span>Download node data as .json</span>
       </v-tooltip>
@@ -105,10 +105,27 @@
             v-bind="attrs"
             v-on="on"
           >
-        <v-icon>mdi-text-box</v-icon>
-      </v-btn>
+            <v-icon>mdi-text-box-outline</v-icon>
+          </v-btn>
         </template>
         <span>Download node data as .txt</span>
+      </v-tooltip>
+      <v-tooltip
+        left
+        transition="slide-x-reverse-transition"
+      >
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            fab
+            small
+            @click="getCsvData"
+            v-bind="attrs"
+            v-on="on"
+          >
+            <v-icon>mdi-file-delimited-outline</v-icon>
+          </v-btn>
+        </template>
+        <span>Download node data as .csv</span>
       </v-tooltip>
     </v-speed-dial>
     <fullscreen-button :usecase="usecase" />
@@ -253,12 +270,41 @@ export default {
     getJsonData() {
       const link = document.createElement('a');
       link.download = 'graph.json';
-      link.href = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(this.graph))}`;
+      link.href = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(this.weightedGraph))}`;
+      link.click();
+      link.remove();
+    },
+    getCsvData() {
+      let csvContent = 'ID,Keyword,Type,Sources,Targets\r\n';
+      const toCsv = this.weightedGraph.nodes.map((node) => {
+        const csvObj = {
+          ID: this.getIdFromUrl(node.id),
+          Keyword: node.label.replace(',', ''),
+          Type: node.keyword_type,
+          Sources: [],
+          Targets: [],
+        };
+        this.weightedGraph.edges.forEach((edge) => {
+          if (edge.source.id === node.id) csvObj.Targets.push(this.removeRoot(edge.target.label));
+          else if (edge.target.id === node.id) csvObj.Sources.push(this.removeRoot(edge.source.label));
+        });
+        csvObj.Targets = csvObj.Targets.join('/');
+        csvObj.Sources = csvObj.Sources.join('/');
+        return csvObj;
+      });
+
+      toCsv.forEach((node) => {
+        csvContent += `${Object.values(node).join(',')}\r\n`;
+      });
+
+      const link = document.createElement('a');
+      link.download = 'graph.csv';
+      link.href = `data:text/csv;charset=utf-8,${csvContent}`;
       link.click();
       link.remove();
     },
     getTextData() {
-      const list = this.styledNodes.nodes;
+      const list = this.weightedGraph.nodes;
       const ret = {};
       list.forEach((node) => {
         if (ret[node.keyword_type]) ret[node.keyword_type].push(node.label);

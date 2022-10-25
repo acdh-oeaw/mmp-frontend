@@ -31,10 +31,12 @@
       :nodeCanvasObjectMode="() => 'replace'"
       :height="fullscreen ? undefined : '500'"
       :zoomToFit="zoomToFit"
-      :linkDirectionalArrowLength="2"
+      :linkDirectionalArrowLength="1.3"
       :refresh="renderKey"
       :autoPauseRedraw="false"
       :nodeRelSize="4"
+      :forceCenter="() => null"
+      :forceLink="linkForces"
     />
     <router-view />
     <v-speed-dial
@@ -88,8 +90,8 @@
             v-bind="attrs"
             v-on="on"
           >
-        <v-icon>mdi-code-json</v-icon>
-      </v-btn>
+            <v-icon>mdi-code-json</v-icon>
+          </v-btn>
         </template>
         <span>Download node data as .json</span>
       </v-tooltip>
@@ -105,10 +107,27 @@
             v-bind="attrs"
             v-on="on"
           >
-        <v-icon>mdi-text-box</v-icon>
-      </v-btn>
+            <v-icon>mdi-text-box</v-icon>
+          </v-btn>
         </template>
         <span>Download node data as .txt</span>
+      </v-tooltip>
+      <v-tooltip
+        left
+        transition="slide-x-reverse-transition"
+      >
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            fab
+            small
+            @click="getCsvData"
+            v-bind="attrs"
+            v-on="on"
+          >
+            <v-icon>mdi-file-delimited-outline</v-icon>
+          </v-btn>
+        </template>
+        <span>Download node data as .csv</span>
       </v-tooltip>
     </v-speed-dial>
     <fullscreen-button :usecase="usecase" />
@@ -213,6 +232,7 @@
   </v-card>
 </template>
 <script>
+import { forceLink } from 'd3';
 import helpers from '@/helpers';
 import Visualization from './Visualization2D';
 import FullscreenButton from './FullscreenButton';
@@ -259,6 +279,42 @@ export default {
       link.click();
       link.remove();
     },
+    getCsvData() {
+      let csvContent = 'ID,Keyword,Authors,Type,Sources,Targets\r\n';
+      const toCsv = this.weightedGraph.nodes.map((node) => {
+        const csvObj = {
+          ID: this.getIdFromUrl(node.id),
+          Keyword: node.label.replace(',', ''),
+          Authors: [],
+          Type: node.keyword_type,
+          Sources: [],
+          Targets: [],
+        };
+        if (!node.keyword_type.includes('author')) {
+          this.weightedGraph.edges.forEach((edge) => {
+            if (edge.source.id === node.id) csvObj.Targets.push(this.removeRoot(edge.target.label));
+            else if (edge.target.id === node.id) {
+              if (edge.source.keyword_type === 'Author') csvObj.Authors.push(edge.source.label);
+              else csvObj.Sources.push(this.removeRoot(edge.source.label));
+            }
+          });
+        }
+        csvObj.Targets = [...new Set(csvObj.Targets)].join('/');
+        csvObj.Sources = [...new Set(csvObj.Sources)].join('/');
+        csvObj.Authors = [...new Set(csvObj.Authors)].join('/');
+        return csvObj;
+      });
+
+      toCsv.forEach((node) => {
+        csvContent += `${Object.values(node).join(',')}\r\n`;
+      });
+
+      const link = document.createElement('a');
+      link.download = 'graph.csv';
+      link.href = `data:text/csv;charset=utf-8,${csvContent}`;
+      link.click();
+      link.remove();
+    },
     getTextData() {
       const list = this.styledNodes.nodes;
       const ret = {};
@@ -284,7 +340,7 @@ export default {
       ctx.beginPath();
       const label = this.removeRoot(node.label);
 
-      const fontSize = ((Math.log2(node.val) || 1) + 18) / globalScale;
+      const fontSize = ((Math.log2(node.conns) || 1) + 18) / globalScale;
       ctx.font = `${fontSize}px Roboto, Sans-Serif`;
 
       ctx.textAlign = 'center';
@@ -301,7 +357,7 @@ export default {
         ctx.lineWidth = 2 / globalScale;
       } else {
         ctx.fillStyle = typeColor;
-        ctx.strokeStyle = '#F1F5FA';
+        ctx.strokeStyle = node.isConnected ? '#F1F5FA' : this.lightenColor('#F1F5FA', 0.3);
         ctx.lineWidth = 1.7 / globalScale;
       }
 
@@ -368,6 +424,9 @@ export default {
       this.renderKey += 1;
       console.log('nodes unpinned', this.renderKey);
     },
+    linkForces() {
+      return forceLink().strength((link) => (link.source.id.includes('author') ? 0.2 : 0));
+    },
   },
   computed: {
     nodeCount() {
@@ -375,7 +434,7 @@ export default {
     },
     weightedGraph() {
       if (!this.graph) return null;
-      const ret = { ...this.graph };
+      const ret = JSON.parse(JSON.stringify(this.graph));
       console.log('weightedGraph', ret);
 
       // filter types
@@ -388,32 +447,33 @@ export default {
 
       console.log('blacklist', blacklist);
 
-      ret.edges = ret.edges.filter((edge) => !blacklist.includes(edge.target.id) && !blacklist.includes(edge.source.id));
+      ret.edges = ret.edges.filter((edge) => !blacklist.includes(edge.target) && !blacklist.includes(edge.source));
 
       // assign weight
       ret.edges.forEach((edge) => {
-        const targetNode = ret.nodes.filter((node) => node.id === edge.source.id)[0];
-        console.log('target', targetNode);
-        edge.color = targetNode?.keyword_type === 'Author' ? '#F85' : '#D5D5D5';
+        const targetNode = ret.nodes.filter((node) => node.id === edge.source)[0];
+        // console.log('target', targetNode);
+        edge.color = targetNode?.keyword_type === 'Author' ? '#F85' : '#CCC';
 
-        if (targetNode?.val) targetNode.val += 1;
-        else if (targetNode) targetNode.val = 2;
+        if (targetNode?.conns) targetNode.conns += 1;
+        else if (targetNode) targetNode.conns = 2;
       });
 
       ret.nodes.map((node) => {
         const retNode = node;
         const authorIds = [...new Set(
           ret.edges
-            .filter((edge) => edge.target.id === node.id && edge.source.id.includes('author'))
+            .filter((edge) => edge.target === node.id && edge.source.includes('author'))
             .map((edge) => edge.source),
         )];
 
         retNode.isConnected = authorIds.length === this.selectedAuthors.length;
-        console.log('authorIds', authorIds, node.isConnected);
+        // console.log('authorIds', authorIds, node.isConnected);
 
         retNode.color = this.keyColors.graph[node.keyword_type];
         return retNode;
       });
+
       return ret;
     },
     types() {
@@ -423,6 +483,11 @@ export default {
     },
   },
   watch: {
+    weightedGraph() {
+      setTimeout(() => {
+        this.zoomToFit = !this.zoomToFit;
+      }, 2000);
+    },
     '$route.query': {
       handler(query) {
         this.loading = 2;
@@ -471,24 +536,27 @@ export default {
                           id: `author_${authors[i]}`,
                           label: this.getOptimalName(authorData.filter((author) => this.getIdFromUrl(author.url) === authors[i])[0]),
                           keyword_type: 'Author',
-                          fx: coords[i][0] * 450,
-                          fy: coords[i][1] * 200,
+                          fx: coords[i][0] * 150,
+                          fy: coords[i][1] * 66,
                         });
+                        allEdges.push(...json.edges.map((edge) => {
+                          edge.id = `${i}_${edge.id}`;
+                          return edge;
+                        }));
                         json.nodes.forEach((node, j) => {
                           allEdges.push({
-                            id: `custom_edge_${j}`,
+                            id: `custom_edge_${i}_${j}`,
                             target: node.id,
                             source: `author_${authors[i]}`,
                           });
                         });
-                        allEdges.push(...json.edges);
                         if (i === 0) intersectedNodes = json.nodes;
-                        else intersectedNodes = this.intersectArrays(intersectedNodes, json.nodes);
+                        else intersectedNodes = this.removeDuplicates([...intersectedNodes, ...json.nodes], 'id');
                         console.log('intersections', intersectedNodes);
                       });
-                      const allNodes = [...authorNodes, ...intersectedNodes];
+                      const allNodes = [...intersectedNodes, ...authorNodes];
                       const nodeIds = allNodes.map((x) => x.id);
-                      const filteredEdges = allEdges.filter((edge) => nodeIds.includes(edge.target) && nodeIds.includes(edge.source));
+                      const filteredEdges = this.removeDuplicates(allEdges.filter((edge) => nodeIds.includes(edge.target) && nodeIds.includes(edge.source)), ['source', 'target']);
                       console.log('filters', nodeIds, allNodes, filteredEdges);
 
                       this.graph = {

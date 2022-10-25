@@ -22,6 +22,9 @@ export default {
       default: null,
     },
     graph: Object,
+    forceCenter: Function,
+    forceLink: Function,
+    forceCollision: Function,
     linkDirectionalArrowLength: Number,
     linkDirectionalArrowRelPos: Number,
     linkDirectionalParticles: Number,
@@ -104,11 +107,15 @@ export default {
             edges: [],
           },
         }))
-        .d3Force('collide', d3.forceCollide().radius((d) => d.val + 20).iterations(3))
-        .nodeRelSize(this.nodeRelSize || 4)
+        // .d3Force('collide', d3.forceCollide().radius((d) => d.val + 20).iterations(3))
+        .nodeRelSize(this.nodeRelSize || 1)
         .nodeCanvasObject(this.nodeCanvasObject)
         .nodeCanvasObjectMode(this.nodeCanvasObjectMode)
         .nodePointerAreaPaint(this.nodePointerAreaPaint);
+
+      if (this.forceCenter !== undefined) this.graphDom.d3Force('center', this.forceCenter());
+      if (this.forceLink !== undefined) this.graphDom.d3Force('link', this.forceLink());
+      if (this.forceCollision !== undefined) this.graphDom.d3Force('collide', this.forceCollision());
 
       console.log('speed', this.graphDom.linkDirectionalParticleSpeed());
     },
@@ -133,6 +140,8 @@ export default {
   },
   mounted() {
     console.log('Graph mounted, data:', this.graph);
+    // console.log('forceCollision:', this.forceCollision(), 'lel', d3.forceCollide());
+    console.log('forcelink', d3.forceLink);
     this.graphDom = ForceGraph()(this.$refs.visWrapper);
     this.setCanvas();
 
