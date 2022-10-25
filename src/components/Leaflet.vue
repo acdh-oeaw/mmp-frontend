@@ -297,7 +297,6 @@
 
 <script>
 import 'leaflet/dist/leaflet.css';
-import 'leaflet.markercluster.placementstrategies';
 
 import * as turf from '@turf/turf';
 import * as L from 'leaflet';
@@ -305,6 +304,7 @@ import { Icon, latLng, latLngBounds } from 'leaflet';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 import { LControl, LGeoJson, LMap, LMarker, LTileLayer, LTooltip } from 'vue2-leaflet';
 import Vue2LeafletMarkercluster from 'vue2-leaflet-markercluster';
+import * as _ from 'leaflet.markercluster.placementstrategies'; // namespaced import to work around import sorting: this is a sideeffect import depending on leaflet
 
 import blueMarker from '@/assets/blue_marker_icon.png';
 import majorTowns800 from '@/assets/DARMC_Medieval_World_814.geojson';
