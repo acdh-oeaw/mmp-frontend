@@ -296,15 +296,18 @@
 </template>
 
 <script>
+// `leaflet.markercluster.placementstrategies` is a sideeffect import depending on
+// `leaflet.markercluster` already being present, so we need to disable import sorting.
+// eslint-disable-next-line simple-import-sort/imports
 import 'leaflet/dist/leaflet.css';
 
 import * as turf from '@turf/turf';
 import * as L from 'leaflet';
 import { Icon, latLng, latLngBounds } from 'leaflet';
-import * as _ from 'leaflet.markercluster.placementstrategies'; // namespaced import to work around import sorting: this is a sideeffect import depending on leaflet
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 import { LControl, LGeoJson, LMap, LMarker, LTileLayer, LTooltip } from 'vue2-leaflet';
 import Vue2LeafletMarkercluster from 'vue2-leaflet-markercluster';
+import 'leaflet.markercluster.placementstrategies';
 
 import blueMarker from '@/assets/blue_marker_icon.png';
 import majorTowns800 from '@/assets/DARMC_Medieval_World_814.geojson';
