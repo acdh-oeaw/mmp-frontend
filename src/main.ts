@@ -1,3 +1,6 @@
+import '@fontsource/roboto-flex/variable-full.css';
+import '@mdi/font/css/materialdesignicons.css';
+
 import Vue from 'vue';
 
 import App from '@/App.vue';
