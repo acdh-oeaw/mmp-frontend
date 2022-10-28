@@ -1,3 +1,5 @@
+/// <reference types="vite/client" />
+
 interface Array<T> {
   filter(predicate: BooleanConstructor): Array<NonNullable<T>>;
 }
