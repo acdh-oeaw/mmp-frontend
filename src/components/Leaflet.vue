@@ -310,15 +310,15 @@ import Vue2LeafletMarkercluster from 'vue2-leaflet-markercluster';
 import 'leaflet.markercluster.placementstrategies';
 
 import blueMarker from '@/assets/blue_marker_icon.png';
-import majorTowns800 from '@/assets/DARMC_Medieval_World_814.geojson';
-import majorTowns1000 from '@/assets/DARMC_Medieval_World_1000.geojson';
-import kingdoms800Geojson from '@/assets/kingdoms_800.geojson';
-import kingdomsMid800Geojson from '@/assets/kingdoms_mid_800.geojson';
-import langobarden from '@/assets/langobarden_karte.geojson';
 import greenMarker from '@/assets/recolored_marker_icon.png';
 import greenMarker2x from '@/assets/recolored_marker_icon_2x.png';
 import redMarker from '@/assets/red_marker_icon.png';
-import romanRoadsGeojson from '@/assets/RomanRoads.geojson';
+import majorTowns800 from '@/assets/geojson/darmc-medieval-world-814.json';
+import majorTowns1000 from '@/assets/geojson/darmc-medieval-world-1000.json';
+import kingdoms800 from '@/assets/geojson/kingdoms-800.json';
+import kingdomsMid800 from '@/assets/geojson/kingdoms-mid-800.json';
+import langobards from '@/assets/geojson/langobards.json';
+import romanRoads from '@/assets/geojson/roman-roads.json';
 import helpers from '@/helpers';
 
 export default {
@@ -402,7 +402,7 @@ export default {
     sources: '',
     romanRoads: {},
     majorTowns: {},
-    langobardenPoints: JSON.parse(JSON.stringify(langobarden)),
+    langobardenPoints: JSON.parse(JSON.stringify(langobards)),
     bounds: latLngBounds([
       [34.016242, 5.488281],
       [71.663663, 34.667969],
@@ -816,7 +816,7 @@ export default {
           const relatedCoords = this.relatedPlaces.map((x) => x.coords.coordinates);
           this.bounds = this.getBounds(allCoords.concat(relatedCoords));
 
-          this.romanRoads = JSON.parse(JSON.stringify(romanRoadsGeojson));
+          this.romanRoads = JSON.parse(JSON.stringify(romanRoads));
 
           this.polygonCenters = JSON.parse(JSON.stringify(to[0]));
           this.polygonCenters.features.forEach((feature) => {
@@ -932,12 +932,12 @@ export default {
             .then((jsonRes) => {
               const layer = jsonRes.custom_layer;
               if (layer === '800') {
-                this.kingdomsLayer = JSON.parse(JSON.stringify(kingdoms800Geojson));
+                this.kingdomsLayer = JSON.parse(JSON.stringify(kingdoms800));
                 this.majorTowns = JSON.parse(JSON.stringify(majorTowns800));
                 this.sources =
                   'Kingdoms:<br> Scientific direction Thomas Lienhard (Paris 1, LaMOP),<br> Production and classification of data, computer developments by Pierre Brochard (CNRS, LaMOP), Mathieu Beaud (Paris 1, LaMOP).<br><br> Roman Roads & Major Towns:<br> Michael McCormick et al. (eds.), The Digital Atlas of Roman and Medieval Civilizations, Cambridge (Massachusetts), 2007.';
               } else if (layer === '850') {
-                this.kingdomsLayer = JSON.parse(JSON.stringify(kingdomsMid800Geojson));
+                this.kingdomsLayer = JSON.parse(JSON.stringify(kingdomsMid800));
                 this.majorTowns = JSON.parse(JSON.stringify(majorTowns1000));
                 this.sources =
                   'Kingdoms:<br> Scientific direction Thomas Lienhard (Paris 1, LaMOP),<br> Production and classification of data, computer developments by Pierre Brochard (CNRS, LaMOP), Mathieu Beaud (Paris 1, LaMOP).<br><br> Roman Roads & Major Towns:<br> Michael McCormick et al. (eds.), The Digital Atlas of Roman and Medieval Civilizations, Cambridge (Massachusetts), 2007.';

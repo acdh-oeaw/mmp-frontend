@@ -7,16 +7,6 @@ const config = defineConfig({
      */
     config.resolve.alias.set('~', process.cwd());
   },
-  configureWebpack: {
-    module: {
-      rules: [
-        {
-          test: /\.geojson$/,
-          loader: 'json-loader',
-        },
-      ],
-    },
-  },
   productionSourceMap: false,
   publicPath: '/mmp-frontend/',
   transpileDependencies: true,
