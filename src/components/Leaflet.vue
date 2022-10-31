@@ -190,7 +190,7 @@
         :options="{ onEachFeature: onEach }"
         :options-style="spatialStyle"
       />
-      <v-marker-cluster
+      <LeafletMarkercluster
         ref="markerCluster"
         :options="clusterOptions"
         @animationend="resetSpatCov(cluster)"
@@ -203,7 +203,7 @@
           @layerremove="removeMarkerCluster()"
           @layeradd="refreshMarkerCluster()"
         />
-      </v-marker-cluster>
+      </LeafletMarkercluster>
       <l-geo-json
         v-if="data[1] && showLayers.cones"
         ref="cones"
@@ -306,7 +306,7 @@ import * as L from 'leaflet';
 import { Icon, latLng, latLngBounds } from 'leaflet';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 import { LControl, LGeoJson, LMap, LMarker, LTileLayer, LTooltip } from 'vue2-leaflet';
-import Vue2LeafletMarkercluster from 'vue2-leaflet-markercluster';
+import LeafletMarkercluster from 'vue2-leaflet-markercluster';
 import 'leaflet.markercluster.placementstrategies';
 
 import blueMarker from '@/assets/blue_marker_icon.png';
@@ -330,7 +330,7 @@ export default {
     LControl,
     LMarker,
     LTooltip,
-    'v-marker-cluster': Vue2LeafletMarkercluster,
+    LeafletMarkercluster,
   },
   mixins: [helpers],
   props: {

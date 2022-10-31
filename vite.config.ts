@@ -1,6 +1,8 @@
 import { fileURLToPath, URL } from 'node:url';
 
 import vue2 from '@vitejs/plugin-vue2';
+import { VuetifyResolver } from 'unplugin-vue-components/resolvers';
+import Components from 'unplugin-vue-components/vite';
 import type { Plugin } from 'vite';
 import { defineConfig, loadEnv } from 'vite';
 
@@ -71,7 +73,45 @@ function meta(): Plugin {
 
 export default defineConfig({
   base: publicPath,
-  plugins: [vue2(), meta()],
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('vuetify/lib')) {
+            return 'vuetify';
+          }
+          if (id.includes('@mdi/font/css/materialdesignicons.css')) {
+            return 'materialdesignicons';
+          }
+          if (id.includes('/assets/geojson/')) {
+            return 'geojson';
+          }
+        },
+      },
+    },
+  },
+  css: {
+    preprocessorOptions: {
+      sass: {
+        additionalData: ['@import "@/scss/variables.scss"', ''].join('\n'),
+      },
+    },
+  },
+  plugins: [
+    vue2(),
+    meta(),
+    Components({
+      dts: false,
+      directives: false,
+      resolvers: [VuetifyResolver()],
+      types: [
+        {
+          from: 'vue-router',
+          names: ['RouterLink', 'RouterView'],
+        },
+      ],
+    }),
+  ],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
