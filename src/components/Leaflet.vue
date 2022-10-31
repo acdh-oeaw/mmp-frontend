@@ -190,7 +190,7 @@
         :options="{ onEachFeature: onEach }"
         :options-style="spatialStyle"
       />
-      <LeafletMarkercluster
+      <l-marker-cluster
         ref="markerCluster"
         :options="clusterOptions"
         @animationend="resetSpatCov(cluster)"
@@ -203,7 +203,7 @@
           @layerremove="removeMarkerCluster()"
           @layeradd="refreshMarkerCluster()"
         />
-      </LeafletMarkercluster>
+      </l-marker-cluster>
       <l-geo-json
         v-if="data[1] && showLayers.cones"
         ref="cones"
@@ -306,7 +306,7 @@ import * as L from 'leaflet';
 import { Icon, latLng, latLngBounds } from 'leaflet';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 import { LControl, LGeoJson, LMap, LMarker, LTileLayer, LTooltip } from 'vue2-leaflet';
-import LeafletMarkercluster from 'vue2-leaflet-markercluster';
+import LMarkerCluster from 'vue2-leaflet-markercluster';
 import 'leaflet.markercluster.placementstrategies';
 
 import blueMarker from '@/assets/blue_marker_icon.png';
@@ -330,7 +330,7 @@ export default {
     LControl,
     LMarker,
     LTooltip,
-    LeafletMarkercluster,
+    LMarkerCluster,
   },
   mixins: [helpers],
   props: {
@@ -345,28 +345,6 @@ export default {
     },
     usecase: {
       default: '',
-    },
-    showLayers: {
-      default: {
-        spatial: true,
-        labels: true,
-        cones: true,
-        places: true,
-        relatedPlaces: true,
-        caseStudy: false,
-        romanRoads: false,
-        majorTowns: false,
-        langobardenPoints: false,
-      },
-    },
-    origins: {
-      default: {},
-    },
-    kingdoms: {
-      default: {},
-    },
-    cluster: {
-      default: {},
     },
   },
   data: () => ({
@@ -441,6 +419,20 @@ export default {
     ],
     menu: false,
     relatedPlaces: [],
+    showLayers: {
+      spatial: true,
+      labels: true,
+      cones: true,
+      places: true,
+      relatedPlaces: true,
+      caseStudy: false,
+      romanRoads: false,
+      majorTowns: false,
+      langobardenPoints: false,
+    },
+    origins: {},
+    kingdoms: {},
+    cluster: {},
   }),
   computed: {
     coneStyle() {
