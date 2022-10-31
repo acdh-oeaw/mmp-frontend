@@ -386,7 +386,6 @@ export default {
       [71.663663, 34.667969],
     ]),
     radioGroup: 1,
-    url: process.env.BASE_URL,
     tileOptions: {
       maxZoom: 10,
       minZoom: 4,
@@ -757,6 +756,8 @@ export default {
   watch: {
     data: {
       handler(to) {
+        if (!Array.isArray(to) || to.length < 2) return;
+
         console.log('to', to, this.data);
         this.spatial = JSON.parse(JSON.stringify(to[0]));
         this.cones = JSON.parse(JSON.stringify(to[1]));
