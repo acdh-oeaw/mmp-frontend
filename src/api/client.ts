@@ -2,833 +2,1057 @@
 
 import type { RequestOptions } from '@stefanprobst/request';
 import { createUrl, request } from '@stefanprobst/request';
-import type { Feature, Point, Polygon } from 'geojson';
-import useRequest from 'swrv';
-import type { IConfig, IResponse } from 'swrv/dist/types';
+import { namespace } from 'd3';
+import type { GeometryCollection, Point, Polygon } from 'geojson';
 
-/**
- * MMP API
- * docs: {@link https://mmp.acdh-dev.oeaw.ac.at/api-docs/}
- */
+import type {
+  Author,
+  AuthorNormalized,
+  Keyword,
+  KeywordNormalized,
+  KeywordType,
+  ModelingProcess,
+  Passage,
+  PassageNormalized,
+  Place,
+  PlaceNormalized,
+  SkosCollection,
+  SkosConcept,
+  SkosConceptNormalized,
+  SkosConceptScheme,
+  Slide,
+  SpatialCoverage,
+  SpatialCoverageGeoJsonProperties,
+  Story,
+  StoryNormalized,
+  Text,
+  TextTopicRelation,
+  Topic,
+  TopicNormalized,
+  UseCase,
+} from '@/api/models';
+import type {
+  AutoComplete,
+  DateLookupSearchParams,
+  Feature,
+  FeatureWithBoundingBox,
+  LimitOffsetPaginationSearchParams,
+  NumberLookupSearchParams,
+  PageNumberPaginationSearchParams,
+  PaginatedGeoJsonResponse,
+  PaginatedResponse,
+  SortableSearchParams,
+  StringLookupSearchParams,
+} from '@/api/types';
 
-const baseUrl = 'https://mmp.acdh-dev.oeaw.ac.at/api/';
+//
+
+const baseUrl = 'https://mmp.acdh-dev.oeaw.ac.at/';
+
+const baseUrls = {
+  autocomplete: new URL('archiv-ac/', baseUrl),
+  archiv: new URL('archiv/', baseUrl),
+  api: new URL('api/', baseUrl),
+};
+
 const options: RequestOptions = { responseType: 'json' };
-const defaults: IConfig = { dedupingInterval: Infinity, revalidateOnFocus: false };
-
-function createKey(url: URL) {
-  url.searchParams.sort();
-  return String(url);
-}
-
-type Config = {
-  isDisabled?: boolean;
-};
 
 //
 
-type PaginatedEntityRequest<T> = T & {
-  limit?: number;
-  offset?: number;
-};
-
-type PaginatedGeoJsonRequest<T> = T & {
-  page?: number;
-  page_size?: number;
-};
-
-type PaginationInfo = {
-  count: number;
-  next: string | null;
-  previous: string | null;
-};
-
-type PaginatedEntityResponse<T> = PaginationInfo & {
-  results: Array<T>;
-};
-
-type PaginatedGeoJsonResponse<T> = PaginationInfo & {
-  type: 'FeatureCollection';
-  features: Array<T>;
-};
-
-type PaginatedGeoJsonResponseAlternate<T> = PaginationInfo & {
-  results: {
-    type: 'FeatureCollection';
-    features: Array<T>;
-  };
-};
-
-//
-
-type IsoDateString = string;
-
-type UrlString = string;
-
-export interface KeyWordRef {
-  url: UrlString;
-  // id: number;
-  legacy_id: string;
-  legacy_pk: number;
-  stichwort: string;
-  name_gr: string;
-  art: string;
-  varianten: string;
-  wurzel: string;
-  kommentar: null;
-  orig_data_csv: string;
-  related_keyword: Array<KeyWordRef['url']>;
+export namespace AuthorAutoComplete {
+  export type SearchParams = AutoComplete.SearchParams;
+  export type Response = AutoComplete.Response;
 }
 
-export interface PlaceRef {
-  id: number;
-  name: string;
-  lat: number;
-  lng: number;
-  art: { id: number; label: string };
+export function getAuthorAutoCompletes(
+  searchParams: AuthorAutoComplete.SearchParams
+): Promise<AuthorAutoComplete.Response> {
+  const url = createUrl({
+    baseUrl: baseUrls.autocomplete,
+    pathname: 'autor-autocomplete/',
+    searchParams,
+  });
+  return request(url, options);
 }
 
-export interface PersonRef {
-  id: number;
-  name: string;
-  place: PlaceRef;
+export namespace KeywordAutoComplete {
+  export type SearchParams = AutoComplete.SearchParams;
+  export type Response = AutoComplete.Response;
 }
 
-export interface TextRef {
-  id: number;
-  title: string;
-  places: Array<PlaceRef>;
-  authors: Array<PersonRef>;
+export function getKeywordAutoCompletes(
+  searchParams: KeywordAutoComplete.SearchParams
+): Promise<KeywordAutoComplete.Response> {
+  const url = createUrl({
+    baseUrl: baseUrls.autocomplete,
+    pathname: 'keyword-autocomplete/',
+    searchParams,
+  });
+  return request(url, options);
 }
 
-export interface PassageRef {
-  id: number;
-  /** year */
-  start_date: number | null;
-  /** year */
-  end_date: number | null;
-  display_label: string;
+/** A Region is a Keyword with art="Region". */
+export namespace RegionAutoComplete {
+  export type SearchParams = AutoComplete.SearchParams;
+  export type Response = AutoComplete.Response;
 }
 
-interface SkosConcept {
-  url: UrlString;
-  pref_label: string;
-  pref_label_lang: string;
-  top_concept: null;
-  notation: string;
-  related: string;
-  broad_match: string;
-  narrow_match: string;
-  exact_match: string;
-  related_match: string;
-  close_match: string;
-  legacy_id: string;
-  creator: string;
-  contributor: string;
-  needs_review: null;
-  date_created: IsoDateString;
-  date_modified: IsoDateString;
-  lft: number;
-  rght: number;
-  tree_id: number;
-  level: number;
-  scheme: UrlString;
-  broader_concept: null;
-  created_by: null;
-  collection: Array<UrlString>;
+export function getRegionAutoCompletes(
+  searchParams: RegionAutoComplete.SearchParams
+): Promise<RegionAutoComplete.Response> {
+  const url = createUrl({
+    baseUrl: baseUrls.autocomplete,
+    pathname: 'region-autocomplete/',
+    searchParams,
+  });
+  return request(url, options);
 }
 
-//
-
-export type Cone = { id: number } & Feature<
-  Polygon,
-  {
-    key_word: KeyWordRef;
-    fuzzyness: number;
-    stelle: Array<PassageRef>;
-    texts: Array<TextRef>;
-    places: Array<PlaceRef>;
-  }
->;
-
-export type PlaceGeoJson = { id: number } & Feature<
-  Point,
-  {
-    name: string;
-    name_antik: string;
-    name_de: string;
-    name_fr: string;
-    name_gr: string;
-    art: SkosConcept['url'] | null;
-    kategorie: SkosConcept['url'] | null;
-  }
->;
-
-export type SpatialCoverage = { id: number; bbox: [number, number, number, number] } & Feature<
-  Polygon,
-  {
-    show_labels: boolean;
-    key_word: KeyWordRef;
-    fuzzyness: number;
-    stelle: Array<PassageRef>;
-    texts: Array<TextRef>;
-    places: Array<PlaceRef>;
-  }
->;
-
-export interface UseCase {
-  url: UrlString;
-  /**
-   * Not included in api responses, added client side for `/api/usecase` only.
-   */
-  id?: number;
-  title: string;
-  principal_investigator: string;
-  pi_norm_id: string;
-  description: string;
-  story_map: string;
-  custom_layer: string | null;
-  knightlab_stoy_map: [];
+/** An Ethnonym is a Keyword with art="Ethnonym". */
+export namespace EthnonymAutoComplete {
+  export type SearchParams = AutoComplete.SearchParams;
+  export type Response = AutoComplete.Response;
 }
 
-export interface Keyword {
-  // id: number;
-  url: UrlString;
-  legacy_id: string;
-  legacy_pk: number;
-  stichwort: string;
-  name_gr: string;
-  art: string;
-  varianten: string;
-  wurzel: string;
-  kommentar: string;
-  orig_data_csv: string;
-  related_keyword: Array<Keyword['url']>;
+export function getEthnonymAutoCompletes(
+  searchParams: EthnonymAutoComplete.SearchParams
+): Promise<EthnonymAutoComplete.Response> {
+  const url = createUrl({
+    baseUrl: baseUrls.autocomplete,
+    pathname: 'ethnonym-autocomplete/',
+    searchParams,
+  });
+  return request(url, options);
 }
 
-export interface Passage {
-  url: UrlString;
-  legacy_id: string;
-  legacy_pk: number;
-  summary: string;
-  zitat: string;
-  zitat_stelle: string;
-  translation: string;
-  start_date: number;
-  end_date: number;
-  kommentar: string;
-  display_label: string;
-  orig_data_csv: string;
-  text: Text;
-  key_word: Array<Keyword>;
-  ort: Array<Place>;
-  use_case: Array<UseCase>;
+/** A Name is a Keyword with art="Eigenname". */
+export namespace NameAutoComplete {
+  export type SearchParams = AutoComplete.SearchParams;
+  export type Response = AutoComplete.Response;
 }
 
-export interface Place {
-  url: string;
-  legacy_id: string;
-  legacy_pk: number;
-  name: string;
-  norm_id: string;
-  name_antik: string;
-  name_de: string;
-  name_fr: string;
-  name_it: string;
-  name_gr: string;
-  long: number;
-  lat: number;
-  coords: Point;
-  fuzzy_geom: null;
-  kommentar: string;
-  orig_data_csv: string;
-  art: SkosConcept['url'];
-  kategorie: SkosConcept['url'];
+export function getNameAutoCompletes(
+  searchParams: NameAutoComplete.SearchParams
+): Promise<NameAutoComplete.Response> {
+  const url = createUrl({
+    baseUrl: baseUrls.autocomplete,
+    pathname: 'eigenname-autocomplete/',
+    searchParams,
+  });
+  return request(url, options);
 }
 
-export interface Author {
-  url: string;
-  legacy_id: string;
-  legacy_pk: 1;
-  name: string;
-  gnd_id: string;
-  name_lat: string;
-  name_en: string;
-  name_fr: string;
-  name_it: string;
-  name_gr: string;
-  jahrhundert: string;
-  start_date: string;
-  end_date: string;
-  start_date_year: number;
-  end_date_year: number;
-  kommentar: string;
-  orig_data_csv: string;
-  ort: Place['url'];
+/** A KeywordKeyword is a Keyword with art="Keyword". */
+export namespace KeywordKeywordAutoComplete {
+  export type SearchParams = AutoComplete.SearchParams;
+  export type Response = AutoComplete.Response;
 }
 
-export interface Text {
-  url: UrlString;
-  legacy_id: string;
-  legacy_pk: number;
-  title: string;
-  alt_title: string;
-  text_lang: string;
-  jahrhundert: string;
-  start_date: string;
-  end_date: string;
-  not_before: number;
-  not_after: number;
-  edition: string;
-  kommentar: string;
-  orig_data_csv: string;
-  art: SkosConcept;
-  author: Author;
-  ort: Place;
+export function getKeywordKeywordAutoCompletes(
+  searchParams: KeywordKeywordAutoComplete.SearchParams
+): Promise<KeywordKeywordAutoComplete.Response> {
+  const url = createUrl({
+    baseUrl: baseUrls.autocomplete,
+    pathname: 'schlagwort-autocomplete/',
+    searchParams,
+  });
+  return request(url, options);
 }
 
-//
-
-export namespace GetCones {
-  export type SearchParams = PaginatedGeoJsonRequest<{
-    id?: Cone['id'];
-    show_labels?: boolean;
-    key_word?: Array<number>; // Array<KeyWordRef['id']>;
-    stelle?: Array<number>;
-    stelle__use_case?: Array<number>;
-    stelle__ort?: Array<number>;
-    stelle__text__ort?: Array<number>;
-    stelle__start_date?: number;
-    stelle__start_date_lookup?: 'gt' | 'lt';
-    stelle__end_date?: number;
-    stelle__end_date_lookup?: 'gt' | 'lt';
-    stelle__text__not_before?: number;
-    stelle__text__not_before_lookup?: 'gt' | 'lt';
-    stelle__text__not_after?: number;
-    stelle__text__not_after_lookup?: 'gt' | 'lt';
-    stelle__text__autor?: Array<number>;
-    stelle__text__autor__start_date_year?: number;
-    stelle__text__autor__start_date_year_lookup?: 'gt' | 'lt';
-    stelle__text__autor__end_date_year?: number;
-    stelle__text__autor__end_date_year_lookup?: 'gt' | 'lt';
-    ordering?: string;
-  }>;
-  export type Response = PaginatedGeoJsonResponse<Cone>;
+export namespace PlaceAutoComplete {
+  export type SearchParams = AutoComplete.SearchParams;
+  export type Response = AutoComplete.Response;
 }
 
-export function useGetCones(
-  searchParams?: GetCones.SearchParams,
-  config?: Config
-): IResponse<GetCones.Response> {
-  const url = createUrl({ baseUrl, pathname: 'cones/', searchParams });
-
-  return useRequest(
-    config?.isDisabled ? null : createKey(url),
-    () =>
-      request(url, options)
-        /**
-         * We don't display cones without origin positions (which are the first text place related to the cone).
-         * TODO: check if this is actually correct
-         */
-        .then((data: GetCones.Response) => {
-          const features = data.features.filter((feature) =>
-            feature.properties.texts.some((text) => text.places.length > 0)
-          );
-          return { ...data, features };
-        }),
-    defaults
-  );
+export function getPlaceAutoCompletes(
+  searchParams: PlaceAutoComplete.SearchParams
+): Promise<PlaceAutoComplete.Response> {
+  const url = createUrl({
+    baseUrl: baseUrls.autocomplete,
+    pathname: 'ort-autocomplete/',
+    searchParams,
+  });
+  return request(url, options);
 }
 
-//
-
-export namespace GetPlacesGeoJson {
-  export type SearchParams = PaginatedEntityRequest<{
-    ids?: Array<PlaceRef['id']>;
-    id?: PlaceRef['id'];
-    legacy_id?: string;
-    legacy_pk?: number;
-    name?: string;
-    norm_id?: string;
-    name_antik?: string;
-    name_de?: string;
-    name_fr?: string;
-    name_it?: string;
-    long?: number;
-    lat?: number;
-    art?: Array<number>;
-    kategorie?: Array<number>;
-    kommentar?: string;
-    rvn_autor_ort_ort?: Array<number>;
-    rvn_text_ort_ort?: Array<number>;
-    rvn_text_ort_ort__rvn_stelle_text_text__key_word?: Array<number>;
-    rvn_text_ort_ort__rvn_stelle_text_text__use_case?: Array<number>;
-    rvn_text_ort_ort__rvn_stelle_text_text?: Array<number>;
-    ordering?: string;
-  }>;
-  export type Response = PaginatedGeoJsonResponseAlternate<PlaceGeoJson>;
+export namespace PassageAutoComplete {
+  export type SearchParams = AutoComplete.SearchParams;
+  export type Response = AutoComplete.Response;
 }
 
-export function useGetPlacesGeoJson(
-  searchParams?: GetPlacesGeoJson.SearchParams,
-  config?: Config
-): IResponse<GetPlacesGeoJson.Response> {
-  const url = createUrl({ baseUrl, pathname: 'ort-geojson/', searchParams });
-
-  return useRequest(
-    config?.isDisabled ? null : createKey(url),
-    () => request(url, options),
-    defaults
-  );
+export function getPassageAutoCompletes(
+  searchParams: PassageAutoComplete.SearchParams
+): Promise<PassageAutoComplete.Response> {
+  const url = createUrl({
+    baseUrl: baseUrls.autocomplete,
+    pathname: 'stelle-autocomplete/',
+    searchParams,
+  });
+  return request(url, options);
 }
 
-//
-
-export namespace GetSpatialCoverages {
-  export type SearchParams = PaginatedGeoJsonRequest<{
-    id?: SpatialCoverage['id'];
-    show_labels?: boolean;
-    key_word?: Array<number>; // Array<KeyWordRef['id']>;
-    stelle?: Array<number>;
-    stelle__use_case?: Array<number>;
-    stelle__ort?: Array<number>;
-    stelle__text__ort?: Array<number>;
-    stelle__start_date?: number;
-    stelle__start_date_lookup?: 'gt' | 'lt';
-    stelle__end_date?: number;
-    stelle__end_date_lookup?: 'gt' | 'lt';
-    stelle__text__not_before?: number;
-    stelle__text__not_before_lookup?: 'gt' | 'lt';
-    stelle__text__not_after?: number;
-    stelle__text__not_after_lookup?: 'gt' | 'lt';
-    stelle__text__autor?: Array<number>;
-    stelle__text__autor__start_date_year?: number;
-    stelle__text__autor__start_date_year_lookup?: 'gt' | 'lt';
-    stelle__text__autor__end_date_year?: number;
-    stelle__text__autor__end_date_year_lookup?: 'gt' | 'lt';
-    ordering?: string;
-  }>;
-  export type Response = PaginatedGeoJsonResponse<SpatialCoverage>;
+export namespace TextAutoComplete {
+  export type SearchParams = AutoComplete.SearchParams;
+  export type Response = AutoComplete.Response;
 }
 
-export function useGetSpatialCoverages(
-  searchParams?: GetSpatialCoverages.SearchParams,
-  config?: Config
-): IResponse<GetSpatialCoverages.Response> {
-  const url = createUrl({ baseUrl, pathname: 'spatialcoverage/', searchParams });
-
-  return useRequest(
-    config?.isDisabled ? null : createKey(url),
-    () => request(url, options),
-    defaults
-  );
+export function getTextAutoCompletes(
+  searchParams: TextAutoComplete.SearchParams
+): Promise<TextAutoComplete.Response> {
+  const url = createUrl({
+    baseUrl: baseUrls.autocomplete,
+    pathname: 'text-autocomplete/',
+    searchParams,
+  });
+  return request(url, options);
 }
 
-//
-
-export namespace GetUseCases {
-  export type SearchParams = PaginatedEntityRequest<{
-    id?: UseCase['id'];
-    ids?: Array<UseCase['id']>;
-    title?: string;
-    principal_investigator?: string;
-    pi_norm_id?: string;
-    description?: string;
-    has_stelle__text?: Array<number>;
-    has_stelle__text__autor?: Array<number>;
-    has_stelle__key_word?: Array<number>;
-    ordering?: string;
-  }>;
-  export type Response = PaginatedEntityResponse<UseCase>;
+export namespace UseCaseAutoComplete {
+  export type SearchParams = AutoComplete.SearchParams;
+  export type Response = AutoComplete.Response;
 }
 
-export function useGetUseCases(
-  searchParams?: GetUseCases.SearchParams,
-  config?: Config
-): IResponse<GetUseCases.Response> {
-  const url = createUrl({ baseUrl, pathname: 'usecase/', searchParams });
-
-  return useRequest(
-    config?.isDisabled ? null : createKey(url),
-    () =>
-      request(url, options)
-        /**
-         * Missing `id` in response.
-         *
-         * @see https://github.com/acdh-oeaw/mmp/issues/115
-         */
-        .then((data: GetUseCases.Response) => {
-          const results = data.results.map((result) => {
-            const id = Number(result.url.split('/').at(-2));
-            return { ...result, id };
-          });
-          return { ...data, results };
-        }),
-    defaults
-  );
-}
-
-export namespace GetUseCaseById {
-  export type PathParams = {
-    id: UseCase['id'];
-  };
-  export type SearchParams = {
-    // TODO: unclear what any search params will do here
-  };
-  export type Response = UseCase;
-}
-
-export function useGetUseCaseById(
-  params: GetUseCaseById.PathParams,
-  searchParams?: GetUseCaseById.SearchParams,
-  config?: Config
-) {
-  const url = createUrl({ baseUrl, pathname: `usecase/${params.id}`, searchParams });
-
-  return useRequest(
-    config?.isDisabled ? null : createKey(url),
-    () =>
-      request(url, options)
-        /**
-         * Missing `id` in response.
-         *
-         * @see https://github.com/acdh-oeaw/mmp/issues/115
-         */
-        .then((data: GetUseCaseById.Response) => {
-          const id = Number(data.url.split('/').at(-2));
-          return { ...data, id };
-        }),
-    defaults
-  );
-}
-
-//
-
-export namespace GetKeywords {
-  export type SearchParams = PaginatedEntityRequest<{
-    id?: string; // Keyword['id']
-    ids?: Array<number>; // Array<Keyword['id']>
-    legacy_id?: string;
-    legacy_pk?: number;
-    stichwort?: string;
-    wurzel?: string;
-    kommentar?: string;
-    art?: Array<number>;
-    /**
-     * Allows multiple values separated by semicolon.
-     */
-    varianten?: string;
-    has_usecase?: 'Yes';
-    rvn_stelle_key_word_keyword__text__not_before?: string;
-    rvn_stelle_key_word_keyword__text__not_after?: string;
-    rvn_stelle_key_word_keyword?: Array<number>;
-    rvn_stelle_key_word_keyword__text?: Array<number>;
-    rvn_stelle_key_word_keyword__text__autor?: Array<number>;
-    rvn_stelle_key_word_keyword__text__autor__ort?: Array<number>;
-    rvn_stelle_key_word_keyword__text__autor__start_date_year?: number;
-    rvn_stelle_key_word_keyword__text__autor__end_date_year?: number;
-    rvn_stelle_key_word_keyword__start_date?: string;
-    rvn_stelle_key_word_keyword__end_date?: string;
-    rvn_stelle_key_word_keyword__use_case?: Array<number>;
-    ordering?: string;
-  }>;
-  export type Response = PaginatedEntityResponse<Keyword>;
-}
-
-export function useGetKeywords(searchParams?: GetKeywords.SearchParams, config?: Config) {
-  const url = createUrl({ baseUrl, pathname: 'keyword/', searchParams });
-
-  return useRequest(
-    config?.isDisabled ? null : createKey(url),
-    () => request(url, options),
-    defaults
-  );
-}
-
-export namespace GetKeywordById {
-  export type PathParams = {
-    id: number; // Keyword['id'];
-  };
-  export type SearchParams = {
-    // TODO: unclear what any search params will do here
-  };
-  export type Response = Keyword;
-}
-
-export function useGetKeywordById(
-  params: GetKeywordById.PathParams,
-  searchParams?: GetKeywordById.SearchParams,
-  config?: Config
-) {
-  const url = createUrl({ baseUrl, pathname: `keyword/${params.id}`, searchParams });
-
-  return useRequest(
-    config?.isDisabled ? null : createKey(url),
-    () => request(url, options),
-    defaults
-  );
-}
-
-//
-
-export namespace GetPassages {
-  export type SearchParams = PaginatedEntityRequest<{
-    id?: number; // Passage['id']
-    ids?: Array<number>; // Array<Passage['id']>
-    legacy_id?: string;
-    legacy_pk?: number;
-    text?: string;
-    summary?: string;
-    zitat?: string;
-    translation?: string;
-    kommentar?: string;
-    has_usecase?: 'Yes';
-    use_case?: Array<number>;
-    ort?: Array<number>;
-    key_word?: Array<number>;
-    start_date?: string;
-    end_date?: string;
-    /**
-     * Intersection.
-     */
-    text__autor_and?: Array<number>;
-    text__autor?: Array<number>;
-    /**
-     * Intersection.
-     */
-    text__ort_and?: Array<number>;
-    text__ort?: Array<number>;
-    text__art?: Array<number>;
-    text__start_date?: string;
-    text__end_date?: string;
-    text__autor__start_date_year?: number;
-    text__autor__end_date_year?: number;
-    /**
-     * Intersection.
-     */
-    key_word_and?: Array<number>;
-    key_word__art?: Array<number>;
-    ordering?: string;
-  }>;
-  export type Response = PaginatedEntityResponse<Passage>;
-}
-
-export function useGetPassages(searchParams?: GetPassages.SearchParams, config?: Config) {
-  const url = createUrl({ baseUrl, pathname: 'stelle/', searchParams });
-
-  return useRequest(
-    config?.isDisabled ? null : createKey(url),
-    () => request(url, options),
-    defaults
-  );
-}
-
-export namespace GetPassageById {
-  export type PathParams = {
-    id: number; // Passage['id'];
-  };
-  export type SearchParams = {
-    // TODO: unclear what any search params will do here
-  };
-  export type Response = Passage;
-}
-
-export function useGetPassageById(
-  params: GetPassageById.PathParams,
-  searchParams?: GetPassageById.SearchParams,
-  config?: Config
-) {
-  const url = createUrl({ baseUrl, pathname: `stelle/${params.id}`, searchParams });
-
-  return useRequest(
-    config?.isDisabled ? null : createKey(url),
-    () => request(url, options),
-    defaults
-  );
+export function getUseCaseAutoCompletes(
+  searchParams: UseCaseAutoComplete.SearchParams
+): Promise<UseCaseAutoComplete.Response> {
+  const url = createUrl({
+    baseUrl: baseUrls.autocomplete,
+    pathname: 'usecase-autocomplete/',
+    searchParams,
+  });
+  return request(url, options);
 }
 
 //
 
 export namespace GetAuthors {
-  export type SearchParams = PaginatedEntityRequest<{
-    id?: number; // Author['id']
-    ids?: Array<number>; // Array<Author['id']>
-    legacy_id?: string;
-    legacy_pk?: number;
-    name?: string;
-    gnd_id?: string;
-    name_lat?: string;
-    name_en?: string;
-    name_fr?: string;
-    name_it?: string;
-    jahrhundert?: string;
-    start_date?: string;
-    end_date?: string;
-    start_date_year?: number;
-    end_date_year?: number;
-    kommentar?: string;
-    ort?: Array<number>;
-    has_usecase?: 'Yes';
-    rvn_text_autor_autor__rvn_stelle_text_text__key_word?: Array<number>;
-    rvn_text_autor_autor__rvn_stelle_text_text__key_word__art?: Array<number>;
-    ordering?: string;
-  }>;
-  export type Response = PaginatedEntityResponse<Author>;
+  export type SearchParams = LimitOffsetPaginationSearchParams &
+    SortableSearchParams & {
+      id?: Author['id'];
+      /** Comma-separated list of IDs. */
+      ids?: string;
+      /** Associated with any usecase? */
+      has_usecase?: boolean;
+
+      gnd_id?: string;
+      gnd_id__lookup?: StringLookupSearchParams;
+
+      name?: string;
+      name__lookup?: StringLookupSearchParams;
+
+      name_lat?: string;
+      name_lat__lookup?: StringLookupSearchParams;
+
+      name_en?: string;
+      name_en__lookup?: StringLookupSearchParams;
+
+      name_fr?: string;
+      name_fr__lookup?: StringLookupSearchParams;
+
+      name_it?: string;
+      name_it__lookup?: StringLookupSearchParams;
+
+      jahrhundert?: string;
+      jahrhundert__lookup?: StringLookupSearchParams;
+
+      start_date?: string;
+      start_date__lookup?: DateLookupSearchParams;
+
+      start_date_year?: number;
+      start_date_year__lookup?: DateLookupSearchParams;
+
+      end_date?: string;
+      end_date__lookup?: DateLookupSearchParams;
+
+      end_date_year?: string;
+      end_date_year__lookup?: DateLookupSearchParams;
+
+      /** Places (AND query). */
+      ort?: Array<Place['id']>;
+
+      kommentar?: string;
+      kommentar__lookup?: StringLookupSearchParams;
+
+      /** Keywords for texts by these authors (AND query). */
+      rvn_text_autor_autor__rvn_stelle_text_text__key_word?: Array<Keyword['id']>;
+
+      /** Keyword type. */
+      rvn_text_autor_autor__rvn_stelle_text_text__key_word__art?: KeywordType;
+    };
+  export type Response = PaginatedResponse<
+    Omit<Author, 'ort'> & {
+      /** Place associated with author (birth or activity). */
+      ort?: PlaceNormalized | null;
+    }
+  >;
 }
 
-export function useGetAuthors(searchParams?: GetAuthors.SearchParams, config?: Config) {
-  const url = createUrl({ baseUrl, pathname: 'autor/', searchParams });
-
-  return useRequest(
-    config?.isDisabled ? null : createKey(url),
-    () => request(url, options),
-    defaults
-  );
+export function getAuthors(searchParams: GetAuthors.SearchParams): Promise<GetAuthors.Response> {
+  const url = createUrl({ baseUrl: baseUrls.api, pathname: 'autor/', searchParams });
+  return request(url, options);
 }
 
-export namespace GetAuthorById {
-  export type PathParams = {
-    id: number; // Author['id'];
-  };
-  export type SearchParams = {
-    // TODO: unclear what any search params will do here
-  };
-  export type Response = Author;
+export namespace GetKeywords {
+  export type SearchParams = LimitOffsetPaginationSearchParams &
+    SortableSearchParams & {
+      id?: Keyword['id'];
+      /** Comma-separated list of IDs. */
+      ids?: string;
+      /** Associated with any usecase? */
+      has_usecase?: boolean;
+
+      art?: KeywordType;
+
+      stichwort?: string;
+      stichwort__lookup?: StringLookupSearchParams;
+
+      wurzel?: string;
+      wurzel__lookup?: StringLookupSearchParams;
+
+      kommentar?: string;
+      kommentar__lookup?: StringLookupSearchParams;
+
+      varianten?: string;
+      varianten__lookup?: StringLookupSearchParams;
+
+      /** Keywords used by these authors (AND query). */
+      rvn_stelle_key_word_keyword__text__autor?: Array<Author['id']>;
+
+      /** Keywords are associated with these passages (AND query). */
+      rvn_stelle_key_word_keyword?: Array<Passage['id']>;
+
+      /** Keywords are associated with these texts (AND query). */
+      rvn_stelle_key_word_keyword__text?: Array<Text['id']>;
+
+      /** Keywords are associated with these places (AND query). */
+      rvn_stelle_key_word_keyword__text__autor__ort?: Array<Place['id']>;
+
+      rvn_stelle_key_word_keyword__text__autor__start_date_year?: string;
+      rvn_stelle_key_word_keyword__text__autor__start_date_year__lookup?: DateLookupSearchParams;
+
+      rvn_stelle_key_word_keyword__text__autor__end_date_year?: string;
+      rvn_stelle_key_word_keyword__text__autor__end_date_year__lookup?: DateLookupSearchParams;
+
+      rvn_stelle_key_word_keyword__text__not_before?: string;
+      rvn_stelle_key_word_keyword__text__not_before__lookup?: DateLookupSearchParams;
+
+      rvn_stelle_key_word_keyword__text__not_after?: string;
+      rvn_stelle_key_word_keyword__text__not_after__lookup?: DateLookupSearchParams;
+
+      rvn_stelle_key_word_keyword__start_date?: string;
+      rvn_stelle_key_word_keyword__start_date__lookup?: DateLookupSearchParams;
+
+      rvn_stelle_key_word_keyword__end_date?: string;
+      rvn_stelle_key_word_keyword__end_date__lookup?: DateLookupSearchParams;
+
+      /** Keywords are associated with these usecases (AND query). */
+      rvn_stelle_key_word_keyword__use_case?: Array<UseCase['id']>;
+    };
+  export type Response = PaginatedResponse<KeywordNormalized>;
 }
 
-export function useGetAuthorById(
-  params: GetAuthorById.PathParams,
-  searchParams?: GetAuthorById.SearchParams,
-  config?: Config
-) {
-  const url = createUrl({ baseUrl, pathname: `autor/${params.id}`, searchParams });
-
-  return useRequest(
-    config?.isDisabled ? null : createKey(url),
-    () => request(url, options),
-    defaults
-  );
+export function getKeywords(searchParams: GetKeywords.SearchParams): Promise<GetKeywords.Response> {
+  const url = createUrl({ baseUrl: baseUrls.api, pathname: 'keyword/', searchParams });
+  return request(url, options);
 }
-
-//
 
 export namespace GetPlaces {
-  export type SearchParams = PaginatedEntityRequest<{
-    id?: number; // Place['id']
-    ids?: Array<number>; // Array<Place['id']>
-    legacy_id?: string;
-    legacy_pk?: number;
-    name?: string;
-    norm_id?: string;
-    name_antik?: string;
-    name_de?: string;
-    name_fr?: string;
-    name_it?: string;
-    kommentar?: string;
-    long?: number;
-    lat?: number;
-    art?: Array<number>;
-    kategorie?: Array<number>;
-    rvn_autor_ort_ort?: Array<number>;
-    rvn_text_ort_ort?: Array<number>;
-    rvn_text_ort_ort__rvn_stelle_text_text__key_word?: Array<number>;
-    rvn_text_ort_ort__rvn_stelle_text_text__use_case?: Array<number>;
-    rvn_text_ort_ort__rvn_stelle_text_text?: Array<number>;
-  }>;
-  export type Response = PaginatedEntityResponse<Place>;
+  export type SearchParams = LimitOffsetPaginationSearchParams &
+    SortableSearchParams & {
+      id?: Place['id'];
+      /** Comma-separated list of IDs. */
+      ids?: string;
+      norm_id?: string;
+      norm_id__lookup?: StringLookupSearchParams;
+
+      name?: string;
+      name__lookup?: StringLookupSearchParams;
+
+      name_antik?: string;
+      name_antik__lookup?: StringLookupSearchParams;
+
+      name_de?: string;
+      name_de__lookup?: StringLookupSearchParams;
+
+      name_fr?: string;
+      name_fr__lookup?: StringLookupSearchParams;
+
+      name_it?: string;
+      name_it__lookup?: StringLookupSearchParams;
+
+      /**
+       * Place types (AND query).
+       *
+       * Allowed values are defined in the "place_art" SkosCollection.
+       * @see '/vocabs-ac/specific-concept-ac/place_art'
+       */
+      art?: Array<SkosConcept['id']>;
+
+      /**
+       * Place categories (AND query).
+       *
+       * Allowed values are defined in the "kategorie" SkosCollection.
+       * @see '/vocabs-ac/specific-concept-ac/kategorie'
+       */
+      kategorie?: Array<SkosConcept['id']>;
+
+      kommentar?: string;
+      kommentar__lookup?: StringLookupSearchParams;
+
+      /** Related authors (AND query). */
+      rvn_autor_ort_ort: Array<Author['id']>;
+
+      /** Related texts (AND query). */
+      rvn_text_ort_ort: Array<Text['id']>;
+
+      /** Keywords related to this place via a text (AND query). */
+      rvn_text_ort_ort__rvn_stelle_text_text__key_word: Array<Keyword['id']>;
+
+      /** Places related to these usecases (AND query). */
+      rvn_text_ort_ort__rvn_stelle_text_text__use_case: Array<UseCase['id']>;
+
+      /** Places related to these passages (AND query). */
+      rvn_text_ort_ort__rvn_stelle_text_text: Array<Passage['id']>;
+
+      long?: number;
+      lat?: number;
+    };
+  export type Response = PaginatedResponse<PlaceNormalized>;
 }
 
-export function useGetPlaces(searchParams?: GetPlaces.SearchParams, config?: Config) {
-  const url = createUrl({ baseUrl, pathname: 'ort/', searchParams });
-
-  return useRequest(
-    config?.isDisabled ? null : createKey(url),
-    () => request(url, options),
-    defaults
-  );
+export function getPlaces(searchParams: GetPlaces.SearchParams): Promise<GetPlaces.Response> {
+  const url = createUrl({ baseUrl: baseUrls.api, pathname: 'ort/', searchParams });
+  return request(url, options);
 }
 
-export namespace GetPlaceById {
-  export type PathParams = {
-    id: number; // Place['id'];
-  };
-  export type SearchParams = {
-    // TODO: unclear what any search params will do here
-  };
-  export type Response = Place;
+export namespace GetPassages {
+  export type SearchParams = LimitOffsetPaginationSearchParams &
+    SortableSearchParams & {
+      id?: Passage['id'];
+      /** Comma-separated list of IDs. */
+      ids?: string;
+      /** Associated with any usecase? */
+      has_usecase?: boolean;
+
+      /** Associated texts (AND query). */
+      text?: Array<Text['id']>;
+
+      /** Passages included in texts by these authors (AND query). */
+      text__autor_and: Array<Author['id']>;
+
+      /** Passages included in texts by these authors (OR query). */
+      text__autor?: Array<Author['id']>;
+
+      /** Passages included in texts related to these places (AND query). */
+      text__ort_and?: Array<Place['id']>;
+
+      /** Passages included in texts related to these places (OR query). */
+      text__ort?: Array<Place['id']>;
+
+      /**
+       * Text genres (AND query).
+       *
+       * Allowed values are defined in the "art" SkosCollection.
+       * @see '/vocabs-ac/specific-concept-ac/art'
+       */
+      text__art?: Array<SkosConcept['id']>;
+
+      /** Related places (AND query). */
+      ort?: Array<Place['id']>;
+
+      summary?: string;
+      summary__lookup?: StringLookupSearchParams;
+
+      zitat?: string;
+      zitat__lookup?: StringLookupSearchParams;
+
+      translation?: string;
+      translation__lookup?: StringLookupSearchParams;
+
+      /** Keyword type. */
+      key_word__art?: KeywordType;
+
+      /** Related usecases (AND query). */
+      use_case?: Array<UseCase['id']>;
+
+      /** Passage contains these keywords (AND query). */
+      key_word_and?: Array<Keyword['id']>;
+
+      /** Passage contains these keywords (OR query). */
+      key_word?: Array<Keyword['id']>;
+
+      kommentar?: string;
+      kommentar__lookup?: StringLookupSearchParams;
+
+      start_date?: number;
+      start_date__lookup?: DateLookupSearchParams;
+
+      end_date?: number;
+      end_date__lookup?: DateLookupSearchParams;
+
+      text__start_date?: string;
+      text__start_date__lookup?: DateLookupSearchParams;
+
+      text__end_date?: string;
+      text__end_date__lookup?: DateLookupSearchParams;
+
+      text__autor__start_date_year?: string;
+      text__autor__start_date_year__lookup?: DateLookupSearchParams;
+
+      text__autor__end_date_year?: string;
+      text__autor__end_date_year__lookup?: DateLookupSearchParams;
+    };
+  export type Response = PaginatedResponse<
+    Omit<Passage, 'key_word' | 'ort' | 'use_case'> & {
+      /** Keywords asssociated with the passage. */
+      key_word: Array<
+        Omit<Keyword, 'related_keyword'> & {
+          /** Related keywords. */
+          related_keyword: Array<KeywordNormalized>;
+        }
+      >;
+      /** Places of composition. */
+      ort: Array<
+        Omit<Place, 'art' | 'kategorie'> & {
+          /**
+           * Type of place.
+           *
+           * Allowed values are defined in the "place_art" SkosCollection.
+           * @see '/vocabs-ac/specific-concept-ac/place_art'
+           */
+          art?: SkosConceptNormalized | null;
+          /**
+           * Category of place.
+           *
+           * Allowed values are defined in the "kategorie" SkosCollection.
+           * @see '/vocabs-ac/specific-concept-ac/kategorie'
+           */
+          kategorie?: SkosConceptNormalized | null;
+        }
+      >;
+      /** Associated usecases. */
+      use_case: Array<
+        Omit<UseCase, 'knightlab_stoy_map'> & {
+          /** Knightlab Story Maps. */
+          knightlab_stoy_map: Array<StoryNormalized>;
+        }
+      >;
+    }
+  >;
 }
 
-export function useGetPlaceById(
-  params: GetPlaceById.PathParams,
-  searchParams?: GetPlaceById.SearchParams,
-  config?: Config
-) {
-  const url = createUrl({ baseUrl, pathname: `ort/${params.id}`, searchParams });
+export function getPassages(searchParams: GetPassages.SearchParams): Promise<GetPassages.Response> {
+  const url = createUrl({ baseUrl: baseUrls.api, pathname: 'stelle/', searchParams });
+  return request(url, options);
+}
 
-  return useRequest(
-    config?.isDisabled ? null : createKey(url),
-    () => request(url, options),
-    defaults
-  );
+export namespace GetTexts {
+  export type SearchParams = LimitOffsetPaginationSearchParams &
+    SortableSearchParams & {
+      id?: Text['id'];
+      /** Comma-separated list of IDs. */
+      ids?: string;
+      /** Associated with any usecase? */
+      has_usecase?: boolean;
+
+      start_date?: string;
+      end_date?: string;
+
+      /** Authors (AND query). */
+      autor?: Array<Author['id']>;
+
+      autor__start_date_year?: string;
+      autor__start_date_year__lookup?: DateLookupSearchParams;
+
+      autor__end_date_year?: string;
+      autor__end_date_year__lookup?: DateLookupSearchParams;
+
+      title?: string;
+      title__lookup?: StringLookupSearchParams;
+
+      jahrhundert?: string;
+      jahrhundert__lookup?: StringLookupSearchParams;
+
+      not_before?: number;
+      not_before__lookup?: DateLookupSearchParams;
+
+      not_after?: number;
+      not_after__lookup?: DateLookupSearchParams;
+
+      edition?: string;
+      edition__lookup?: StringLookupSearchParams;
+
+      /**
+       * Genres (AND query).
+       *
+       * Allowed values are defined in the "art" SkosCollection.
+       * @see '/vocabs-ac/specific-concept-ac/art'
+       */
+      art?: Array<SkosConcept['id']>;
+
+      /** Related places (AND query). */
+      ort?: Array<Place['id']>;
+
+      kommentar?: string;
+      kommentar__lookup?: StringLookupSearchParams;
+
+      /** Keywords (AND query). */
+      rvn_stelle_text_text__key_word?: Array<Keyword['id']>;
+
+      /** Keyword type. */
+      rvn_stelle_text_text__key_word__art?: KeywordType;
+    };
+  export type Response = PaginatedResponse<
+    Omit<Text, 'autor' | 'art' | 'ort'> & {
+      /** Authors. */
+      autor: Array<AuthorNormalized>;
+      /**
+       * Genre.
+       *
+       * Allowed values are defined in the "art" SkosCollection.
+       * @see '/vocabs-ac/specific-concept-ac/art'
+       */
+      art?: SkosConceptNormalized | null;
+      /** Places of composition. */
+      ort: Array<PlaceNormalized>;
+    }
+  >;
+}
+
+export function getTexts(searchParams: GetTexts.SearchParams): Promise<GetTexts.Response> {
+  const url = createUrl({ baseUrl: baseUrls.api, pathname: 'text/', searchParams });
+  return request(url, options);
+}
+
+export namespace GetUseCases {
+  export type SearchParams = LimitOffsetPaginationSearchParams &
+    SortableSearchParams & {
+      id?: UseCase['id'];
+      /** Comma-separated list of IDs. */
+      ids?: string;
+
+      title?: string;
+      title__lookup?: StringLookupSearchParams;
+
+      principal_investigator?: string;
+      principal_investigator__lookup?: StringLookupSearchParams;
+
+      pi_norm_id?: string;
+      pi_norm_id__lookup?: StringLookupSearchParams;
+
+      description?: string;
+      description__lookup?: StringLookupSearchParams;
+
+      /** Related texts (AND query). */
+      has_stelle__text?: Array<Text['id']>;
+
+      /** Related authors (AND query). */
+      has_stelle__text__autor?: Array<Author['id']>;
+
+      /** Related keywords (AND query). */
+      has_stelle__key_word?: Array<Keyword['id']>;
+    };
+  export type Response = PaginatedResponse<
+    Omit<UseCase, 'knightlab_stoy_map'> & {
+      knightlab_stoy_map: Array<StoryNormalized>;
+    }
+  >;
+}
+
+export function getUseCases(searchParams: GetUseCases.SearchParams): Promise<GetUseCases.Response> {
+  const url = createUrl({ baseUrl: baseUrls.api, pathname: 'usecase/', searchParams });
+  return request(url, options);
 }
 
 //
 
-export namespace GetTexts {
-  export type SearchParams = PaginatedEntityRequest<{
-    id?: number; // Text['id']
-    ids?: Array<number>; // Array<Text['id']>
-    legacy_id?: string;
-    legacy_pk?: number;
-    autor?: Array<number>;
-    title?: string;
-    jahrhundert?: string;
-    start_date?: string;
-    end_date?: string;
-    edition?: string;
-    art?: Array<number>;
-    ort?: Array<number>;
-    kommentar?: string;
-    has_usecase?: 'Yes';
-    autor__start_date_year?: number;
-    autor__end_date_year?: number;
-    not_before?: string;
-    not_after?: string;
-    rvn_stelle_text_text__key_word?: Array<number>;
-    rvn_stelle_text_text__key_word__art?: Array<number>;
-  }>;
-  export type Response = PaginatedEntityResponse<Text>;
+export namespace GetModelingProcesses {
+  export type SearchParams = LimitOffsetPaginationSearchParams;
+  export type Response = PaginatedResponse<ModelingProcess>;
 }
 
-export function useGetTexts(searchParams?: GetTexts.SearchParams, config?: Config) {
-  const url = createUrl({ baseUrl, pathname: 'text/', searchParams });
-
-  return useRequest(
-    config?.isDisabled ? null : createKey(url),
-    () => request(url, options),
-    defaults
-  );
+export function getModelingProcesses(
+  searchParams: GetModelingProcesses.SearchParams
+): Promise<GetModelingProcesses.Response> {
+  const url = createUrl({ baseUrl: baseUrls.api, pathname: 'modeling-process/', searchParams });
+  return request(url, options);
 }
 
-export namespace GetTextById {
+export namespace GetTextTopicRelations {
+  export type SearchParams = LimitOffsetPaginationSearchParams & {
+    /** Comma-separated list of IDs. */
+    ids?: string;
+    /** Related passages (AND query). */
+    text?: Array<Passage['id']>;
+    /** Related topics (AND query). */
+    topic?: Array<Topic['id']>;
+    weight?: number;
+    weight_lookup?: NumberLookupSearchParams;
+  };
+  export type Response = PaginatedResponse<
+    Omit<TextTopicRelation, 'topic' | 'text'> & {
+      text?: PassageNormalized | null;
+      topic?: TopicNormalized | null;
+    }
+  >;
+}
+
+export function getTextTopicRelations(
+  searchParams: GetTextTopicRelations.SearchParams
+): Promise<GetTextTopicRelations.Response> {
+  const url = createUrl({ baseUrl: baseUrls.api, pathname: 'text-topic-relation/', searchParams });
+  return request(url, options);
+}
+
+export namespace GetTopics {
+  export type SearchParams = LimitOffsetPaginationSearchParams;
+  export type Response = PaginatedResponse<Topic>;
+}
+
+export function getTopics(searchParams: GetTopics.SearchParams): Promise<GetTopics.Response> {
+  const url = createUrl({ baseUrl: baseUrls.api, pathname: 'topics/', searchParams });
+  return request(url, options);
+}
+
+//
+
+export namespace GetPlacesGeojson {
+  export type SearchParams = PageNumberPaginationSearchParams & SortableSearchParams;
+  export type Response = PaginatedGeoJsonResponse<
+    { id: Place['id'] } & Feature<
+      Point,
+      Pick<
+        PlaceNormalized,
+        'name' | 'name_antik' | 'name_de' | 'name_fr' | 'name_gr' | 'art' | 'kategorie'
+      >
+    >
+  >;
+}
+
+/** Uses Place['coordinates'] as geojson geometry. */
+export function getPlacesGeojson(
+  searchParams: GetPlacesGeojson.SearchParams
+): Promise<GetPlacesGeojson.Response> {
+  const url = createUrl({ baseUrl: baseUrls.api, pathname: 'ort-geojson/', searchParams });
+  return request(url, options);
+}
+
+export namespace GetFuzzyPlacesGeojson {
+  export type SearchParams = PageNumberPaginationSearchParams & SortableSearchParams;
+  export type Response = PaginatedGeoJsonResponse<
+    { id: Place['id'] } & Feature<
+      GeometryCollection,
+      Pick<
+        PlaceNormalized,
+        'name' | 'name_antik' | 'name_de' | 'name_fr' | 'name_gr' | 'art' | 'kategorie'
+      >
+    >
+  >;
+}
+
+/** Uses Place['fuzzy_geom'] as geojson geometry - which seems to always be `null`. */
+export function getFuzzyPlacesGeojson(
+  searchParams: GetFuzzyPlacesGeojson.SearchParams
+): Promise<GetFuzzyPlacesGeojson.Response> {
+  const url = createUrl({ baseUrl: baseUrls.api, pathname: 'fuzzy-ort-geojson/', searchParams });
+  return request(url, options);
+}
+
+type SpatialCoverageSearchParams = {
+  id?: SpatialCoverage['id'];
+
+  /** Keywords (AND query). */
+  key_word?: Array<Keyword['id']>;
+  /** Passages (AND query). */
+  stelle?: Array<Passage['id']>;
+  /** Usecases (AND query). */
+  stelle__use_case?: Array<UseCase['id']>;
+  /** Places mentioned in passage (AND query). */
+  stelle__ort?: Array<Place['id']>;
+  /** Places mentioned in related texts (AND query). */
+  stelle__text__ort?: Array<Place['id']>;
+  /** Related authors (AND query). */
+  stelle__text__autor?: Array<Author['id']>;
+
+  stelle__start_date?: number;
+  stelle__start_date__lookup?: DateLookupSearchParams;
+
+  stelle__end_date?: number;
+  stelle__end_date__lookup?: DateLookupSearchParams;
+
+  stelle__text__not_before?: number;
+  stelle__text__not_before__lookup?: DateLookupSearchParams;
+
+  stelle__text__not_after?: number;
+  stelle__text__not_after__lookup?: DateLookupSearchParams;
+
+  stelle__text__autor__start_date_year?: number;
+  stelle__text__autor__start_date_year__lookup?: DateLookupSearchParams;
+
+  stelle__text__autor__end_date_year?: number;
+  stelle__text__autor__end_date_year__lookup?: DateLookupSearchParams;
+
+  show_labels?: boolean;
+};
+
+export namespace GetConesGeojson {
+  export type SearchParams = PageNumberPaginationSearchParams &
+    SortableSearchParams &
+    SpatialCoverageSearchParams;
+  export type Response = PaginatedGeoJsonResponse<
+    { id: SpatialCoverage['id'] } & Feature<Polygon, SpatialCoverageGeoJsonProperties>
+  >;
+}
+
+/** Uses SpatialCoverage['convex_hull'] as geojson geometry. */
+export function getConesGeojson(
+  searchParams: GetConesGeojson.SearchParams
+): Promise<GetConesGeojson.Response> {
+  const url = createUrl({ baseUrl: baseUrls.api, pathname: 'cones/', searchParams });
+  return request(url, options);
+}
+
+export namespace GetSpatialCoveragesGeojson {
+  export type SearchParams = PageNumberPaginationSearchParams &
+    SortableSearchParams &
+    SpatialCoverageSearchParams;
+  export type Response = PaginatedGeoJsonResponse<
+    { id: SpatialCoverage['id'] } & FeatureWithBoundingBox<
+      Polygon,
+      SpatialCoverageGeoJsonProperties & {
+        /**
+         * Display labels for coverage.
+         *
+         * @default true
+         */
+        show_labels: SpatialCoverage['show_labels'];
+      }
+    >
+  >;
+}
+
+/** Uses SpatialCoverage['fuzzy_geom'] as geojson geometry. */
+export function getSpatialCoveragesGeojson(
+  searchParams: GetSpatialCoveragesGeojson.SearchParams
+): Promise<GetSpatialCoveragesGeojson.Response> {
+  const url = createUrl({ baseUrl: baseUrls.api, pathname: 'spatialcoverage/', searchParams });
+  return request(url, options);
+}
+
+export namespace GetLinesPointsGeojson {
+  export type SearchParams = PageNumberPaginationSearchParams &
+    SortableSearchParams &
+    SpatialCoverageSearchParams;
+  export type Response = PaginatedGeoJsonResponse<
+    { id: SpatialCoverage['id'] } & FeatureWithBoundingBox<
+      GeometryCollection,
+      SpatialCoverageGeoJsonProperties
+    >
+  >;
+}
+
+/** Uses SpatialCoverage['geom_collection'] as geojson geometry. */
+export function getLinesPointsGeojson(
+  searchParams: GetLinesPointsGeojson.SearchParams
+): Promise<GetLinesPointsGeojson.Response> {
+  const url = createUrl({ baseUrl: baseUrls.api, pathname: 'lines-and-points/', searchParams });
+  return request(url, options);
+}
+
+//
+
+export namespace GetStories {
+  export type SearchParams = LimitOffsetPaginationSearchParams & SortableSearchParams;
+  export type Response = PaginatedResponse<Story>;
+}
+
+export function getStories(searchParams: GetStories.SearchParams): Promise<GetStories.Response> {
+  const url = createUrl({ baseUrl: baseUrls.api, pathname: 'stories/', searchParams });
+  return request(url, options);
+}
+
+export namespace GetStorySlides {
+  export type SearchParams = LimitOffsetPaginationSearchParams & SortableSearchParams;
+  export type Response = PaginatedResponse<Slide>;
+}
+
+export function getStorySlides(
+  searchParams: GetStorySlides.SearchParams
+): Promise<GetStorySlides.Response> {
+  const url = createUrl({ baseUrl: baseUrls.api, pathname: 'slides/', searchParams });
+  return request(url, options);
+}
+
+//
+
+export namespace GetSkosCollections {
+  // TODO: https://github.com/acdh-oeaw/acdh-django-vocabs/blob/master/vocabs/filters.py
+  export type SearchParams = PageNumberPaginationSearchParams & SortableSearchParams;
+  export type Response = PaginatedResponse<SkosCollection>;
+}
+
+export function getSkosCollections(
+  searchParams: GetSkosCollections.SearchParams
+): Promise<GetSkosCollections.Response> {
+  const url = createUrl({ baseUrl: baseUrls.api, pathname: 'skoscollections/', searchParams });
+  return request(url, options);
+}
+
+export namespace GetSkosConcepts {
+  // TODO: https://github.com/acdh-oeaw/acdh-django-vocabs/blob/master/vocabs/filters.py
+  export type SearchParams = PageNumberPaginationSearchParams & SortableSearchParams;
+  export type Response = PaginatedResponse<SkosConcept>;
+}
+
+export function getSkosConcepts(
+  searchParams: GetSkosConcepts.SearchParams
+): Promise<GetSkosConcepts.Response> {
+  const url = createUrl({ baseUrl: baseUrls.api, pathname: 'skosconcepts/', searchParams });
+  return request(url, options);
+}
+
+export namespace GetSkosConceptSchemes {
+  // TODO: https://github.com/acdh-oeaw/acdh-django-vocabs/blob/master/vocabs/filters.py
+  export type SearchParams = PageNumberPaginationSearchParams & SortableSearchParams;
+  export type Response = PaginatedResponse<SkosConceptScheme>;
+}
+
+export function getSkosConceptSchemes(
+  searchParams: GetSkosConceptSchemes.SearchParams
+): Promise<GetSkosConceptSchemes.Response> {
+  const url = createUrl({ baseUrl: baseUrls.api, pathname: 'skosconceptschemes/', searchParams });
+  return request(url, options);
+}
+
+//
+
+export namespace GetUseCaseTimetableById {
   export type PathParams = {
-    id: number; // Text['id'];
+    id: UseCase['id'];
   };
-  export type SearchParams = {
-    // TODO: unclear what any search params will do here
-  };
-  export type Response = Text;
+  export type Response = Array<{
+    id: UseCase['id'];
+    start_date: number;
+    end_date: number;
+    ent_type: 'event';
+    ent_title: string;
+    ent_description: string;
+    /** Pathname only */
+    ent_detail_view: UrlString;
+  }>;
 }
 
-export function useGetTextById(
-  params: GetTextById.PathParams,
-  searchParams?: GetTextById.SearchParams,
-  config?: Config
-) {
-  const url = createUrl({ baseUrl, pathname: `text/${params.id}`, searchParams });
+export function getUseCaseTimetableById(
+  params: GetUseCaseTimetableById.PathParams
+): Promise<GetUseCaseTimetableById.Response> {
+  const url = createUrl({ baseUrl, pathname: `/archiv/usecase-timetable-data/${params.id}` });
+  return request(url, options);
+}
 
-  return useRequest(
-    config?.isDisabled ? null : createKey(url),
-    () => request(url, options),
-    defaults
-  );
+/** Keyword count by century. */
+export namespace GetKeywordCenturyById {
+  export type PathParams = {
+    id: Keyword['id'];
+  };
+  export type Response = {
+    id: Keyword['id'];
+    title: Keyword['stichwort'];
+    /** Tuples of century and count, e.g. [9, 123]. */
+    data: Array<[number, number]>;
+  };
+}
+
+export function getKeywordCenturyById(
+  params: GetKeywordCenturyById.PathParams
+): Promise<GetKeywordCenturyById.Response> {
+  const url = createUrl({ baseUrl, pathname: `/archiv/keyword/century/${params.id}` });
+  return request(url, options);
+}
+
+export namespace GetKeywordGraphById {
+  export type PathParams = {
+    id: Keyword['id'];
+  };
+  export type SearchParams = GetKeywords.SearchParams;
+  export type Response = {
+    nodes: Array<{
+      id: Keyword['id'];
+      type: 'archiv__keyword';
+      label: string;
+      /** Pathname only. */
+      detail_view_url: UrlString;
+      /** Pathname only. */
+      as_graph: UrlString;
+      keyword_type: KeywordType;
+    }>;
+    edges: Array<{
+      id: number;
+      source: string;
+      target: string;
+      type: 'e';
+    }>;
+    types: {
+      nodes: [
+        {
+          id: 'archiv__keyword';
+          label: 'Keyword';
+          color: '#006699';
+        }
+      ];
+      edges: [
+        {
+          id: 'e';
+          color: '#990066';
+        }
+      ];
+    };
+  };
+}
+
+export function getKeywordGraphById(
+  params: GetKeywordGraphById.PathParams,
+  searchParams: GetKeywordGraphById.SearchParams
+): Promise<GetKeywordGraphById.Response> {
+  const url = createUrl({ baseUrl, pathname: `/archiv/keyword-data/${params.id}`, searchParams });
+  return request(url, options);
+}
+
+export namespace GetPassageKeywords {
+  export type SearchParams = GetPassages.SearchParams;
+  export type Response = {
+    token_dict: Array<{ [token: string]: number }>;
+  };
+}
+
+export function getPassageKeywords(
+  searchParams: GetPassageKeywords.SearchParams
+): Promise<GetPassageKeywords.Response> {
+  const url = createUrl({ baseUrl, pathname: '/archiv/kw-stelle/', searchParams });
+  return request(url, options);
+}
+
+export namespace GetPassageNlpData {
+  export type SearchParams = GetPassages.SearchParams;
+  export type Response = {
+    token: Array<string>;
+    token_dict: Record<string, number>;
+    token_count: number;
+    unique_token_count: number;
+  };
+}
+
+export function getPassageNlpData(): Promise<GetPassageNlpData.Response> {
+  const url = createUrl({ baseUrl, pathname: '/archiv/nlp-data/' });
+  return request(url, options);
+}
+
+export namespace GetStopwords {
+  export type Response = {
+    results: Array<string>;
+  };
+}
+
+export function getStopwords(): Promise<GetStopwords.Response> {
+  const url = createUrl({ baseUrl, pathname: '/archiv/stopwords/' });
+  return request(url, options);
 }
