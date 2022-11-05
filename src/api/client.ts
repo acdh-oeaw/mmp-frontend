@@ -2,7 +2,6 @@
 
 import type { RequestOptions } from '@stefanprobst/request';
 import { createUrl, request } from '@stefanprobst/request';
-import { namespace } from 'd3';
 import type { GeometryCollection, Point, Polygon } from 'geojson';
 
 import type {
@@ -53,6 +52,7 @@ const baseUrls = {
   autocomplete: new URL('archiv-ac/', baseUrl),
   archiv: new URL('archiv/', baseUrl),
   api: new URL('api/', baseUrl),
+  vocabsAutocomplete: new URL('vocabs-ac/', baseUrl),
 };
 
 const options: RequestOptions = { responseType: 'json' };
@@ -223,6 +223,54 @@ export function getUseCaseAutoCompletes(
   return request(url, options);
 }
 
+export namespace GetTextGenreTypeAutocompletes {
+  export type SearchParams = AutoComplete.SearchParams;
+  export type Response = AutoComplete.Response;
+}
+
+export function getTextGenreTypeAutocompletes(
+  searchParams: GetTextGenreTypeAutocompletes.SearchParams
+): Promise<GetTextGenreTypeAutocompletes.Response> {
+  const url = createUrl({
+    baseUrl: baseUrls.vocabsAutocomplete,
+    pathname: 'specific-concept-ac/art',
+    searchParams,
+  });
+  return request(url, options);
+}
+
+export namespace GetPlaceTypeAutocompletes {
+  export type SearchParams = AutoComplete.SearchParams;
+  export type Response = AutoComplete.Response;
+}
+
+export function getPlaceTypeAutocompletes(
+  searchParams: GetPlaceTypeAutocompletes.SearchParams
+): Promise<GetPlaceTypeAutocompletes.Response> {
+  const url = createUrl({
+    baseUrl: baseUrls.vocabsAutocomplete,
+    pathname: 'specific-concept-ac/place_art',
+    searchParams,
+  });
+  return request(url, options);
+}
+
+export namespace GetPlaceCategoryAutocompletes {
+  export type SearchParams = AutoComplete.SearchParams;
+  export type Response = AutoComplete.Response;
+}
+
+export function getPlaceCategoryAutocompletes(
+  searchParams: GetPlaceCategoryAutocompletes.SearchParams
+): Promise<GetPlaceCategoryAutocompletes.Response> {
+  const url = createUrl({
+    baseUrl: baseUrls.vocabsAutocomplete,
+    pathname: 'specific-concept-ac/kategorie',
+    searchParams,
+  });
+  return request(url, options);
+}
+
 //
 
 export namespace GetAuthors {
@@ -292,6 +340,21 @@ export function getAuthors(searchParams: GetAuthors.SearchParams): Promise<GetAu
   return request(url, options);
 }
 
+export namespace GetAuthorById {
+  export type PathParams = {
+    id: Author['id'];
+  };
+  export type Response = Omit<Author, 'ort'> & {
+    /** Place associated with author (birth or activity). */
+    ort?: PlaceNormalized | null;
+  };
+}
+
+export function getAuthorById(params: GetAuthorById.PathParams): Promise<GetAuthorById.Response> {
+  const url = createUrl({ baseUrl: baseUrls.api, pathname: `autor/${params.id}` });
+  return request(url, options);
+}
+
 export namespace GetKeywords {
   export type SearchParams = LimitOffsetPaginationSearchParams &
     SortableSearchParams & {
@@ -353,6 +416,20 @@ export namespace GetKeywords {
 
 export function getKeywords(searchParams: GetKeywords.SearchParams): Promise<GetKeywords.Response> {
   const url = createUrl({ baseUrl: baseUrls.api, pathname: 'keyword/', searchParams });
+  return request(url, options);
+}
+
+export namespace GetKeywordById {
+  export type PathParams = {
+    id: Keyword['id'];
+  };
+  export type Response = KeywordNormalized;
+}
+
+export function getKeywordById(
+  params: GetKeywordById.PathParams
+): Promise<GetKeywordById.Response> {
+  const url = createUrl({ baseUrl: baseUrls.api, pathname: `keyword/${params.id}` });
   return request(url, options);
 }
 
@@ -422,6 +499,18 @@ export namespace GetPlaces {
 
 export function getPlaces(searchParams: GetPlaces.SearchParams): Promise<GetPlaces.Response> {
   const url = createUrl({ baseUrl: baseUrls.api, pathname: 'ort/', searchParams });
+  return request(url, options);
+}
+
+export namespace GetPlaceById {
+  export type PathParams = {
+    id: Place['id'];
+  };
+  export type Response = PlaceNormalized;
+}
+
+export function getPlaceById(params: GetPlaceById.PathParams): Promise<GetPlaceById.Response> {
+  const url = createUrl({ baseUrl: baseUrls.api, pathname: `ort/${params.id}` });
   return request(url, options);
 }
 
@@ -546,6 +635,54 @@ export function getPassages(searchParams: GetPassages.SearchParams): Promise<Get
   return request(url, options);
 }
 
+export namespace GetPassageById {
+  export type PathParams = {
+    id: Passage['id'];
+  };
+  export type Response = Omit<Passage, 'key_word' | 'ort' | 'use_case'> & {
+    /** Keywords asssociated with the passage. */
+    key_word: Array<
+      Omit<Keyword, 'related_keyword'> & {
+        /** Related keywords. */
+        related_keyword: Array<KeywordNormalized>;
+      }
+    >;
+    /** Places of composition. */
+    ort: Array<
+      Omit<Place, 'art' | 'kategorie'> & {
+        /**
+         * Type of place.
+         *
+         * Allowed values are defined in the "place_art" SkosCollection.
+         * @see '/vocabs-ac/specific-concept-ac/place_art'
+         */
+        art?: SkosConceptNormalized | null;
+        /**
+         * Category of place.
+         *
+         * Allowed values are defined in the "kategorie" SkosCollection.
+         * @see '/vocabs-ac/specific-concept-ac/kategorie'
+         */
+        kategorie?: SkosConceptNormalized | null;
+      }
+    >;
+    /** Associated usecases. */
+    use_case: Array<
+      Omit<UseCase, 'knightlab_stoy_map'> & {
+        /** Knightlab Story Maps. */
+        knightlab_stoy_map: Array<StoryNormalized>;
+      }
+    >;
+  };
+}
+
+export function getPassageById(
+  params: GetPassageById.PathParams
+): Promise<GetPassageById.Response> {
+  const url = createUrl({ baseUrl: baseUrls.api, pathname: `stelle/${params.id}` });
+  return request(url, options);
+}
+
 export namespace GetTexts {
   export type SearchParams = LimitOffsetPaginationSearchParams &
     SortableSearchParams & {
@@ -624,6 +761,30 @@ export function getTexts(searchParams: GetTexts.SearchParams): Promise<GetTexts.
   return request(url, options);
 }
 
+export namespace GetTextById {
+  export type PathParams = {
+    id: Text['id'];
+  };
+  export type Response = Omit<Text, 'autor' | 'art' | 'ort'> & {
+    /** Authors. */
+    autor: Array<AuthorNormalized>;
+    /**
+     * Genre.
+     *
+     * Allowed values are defined in the "art" SkosCollection.
+     * @see '/vocabs-ac/specific-concept-ac/art'
+     */
+    art?: SkosConceptNormalized | null;
+    /** Places of composition. */
+    ort: Array<PlaceNormalized>;
+  };
+}
+
+export function getTextById(params: GetTextById.PathParams): Promise<GetTextById.Response> {
+  const url = createUrl({ baseUrl: baseUrls.api, pathname: `text/${params.id}` });
+  return request(url, options);
+}
+
 export namespace GetUseCases {
   export type SearchParams = LimitOffsetPaginationSearchParams &
     SortableSearchParams & {
@@ -664,6 +825,22 @@ export function getUseCases(searchParams: GetUseCases.SearchParams): Promise<Get
   return request(url, options);
 }
 
+export namespace GetUseCaseById {
+  export type PathParams = {
+    id: UseCase['id'];
+  };
+  export type Response = Omit<UseCase, 'knightlab_stoy_map'> & {
+    knightlab_stoy_map: Array<StoryNormalized>;
+  };
+}
+
+export function getUseCaseById(
+  params: GetUseCaseById.PathParams
+): Promise<GetUseCaseById.Response> {
+  const url = createUrl({ baseUrl: baseUrls.api, pathname: `usecase/${params.id}` });
+  return request(url, options);
+}
+
 //
 
 export namespace GetModelingProcesses {
@@ -675,6 +852,20 @@ export function getModelingProcesses(
   searchParams: GetModelingProcesses.SearchParams
 ): Promise<GetModelingProcesses.Response> {
   const url = createUrl({ baseUrl: baseUrls.api, pathname: 'modeling-process/', searchParams });
+  return request(url, options);
+}
+
+export namespace GetModelingProcessById {
+  export type PathParams = {
+    id: ModelingProcess['id'];
+  };
+  export type Response = ModelingProcess;
+}
+
+export function getModelingProcessById(
+  params: GetModelingProcessById.PathParams
+): Promise<GetModelingProcessById.Response> {
+  const url = createUrl({ baseUrl: baseUrls.api, pathname: `modeling-process/${params.id}` });
   return request(url, options);
 }
 
@@ -704,6 +895,23 @@ export function getTextTopicRelations(
   return request(url, options);
 }
 
+export namespace GetTextTopicRelationById {
+  export type PathParams = {
+    id: TextTopicRelation['id'];
+  };
+  export type Response = Omit<TextTopicRelation, 'topic' | 'text'> & {
+    text?: PassageNormalized | null;
+    topic?: TopicNormalized | null;
+  };
+}
+
+export function getTextTopicRelationById(
+  params: GetTextTopicRelationById.PathParams
+): Promise<GetTextTopicRelationById.Response> {
+  const url = createUrl({ baseUrl: baseUrls.api, pathname: `text-topic-relation/${params.id}` });
+  return request(url, options);
+}
+
 export namespace GetTopics {
   export type SearchParams = LimitOffsetPaginationSearchParams;
   export type Response = PaginatedResponse<Topic>;
@@ -714,10 +922,24 @@ export function getTopics(searchParams: GetTopics.SearchParams): Promise<GetTopi
   return request(url, options);
 }
 
+export namespace GetTopicById {
+  export type PathParams = {
+    id: Topic['id'];
+  };
+  export type Response = Topic;
+}
+
+export function getTopicById(params: GetTopicById.PathParams): Promise<GetTopicById.Response> {
+  const url = createUrl({ baseUrl: baseUrls.api, pathname: `topics/${params.id}` });
+  return request(url, options);
+}
+
 //
 
 export namespace GetPlacesGeojson {
-  export type SearchParams = PageNumberPaginationSearchParams & SortableSearchParams;
+  export type SearchParams = PageNumberPaginationSearchParams &
+    SortableSearchParams &
+    Omit<GetPlaces.SearchParams, 'limit' | 'offset'>;
   export type Response = PaginatedGeoJsonResponse<
     { id: Place['id'] } & Feature<
       Point,
@@ -737,8 +959,31 @@ export function getPlacesGeojson(
   return request(url, options);
 }
 
+export namespace GetPlaceGeojsonById {
+  export type PathParams = {
+    id: Place['id'];
+  };
+  export type Response = { id: Place['id'] } & Feature<
+    Point,
+    Pick<
+      PlaceNormalized,
+      'name' | 'name_antik' | 'name_de' | 'name_fr' | 'name_gr' | 'art' | 'kategorie'
+    >
+  >;
+}
+
+/** Uses Place['coordinates'] as geojson geometry. */
+export function getPlaceGeojsonById(
+  params: GetPlaceGeojsonById.PathParams
+): Promise<GetPlaceGeojsonById.Response> {
+  const url = createUrl({ baseUrl: baseUrls.api, pathname: `ort-geojson/${params.id}` });
+  return request(url, options);
+}
+
 export namespace GetFuzzyPlacesGeojson {
-  export type SearchParams = PageNumberPaginationSearchParams & SortableSearchParams;
+  export type SearchParams = PageNumberPaginationSearchParams &
+    SortableSearchParams &
+    Omit<GetPlaces.SearchParams, 'limit' | 'offset'>;
   export type Response = PaginatedGeoJsonResponse<
     { id: Place['id'] } & Feature<
       GeometryCollection,
@@ -755,6 +1000,27 @@ export function getFuzzyPlacesGeojson(
   searchParams: GetFuzzyPlacesGeojson.SearchParams
 ): Promise<GetFuzzyPlacesGeojson.Response> {
   const url = createUrl({ baseUrl: baseUrls.api, pathname: 'fuzzy-ort-geojson/', searchParams });
+  return request(url, options);
+}
+
+export namespace GetFuzzyPlaceGeojsonById {
+  export type PathParams = {
+    id: Place['id'];
+  };
+  export type Response = { id: Place['id'] } & Feature<
+    GeometryCollection,
+    Pick<
+      PlaceNormalized,
+      'name' | 'name_antik' | 'name_de' | 'name_fr' | 'name_gr' | 'art' | 'kategorie'
+    >
+  >;
+}
+
+/** Uses Place['fuzzy_geom'] as geojson geometry - which seems to always be `null`. */
+export function getFuzzyPlaceGeojsonById(
+  params: GetFuzzyPlaceGeojsonById.PathParams
+): Promise<GetFuzzyPlaceGeojsonById.Response> {
+  const url = createUrl({ baseUrl: baseUrls.api, pathname: `fuzzy-ort-geojson/${params.id}` });
   return request(url, options);
 }
 
@@ -812,6 +1078,24 @@ export function getConesGeojson(
   return request(url, options);
 }
 
+export namespace GetConeGeojsonById {
+  export type PathParams = {
+    id: SpatialCoverage['id'];
+  };
+  export type Response = { id: SpatialCoverage['id'] } & Feature<
+    Polygon,
+    SpatialCoverageGeoJsonProperties
+  >;
+}
+
+/** Uses SpatialCoverage['convex_hull'] as geojson geometry. */
+export function getConeGeojsonById(
+  params: GetConeGeojsonById.PathParams
+): Promise<GetConeGeojsonById.Response> {
+  const url = createUrl({ baseUrl: baseUrls.api, pathname: `cones/${params.id}` });
+  return request(url, options);
+}
+
 export namespace GetSpatialCoveragesGeojson {
   export type SearchParams = PageNumberPaginationSearchParams &
     SortableSearchParams &
@@ -839,6 +1123,31 @@ export function getSpatialCoveragesGeojson(
   return request(url, options);
 }
 
+export namespace GetSpatialCoverageGeojsonById {
+  export type PathParams = {
+    id: SpatialCoverage['id'];
+  };
+  export type Response = { id: SpatialCoverage['id'] } & FeatureWithBoundingBox<
+    Polygon,
+    SpatialCoverageGeoJsonProperties & {
+      /**
+       * Display labels for coverage.
+       *
+       * @default true
+       */
+      show_labels: SpatialCoverage['show_labels'];
+    }
+  >;
+}
+
+/** Uses SpatialCoverage['fuzzy_geom'] as geojson geometry. */
+export function getSpatialCoverageGeojsonById(
+  params: GetSpatialCoverageGeojsonById.PathParams
+): Promise<GetSpatialCoverageGeojsonById.Response> {
+  const url = createUrl({ baseUrl: baseUrls.api, pathname: `spatialcoverage/${params.id}` });
+  return request(url, options);
+}
+
 export namespace GetLinesPointsGeojson {
   export type SearchParams = PageNumberPaginationSearchParams &
     SortableSearchParams &
@@ -859,6 +1168,24 @@ export function getLinesPointsGeojson(
   return request(url, options);
 }
 
+export namespace GetLinesPointsGeojsonById {
+  export type PathParams = {
+    id: SpatialCoverage['id'];
+  };
+  export type Response = { id: SpatialCoverage['id'] } & FeatureWithBoundingBox<
+    GeometryCollection,
+    SpatialCoverageGeoJsonProperties
+  >;
+}
+
+/** Uses SpatialCoverage['geom_collection'] as geojson geometry. */
+export function getLinesPointsGeojsonById(
+  params: GetLinesPointsGeojsonById.PathParams
+): Promise<GetLinesPointsGeojsonById.Response> {
+  const url = createUrl({ baseUrl: baseUrls.api, pathname: `lines-and-points/${params.id}` });
+  return request(url, options);
+}
+
 //
 
 export namespace GetStories {
@@ -871,6 +1198,18 @@ export function getStories(searchParams: GetStories.SearchParams): Promise<GetSt
   return request(url, options);
 }
 
+export namespace GetStoryById {
+  export type PathParams = {
+    id: Story['id'];
+  };
+  export type Response = Story;
+}
+
+export function getStoryById(params: GetStoryById.PathParams): Promise<GetStoryById.Response> {
+  const url = createUrl({ baseUrl: baseUrls.api, pathname: `stories/${params.id}` });
+  return request(url, options);
+}
+
 export namespace GetStorySlides {
   export type SearchParams = LimitOffsetPaginationSearchParams & SortableSearchParams;
   export type Response = PaginatedResponse<Slide>;
@@ -880,6 +1219,20 @@ export function getStorySlides(
   searchParams: GetStorySlides.SearchParams
 ): Promise<GetStorySlides.Response> {
   const url = createUrl({ baseUrl: baseUrls.api, pathname: 'slides/', searchParams });
+  return request(url, options);
+}
+
+export namespace GetStorySlideById {
+  export type PathParams = {
+    id: Slide['id'];
+  };
+  export type Response = Slide;
+}
+
+export function getStorySlideById(
+  params: GetStorySlideById.PathParams
+): Promise<GetStorySlideById.Response> {
+  const url = createUrl({ baseUrl: baseUrls.api, pathname: `slides/${params.id}` });
   return request(url, options);
 }
 
@@ -898,6 +1251,20 @@ export function getSkosCollections(
   return request(url, options);
 }
 
+export namespace GetSkosCollectionById {
+  export type PathParams = {
+    id: SkosCollection['id'];
+  };
+  export type Response = SkosCollection;
+}
+
+export function getSkosCollectionById(
+  params: GetSkosCollectionById.PathParams
+): Promise<GetSkosCollectionById.Response> {
+  const url = createUrl({ baseUrl: baseUrls.api, pathname: `skoscollections/${params.id}` });
+  return request(url, options);
+}
+
 export namespace GetSkosConcepts {
   // TODO: https://github.com/acdh-oeaw/acdh-django-vocabs/blob/master/vocabs/filters.py
   export type SearchParams = PageNumberPaginationSearchParams & SortableSearchParams;
@@ -911,6 +1278,20 @@ export function getSkosConcepts(
   return request(url, options);
 }
 
+export namespace GetSkosConceptById {
+  export type PathParams = {
+    id: SkosConcept['id'];
+  };
+  export type Response = SkosConcept;
+}
+
+export function getSkosConceptById(
+  params: GetSkosConceptById.PathParams
+): Promise<GetSkosConceptById.Response> {
+  const url = createUrl({ baseUrl: baseUrls.api, pathname: `skosconcepts/${params.id}` });
+  return request(url, options);
+}
+
 export namespace GetSkosConceptSchemes {
   // TODO: https://github.com/acdh-oeaw/acdh-django-vocabs/blob/master/vocabs/filters.py
   export type SearchParams = PageNumberPaginationSearchParams & SortableSearchParams;
@@ -921,6 +1302,20 @@ export function getSkosConceptSchemes(
   searchParams: GetSkosConceptSchemes.SearchParams
 ): Promise<GetSkosConceptSchemes.Response> {
   const url = createUrl({ baseUrl: baseUrls.api, pathname: 'skosconceptschemes/', searchParams });
+  return request(url, options);
+}
+
+export namespace GetSkosConceptSchemeById {
+  export type PathParams = {
+    id: SkosConceptScheme['id'];
+  };
+  export type Response = SkosConceptScheme;
+}
+
+export function getSkosConceptSchemeById(
+  params: GetSkosConceptSchemeById.PathParams
+): Promise<GetSkosConceptSchemeById.Response> {
+  const url = createUrl({ baseUrl: baseUrls.api, pathname: `skosconceptschemes/${params.id}` });
   return request(url, options);
 }
 
@@ -945,34 +1340,34 @@ export namespace GetUseCaseTimetableById {
 export function getUseCaseTimetableById(
   params: GetUseCaseTimetableById.PathParams
 ): Promise<GetUseCaseTimetableById.Response> {
-  const url = createUrl({ baseUrl, pathname: `/archiv/usecase-timetable-data/${params.id}` });
+  const url = createUrl({
+    baseUrl: baseUrls.archiv,
+    pathname: `usecase-timetable-data/${params.id}`,
+  });
   return request(url, options);
 }
 
 /** Keyword count by century. */
-export namespace GetKeywordCenturyById {
+export namespace GetKeywordByCenturyById {
   export type PathParams = {
     id: Keyword['id'];
   };
   export type Response = {
     id: Keyword['id'];
     title: Keyword['stichwort'];
-    /** Tuples of century and count, e.g. [9, 123]. */
+    /** Tuples of century and number of texts which include the keyword, e.g. [9, 123]. */
     data: Array<[number, number]>;
   };
 }
 
-export function getKeywordCenturyById(
-  params: GetKeywordCenturyById.PathParams
-): Promise<GetKeywordCenturyById.Response> {
-  const url = createUrl({ baseUrl, pathname: `/archiv/keyword/century/${params.id}` });
+export function getKeywordByCenturyById(
+  params: GetKeywordByCenturyById.PathParams
+): Promise<GetKeywordByCenturyById.Response> {
+  const url = createUrl({ baseUrl: baseUrls.archiv, pathname: `keyword/century/${params.id}` });
   return request(url, options);
 }
 
-export namespace GetKeywordGraphById {
-  export type PathParams = {
-    id: Keyword['id'];
-  };
+export namespace GetKeywordGraph {
   export type SearchParams = GetKeywords.SearchParams;
   export type Response = {
     nodes: Array<{
@@ -1009,11 +1404,14 @@ export namespace GetKeywordGraphById {
   };
 }
 
-export function getKeywordGraphById(
-  params: GetKeywordGraphById.PathParams,
-  searchParams: GetKeywordGraphById.SearchParams
-): Promise<GetKeywordGraphById.Response> {
-  const url = createUrl({ baseUrl, pathname: `/archiv/keyword-data/${params.id}`, searchParams });
+export function getKeywordGraph(
+  searchParams: GetKeywordGraph.SearchParams
+): Promise<GetKeywordGraph.Response> {
+  const url = createUrl({
+    baseUrl: baseUrls.archiv,
+    pathname: 'keyword-data/',
+    searchParams,
+  });
   return request(url, options);
 }
 
@@ -1027,7 +1425,7 @@ export namespace GetPassageKeywords {
 export function getPassageKeywords(
   searchParams: GetPassageKeywords.SearchParams
 ): Promise<GetPassageKeywords.Response> {
-  const url = createUrl({ baseUrl, pathname: '/archiv/kw-stelle/', searchParams });
+  const url = createUrl({ baseUrl: baseUrls.archiv, pathname: 'kw-stelle/', searchParams });
   return request(url, options);
 }
 
@@ -1041,18 +1439,20 @@ export namespace GetPassageNlpData {
   };
 }
 
-export function getPassageNlpData(): Promise<GetPassageNlpData.Response> {
-  const url = createUrl({ baseUrl, pathname: '/archiv/nlp-data/' });
+export function getPassageNlpData(
+  searchParams: GetPassageNlpData.SearchParams
+): Promise<GetPassageNlpData.Response> {
+  const url = createUrl({ baseUrl: baseUrls.archiv, pathname: 'nlp-data/', searchParams });
   return request(url, options);
 }
 
-export namespace GetStopwords {
+export namespace GetStopWords {
   export type Response = {
     results: Array<string>;
   };
 }
 
-export function getStopwords(): Promise<GetStopwords.Response> {
-  const url = createUrl({ baseUrl, pathname: '/archiv/stopwords/' });
+export function getStopWords(): Promise<GetStopWords.Response> {
+  const url = createUrl({ baseUrl: baseUrls.archiv, pathname: 'stopwords/' });
   return request(url, options);
 }

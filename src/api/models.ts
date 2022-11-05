@@ -361,6 +361,7 @@ export type SpatialCoverageGeoJsonProperties = {
  */
 export type SkosConcept = Omit<
   {
+    /** NOTE: Omitted from payloads because of `HyperlinkedModelSerializer`. */
     id: number;
     url: string;
 
@@ -380,7 +381,7 @@ export type SkosConcept = Omit<
     collection: Array<SkosCollection>;
     /** A notation is a unique string used to identify the concept in the current vocabulary. */
     notation: string;
-    /** Concept with a broader meaning that this concept inherits from. */
+    /** Concept with a broader meaning which this concept inherits from. */
     broader_concept?: SkosConcept | null;
     narrower_concepts?: Array<SkosConcept> | null;
 
@@ -420,7 +421,8 @@ export type SkosConceptNormalized = Normalized<
  * @see https://github.com/acdh-oeaw/acdh-django-vocabs
  */
 export type SkosConceptScheme = {
-  // id: number; // Omitted because of `HyperlinkedModelSerializer`.
+  /** NOTE: Omitted from payloads because of `HyperlinkedModelSerializer`. */
+  id: number;
   url: string;
 
   /** URI to unambiguously identify this Concept Scheme. */
@@ -470,7 +472,8 @@ export type SkosConceptSchemeNormalized = Normalized<SkosConceptScheme, 'curator
  * @see https://github.com/acdh-oeaw/acdh-django-vocabs
  */
 export type SkosCollection = {
-  id: number; // Omitted because of `HyperlinkedModelSerializer`.
+  /** NOTE: Omitted from payloads because of `HyperlinkedModelSerializer`. */
+  id: number;
   url: string;
 
   /** Label. */
