@@ -2,10 +2,10 @@
   <v-card flat color="rgba(0, 0, 0, 0)">
     <v-list two-line>
       <v-skeleton-loader type="list-item-three-line@3" class="transparent-skeleton" v-if="loading" />
-      <v-list-item v-else-if="data.length" v-for="passage in data" three-line :key="passage.url" :to="{
+      <v-list-item v-else-if="data.length" v-for="passage in data" three-line :key="passage.id" :to="{
               name: fullscreen ? 'Passage Detail Fullscreen' : 'Passage Detail',
-              query: addParamsToQuery({ Passage: getIdFromUrl(passage.url) }),
-              params: { id: getIdFromUrl(passage.url) }}">
+              query: addParamsToQuery({ Passage: passage.id }),
+              params: { id: passage.id }}">
         <v-list-item-content>
           <v-list-item-title>
             {{ passage.display_label }}

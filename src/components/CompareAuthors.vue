@@ -528,13 +528,13 @@ export default {
                           const rad = (i / jsonRes.length) * 2 * Math.PI;
                           coords.push([Math.cos(rad), Math.sin(rad)]);
                         }
-                        console.log('author label data', authorData[i]?.url,
+                        console.log('author label data', authorData[i]?.id,
                           authors[i],
-                          authorData.filter((author) => this.getIdFromUrl(author.url) === authors[i])[0]);
+                          authorData.filter((author) => author.id === authors[i])[0]);
 
                         authorNodes.push({
                           id: `author_${authors[i]}`,
-                          label: this.getOptimalName(authorData.filter((author) => this.getIdFromUrl(author.url) === authors[i])[0]),
+                          label: this.getOptimalName(authorData.filter((author) => author.id === authors[i])[0]),
                           keyword_type: 'Author',
                           fx: coords[i][0] * 150,
                           fy: coords[i][1] * 66,

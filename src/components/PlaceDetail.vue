@@ -34,9 +34,9 @@
             Authors
           </v-expansion-panel-header>
           <v-expansion-panel-content>
-            <v-list-item v-for="author in data.authors.results" :key="author.url" :to="{ name: fullscreen ? 'Author Detail Fullscreen' : 'Author Detail',
-                query: addParamsToQuery({ Author: getIdFromUrl(author.url) }),
-                params: { id: getIdFromUrl(author.url) }
+            <v-list-item v-for="author in data.authors.results" :key="author.id" :to="{ name: fullscreen ? 'Author Detail Fullscreen' : 'Author Detail',
+                query: addParamsToQuery({ Author: author.id }),
+                params: { id: author.id }
               }">
               <v-list-item-content>
                 <v-list-item-title>{{ getOptimalName(author) }}</v-list-item-title>
@@ -60,7 +60,7 @@
             Texts
           </v-expansion-panel-header>
           <v-expansion-panel-content>
-            <v-list-item v-for="text in data.texts.results" :key="text.url" two-line>
+            <v-list-item v-for="text in data.texts.results" :key="text.id" two-line>
               <v-list-item-content>
                 <v-list-item-title>{{ text.title }}</v-list-item-title>
                 <v-list-item-subtitle>{{ text.autor.map((x) => getOptimalName(x)).join(', ') }}</v-list-item-subtitle>

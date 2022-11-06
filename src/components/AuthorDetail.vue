@@ -25,9 +25,9 @@
     </v-list-item>
     <v-divider />
     <v-container>
-      <div class="keyword-chip" v-for="keyword in keywords.results" :key="keyword.url">
+      <div class="keyword-chip" v-for="keyword in keywords.results" :key="keyword.id">
         <v-chip :color="keyColors.chips[keyword.art]" small
-          @click="$store.commit('addToItemsAndInput', { id: keyword.url.replace(/\D/g, ''), selected_text: keyword.stichwort, group: 'Keyword' })">
+          @click="$store.commit('addToItemsAndInput', { id: keyword.id, selected_text: keyword.stichwort, group: 'Keyword' })">
           {{ keyword.stichwort }}
         </v-chip>
       </div>
@@ -42,9 +42,9 @@
           </v-expansion-panel-header>
           <v-expansion-panel-content>
             <v-list v-if="!loading">
-              <v-list-item v-for="usecase in usecases.results" three-line :key="usecase.url" :to="{
+              <v-list-item v-for="usecase in usecases.results" three-line :key="usecase.id" :to="{
                 name: 'Case Study',
-                params: { id: getIdFromUrl(usecase.url) },
+                params: { id: usecase.id },
                 query: addParamsToQuery()
               }">
                 <v-list-item-content>
@@ -84,10 +84,10 @@
           </v-expansion-panel-header>
           <v-expansion-panel-content>
             <v-list v-if="!loading">
-              <v-list-item v-for="passage in passages.results" three-line :key="passage.url" :to="{
+              <v-list-item v-for="passage in passages.results" three-line :key="passage.id" :to="{
               name: fullscreen ? 'Passage Detail Fullscreen' : 'Passage Detail',
-              query: addParamsToQuery({ Passage: getIdFromUrl(passage.url) }),
-              params: { id: getIdFromUrl(passage.url) }}">
+              query: addParamsToQuery({ Passage: passage.id }),
+              params: { id: passage.id }}">
                 <v-list-item-content>
                   <v-list-item-title>
                     {{ passage.display_label }}

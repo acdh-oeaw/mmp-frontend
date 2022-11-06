@@ -71,7 +71,7 @@
                 </template>
               </v-expansion-panel-header>
               <v-expansion-panel-content>
-                <keyword-list-item :parentNodes="data.keywords.map((x) => getIdFromUrl(x.url))"
+                <keyword-list-item :parentNodes="data.keywords.map((x) => x.id)"
                   :siblingNode="conn.id" />
               </v-expansion-panel-content>
             </v-expansion-panel>
@@ -86,7 +86,7 @@
               <v-col>
                 <v-btn dark color="#171d3b" block class="detail-button" :to="{
                   name: fullscreen ? 'List Fullscreen' : 'List',
-                  query: addParamsToQuery({ Keyword: data.keywords.map((x) => x.url.replace(/\D/g, '')).join('+') })
+                  query: addParamsToQuery({ Keyword: data.keywords.map((x) => x.id).join('+') })
                 }">
                   {{ shorten(`Show all Passages for ${data.keywords.map((x) => x.stichwort).join(', ')}`, 40) }}
                 </v-btn>
@@ -148,7 +148,7 @@ export default {
 
       if (!this.data.keywords || !this.data.nodes) return retArr;
 
-      // const keyIds = this.data.keywords.map((x) => this.getIdFromUrl(x.url));
+      // const keyIds = this.data.keywords.map((x) => x.id);
       const edges = this.data.nodes.edges.map((edge) => ({ source: this.getIdFromUrl(edge.source), target: this.getIdFromUrl(edge.target) }));
       // edges = this.removeDuplicates(edges, ['source', 'target']);
 

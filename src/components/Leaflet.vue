@@ -243,13 +243,13 @@
       <template v-if="showLayers.relatedPlaces">
         <l-marker
           v-for="place in relatedPlaces"
-          :key="place.url"
+          :key="place.id"
           :lat-lng="returnLatLng(place.coords.coordinates)"
           @click="
             $router.push({
               name: fullscreen ? 'Place Detail Fullscreen' : 'Place Detail',
               query: $route.query,
-              params: { id: getIdFromUrl(place.url) },
+              params: { id: place.id },
             })
           "
         >

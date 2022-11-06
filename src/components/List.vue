@@ -25,10 +25,10 @@
             v-for="author, i in item.text.autor"
             :to="{
               name: fullscreen ? 'Author Detail Fullscreen' : 'Author Detail',
-              params: { id: author.url.replace(/\D/g, '') },
+              params: { id: author.id },
               query: $route.query,
             }"
-            :key="author.url"
+            :key="author.id"
             class="text-decoration-none"
           >
             <span v-if="i != 0">, </span>
@@ -42,7 +42,7 @@
           <router-link
             :to="{
               name: fullscreen ? 'Passage Detail Fullscreen' : 'Passage Detail',
-              params: { id: item.url.replace(/\D/g, '') }, query: $route.query
+              params: { id: item.id }, query: $route.query
             }"
             class="text-decoration-none"
           >
@@ -111,7 +111,7 @@ export default {
   methods: {
     addKeywordToInput(obj) {
       this.$store.commit('addToItemsAndInput', {
-        id: parseInt(obj.url.replace(/\D/g, ''), 10),
+        id: obj.id,
         selected_text: obj.stichwort,
         group: 'Keyword',
       });
@@ -119,7 +119,7 @@ export default {
     addAuthorToInput(obj) {
       console.log(obj);
       this.$store.commit('addToItemsAndInput', {
-        id: parseInt(obj.url.replace(/\D/g, ''), 10),
+        id: obj.id,
         selected_text: obj.name,
         group: 'Author',
       });
