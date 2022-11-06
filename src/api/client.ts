@@ -46,7 +46,7 @@ import type {
 
 //
 
-const baseUrl = 'https://mmp.acdh-dev.oeaw.ac.at/';
+const baseUrl = process.env.VUE_APP_MMP_API_BASE_URL
 
 const baseUrls = {
   autocomplete: new URL('archiv-ac/', baseUrl),
