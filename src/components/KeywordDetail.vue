@@ -199,7 +199,7 @@ export default {
         const ids = params.id.toString(10).split('+');
 
         // Keywords
-        let urls = ids.map((x) => `https://mmp.acdh-dev.oeaw.ac.at/api/keyword/${x}/?format=json`);
+        let urls = ids.map((x) => `${process.env.VUE_APP_MMP_API_BASE_URL}/api/keyword/${x}/?format=json`);
         let prefetched = this.$store.state.fetchedResults[urls.toString()];
         if (prefetched) {
           this.data.keywords = prefetched;
@@ -225,7 +225,7 @@ export default {
         }
 
         // Overtime
-        urls = ids.map((x) => `https://mmp.acdh-dev.oeaw.ac.at/archiv/keyword/century/${x}`);
+        urls = ids.map((x) => `${process.env.VUE_APP_MMP_API_BASE_URL}/archiv/keyword/century/${x}`);
         prefetched = this.$store.state.fetchedResults[urls.toString()];
         if (prefetched) {
           this.data.overtime = prefetched;
@@ -252,9 +252,9 @@ export default {
 
         // Else
         urls = [
-          `https://mmp.acdh-dev.oeaw.ac.at/archiv/keyword-data/?ids=${ids.join(',')}`,
-          `https://mmp.acdh-dev.oeaw.ac.at/api/stelle/?format=json&has_usecase=${this.hasUsecase}`,
-          'https://mmp.acdh-dev.oeaw.ac.at/api/spatialcoverage/?format=json',
+          `${process.env.VUE_APP_MMP_API_BASE_URL}/archiv/keyword-data/?ids=${ids.join(',')}`,
+          `${process.env.VUE_APP_MMP_API_BASE_URL}/api/stelle/?format=json&has_usecase=${this.hasUsecase}`,
+          `${process.env.VUE_APP_MMP_API_BASE_URL}/api/spatialcoverage/?format=json`,
         ];
 
         ids.forEach((x) => {

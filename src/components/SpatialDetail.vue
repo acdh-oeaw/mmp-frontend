@@ -98,7 +98,7 @@ export default {
         this.data = [];
         arr.forEach((param) => {
           this.loading = true;
-          const address = `https://mmp.acdh-dev.oeaw.ac.at/api/spatialcoverage/${param}`;
+          const address = `${process.env.VUE_APP_MMP_API_BASE_URL}/api/spatialcoverage/${param}`;
           const prefetched = this.$store.state.fetchedResults[address];
           if (prefetched) {
             this.data.push(prefetched);
