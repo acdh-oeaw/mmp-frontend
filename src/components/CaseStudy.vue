@@ -136,8 +136,8 @@ export default {
     const id = this.id || this.$route.params.id;
 
     const urls = [
-      `https://mmp.acdh-dev.oeaw.ac.at/api/usecase/${id}?format=json`,
-      `https://mmp.acdh-dev.oeaw.ac.at/archiv/usecase-timetable-data/${id}`,
+      `${process.env.VUE_APP_MMP_API_BASE_URL}/api/usecase/${id}?format=json`,
+      `${process.env.VUE_APP_MMP_API_BASE_URL}/archiv/usecase-timetable-data/${id}`,
     ];
 
     const prefetched = this.$store.state.fetchedResults[urls.toString()];

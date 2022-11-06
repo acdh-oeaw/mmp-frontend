@@ -136,7 +136,7 @@ export default {
       handler(params) {
         console.log(params);
         this.loading = true;
-        const address = `https://mmp.acdh-dev.oeaw.ac.at/api/stelle/${params.id}/?format=json`;
+        const address = `${process.env.VUE_APP_MMP_API_BASE_URL}/api/stelle/${params.id}/?format=json`;
         const prefetched = this.$store.state.fetchedResults[address];
 
         if (prefetched) {
