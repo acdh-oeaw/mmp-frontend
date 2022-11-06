@@ -95,9 +95,9 @@ export default {
         console.log('place params', params);
         this.loading = true;
         const urls = [
-          `${process.env.VUE_APP_MMP_API_BASE_URL}/api/ort/${params.id}/?format=json`,
-          `${process.env.VUE_APP_MMP_API_BASE_URL}/api/text/?ort=${params.id}&format=json&has_usecase=${this.hasUsecase}`,
-          `${process.env.VUE_APP_MMP_API_BASE_URL}/api/autor/?ort=${params.id}&format=json&has_usecase=${this.hasUsecase}`,
+          `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/ort/${params.id}/?format=json`,
+          `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/text/?ort=${params.id}&format=json&has_usecase=${this.hasUsecase}`,
+          `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/autor/?ort=${params.id}&format=json&has_usecase=${this.hasUsecase}`,
         ];
         const prefetched = this.$store.state.fetchedResults[urls.toString()];
 

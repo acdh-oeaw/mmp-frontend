@@ -495,12 +495,12 @@ export default {
         const authors = query.Author?.split('+') || [];
         if (authors.length >= 2) {
           this.selectedAuthors = authors;
-          fetch(`${process.env.VUE_APP_MMP_API_BASE_URL}/api/autor/?format=json&ids=${authors.join(',')}`)
+          fetch(`${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/autor/?format=json&ids=${authors.join(',')}`)
             .then((res) => res.json())
             .then((authorJsonRes) => {
               const authorData = authorJsonRes.results;
               console.log('Author Data', authorData);
-              Promise.all(authors.map((x) => fetch(`${process.env.VUE_APP_MMP_API_BASE_URL}/archiv/keyword-data/?has_usecase=${this.hasUsecase}&rvn_stelle_key_word_keyword__text__autor=${x}`)))
+              Promise.all(authors.map((x) => fetch(`${import.meta.env.VITE_APP_MMP_API_BASE_URL}/archiv/keyword-data/?has_usecase=${this.hasUsecase}&rvn_stelle_key_word_keyword__text__autor=${x}`)))
                 .then((res) => {
                   Promise.all(res.map((x) => x.json()))
                     .then((jsonRes) => {

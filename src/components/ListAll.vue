@@ -166,7 +166,7 @@ export default {
     fetchEntities(tabIndex) {
       this.tabs[tabIndex].loading = true;
       const names = ['name', 'zitat', 'stichwort', 'title', 'name'];
-      const address = `${process.env.VUE_APP_MMP_API_BASE_URL}/api/${this.tabs[tabIndex].api}/?${names[tabIndex]}=${this.tabs[tabIndex].filter}&${names[tabIndex]}_lookup=icontains&offset=${this.tabs[tabIndex].pagination.offset}&limit=${this.tabs[tabIndex].pagination.limit}&format=json`;
+      const address = `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/${this.tabs[tabIndex].api}/?${names[tabIndex]}=${this.tabs[tabIndex].filter}&${names[tabIndex]}_lookup=icontains&offset=${this.tabs[tabIndex].pagination.offset}&limit=${this.tabs[tabIndex].pagination.limit}&format=json`;
       const prefetched = this.$store.state.fetchedResults[address];
       if (prefetched) {
         this.tabs[tabIndex].items = prefetched.results;
