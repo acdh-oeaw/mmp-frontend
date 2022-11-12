@@ -1,0 +1,13 @@
+{
+  "extends": "@vue/tsconfig/tsconfig.node.json",
+  "compilerOptions": {
+    "composite": true,
+    "types": ["node"]
+  },
+  "include": ["vite.config.ts", "./config/**/*.ts", "./scripts/**/*.ts"],
+  "ts-node": {
+    "esm": true,
+    "experimentalSpecifierResolution": "node",
+    "transpileOnly": true
+  }
+}

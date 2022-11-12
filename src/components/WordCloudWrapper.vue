@@ -299,8 +299,8 @@ export default {
         this.loading = 2;
         this.words = [];
         let urls = [
-          `${process.env.VUE_APP_MMP_API_BASE_URL}/archiv/nlp-data/?`,
-          `${process.env.VUE_APP_MMP_API_BASE_URL}/archiv/kw-stelle/?`,
+          `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/archiv/nlp-data/?`,
+          `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/archiv/kw-stelle/?`,
         ];
 
         const terms = {

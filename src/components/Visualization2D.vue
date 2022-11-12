@@ -5,10 +5,8 @@
 </template>
 
 <script>
+import * as d3 from 'd3'
 import ForceGraph from 'force-graph';
-
-// eslint-disable-next-line
-const d3 = require('d3'); // import wasnt working here
 
 export default {
   name: 'Visualization',

@@ -40,7 +40,7 @@ export default {
   mixins: [helpers],
   mounted() {
     const { intersect } = this.$store.state.apiParams;
-    let url = `${process.env.VUE_APP_MMP_API_BASE_URL}/api/stelle/?${intersect ? 'key_word_and' : 'key_word'}=${this.siblingNode}&has_usecase=${this.hasUsecase}`;
+    let url = `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/stelle/?${intersect ? 'key_word_and' : 'key_word'}=${this.siblingNode}&has_usecase=${this.hasUsecase}`;
     this.parentNodes.forEach((x) => {
       url += intersect ? `&key_word_and=${x}` : `&key_word=${x}`;
     });

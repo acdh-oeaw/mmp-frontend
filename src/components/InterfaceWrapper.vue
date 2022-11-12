@@ -423,7 +423,7 @@ export default {
               const idCount = ids.length;
               this.skeletonChips += idCount;
               ids = ids.join(',');
-              fetch(`${process.env.VUE_APP_MMP_API_BASE_URL}/api/${apiParams[cat].url}/?ids=${ids}`)
+              fetch(`${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/${apiParams[cat].url}/?ids=${ids}`)
                 .then((res) => res.json())
                 .then((res) => {
                   console.log('Query', cat, res);
@@ -453,11 +453,11 @@ export default {
       if (!val || val.length < 1) return;
       const urls = {};
       const filters = this.$store.state.searchFilters;
-      if (filters.author) urls.Author = `${process.env.VUE_APP_MMP_API_BASE_URL}/archiv-ac/autor-autocomplete/?q=${val}`;
-      if (filters.passage) urls.Passage = `${process.env.VUE_APP_MMP_API_BASE_URL}/archiv-ac/stelle-autocomplete/?q=${val}`;
-      if (Object.values(filters.keyword).some((x) => x)) urls.Keyword = `${process.env.VUE_APP_MMP_API_BASE_URL}/archiv-ac/keyword-autocomplete/?q=${val}`;
-      if (filters.usecase) urls['Use Case'] = `${process.env.VUE_APP_MMP_API_BASE_URL}/archiv-ac/usecase-autocomplete/?q=${val}`;
-      if (filters.place) urls.Place = `${process.env.VUE_APP_MMP_API_BASE_URL}/archiv-ac/ort-autocomplete/?q=${val}`;
+      if (filters.author) urls.Author = `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/archiv-ac/autor-autocomplete/?q=${val}`;
+      if (filters.passage) urls.Passage = `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/archiv-ac/stelle-autocomplete/?q=${val}`;
+      if (Object.values(filters.keyword).some((x) => x)) urls.Keyword = `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/archiv-ac/keyword-autocomplete/?q=${val}`;
+      if (filters.usecase) urls['Use Case'] = `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/archiv-ac/usecase-autocomplete/?q=${val}`;
+      if (filters.place) urls.Place = `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/archiv-ac/ort-autocomplete/?q=${val}`;
 
       const labels = ['Author', 'Passage', 'Keyword', 'Use Case', 'Place'];
       const prefetched = this.$store.state.fetchedResults[JSON.stringify(urls)];

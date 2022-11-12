@@ -98,7 +98,7 @@ export default {
         this.data = [];
         arr.forEach((param) => {
           this.loading = true;
-          const address = `${process.env.VUE_APP_MMP_API_BASE_URL}/api/spatialcoverage/${param}`;
+          const address = `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/spatialcoverage/${param}`;
           const prefetched = this.$store.state.fetchedResults[address];
           if (prefetched) {
             this.data.push(prefetched);
