@@ -21,7 +21,7 @@ import type {
   SkosConceptScheme,
   Slide,
   SpatialCoverage,
-  SpatialCoverageGeoJsonProperties,
+  SpatialCoverageGeojsonProperties,
   Story,
   StoryNormalized,
   Text,
@@ -46,45 +46,45 @@ import type {
 
 //
 
-const baseUrl = import.meta.env.VITE_APP_MMP_API_BASE_URL
+const baseUrl = import.meta.env.VITE_APP_MMP_API_BASE_URL;
 
 const baseUrls = {
-  autocomplete: new URL('archiv-ac/', baseUrl),
+  autoComplete: new URL('archiv-ac/', baseUrl),
   archiv: new URL('archiv/', baseUrl),
   api: new URL('api/', baseUrl),
-  vocabsAutocomplete: new URL('vocabs-ac/', baseUrl),
+  vocabsAutoComplete: new URL('vocabs-ac/', baseUrl),
 };
 
 const options: RequestOptions = { responseType: 'json' };
 
 //
 
-export namespace AuthorAutoComplete {
+export namespace GetAuthorsAutoComplete {
   export type SearchParams = AutoComplete.SearchParams;
   export type Response = AutoComplete.Response;
 }
 
-export function getAuthorAutoCompletes(
-  searchParams: AuthorAutoComplete.SearchParams
-): Promise<AuthorAutoComplete.Response> {
+export function getAuthorsAutoComplete(
+  searchParams: GetAuthorsAutoComplete.SearchParams
+): Promise<GetAuthorsAutoComplete.Response> {
   const url = createUrl({
-    baseUrl: baseUrls.autocomplete,
+    baseUrl: baseUrls.autoComplete,
     pathname: 'autor-autocomplete/',
     searchParams,
   });
   return request(url, options);
 }
 
-export namespace KeywordAutoComplete {
+export namespace GetKeywordsAutoComplete {
   export type SearchParams = AutoComplete.SearchParams;
   export type Response = AutoComplete.Response;
 }
 
-export function getKeywordAutoCompletes(
-  searchParams: KeywordAutoComplete.SearchParams
-): Promise<KeywordAutoComplete.Response> {
+export function getKeywordsAutoComplete(
+  searchParams: GetKeywordsAutoComplete.SearchParams
+): Promise<GetKeywordsAutoComplete.Response> {
   const url = createUrl({
-    baseUrl: baseUrls.autocomplete,
+    baseUrl: baseUrls.autoComplete,
     pathname: 'keyword-autocomplete/',
     searchParams,
   });
@@ -92,16 +92,16 @@ export function getKeywordAutoCompletes(
 }
 
 /** A Region is a Keyword with art="Region". */
-export namespace RegionAutoComplete {
+export namespace GetRegionKeywordsAutoComplete {
   export type SearchParams = AutoComplete.SearchParams;
   export type Response = AutoComplete.Response;
 }
 
-export function getRegionAutoCompletes(
-  searchParams: RegionAutoComplete.SearchParams
-): Promise<RegionAutoComplete.Response> {
+export function getRegionKeywordsAutoComplete(
+  searchParams: GetRegionKeywordsAutoComplete.SearchParams
+): Promise<GetRegionKeywordsAutoComplete.Response> {
   const url = createUrl({
-    baseUrl: baseUrls.autocomplete,
+    baseUrl: baseUrls.autoComplete,
     pathname: 'region-autocomplete/',
     searchParams,
   });
@@ -109,16 +109,16 @@ export function getRegionAutoCompletes(
 }
 
 /** An Ethnonym is a Keyword with art="Ethnonym". */
-export namespace EthnonymAutoComplete {
+export namespace GetEthnonymKeywordsAutoComplete {
   export type SearchParams = AutoComplete.SearchParams;
   export type Response = AutoComplete.Response;
 }
 
-export function getEthnonymAutoCompletes(
-  searchParams: EthnonymAutoComplete.SearchParams
-): Promise<EthnonymAutoComplete.Response> {
+export function getEthnonymKeywordsAutoComplete(
+  searchParams: GetEthnonymKeywordsAutoComplete.SearchParams
+): Promise<GetEthnonymKeywordsAutoComplete.Response> {
   const url = createUrl({
-    baseUrl: baseUrls.autocomplete,
+    baseUrl: baseUrls.autoComplete,
     pathname: 'ethnonym-autocomplete/',
     searchParams,
   });
@@ -126,16 +126,16 @@ export function getEthnonymAutoCompletes(
 }
 
 /** A Name is a Keyword with art="Eigenname". */
-export namespace NameAutoComplete {
+export namespace GetNameKeywordsAutoComplete {
   export type SearchParams = AutoComplete.SearchParams;
   export type Response = AutoComplete.Response;
 }
 
-export function getNameAutoCompletes(
-  searchParams: NameAutoComplete.SearchParams
-): Promise<NameAutoComplete.Response> {
+export function getNameKeywordsAutoComplete(
+  searchParams: GetNameKeywordsAutoComplete.SearchParams
+): Promise<GetNameKeywordsAutoComplete.Response> {
   const url = createUrl({
-    baseUrl: baseUrls.autocomplete,
+    baseUrl: baseUrls.autoComplete,
     pathname: 'eigenname-autocomplete/',
     searchParams,
   });
@@ -143,128 +143,128 @@ export function getNameAutoCompletes(
 }
 
 /** A KeywordKeyword is a Keyword with art="Keyword". */
-export namespace KeywordKeywordAutoComplete {
+export namespace GetKeywordKeywordsAutoComplete {
   export type SearchParams = AutoComplete.SearchParams;
   export type Response = AutoComplete.Response;
 }
 
-export function getKeywordKeywordAutoCompletes(
-  searchParams: KeywordKeywordAutoComplete.SearchParams
-): Promise<KeywordKeywordAutoComplete.Response> {
+export function getKeywordKeywordsAutoComplete(
+  searchParams: GetKeywordKeywordsAutoComplete.SearchParams
+): Promise<GetKeywordKeywordsAutoComplete.Response> {
   const url = createUrl({
-    baseUrl: baseUrls.autocomplete,
+    baseUrl: baseUrls.autoComplete,
     pathname: 'schlagwort-autocomplete/',
     searchParams,
   });
   return request(url, options);
 }
 
-export namespace PlaceAutoComplete {
+export namespace GetPlacesAutoComplete {
   export type SearchParams = AutoComplete.SearchParams;
   export type Response = AutoComplete.Response;
 }
 
-export function getPlaceAutoCompletes(
-  searchParams: PlaceAutoComplete.SearchParams
-): Promise<PlaceAutoComplete.Response> {
+export function getPlacesAutoComplete(
+  searchParams: GetPlacesAutoComplete.SearchParams
+): Promise<GetPlacesAutoComplete.Response> {
   const url = createUrl({
-    baseUrl: baseUrls.autocomplete,
+    baseUrl: baseUrls.autoComplete,
     pathname: 'ort-autocomplete/',
     searchParams,
   });
   return request(url, options);
 }
 
-export namespace PassageAutoComplete {
+export namespace GetPassagesAutoComplete {
   export type SearchParams = AutoComplete.SearchParams;
   export type Response = AutoComplete.Response;
 }
 
-export function getPassageAutoCompletes(
-  searchParams: PassageAutoComplete.SearchParams
-): Promise<PassageAutoComplete.Response> {
+export function getPassagesAutoComplete(
+  searchParams: GetPassagesAutoComplete.SearchParams
+): Promise<GetPassagesAutoComplete.Response> {
   const url = createUrl({
-    baseUrl: baseUrls.autocomplete,
+    baseUrl: baseUrls.autoComplete,
     pathname: 'stelle-autocomplete/',
     searchParams,
   });
   return request(url, options);
 }
 
-export namespace TextAutoComplete {
+export namespace GetTextsAutoComplete {
   export type SearchParams = AutoComplete.SearchParams;
   export type Response = AutoComplete.Response;
 }
 
-export function getTextAutoCompletes(
-  searchParams: TextAutoComplete.SearchParams
-): Promise<TextAutoComplete.Response> {
+export function getTextsAutoComplete(
+  searchParams: GetTextsAutoComplete.SearchParams
+): Promise<GetTextsAutoComplete.Response> {
   const url = createUrl({
-    baseUrl: baseUrls.autocomplete,
+    baseUrl: baseUrls.autoComplete,
     pathname: 'text-autocomplete/',
     searchParams,
   });
   return request(url, options);
 }
 
-export namespace UseCaseAutoComplete {
+export namespace GetUseCasesAutoComplete {
   export type SearchParams = AutoComplete.SearchParams;
   export type Response = AutoComplete.Response;
 }
 
-export function getUseCaseAutoCompletes(
-  searchParams: UseCaseAutoComplete.SearchParams
-): Promise<UseCaseAutoComplete.Response> {
+export function getUseCasesAutoComplete(
+  searchParams: GetUseCasesAutoComplete.SearchParams
+): Promise<GetUseCasesAutoComplete.Response> {
   const url = createUrl({
-    baseUrl: baseUrls.autocomplete,
+    baseUrl: baseUrls.autoComplete,
     pathname: 'usecase-autocomplete/',
     searchParams,
   });
   return request(url, options);
 }
 
-export namespace GetTextGenreTypeAutocompletes {
+export namespace GetTextGenreTypesAutoComplete {
   export type SearchParams = AutoComplete.SearchParams;
   export type Response = AutoComplete.Response;
 }
 
-export function getTextGenreTypeAutocompletes(
-  searchParams: GetTextGenreTypeAutocompletes.SearchParams
-): Promise<GetTextGenreTypeAutocompletes.Response> {
+export function getTextGenreTypesAutoComplete(
+  searchParams: GetTextGenreTypesAutoComplete.SearchParams
+): Promise<GetTextGenreTypesAutoComplete.Response> {
   const url = createUrl({
-    baseUrl: baseUrls.vocabsAutocomplete,
+    baseUrl: baseUrls.vocabsAutoComplete,
     pathname: 'specific-concept-ac/art',
     searchParams,
   });
   return request(url, options);
 }
 
-export namespace GetPlaceTypeAutocompletes {
+export namespace GetPlaceTypesAutoComplete {
   export type SearchParams = AutoComplete.SearchParams;
   export type Response = AutoComplete.Response;
 }
 
-export function getPlaceTypeAutocompletes(
-  searchParams: GetPlaceTypeAutocompletes.SearchParams
-): Promise<GetPlaceTypeAutocompletes.Response> {
+export function getPlaceTypesAutoComplete(
+  searchParams: GetPlaceTypesAutoComplete.SearchParams
+): Promise<GetPlaceTypesAutoComplete.Response> {
   const url = createUrl({
-    baseUrl: baseUrls.vocabsAutocomplete,
+    baseUrl: baseUrls.vocabsAutoComplete,
     pathname: 'specific-concept-ac/place_art',
     searchParams,
   });
   return request(url, options);
 }
 
-export namespace GetPlaceCategoryAutocompletes {
+export namespace GetPlaceCategoriesAutoComplete {
   export type SearchParams = AutoComplete.SearchParams;
   export type Response = AutoComplete.Response;
 }
 
-export function getPlaceCategoryAutocompletes(
-  searchParams: GetPlaceCategoryAutocompletes.SearchParams
-): Promise<GetPlaceCategoryAutocompletes.Response> {
+export function getPlaceCategoriesAutoComplete(
+  searchParams: GetPlaceCategoriesAutoComplete.SearchParams
+): Promise<GetPlaceCategoriesAutoComplete.Response> {
   const url = createUrl({
-    baseUrl: baseUrls.vocabsAutocomplete,
+    baseUrl: baseUrls.vocabsAutoComplete,
     pathname: 'specific-concept-ac/kategorie',
     searchParams,
   });
@@ -477,19 +477,19 @@ export namespace GetPlaces {
       kommentar__lookup?: StringLookupSearchParams;
 
       /** Related authors (AND query). */
-      rvn_autor_ort_ort: Array<Author['id']>;
+      rvn_autor_ort_ort?: Array<Author['id']>;
 
       /** Related texts (AND query). */
-      rvn_text_ort_ort: Array<Text['id']>;
+      rvn_text_ort_ort?: Array<Text['id']>;
 
       /** Keywords related to this place via a text (AND query). */
-      rvn_text_ort_ort__rvn_stelle_text_text__key_word: Array<Keyword['id']>;
+      rvn_text_ort_ort__rvn_stelle_text_text__key_word?: Array<Keyword['id']>;
 
       /** Places related to these usecases (AND query). */
-      rvn_text_ort_ort__rvn_stelle_text_text__use_case: Array<UseCase['id']>;
+      rvn_text_ort_ort__rvn_stelle_text_text__use_case?: Array<UseCase['id']>;
 
       /** Places related to these passages (AND query). */
-      rvn_text_ort_ort__rvn_stelle_text_text: Array<Passage['id']>;
+      rvn_text_ort_ort__rvn_stelle_text_text?: Array<Passage['id']>;
 
       long?: number;
       lat?: number;
@@ -527,7 +527,7 @@ export namespace GetPassages {
       text?: Array<Text['id']>;
 
       /** Passages included in texts by these authors (AND query). */
-      text__autor_and: Array<Author['id']>;
+      text__autor_and?: Array<Author['id']>;
 
       /** Passages included in texts by these authors (OR query). */
       text__autor?: Array<Author['id']>;
@@ -936,19 +936,18 @@ export function getTopicById(params: GetTopicById.PathParams): Promise<GetTopicB
 
 //
 
+export type PlaceGeojson = { id: Place['id'] } & Feature<
+  Point,
+  Pick<PlaceNormalized, 'name' | 'name_antik' | 'name_de' | 'name_fr' | 'name_gr' | 'kategorie'> & {
+    art: { id: SkosConcept['id']; label: SkosConcept['pref_label'] } | null;
+  }
+>;
+
 export namespace GetPlacesGeojson {
   export type SearchParams = PageNumberPaginationSearchParams &
     SortableSearchParams &
     Omit<GetPlaces.SearchParams, 'limit' | 'offset'>;
-  export type Response = PaginatedGeoJsonResponse<
-    { id: Place['id'] } & Feature<
-      Point,
-      Pick<
-        PlaceNormalized,
-        'name' | 'name_antik' | 'name_de' | 'name_fr' | 'name_gr' | 'art' | 'kategorie'
-      >
-    >
-  >;
+  export type Response = PaginatedGeoJsonResponse<PlaceGeojson>;
 }
 
 /** Uses Place['coordinates'] as geojson geometry. */
@@ -963,13 +962,7 @@ export namespace GetPlaceGeojsonById {
   export type PathParams = {
     id: Place['id'];
   };
-  export type Response = { id: Place['id'] } & Feature<
-    Point,
-    Pick<
-      PlaceNormalized,
-      'name' | 'name_antik' | 'name_de' | 'name_fr' | 'name_gr' | 'art' | 'kategorie'
-    >
-  >;
+  export type Response = PlaceGeojson;
 }
 
 /** Uses Place['coordinates'] as geojson geometry. */
@@ -980,19 +973,21 @@ export function getPlaceGeojsonById(
   return request(url, options);
 }
 
+export type FuzzyPlaceGeojson = { id: Place['id'] } & Feature<
+  GeometryCollection,
+  Pick<
+    PlaceNormalized,
+    'name' | 'name_antik' | 'name_de' | 'name_fr' | 'name_gr' | 'art' | 'kategorie'
+  > & {
+    art: { id: SkosConcept['id']; label: SkosConcept['pref_label'] } | null;
+  }
+>;
+
 export namespace GetFuzzyPlacesGeojson {
   export type SearchParams = PageNumberPaginationSearchParams &
     SortableSearchParams &
     Omit<GetPlaces.SearchParams, 'limit' | 'offset'>;
-  export type Response = PaginatedGeoJsonResponse<
-    { id: Place['id'] } & Feature<
-      GeometryCollection,
-      Pick<
-        PlaceNormalized,
-        'name' | 'name_antik' | 'name_de' | 'name_fr' | 'name_gr' | 'art' | 'kategorie'
-      >
-    >
-  >;
+  export type Response = PaginatedGeoJsonResponse<FuzzyPlaceGeojson>;
 }
 
 /** Uses Place['fuzzy_geom'] as geojson geometry - which seems to always be `null`. */
@@ -1007,13 +1002,7 @@ export namespace GetFuzzyPlaceGeojsonById {
   export type PathParams = {
     id: Place['id'];
   };
-  export type Response = { id: Place['id'] } & Feature<
-    GeometryCollection,
-    Pick<
-      PlaceNormalized,
-      'name' | 'name_antik' | 'name_de' | 'name_fr' | 'name_gr' | 'art' | 'kategorie'
-    >
-  >;
+  export type Response = FuzzyPlaceGeojson;
 }
 
 /** Uses Place['fuzzy_geom'] as geojson geometry - which seems to always be `null`. */
@@ -1024,7 +1013,7 @@ export function getFuzzyPlaceGeojsonById(
   return request(url, options);
 }
 
-type SpatialCoverageSearchParams = {
+export type SpatialCoverageSearchParams = {
   id?: SpatialCoverage['id'];
 
   /** Keywords (AND query). */
@@ -1061,13 +1050,16 @@ type SpatialCoverageSearchParams = {
   show_labels?: boolean;
 };
 
+export type ConeGeojson = { id: SpatialCoverage['id'] } & Feature<
+  Polygon,
+  SpatialCoverageGeojsonProperties
+>;
+
 export namespace GetConesGeojson {
   export type SearchParams = PageNumberPaginationSearchParams &
     SortableSearchParams &
     SpatialCoverageSearchParams;
-  export type Response = PaginatedGeoJsonResponse<
-    { id: SpatialCoverage['id'] } & Feature<Polygon, SpatialCoverageGeoJsonProperties>
-  >;
+  export type Response = PaginatedGeoJsonResponse<ConeGeojson>;
 }
 
 /** Uses SpatialCoverage['convex_hull'] as geojson geometry. */
@@ -1082,10 +1074,7 @@ export namespace GetConeGeojsonById {
   export type PathParams = {
     id: SpatialCoverage['id'];
   };
-  export type Response = { id: SpatialCoverage['id'] } & Feature<
-    Polygon,
-    SpatialCoverageGeoJsonProperties
-  >;
+  export type Response = ConeGeojson;
 }
 
 /** Uses SpatialCoverage['convex_hull'] as geojson geometry. */
@@ -1096,23 +1085,23 @@ export function getConeGeojsonById(
   return request(url, options);
 }
 
+export type SpatialCoverageGeojson = { id: SpatialCoverage['id'] } & FeatureWithBoundingBox<
+  Polygon,
+  SpatialCoverageGeojsonProperties & {
+    /**
+     * Display labels for coverage.
+     *
+     * @default true
+     */
+    show_labels: SpatialCoverage['show_labels'];
+  }
+>;
+
 export namespace GetSpatialCoveragesGeojson {
   export type SearchParams = PageNumberPaginationSearchParams &
     SortableSearchParams &
     SpatialCoverageSearchParams;
-  export type Response = PaginatedGeoJsonResponse<
-    { id: SpatialCoverage['id'] } & FeatureWithBoundingBox<
-      Polygon,
-      SpatialCoverageGeoJsonProperties & {
-        /**
-         * Display labels for coverage.
-         *
-         * @default true
-         */
-        show_labels: SpatialCoverage['show_labels'];
-      }
-    >
-  >;
+  export type Response = PaginatedGeoJsonResponse<SpatialCoverageGeojson>;
 }
 
 /** Uses SpatialCoverage['fuzzy_geom'] as geojson geometry. */
@@ -1127,17 +1116,7 @@ export namespace GetSpatialCoverageGeojsonById {
   export type PathParams = {
     id: SpatialCoverage['id'];
   };
-  export type Response = { id: SpatialCoverage['id'] } & FeatureWithBoundingBox<
-    Polygon,
-    SpatialCoverageGeoJsonProperties & {
-      /**
-       * Display labels for coverage.
-       *
-       * @default true
-       */
-      show_labels: SpatialCoverage['show_labels'];
-    }
-  >;
+  export type Response = SpatialCoverageGeojson;
 }
 
 /** Uses SpatialCoverage['fuzzy_geom'] as geojson geometry. */
@@ -1148,16 +1127,16 @@ export function getSpatialCoverageGeojsonById(
   return request(url, options);
 }
 
+export type LinesPointsGeojson = { id: SpatialCoverage['id'] } & FeatureWithBoundingBox<
+  GeometryCollection,
+  SpatialCoverageGeojsonProperties
+>;
+
 export namespace GetLinesPointsGeojson {
   export type SearchParams = PageNumberPaginationSearchParams &
     SortableSearchParams &
     SpatialCoverageSearchParams;
-  export type Response = PaginatedGeoJsonResponse<
-    { id: SpatialCoverage['id'] } & FeatureWithBoundingBox<
-      GeometryCollection,
-      SpatialCoverageGeoJsonProperties
-    >
-  >;
+  export type Response = PaginatedGeoJsonResponse<LinesPointsGeojson>;
 }
 
 /** Uses SpatialCoverage['geom_collection'] as geojson geometry. */
@@ -1172,10 +1151,7 @@ export namespace GetLinesPointsGeojsonById {
   export type PathParams = {
     id: SpatialCoverage['id'];
   };
-  export type Response = { id: SpatialCoverage['id'] } & FeatureWithBoundingBox<
-    GeometryCollection,
-    SpatialCoverageGeoJsonProperties
-  >;
+  export type Response = LinesPointsGeojson;
 }
 
 /** Uses SpatialCoverage['geom_collection'] as geojson geometry. */

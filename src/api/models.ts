@@ -16,7 +16,7 @@ export type UseCase = {
   pi_norm_id: string;
 
   /** Story Map. */
-  story_map?: string | null;
+  story_map?: HtmlString | null;
   /** Knightlab Story Maps. */
   knightlab_stoy_map: Array<Story>;
 
@@ -326,9 +326,10 @@ export type SpatialCoverage = {
 
 export type SpatialCoverageNormalized = Normalized<SpatialCoverage, 'stelle' | 'key_word'>;
 
-type PlaceGeoJsonProperty = {
+export type PlaceGeojsonProperty = {
   id: Place['id'];
   name: Place['name'];
+  name_antik: Place['name_antik'];
   lat?: number | null;
   lng?: number | null;
   art?: {
@@ -337,7 +338,7 @@ type PlaceGeoJsonProperty = {
   } | null;
 };
 
-export type SpatialCoverageGeoJsonProperties = {
+export type SpatialCoverageGeojsonProperties = {
   /** Keyword associated with coverage. */
   key_word?: KeywordNormalized | null;
   /** Uncertainty of location on a scale from 1 (very secure) to 10 (very insecure). */
@@ -346,14 +347,14 @@ export type SpatialCoverageGeoJsonProperties = {
   texts: Array<{
     id: Text['id'];
     title: Text['title'];
-    places: Array<PlaceGeoJsonProperty>;
+    places: Array<PlaceGeojsonProperty>;
     authors: Array<{
       id: Author['id'];
       name: Author['name'];
-      place?: PlaceGeoJsonProperty | null;
+      place?: PlaceGeojsonProperty | null;
     }>;
   }>;
-  places: Array<PlaceGeoJsonProperty>;
+  places: Array<PlaceGeojsonProperty>;
 };
 
 /**
