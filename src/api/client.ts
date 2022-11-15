@@ -329,6 +329,17 @@ export namespace GetAuthors {
 
       /** Keyword type. */
       rvn_text_autor_autor__rvn_stelle_text_text__key_word__art?: KeywordType;
+
+      /** Authored texts (AND query). */
+      rvn_text_autor_autor?: Array<Text['id']>;
+
+      /**
+       * Genres of related texts (AND query).
+       *
+       * Allowed values are defined in the "art" SkosCollection.
+       * @see '/vocabs-ac/specific-concept-ac/art'
+       */
+      rvn_text_autor_autor__art?: Array<SkosConcept['id']>;
     };
   export type Response = PaginatedResponse<
     Omit<Author, 'ort'> & {
@@ -389,6 +400,14 @@ export namespace GetKeywords {
 
       /** Keywords are associated with these texts (AND query). */
       rvn_stelle_key_word_keyword__text?: Array<Text['id']>;
+
+      /**
+       * Genres of related texts (AND query).
+       *
+       * Allowed values are defined in the "art" SkosCollection.
+       * @see '/vocabs-ac/specific-concept-ac/art'
+       */
+      rvn_stelle_key_word_keyword__text__art?: Array<SkosConcept['id']>;
 
       /** Keywords are associated with these places (AND query). */
       rvn_stelle_key_word_keyword__text__autor__ort?: Array<Place['id']>;
@@ -493,6 +512,14 @@ export namespace GetPlaces {
 
       /** Places related to these passages (AND query). */
       rvn_text_ort_ort__rvn_stelle_text_text?: Array<Passage['id']>;
+
+      /**
+       * Genres of related texts (AND query).
+       *
+       * Allowed values are defined in the "art" SkosCollection.
+       * @see '/vocabs-ac/specific-concept-ac/art'
+       */
+      rvn_text_ort_ort__art?: Array<SkosConcept['id']>;
 
       long?: number;
       lat?: number;
@@ -813,6 +840,14 @@ export namespace GetUseCases {
       /** Related authors (AND query). */
       has_stelle__text__autor?: Array<Author['id']>;
 
+      /**
+       * Genres of related texts (AND query).
+       *
+       * Allowed values are defined in the "art" SkosCollection.
+       * @see '/vocabs-ac/specific-concept-ac/art'
+       */
+      has_stelle__text__art?: Array<SkosConcept['id']>;
+
       /** Related keywords (AND query). */
       has_stelle__key_word?: Array<Keyword['id']>;
     };
@@ -1068,6 +1103,13 @@ export type SpatialCoverageSearchParams = {
   stelle__text__ort?: Array<Place['id']>;
   /** Related authors (AND query). */
   stelle__text__autor?: Array<Author['id']>;
+  /**
+   * Genres of related texts (AND query).
+   *
+   * Allowed values are defined in the "art" SkosCollection.
+   * @see '/vocabs-ac/specific-concept-ac/art'
+   */
+  stelle__text__art?: Array<SkosConcept['id']>;
 
   stelle__start_date?: number;
   stelle__start_date__lookup?: DateLookupSearchParams;
