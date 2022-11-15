@@ -297,7 +297,7 @@ export type Event = {
   use_case: Array<UseCase>;
 };
 
-export type EventNormalized = Event;
+export type EventNormalized = Normalized<Event, 'use_case'>;
 
 /** Spatial Coverage of a Keyword bound to a specifc source document. */
 export type SpatialCoverage = {
