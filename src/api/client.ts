@@ -22,6 +22,7 @@ import type {
   Slide,
   SpatialCoverage,
   SpatialCoverageGeojsonProperties,
+  StopWordNormalized,
   Story,
   StoryNormalized,
   Text,
@@ -1423,12 +1424,15 @@ export function getPassageNlpData(
 }
 
 export namespace GetStopWords {
-  export type Response = {
-    results: Array<string>;
-  };
+  export type SearchParams = LimitOffsetPaginationSearchParams;
+  export type Response = PaginatedResponse<{
+    results: Array<StopWordNormalized>;
+  }>;
 }
 
-export function getStopWords(): Promise<GetStopWords.Response> {
-  const url = createUrl({ baseUrl: baseUrls.archiv, pathname: 'stopwords/' });
+export function getStopWords(
+  searchParams: GetStopWords.SearchParams
+): Promise<GetStopWords.Response> {
+  const url = createUrl({ baseUrl: baseUrls.api, pathname: 'stopwords/', searchParams });
   return request(url, options);
 }

@@ -333,11 +333,14 @@ export function useModelingProcessById(
   });
 }
 
-export function useStopWords(options?: Options) {
+export function useStopWords(
+  searchParams: MaybeRef<Partial<api.GetStopWords.SearchParams>>,
+  options?: Options
+) {
   return useQuery({
-    queryKey: createKey('stop-word', 'list'),
-    queryFn: () => {
-      return api.getStopWords();
+    queryKey: createKey('stop-word', 'list', searchParams),
+    queryFn: ({ queryKey: [, , searchParams] }) => {
+      return api.getStopWords(searchParams);
     },
     enabled: options?.isEnabled,
     keepPreviousData: options?.keepPreviousData,
