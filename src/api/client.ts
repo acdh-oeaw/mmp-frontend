@@ -7,6 +7,8 @@ import type { GeometryCollection, Point, Polygon } from 'geojson';
 import type {
   Author,
   AuthorNormalized,
+  Event,
+  EventNormalized,
   Keyword,
   KeywordNormalized,
   KeywordType,
@@ -22,6 +24,7 @@ import type {
   Slide,
   SpatialCoverage,
   SpatialCoverageGeojsonProperties,
+  StopWordNormalized,
   Story,
   StoryNormalized,
   Text,
@@ -841,6 +844,43 @@ export function getUseCaseById(
   return request(url, options);
 }
 
+export namespace GetEvents {
+  export type SearchParams = LimitOffsetPaginationSearchParams &
+    SortableSearchParams & {
+      title?: string;
+      title__lookup?: StringLookupSearchParams;
+
+      description?: string;
+      description__lookup?: StringLookupSearchParams;
+
+      start_date?: number;
+      start_date__lookup?: DateLookupSearchParams;
+
+      end_date?: number;
+      end_date__lookup?: DateLookupSearchParams;
+
+      use_case?: Array<UseCase['id']>;
+    };
+  export type Response = PaginatedResponse<EventNormalized>;
+}
+
+export function getEvents(searchParams: GetEvents.SearchParams): Promise<GetEvents.Response> {
+  const url = createUrl({ baseUrl: baseUrls.api, pathname: 'events/', searchParams });
+  return request(url, options);
+}
+
+export namespace GetEventById {
+  export type PathParams = {
+    id: Event['id'];
+  };
+  export type Response = EventNormalized;
+}
+
+export function getEventById(params: GetEventById.PathParams): Promise<GetEventById.Response> {
+  const url = createUrl({ baseUrl: baseUrls.api, pathname: `events/${params.id}` });
+  return request(url, options);
+}
+
 //
 
 export namespace GetModelingProcesses {
@@ -1423,12 +1463,15 @@ export function getPassageNlpData(
 }
 
 export namespace GetStopWords {
-  export type Response = {
-    results: Array<string>;
-  };
+  export type SearchParams = LimitOffsetPaginationSearchParams;
+  export type Response = PaginatedResponse<{
+    results: Array<StopWordNormalized>;
+  }>;
 }
 
-export function getStopWords(): Promise<GetStopWords.Response> {
-  const url = createUrl({ baseUrl: baseUrls.archiv, pathname: 'stopwords/' });
+export function getStopWords(
+  searchParams: GetStopWords.SearchParams
+): Promise<GetStopWords.Response> {
+  const url = createUrl({ baseUrl: baseUrls.api, pathname: 'stopwords/', searchParams });
   return request(url, options);
 }

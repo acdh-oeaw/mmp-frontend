@@ -29,6 +29,7 @@ const resources = [
   'autocomplete-text-genre-type',
   'autocomplete-place-type',
   'autocomplete-place-category',
+  'event',
   'geojson-place',
   'geojson-fuzzy-place',
   'geojson-cone',
@@ -305,6 +306,34 @@ export function useUseCaseTimeTableById(
   });
 }
 
+export function useEvents(
+  searchParams: MaybeRef<Partial<api.GetEvents.SearchParams>>,
+  options?: Options
+) {
+  return useQuery({
+    queryKey: createKey('event', 'list', searchParams),
+    queryFn: ({ queryKey: [, , searchParams] }) => {
+      return api.getEvents(searchParams);
+    },
+    enabled: options?.isEnabled,
+    keepPreviousData: options?.keepPreviousData,
+  });
+}
+
+export function useEventById(
+  params: MaybeRef<Partial<api.GetEventById.PathParams>>,
+  options?: Options
+) {
+  return useQuery({
+    queryKey: createKey('event', 'by-id', params),
+    queryFn: ({ queryKey: [, , params] }) => {
+      return api.getEventById(assertId(params));
+    },
+    enabled: options?.isEnabled,
+    keepPreviousData: options?.keepPreviousData,
+  });
+}
+
 export function useModelingProcesses(
   searchParams: MaybeRef<Partial<api.GetModelingProcesses.SearchParams>>,
   options?: Options
@@ -333,11 +362,14 @@ export function useModelingProcessById(
   });
 }
 
-export function useStopWords(options?: Options) {
+export function useStopWords(
+  searchParams: MaybeRef<Partial<api.GetStopWords.SearchParams>>,
+  options?: Options
+) {
   return useQuery({
-    queryKey: createKey('stop-word', 'list'),
-    queryFn: () => {
-      return api.getStopWords();
+    queryKey: createKey('stop-word', 'list', searchParams),
+    queryFn: ({ queryKey: [, , searchParams] }) => {
+      return api.getStopWords(searchParams);
     },
     enabled: options?.isEnabled,
     keepPreviousData: options?.keepPreviousData,

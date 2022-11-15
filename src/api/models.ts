@@ -278,8 +278,7 @@ export type Text = Omit<
 
 export type TextNormalized = Normalized<Text, 'autor' | 'art' | 'ort'>;
 
-/** Currently not exposed via api. */
-type _Event = {
+export type Event = {
   id: number;
 
   /** Label. */
@@ -297,6 +296,8 @@ type _Event = {
   /** Associated usecases. */
   use_case: Array<UseCase>;
 };
+
+export type EventNormalized = Normalized<Event, 'use_case'>;
 
 /** Spatial Coverage of a Keyword bound to a specifc source document. */
 export type SpatialCoverage = {
@@ -544,6 +545,14 @@ export type TextTopicRelation = {
 };
 
 export type TextTopicRelationNormalized = Normalized<TextTopicRelation, 'text' | 'topic'>;
+
+export type StopWord = {
+  id: number;
+
+  word: string;
+};
+
+export type StopWordNormalized = StopWord;
 
 /**
  * @see https://github.com/acdh-oeaw/django-story-map
