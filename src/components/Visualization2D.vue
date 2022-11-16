@@ -5,16 +5,11 @@
 </template>
 
 <script>
+import * as d3 from 'd3';
 import ForceGraph from 'force-graph';
-
-// eslint-disable-next-line
-const d3 = require('d3'); // import wasnt working here
 
 export default {
   name: 'Visualization',
-  data: () => ({
-    graphDom: null,
-  }),
   props: {
     backgroundColor: String,
     dagMode: {
@@ -56,7 +51,41 @@ export default {
       type: Boolean,
       default: false,
     },
+  },
+  data: () => ({
+    graphDom: null,
+  }),
+  watch: {
+    graph: {
+      handler(val) {
+        this.graphDom.graphData(this.transformedData(val));
+      },
+      deep: true,
+    },
+    refresh() {
+      console.log('refresh called');
+      this.graphDom.d3ReheatSimulation();
+    },
+    zoomToFit() {
+      // cheap workaraound, change zoomToFit to !zoomToFit to zoom (to fit)
+      this.graphDom.zoomToFit(500);
+    },
+  },
+  mounted() {
+    console.log('Graph mounted, data:', this.graph);
+    // console.log('forceCollision:', this.forceCollision(), 'lel', d3.forceCollide());
+    console.log('forcelink', d3.forceLink);
+    this.graphDom = ForceGraph()(this.$refs.visWrapper);
+    this.setCanvas();
 
+    // resize canvas on div resize
+    const sizeOberserver = new ResizeObserver((entries) => {
+      const rect = entries[0].contentRect;
+      // console.log('resize detected', rect.width, rect.height);
+      this.graphDom.width(rect.width).height(rect.height);
+    });
+
+    sizeOberserver.observe(this.$refs.visWrapper);
   },
   methods: {
     transformedData(obj) {
@@ -99,14 +128,18 @@ export default {
         .linkDirectionalParticleWidth(this.linkDirectionalParticleWidth || 4)
         .linkDirectionalArrowLength(this.linkDirectionalArrowLength || 0)
         .linkDirectionalArrowRelPos(this.linkDirectionalArrowRelPos || 0.5)
-        .graphData(this.transformedData(this.graph || {
-          nodes: [],
-          edges: [],
-          types: {
-            nodes: [],
-            edges: [],
-          },
-        }))
+        .graphData(
+          this.transformedData(
+            this.graph || {
+              nodes: [],
+              edges: [],
+              types: {
+                nodes: [],
+                edges: [],
+              },
+            }
+          )
+        )
         // .d3Force('collide', d3.forceCollide().radius((d) => d.val + 20).iterations(3))
         .nodeRelSize(this.nodeRelSize || 1)
         .nodeCanvasObject(this.nodeCanvasObject)
@@ -115,46 +148,14 @@ export default {
 
       if (this.forceCenter !== undefined) this.graphDom.d3Force('center', this.forceCenter());
       if (this.forceLink !== undefined) this.graphDom.d3Force('link', this.forceLink());
-      if (this.forceCollision !== undefined) this.graphDom.d3Force('collide', this.forceCollision());
+      if (this.forceCollision !== undefined)
+        this.graphDom.d3Force('collide', this.forceCollision());
 
       console.log('speed', this.graphDom.linkDirectionalParticleSpeed());
     },
     logSize() {
       console.log('ref', this.$refs.visWrapper.clientWidth);
     },
-  },
-  watch: {
-    graph: {
-      handler(val) {
-        this.graphDom.graphData(this.transformedData(val));
-      },
-      deep: true,
-    },
-    refresh() {
-      console.log('refresh called');
-      this.graphDom.d3ReheatSimulation();
-    },
-    zoomToFit() { // cheap workaraound, change zoomToFit to !zoomToFit to zoom (to fit)
-      this.graphDom.zoomToFit(500);
-    },
-  },
-  mounted() {
-    console.log('Graph mounted, data:', this.graph);
-    // console.log('forceCollision:', this.forceCollision(), 'lel', d3.forceCollide());
-    console.log('forcelink', d3.forceLink);
-    this.graphDom = ForceGraph()(this.$refs.visWrapper);
-    this.setCanvas();
-
-    // resize canvas on div resize
-    const sizeOberserver = new ResizeObserver((entries) => {
-      const rect = entries[0].contentRect;
-      // console.log('resize detected', rect.width, rect.height);
-      this.graphDom
-        .width(rect.width)
-        .height(rect.height);
-    });
-
-    sizeOberserver.observe(this.$refs.visWrapper);
   },
 };
 </script>

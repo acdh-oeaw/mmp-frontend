@@ -4,6 +4,7 @@
     "editorConfig.editorConfig",
     "esbenp.prettier-vscode",
     "stylelint.vscode-stylelint",
-    "vue.volar"
+    "vue.volar",
+    "vue.vscode-typescript-vue-plugin"
   ]
 }

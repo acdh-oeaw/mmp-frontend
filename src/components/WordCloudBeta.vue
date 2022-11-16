@@ -1,14 +1,14 @@
 <template>
-  <div class="cloud-wrapper" ref="cloudRel">
+  <div ref="cloudRel" class="cloud-wrapper">
     <h3 class="text-center">{{ title }}</h3>
     <cloud
       :key="renderKey"
       :data="words"
-      :fontSizeMapper="sizeFunction"
+      :font-size-mapper="sizeFunction"
       :width="width"
       :height="height"
       padding="2"
-      :onWordClick="() => null"
+      :on-word-click="() => null"
       font="Roboto, sans-serif"
     />
   </div>
@@ -18,13 +18,13 @@ import cloud from 'vue-d3-cloud';
 
 export default {
   name: 'WordCloudBeta',
+  components: { cloud },
+  props: ['data', 'title'],
   data: () => ({
     renderKey: 0,
     width: 500,
     height: 500,
   }),
-  props: ['data', 'title'],
-  components: { cloud },
   computed: {
     words() {
       console.log(this.renderKey);
@@ -32,11 +32,6 @@ export default {
     },
     maxOccurences() {
       return Math.max(...this.words.map((word) => word.value));
-    },
-  },
-  methods: {
-    sizeFunction(word) {
-      return (word.value * 400) / this.words.length;
     },
   },
   mounted() {
@@ -52,6 +47,11 @@ export default {
     });
 
     sizeOberserver.observe(this.$refs.cloudRel);
+  },
+  methods: {
+    sizeFunction(word) {
+      return (word.value * 400) / this.words.length;
+    },
   },
 };
 </script>

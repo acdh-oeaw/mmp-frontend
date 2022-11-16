@@ -1,25 +1,17 @@
 {
+  "extends": "@vue/tsconfig/tsconfig.web.json",
   "compilerOptions": {
     "allowJs": true,
     "baseUrl": ".",
     "checkJs": false,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "jsx": "preserve",
-    "lib": ["dom", "dom.iterable", "es2022", "scripthost"],
-    "module": "esnext",
-    "moduleResolution": "node",
-    "noEmit": true,
+    "lib": ["dom", "dom.iterable", "es2020"],
     "noUncheckedIndexedAccess": true,
     "paths": {
       "@/*": ["./src/*"],
       "~/*": ["./*"]
     },
-    "resolveJsonModule": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "target": "es2022",
     "types": ["d3", "leaflet", "vuetify"]
   },
-  "include": ["**/*.ts", "**/*.vue", "**/*.config.mjs"]
+  "include": ["app.d.ts", "./src/**/*", "./src/**/*.vue"],
+  "references": [{ "path": "./tsconfig.node.json" }]
 }

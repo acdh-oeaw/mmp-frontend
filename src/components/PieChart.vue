@@ -8,18 +8,19 @@ import { Chart } from 'highcharts-vue';
 
 export default {
   name: 'PieChart',
+  components: { Chart },
+  props: ['data', 'title', 'height'],
   data: () => ({
     renderKey: 0,
   }),
-  props: ['data', 'title', 'height'],
-  components: { Chart },
   computed: {
     pieOptions() {
       console.log(this.data, this.renderKey);
 
       const reducedData = this.data.filter((x, i) => i < 25);
       for (let i = 0; i < reducedData.length; i += 1) {
-        for (let j = 1; reducedData[i].length > 30; j += 1) reducedData[i] = reducedData[i].filter((entry) => entry[1] > j); // improves performance by a lot
+        for (let j = 1; reducedData[i].length > 30; j += 1)
+          reducedData[i] = reducedData[i].filter((entry) => entry[1] > j); // improves performance by a lot
       }
 
       return {

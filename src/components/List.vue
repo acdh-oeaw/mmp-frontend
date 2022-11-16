@@ -136,7 +136,9 @@ export default {
         Place: 'text__ort',
       };
 
-      let address = `https://mmp.acdh-dev.oeaw.ac.at/api/stelle/?format=json&limit=${this.pagination.limit}&offset=${this.pagination.offset}&has_usecase=${this.hasUsecase}`;
+      let address = `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/stelle/?format=json&limit=${
+        this.pagination.limit
+      }&offset=${this.pagination.offset}&has_usecase=${this.hasUsecase}`;
       const props = [this.author, this.passage, this.keyword, this.usecase, this.place];
 
       if (props.some((x) => x)) {

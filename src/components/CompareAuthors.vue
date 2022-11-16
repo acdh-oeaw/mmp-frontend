@@ -88,8 +88,8 @@
     >
       <template #activator>
         <v-btn v-model="fab.control" icon small>
-          <v-icon v-if="fab.control"> mdi-close </v-icon>
-          <v-icon v-else> mdi-dots-vertical </v-icon>
+          <v-icon v-if="fab.control">mdi-close</v-icon>
+          <v-icon v-else>mdi-dots-vertical</v-icon>
         </v-btn>
       </template>
       <v-tooltip right transition="slide-x-transition">
@@ -239,7 +239,11 @@ export default {
         const authors = query.Author?.split('+') || [];
         if (authors.length >= 2) {
           this.selectedAuthors = authors;
-          fetch(`https://mmp.acdh-dev.oeaw.ac.at/api/autor/?format=json&ids=${authors.join(',')}`)
+          fetch(
+            `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/autor/?format=json&ids=${authors.join(
+              ','
+            )}`
+          )
             .then((res) => res.json())
             .then((authorJsonRes) => {
               const authorData = authorJsonRes.results;
@@ -247,7 +251,11 @@ export default {
               Promise.all(
                 authors.map((x) =>
                   fetch(
-                    `https://mmp.acdh-dev.oeaw.ac.at/archiv/keyword-data/?has_usecase=${this.hasUsecase}&rvn_stelle_key_word_keyword__text__autor=${x}`
+                    `${
+                      import.meta.env.VITE_APP_MMP_API_BASE_URL
+                    }/archiv/keyword-data/?has_usecase=${
+                      this.hasUsecase
+                    }&rvn_stelle_key_word_keyword__text__autor=${x}`
                   )
                 )
               ).then((res) => {

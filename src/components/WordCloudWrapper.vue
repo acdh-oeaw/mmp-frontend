@@ -166,8 +166,8 @@ export default {
         this.loading = 2;
         this.words = [];
         let urls = [
-          'https://mmp.acdh-dev.oeaw.ac.at/archiv/nlp-data/?',
-          'https://mmp.acdh-dev.oeaw.ac.at/archiv/kw-stelle/?',
+          `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/archiv/nlp-data/?`,
+          `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/archiv/kw-stelle/?`,
         ];
 
         const terms = {
