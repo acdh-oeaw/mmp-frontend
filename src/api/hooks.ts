@@ -14,6 +14,22 @@ type Options = {
   keepPreviousData?: UseQueryOptions['keepPreviousData'];
 };
 
+function getQueryOptions(options?: Options) {
+  const queryOptions: Pick<UseQueryOptions, 'enabled' | 'keepPreviousData'> = {};
+
+  if (options == null) return queryOptions;
+
+  if (options.isEnabled != null) {
+    queryOptions.enabled = options.isEnabled;
+  }
+
+  if (options.keepPreviousData != null) {
+    queryOptions.keepPreviousData = options.keepPreviousData;
+  }
+
+  return queryOptions;
+}
+
 const resources = [
   'author',
   'autocomplete-author',
@@ -77,8 +93,7 @@ export function useAuthors(
     queryFn: ({ queryKey: [, , searchParams] }) => {
       return api.getAuthors(searchParams);
     },
-    enabled: options?.isEnabled,
-    keepPreviousData: options?.keepPreviousData,
+    ...getQueryOptions(options),
   });
 }
 
@@ -91,8 +106,7 @@ export function useAuthorById(
     queryFn: ({ queryKey: [, , params] }) => {
       return api.getAuthorById(assertId(params));
     },
-    enabled: options?.isEnabled,
-    keepPreviousData: options?.keepPreviousData,
+    ...getQueryOptions(options),
   });
 }
 
@@ -105,8 +119,7 @@ export function useKeywords(
     queryFn: ({ queryKey: [, , searchParams] }) => {
       return api.getKeywords(searchParams);
     },
-    enabled: options?.isEnabled,
-    keepPreviousData: options?.keepPreviousData,
+    ...getQueryOptions(options),
   });
 }
 
@@ -119,8 +132,7 @@ export function useKeywordById(
     queryFn: ({ queryKey: [, , params] }) => {
       return api.getKeywordById(assertId(params));
     },
-    enabled: options?.isEnabled,
-    keepPreviousData: options?.keepPreviousData,
+    ...getQueryOptions(options),
   });
 }
 
@@ -133,8 +145,7 @@ export function useKeywordByCenturyById(
     queryFn: ({ queryKey: [, , params] }) => {
       return api.getKeywordByCenturyById(assertId(params));
     },
-    enabled: options?.isEnabled,
-    keepPreviousData: options?.keepPreviousData,
+    ...getQueryOptions(options),
   });
 }
 
@@ -147,8 +158,7 @@ export function useKeywordGraph(
     queryFn: ({ queryKey: [, , searchParams] }) => {
       return api.getKeywordGraph(searchParams);
     },
-    enabled: options?.isEnabled,
-    keepPreviousData: options?.keepPreviousData,
+    ...getQueryOptions(options),
   });
 }
 
@@ -161,8 +171,7 @@ export function usePassages(
     queryFn: ({ queryKey: [, , searchParams] }) => {
       return api.getPassages(searchParams);
     },
-    enabled: options?.isEnabled,
-    keepPreviousData: options?.keepPreviousData,
+    ...getQueryOptions(options),
   });
 }
 
@@ -175,8 +184,7 @@ export function usePassageById(
     queryFn: ({ queryKey: [, , params] }) => {
       return api.getPassageById(assertId(params));
     },
-    enabled: options?.isEnabled,
-    keepPreviousData: options?.keepPreviousData,
+    ...getQueryOptions(options),
   });
 }
 
@@ -189,8 +197,7 @@ export function usePassageKeywords(
     queryFn: ({ queryKey: [, , searchParams] }) => {
       return api.getPassageKeywords(searchParams);
     },
-    enabled: options?.isEnabled,
-    keepPreviousData: options?.keepPreviousData,
+    ...getQueryOptions(options),
   });
 }
 
@@ -203,8 +210,7 @@ export function usePassageNlpData(
     queryFn: ({ queryKey: [, , searchParams] }) => {
       return api.getPassageNlpData(searchParams);
     },
-    enabled: options?.isEnabled,
-    keepPreviousData: options?.keepPreviousData,
+    ...getQueryOptions(options),
   });
 }
 
@@ -217,8 +223,7 @@ export function usePlaces(
     queryFn: ({ queryKey: [, , searchParams] }) => {
       return api.getPlaces(searchParams);
     },
-    enabled: options?.isEnabled,
-    keepPreviousData: options?.keepPreviousData,
+    ...getQueryOptions(options),
   });
 }
 
@@ -231,8 +236,7 @@ export function usePlaceById(
     queryFn: ({ queryKey: [, , params] }) => {
       return api.getPlaceById(assertId(params));
     },
-    enabled: options?.isEnabled,
-    keepPreviousData: options?.keepPreviousData,
+    ...getQueryOptions(options),
   });
 }
 
@@ -245,8 +249,7 @@ export function useTexts(
     queryFn: ({ queryKey: [, , searchParams] }) => {
       return api.getTexts(searchParams);
     },
-    enabled: options?.isEnabled,
-    keepPreviousData: options?.keepPreviousData,
+    ...getQueryOptions(options),
   });
 }
 
@@ -259,8 +262,7 @@ export function useTextById(
     queryFn: ({ queryKey: [, , params] }) => {
       return api.getTextById(assertId(params));
     },
-    enabled: options?.isEnabled,
-    keepPreviousData: options?.keepPreviousData,
+    ...getQueryOptions(options),
   });
 }
 
@@ -273,8 +275,7 @@ export function useUseCases(
     queryFn: ({ queryKey: [, , searchParams] }) => {
       return api.getUseCases(searchParams);
     },
-    enabled: options?.isEnabled,
-    keepPreviousData: options?.keepPreviousData,
+    ...getQueryOptions(options),
   });
 }
 
@@ -287,8 +288,7 @@ export function useUseCaseById(
     queryFn: ({ queryKey: [, , params] }) => {
       return api.getUseCaseById(assertId(params));
     },
-    enabled: options?.isEnabled,
-    keepPreviousData: options?.keepPreviousData,
+    ...getQueryOptions(options),
   });
 }
 
@@ -301,8 +301,7 @@ export function useUseCaseTimeTableById(
     queryFn: ({ queryKey: [, , params] }) => {
       return api.getUseCaseTimetableById(assertId(params));
     },
-    enabled: options?.isEnabled,
-    keepPreviousData: options?.keepPreviousData,
+    ...getQueryOptions(options),
   });
 }
 
@@ -315,8 +314,7 @@ export function useEvents(
     queryFn: ({ queryKey: [, , searchParams] }) => {
       return api.getEvents(searchParams);
     },
-    enabled: options?.isEnabled,
-    keepPreviousData: options?.keepPreviousData,
+    ...getQueryOptions(options),
   });
 }
 
@@ -329,8 +327,7 @@ export function useEventById(
     queryFn: ({ queryKey: [, , params] }) => {
       return api.getEventById(assertId(params));
     },
-    enabled: options?.isEnabled,
-    keepPreviousData: options?.keepPreviousData,
+    ...getQueryOptions(options),
   });
 }
 
@@ -343,8 +340,7 @@ export function useModelingProcesses(
     queryFn: ({ queryKey: [, , searchParams] }) => {
       return api.getModelingProcesses(searchParams);
     },
-    enabled: options?.isEnabled,
-    keepPreviousData: options?.keepPreviousData,
+    ...getQueryOptions(options),
   });
 }
 
@@ -357,8 +353,7 @@ export function useModelingProcessById(
     queryFn: ({ queryKey: [, , params] }) => {
       return api.getModelingProcessById(assertId(params));
     },
-    enabled: options?.isEnabled,
-    keepPreviousData: options?.keepPreviousData,
+    ...getQueryOptions(options),
   });
 }
 
@@ -371,8 +366,7 @@ export function useStopWords(
     queryFn: ({ queryKey: [, , searchParams] }) => {
       return api.getStopWords(searchParams);
     },
-    enabled: options?.isEnabled,
-    keepPreviousData: options?.keepPreviousData,
+    ...getQueryOptions(options),
   });
 }
 
@@ -385,8 +379,7 @@ export function useTextTopicRelations(
     queryFn: ({ queryKey: [, , searchParams] }) => {
       return api.getTextTopicRelations(searchParams);
     },
-    enabled: options?.isEnabled,
-    keepPreviousData: options?.keepPreviousData,
+    ...getQueryOptions(options),
   });
 }
 
@@ -399,8 +392,7 @@ export function useTextTopicRelationById(
     queryFn: ({ queryKey: [, , params] }) => {
       return api.getTextTopicRelationById(assertId(params));
     },
-    enabled: options?.isEnabled,
-    keepPreviousData: options?.keepPreviousData,
+    ...getQueryOptions(options),
   });
 }
 
@@ -413,8 +405,7 @@ export function useTopics(
     queryFn: ({ queryKey: [, , searchParams] }) => {
       return api.getTopics(searchParams);
     },
-    enabled: options?.isEnabled,
-    keepPreviousData: options?.keepPreviousData,
+    ...getQueryOptions(options),
   });
 }
 
@@ -427,8 +418,7 @@ export function useTopicById(
     queryFn: ({ queryKey: [, , params] }) => {
       return api.getTopicById(assertId(params));
     },
-    enabled: options?.isEnabled,
-    keepPreviousData: options?.keepPreviousData,
+    ...getQueryOptions(options),
   });
 }
 
@@ -441,8 +431,7 @@ export function usePlacesGeojson(
     queryFn: ({ queryKey: [, , searchParams] }) => {
       return api.getPlacesGeojson(searchParams);
     },
-    enabled: options?.isEnabled,
-    keepPreviousData: options?.keepPreviousData,
+    ...getQueryOptions(options),
   });
 }
 
@@ -455,8 +444,7 @@ export function usePlaceGeojsonById(
     queryFn: ({ queryKey: [, , params] }) => {
       return api.getPlaceGeojsonById(assertId(params));
     },
-    enabled: options?.isEnabled,
-    keepPreviousData: options?.keepPreviousData,
+    ...getQueryOptions(options),
   });
 }
 
@@ -469,8 +457,7 @@ export function useFuzzyPlacesGeojson(
     queryFn: ({ queryKey: [, , searchParams] }) => {
       return api.getFuzzyPlacesGeojson(searchParams);
     },
-    enabled: options?.isEnabled,
-    keepPreviousData: options?.keepPreviousData,
+    ...getQueryOptions(options),
   });
 }
 
@@ -483,8 +470,7 @@ export function useFuzzyPlaceGeojsonById(
     queryFn: ({ queryKey: [, , params] }) => {
       return api.getFuzzyPlaceGeojsonById(assertId(params));
     },
-    enabled: options?.isEnabled,
-    keepPreviousData: options?.keepPreviousData,
+    ...getQueryOptions(options),
   });
 }
 
@@ -497,8 +483,7 @@ export function useConesGeojson(
     queryFn: ({ queryKey: [, , searchParams] }) => {
       return api.getConesGeojson(searchParams);
     },
-    enabled: options?.isEnabled,
-    keepPreviousData: options?.keepPreviousData,
+    ...getQueryOptions(options),
   });
 }
 
@@ -511,8 +496,7 @@ export function useConeGeojsonById(
     queryFn: ({ queryKey: [, , params] }) => {
       return api.getConeGeojsonById(assertId(params));
     },
-    enabled: options?.isEnabled,
-    keepPreviousData: options?.keepPreviousData,
+    ...getQueryOptions(options),
   });
 }
 
@@ -525,8 +509,7 @@ export function useSpatialCoveragesGeojson(
     queryFn: ({ queryKey: [, , searchParams] }) => {
       return api.getSpatialCoveragesGeojson(searchParams);
     },
-    enabled: options?.isEnabled,
-    keepPreviousData: options?.keepPreviousData,
+    ...getQueryOptions(options),
   });
 }
 
@@ -539,8 +522,7 @@ export function useSpatialCoverageGeojsonById(
     queryFn: ({ queryKey: [, , params] }) => {
       return api.getSpatialCoverageGeojsonById(assertId(params));
     },
-    enabled: options?.isEnabled,
-    keepPreviousData: options?.keepPreviousData,
+    ...getQueryOptions(options),
   });
 }
 
@@ -553,8 +535,7 @@ export function useLinesPointsGeojson(
     queryFn: ({ queryKey: [, , searchParams] }) => {
       return api.getLinesPointsGeojson(searchParams);
     },
-    enabled: options?.isEnabled,
-    keepPreviousData: options?.keepPreviousData,
+    ...getQueryOptions(options),
   });
 }
 
@@ -567,8 +548,7 @@ export function useLinesPointsGeojsonById(
     queryFn: ({ queryKey: [, , params] }) => {
       return api.getLinesPointsGeojsonById(assertId(params));
     },
-    enabled: options?.isEnabled,
-    keepPreviousData: options?.keepPreviousData,
+    ...getQueryOptions(options),
   });
 }
 
@@ -581,8 +561,7 @@ export function useStories(
     queryFn: ({ queryKey: [, , searchParams] }) => {
       return api.getStories(searchParams);
     },
-    enabled: options?.isEnabled,
-    keepPreviousData: options?.keepPreviousData,
+    ...getQueryOptions(options),
   });
 }
 
@@ -595,8 +574,7 @@ export function useStoryById(
     queryFn: ({ queryKey: [, , params] }) => {
       return api.getStoryById(assertId(params));
     },
-    enabled: options?.isEnabled,
-    keepPreviousData: options?.keepPreviousData,
+    ...getQueryOptions(options),
   });
 }
 
@@ -609,8 +587,7 @@ export function useStorySlides(
     queryFn: ({ queryKey: [, , searchParams] }) => {
       return api.getStorySlides(searchParams);
     },
-    enabled: options?.isEnabled,
-    keepPreviousData: options?.keepPreviousData,
+    ...getQueryOptions(options),
   });
 }
 
@@ -623,8 +600,7 @@ export function useStorySlideById(
     queryFn: ({ queryKey: [, , params] }) => {
       return api.getStorySlideById(assertId(params));
     },
-    enabled: options?.isEnabled,
-    keepPreviousData: options?.keepPreviousData,
+    ...getQueryOptions(options),
   });
 }
 
@@ -637,8 +613,7 @@ export function useSkosCollections(
     queryFn: ({ queryKey: [, , searchParams] }) => {
       return api.getSkosCollections(searchParams);
     },
-    enabled: options?.isEnabled,
-    keepPreviousData: options?.keepPreviousData,
+    ...getQueryOptions(options),
   });
 }
 
@@ -651,8 +626,7 @@ export function useSkosCollectionById(
     queryFn: ({ queryKey: [, , params] }) => {
       return api.getSkosCollectionById(assertId(params));
     },
-    enabled: options?.isEnabled,
-    keepPreviousData: options?.keepPreviousData,
+    ...getQueryOptions(options),
   });
 }
 
@@ -665,8 +639,7 @@ export function useSkosConcepts(
     queryFn: ({ queryKey: [, , searchParams] }) => {
       return api.getSkosConcepts(searchParams);
     },
-    enabled: options?.isEnabled,
-    keepPreviousData: options?.keepPreviousData,
+    ...getQueryOptions(options),
   });
 }
 
@@ -679,8 +652,7 @@ export function useSkosConceptById(
     queryFn: ({ queryKey: [, , params] }) => {
       return api.getSkosConceptById(assertId(params));
     },
-    enabled: options?.isEnabled,
-    keepPreviousData: options?.keepPreviousData,
+    ...getQueryOptions(options),
   });
 }
 
@@ -693,8 +665,7 @@ export function useSkosConceptSchemes(
     queryFn: ({ queryKey: [, , searchParams] }) => {
       return api.getSkosConceptSchemes(searchParams);
     },
-    enabled: options?.isEnabled,
-    keepPreviousData: options?.keepPreviousData,
+    ...getQueryOptions(options),
   });
 }
 
@@ -707,8 +678,7 @@ export function useSkosConceptSchemeById(
     queryFn: ({ queryKey: [, , params] }) => {
       return api.getSkosConceptSchemeById(assertId(params));
     },
-    enabled: options?.isEnabled,
-    keepPreviousData: options?.keepPreviousData,
+    ...getQueryOptions(options),
   });
 }
 
@@ -721,8 +691,7 @@ export function useAuthorsAutoComplete(
     queryFn: ({ queryKey: [, , searchParams] }) => {
       return api.getAuthorsAutoComplete(searchParams);
     },
-    enabled: options?.isEnabled,
-    keepPreviousData: options?.keepPreviousData,
+    ...getQueryOptions(options),
   });
 }
 
@@ -735,8 +704,7 @@ export function useKeywordsAutoComplete(
     queryFn: ({ queryKey: [, , searchParams] }) => {
       return api.getKeywordsAutoComplete(searchParams);
     },
-    enabled: options?.isEnabled,
-    keepPreviousData: options?.keepPreviousData,
+    ...getQueryOptions(options),
   });
 }
 
@@ -749,8 +717,7 @@ export function useRegionKeywordsAutoComplete(
     queryFn: ({ queryKey: [, , searchParams] }) => {
       return api.getRegionKeywordsAutoComplete(searchParams);
     },
-    enabled: options?.isEnabled,
-    keepPreviousData: options?.keepPreviousData,
+    ...getQueryOptions(options),
   });
 }
 
@@ -763,8 +730,7 @@ export function useEthnonymKeywordsAutoComplete(
     queryFn: ({ queryKey: [, , searchParams] }) => {
       return api.getEthnonymKeywordsAutoComplete(searchParams);
     },
-    enabled: options?.isEnabled,
-    keepPreviousData: options?.keepPreviousData,
+    ...getQueryOptions(options),
   });
 }
 
@@ -777,8 +743,7 @@ export function useKeywordKeywordsAutoComplete(
     queryFn: ({ queryKey: [, , searchParams] }) => {
       return api.getKeywordKeywordsAutoComplete(searchParams);
     },
-    enabled: options?.isEnabled,
-    keepPreviousData: options?.keepPreviousData,
+    ...getQueryOptions(options),
   });
 }
 
@@ -791,8 +756,7 @@ export function useNameKeywordsAutoComplete(
     queryFn: ({ queryKey: [, , searchParams] }) => {
       return api.getNameKeywordsAutoComplete(searchParams);
     },
-    enabled: options?.isEnabled,
-    keepPreviousData: options?.keepPreviousData,
+    ...getQueryOptions(options),
   });
 }
 
@@ -805,8 +769,7 @@ export function usePlacesAutoComplete(
     queryFn: ({ queryKey: [, , searchParams] }) => {
       return api.getPlacesAutoComplete(searchParams);
     },
-    enabled: options?.isEnabled,
-    keepPreviousData: options?.keepPreviousData,
+    ...getQueryOptions(options),
   });
 }
 
@@ -819,8 +782,7 @@ export function usePassagesAutoComplete(
     queryFn: ({ queryKey: [, , searchParams] }) => {
       return api.getPassagesAutoComplete(searchParams);
     },
-    enabled: options?.isEnabled,
-    keepPreviousData: options?.keepPreviousData,
+    ...getQueryOptions(options),
   });
 }
 
@@ -833,8 +795,7 @@ export function useTextsAutoComplete(
     queryFn: ({ queryKey: [, , searchParams] }) => {
       return api.getTextsAutoComplete(searchParams);
     },
-    enabled: options?.isEnabled,
-    keepPreviousData: options?.keepPreviousData,
+    ...getQueryOptions(options),
   });
 }
 
@@ -847,8 +808,7 @@ export function useUseCasesAutoComplete(
     queryFn: ({ queryKey: [, , searchParams] }) => {
       return api.getUseCasesAutoComplete(searchParams);
     },
-    enabled: options?.isEnabled,
-    keepPreviousData: options?.keepPreviousData,
+    ...getQueryOptions(options),
   });
 }
 
@@ -861,8 +821,7 @@ export function useTextGenreTypesAutoComplete(
     queryFn: ({ queryKey: [, , searchParams] }) => {
       return api.getTextGenreTypesAutoComplete(searchParams);
     },
-    enabled: options?.isEnabled,
-    keepPreviousData: options?.keepPreviousData,
+    ...getQueryOptions(options),
   });
 }
 
@@ -875,8 +834,7 @@ export function usePlaceTypesAutoComplete(
     queryFn: ({ queryKey: [, , searchParams] }) => {
       return api.getPlaceTypesAutoComplete(searchParams);
     },
-    enabled: options?.isEnabled,
-    keepPreviousData: options?.keepPreviousData,
+    ...getQueryOptions(options),
   });
 }
 
@@ -889,7 +847,6 @@ export function usePlaceCategoriesAutoComplete(
     queryFn: ({ queryKey: [, , searchParams] }) => {
       return api.getPlaceCategoriesAutoComplete(searchParams);
     },
-    enabled: options?.isEnabled,
-    keepPreviousData: options?.keepPreviousData,
+    ...getQueryOptions(options),
   });
 }
