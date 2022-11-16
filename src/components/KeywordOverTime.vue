@@ -7,7 +7,7 @@
 <script>
 import { Chart } from 'highcharts-vue';
 
-export default ({
+export default {
   name: 'OverTime',
   components: { Chart },
   props: ['data'],
@@ -26,10 +26,12 @@ export default ({
         tooltip: {
           // split: true,
           // the only way the right 'this' object is passed to the formatter function
-          // eslint-disable-next-line object-shorthand
+
           formatter: function lel() {
             const endings = ['st', 'nd', 'rd'];
-            return `${this.point.x}${endings[this.point.x - 1] || 'th'} century<br />${this.point.y} occurences`;
+            return `${this.point.x}${endings[this.point.x - 1] || 'th'} century<br />${
+              this.point.y
+            } occurences`;
           },
         },
         legend: {
@@ -55,5 +57,5 @@ export default ({
   mounted() {
     console.log('Over time mounted', this.data);
   },
-});
+};
 </script>

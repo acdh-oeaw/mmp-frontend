@@ -2,8 +2,10 @@
   <v-navigation-drawer permanent fixed right color="#F1F5FA" :width="drawerWidth">
     <v-list-item>
       <v-list-item-action>
-        <router-link :to="{ name: fullscreen ? 'List Fullscreen' : 'List', query: $route.query }"
-          class="text-decoration-none">
+        <router-link
+          :to="{ name: fullscreen ? 'List Fullscreen' : 'List', query: $route.query }"
+          class="text-decoration-none"
+        >
           <v-icon>mdi-close</v-icon>
         </router-link>
       </v-list-item-action>
@@ -28,19 +30,35 @@
             {{ item.key }}
           </td>
           <td v-if="item.key === 'Keywords'">
-            <div class="keyword-chip" v-for="keyword in item.value" :key="keyword.url">
-              <v-chip :color="keyColors.chips[keyword.art]" small
-                @click="$store.commit('addToItemsAndInput', { id: keyword.url.replace(/\D/g, ''), selected_text: keyword.stichwort, group: 'Keyword' })">
+            <div v-for="keyword in item.value" :key="keyword.url" class="keyword-chip">
+              <v-chip
+                :color="keyColors.chips[keyword.art]"
+                small
+                @click="
+                  $store.commit('addToItemsAndInput', {
+                    id: keyword.url.replace(/\D/g, ''),
+                    selected_text: keyword.stichwort,
+                    group: 'Keyword',
+                  })
+                "
+              >
                 {{ keyword.stichwort }}
               </v-chip>
             </div>
           </td>
           <td v-else-if="['Place', 'Author'].includes(item.key)">
-            <router-link v-for="val, i in item.value" :key="val.url" :to="{
+            <router-link
+              v-for="(val, i) in item.value"
+              :key="val.url"
+              :to="{
                 name: fullscreen ? `${item.key} Detail Fullscreen` : `${item.key} Detail`,
-                query: item.key === 'Place' ? addParamsToQuery({ Place: getIdFromUrl(val.url) }) : $route.query,
-                params: { id: getIdFromUrl(val.url) }
-              }">
+                query:
+                  item.key === 'Place'
+                    ? addParamsToQuery({ Place: getIdFromUrl(val.url) })
+                    : $route.query,
+                params: { id: getIdFromUrl(val.url) },
+              }"
+            >
               <span v-if="i != 0">, </span>
               {{ getOptimalName(val) }}
               <v-icon>mdi-chevron-right</v-icon>
@@ -63,6 +81,7 @@ import helpers from '@/helpers';
 
 export default {
   name: 'PassasgeDetail',
+  mixins: [helpers],
   data: () => ({
     headers: [
       { text: 'key', value: 'key' },
@@ -76,11 +95,47 @@ export default {
       author: null,
     },
   }),
-  mixins: [helpers],
+  watch: {
+    '$route.params': {
+      handler(params) {
+        console.log(params);
+        this.loading = true;
+        const address = `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/stelle/${
+          params.id
+        }/?format=json`;
+        const prefetched = this.$store.state.fetchedResults[address];
+
+        if (prefetched) {
+          console.log('prefetched', prefetched);
+          this.addRes(prefetched);
+          this.loading = false;
+        } else {
+          fetch(address)
+            .then((res) => res.json())
+            .then((res) => {
+              console.log(res);
+              this.$store.commit('addToResults', { req: address, res });
+              this.addRes(res);
+            })
+            .catch((err) => {
+              console.error(err);
+            })
+            .finally(() => {
+              this.loading = false;
+            });
+        }
+      },
+      deep: true,
+      immediate: true,
+    },
+  },
   methods: {
     addRes(res) {
       this.title.title = res.text.title;
-      this.title.written = (res.text.start_date || res.text.end_date) ? `${res.text.start_date || 'unknown'} - ${res.text.end_date || 'unknown'}` : 'unknown';
+      this.title.written =
+        res.text.start_date || res.text.end_date
+          ? `${res.text.start_date || 'unknown'} - ${res.text.end_date || 'unknown'}`
+          : 'unknown';
       this.title.author = res.text.autor.map((x) => x.name_en).join(', ');
 
       this.items = [
@@ -129,38 +184,6 @@ export default {
           value: res.kommentar,
         },
       ];
-    },
-  },
-  watch: {
-    '$route.params': {
-      handler(params) {
-        console.log(params);
-        this.loading = true;
-        const address = `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/stelle/${params.id}/?format=json`;
-        const prefetched = this.$store.state.fetchedResults[address];
-
-        if (prefetched) {
-          console.log('prefetched', prefetched);
-          this.addRes(prefetched);
-          this.loading = false;
-        } else {
-          fetch(address)
-            .then((res) => res.json())
-            .then((res) => {
-              console.log(res);
-              this.$store.commit('addToResults', { req: address, res });
-              this.addRes(res);
-            })
-            .catch((err) => {
-              console.error(err);
-            })
-            .finally(() => {
-              this.loading = false;
-            });
-        }
-      },
-      deep: true,
-      immediate: true,
     },
   },
 };

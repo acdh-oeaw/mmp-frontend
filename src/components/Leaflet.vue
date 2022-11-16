@@ -919,7 +919,9 @@ export default {
 
         const study = this.$route.query['Use Case'];
         if (study) {
-          const url = `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/usecase/${study}?format=json`;
+          const url = `${
+            import.meta.env.VITE_APP_MMP_API_BASE_URL
+          }/api/usecase/${study}?format=json`;
           fetch(url)
             .then((res) => res.json())
             .then((jsonRes) => {

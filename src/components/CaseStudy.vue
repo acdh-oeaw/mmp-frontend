@@ -7,52 +7,57 @@
             <v-btn icon plain :to="{ name: 'Studies' }">
               <v-icon>mdi-chevron-left</v-icon>
             </v-btn>
-            CASE STUDY<span v-if="study.principal_investigator">&nbsp;&nbsp;&bull;&nbsp;&nbsp;{{
-            study.principal_investigator }}</span>
+            CASE STUDY<span v-if="study.principal_investigator"
+              >&nbsp;&nbsp;&bull;&nbsp;&nbsp;{{ study.principal_investigator }}</span
+            >
           </p>
           <p class="text-h4">{{ study.title }}</p>
           <p v-if="study.description">{{ study.description }}</p>
           <v-tabs fixed-tabs show-arrows background-color="transparent">
-            <v-tab exact :to="{ query: addParamsToQuery({ tab: 'timeline' })}">
-              Timeline
-            </v-tab>
-            <v-tab exact v-if="study.story_map" :to="{ query: addParamsToQuery({ tab: 'story' })}">
+            <v-tab exact :to="{ query: addParamsToQuery({ tab: 'timeline' }) }"> Timeline </v-tab>
+            <v-tab v-if="study.story_map" exact :to="{ query: addParamsToQuery({ tab: 'story' }) }">
               Story Map
             </v-tab>
-            <v-tab exact :to="{ query: addParamsToQuery({ tab: 'graph' })}">
-              Graph
-            </v-tab>
-            <v-tab exact :to="{ query: addParamsToQuery({ tab: 'map' })}">
-              Map
-            </v-tab>
-            <v-tab exact :to="{ query: addParamsToQuery({ tab: 'cloud' })}">
-              Word Cloud
-            </v-tab>
+            <v-tab exact :to="{ query: addParamsToQuery({ tab: 'graph' }) }"> Graph </v-tab>
+            <v-tab exact :to="{ query: addParamsToQuery({ tab: 'map' }) }"> Map </v-tab>
+            <v-tab exact :to="{ query: addParamsToQuery({ tab: 'cloud' }) }"> Word Cloud </v-tab>
           </v-tabs>
           <br />
           <v-tabs-items :value="$route.query.tab || 'timeline'">
             <v-tab-item value="timeline">
               <v-timeline :dense="$vuetify.breakpoint.mobile">
-                <v-timeline-item v-for="(event, i) in events" :key="`${event.id}&${i}`" large
-                  :icon="getIconFromType(event.ent_type).icon" :color="getIconFromType(event.ent_type).color"
-                  :class="{ 'text-right': i%2 == 1 && !$vuetify.breakpoint.mobile }">
-                  <span class="font-weight-medium" slot="opposite">
+                <v-timeline-item
+                  v-for="(event, i) in events"
+                  :key="`${event.id}&${i}`"
+                  large
+                  :icon="getIconFromType(event.ent_type).icon"
+                  :color="getIconFromType(event.ent_type).color"
+                  :class="{ 'text-right': i % 2 == 1 && !$vuetify.breakpoint.mobile }"
+                >
+                  <span slot="opposite" class="font-weight-medium">
                     {{ renderDates(event.start_date, event.end_date) }}
                   </span>
-                  <span class="font-weight-medium" v-if="$vuetify.breakpoint.mobile">
+                  <span v-if="$vuetify.breakpoint.mobile" class="font-weight-medium">
                     {{ renderDates(event.start_date, event.end_date) }}: <br />
                   </span>
-                  <router-link class="font-weight-medium" v-if="event.ent_type === 'autor'" :to="{
-                    name: 'List',
-                    query: addParamsToQuery({ Author: event.id })
-                  }">
+                  <router-link
+                    v-if="event.ent_type === 'autor'"
+                    class="font-weight-medium"
+                    :to="{
+                      name: 'List',
+                      query: addParamsToQuery({ Author: event.id }),
+                    }"
+                  >
                     {{ event.ent_description }}
                     &nbsp;
                     <v-icon>mdi-chevron-right</v-icon>
                   </router-link>
-                  <span v-else :class="{
-                    'font-weight-medium': event.ent_type != 'event'
-                  }">
+                  <span
+                    v-else
+                    :class="{
+                      'font-weight-medium': event.ent_type != 'event',
+                    }"
+                  >
                     {{ event.ent_description }}
                   </span>
                 </v-timeline-item>
@@ -83,25 +88,59 @@
 </template>
 
 <script>
-/* eslint-disable prefer-destructuring */
+import helpers from '../helpers';
 import Graph from './GraphWrapperBeta';
 import MapWrapper from './MapWrapper';
 import WordCloudWrapper from './WordCloudWrapper';
-import helpers from '../helpers';
 
 export default {
   name: 'Studies',
+  components: {
+    Graph,
+    MapWrapper,
+    WordCloudWrapper,
+  },
   mixins: [helpers],
+  props: ['id'],
   data: () => ({
     study: {},
     events: [],
     loading: true,
   }),
-  props: ['id'],
-  components: {
-    Graph,
-    MapWrapper,
-    WordCloudWrapper,
+  mounted() {
+    const id = this.id || this.$route.params.id;
+
+    const urls = [
+      `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/usecase/${id}?format=json`,
+      `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/archiv/usecase-timetable-data/${id}`,
+    ];
+
+    const prefetched = this.$store.state.fetchedResults[urls.toString()];
+    if (prefetched) {
+      [this.study, this.events] = prefetched;
+    } else {
+      Promise.all(urls.map((x) => fetch(x)))
+        .then((res) => {
+          Promise.all(res.map((x) => x.json()))
+            .then((jsonRes) => {
+              console.log('Study', jsonRes);
+              if (jsonRes[0].story_map)
+                jsonRes[0].story_map = jsonRes[0].story_map.replaceAll('/explore/', '/view/');
+              [this.study, this.events] = jsonRes;
+
+              console.log('route', this.$route);
+            })
+            .catch((err) => {
+              console.error(err);
+            })
+            .finally(() => {
+              this.loading = false;
+            });
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    }
   },
   methods: {
     removeDatesFromTitle(title) {
@@ -131,40 +170,6 @@ export default {
       if (start && end) return `${start} - ${end} A.D.`;
       return `${start || end} A.D.`;
     },
-  },
-  mounted() {
-    const id = this.id || this.$route.params.id;
-
-    const urls = [
-      `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/usecase/${id}?format=json`,
-      `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/archiv/usecase-timetable-data/${id}`,
-    ];
-
-    const prefetched = this.$store.state.fetchedResults[urls.toString()];
-    if (prefetched) {
-      [this.study, this.events] = prefetched;
-    } else {
-      Promise.all(urls.map((x) => fetch(x)))
-        .then((res) => {
-          Promise.all(res.map((x) => x.json()))
-            .then((jsonRes) => {
-              console.log('Study', jsonRes);
-              if (jsonRes[0].story_map) jsonRes[0].story_map = jsonRes[0].story_map.replaceAll('/explore/', '/view/');
-              [this.study, this.events] = jsonRes;
-
-              console.log('route', this.$route);
-            })
-            .catch((err) => {
-              console.error(err);
-            })
-            .finally(() => {
-              this.loading = false;
-            });
-        })
-        .catch((err) => {
-          console.error(err);
-        });
-    }
   },
 };
 </script>

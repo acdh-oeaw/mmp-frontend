@@ -1,8 +1,5 @@
 <template>
-  <v-card
-    color="transparent"
-    width="100%"
-  >
+  <v-card color="transparent" width="100%">
     <leaflet :data="entries" :loading="loading" :usecase="usecase" />
     <!-- <div v-for="(feature, i) in featureList">
       <div
@@ -20,7 +17,7 @@
         <data-table :data="feature.properties.stelle" />
       </div>
     </div> -->
-  <router-view />
+    <router-view />
   </v-card>
 </template>
 
@@ -28,17 +25,11 @@
 import Leaflet from './Leaflet';
 
 export default {
-  name: 'Map',
+  name: 'MapWrapper',
   components: {
     Leaflet,
   },
-  props: [
-    'passage',
-    'author',
-    'keyword',
-    'place',
-    'usecase',
-  ],
+  props: ['passage', 'author', 'keyword', 'place', 'usecase'],
   data: () => ({
     entries: [],
     loading: false,
@@ -60,13 +51,7 @@ export default {
           // Place: 'unused',
         };
 
-        const props = [
-          this.author,
-          this.passage,
-          this.keyword,
-          this.usecase,
-          this.place,
-        ];
+        const props = [this.author, this.passage, this.keyword, this.usecase, this.place];
 
         console.log('map props', props);
 
@@ -75,12 +60,17 @@ export default {
           props.forEach((prop, i) => {
             if (prop && prop !== '0') {
               console.debug('map prop', prop);
-              if (i === 4) { // place
+              if (i === 4) {
+                // place
                 if (JSON.stringify(urls) === JSON.stringify(blankUrls)) {
                   // prevents fetching every coverage if no other filters are applied
                   urls = urls.map((x) => `${x}&id=0`);
                 }
-                urls.push(`${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/ort-geojson/?format=json&ids=${prop}`);
+                urls.push(
+                  `${
+                    import.meta.env.VITE_APP_MMP_API_BASE_URL
+                  }/api/ort-geojson/?format=json&ids=${prop}`
+                );
               } else {
                 urls = urls.map((url) => `${url}&${Object.values(terms)[i]}=${prop}`);
               }
@@ -97,14 +87,28 @@ export default {
           });
 
           if (query.time) {
-            const startKey = this.$store.state.slider === 'passage' ? 'stelle__start_date' : 'stelle__text__not_before';
-            const endKey = this.$store.state.slider === 'passage' ? 'stelle__end_date' : 'stelle__text__not_after';
+            const startKey =
+              this.$store.state.slider === 'passage'
+                ? 'stelle__start_date'
+                : 'stelle__text__not_before';
+            const endKey =
+              this.$store.state.slider === 'passage'
+                ? 'stelle__end_date'
+                : 'stelle__text__not_after';
 
             if (query.time.toString().includes('+')) {
               const times = query.time.split('+');
-              urls = urls.map((url) => `${url}&${startKey}=${times[0]}&${startKey}_lookup=gt&${endKey}=${times[1]}&${endKey}_lookup=lt`);
+              urls = urls.map(
+                (url) =>
+                  `${url}&${startKey}=${times[0]}&${startKey}_lookup=gt&${endKey}=${times[1]}&${endKey}_lookup=lt`
+              );
             } else {
-              urls = urls.map((url) => `${url}&${startKey}=${query.time - 5}&${startKey}_lookup=gt&${endKey}=${query.time + 4}&${endKey}_lookup=g`);
+              urls = urls.map(
+                (url) =>
+                  `${url}&${startKey}=${query.time - 5}&${startKey}_lookup=gt&${endKey}=${
+                    query.time + 4
+                  }&${endKey}_lookup=g`
+              );
             }
           }
           if (query.Place) {
@@ -113,8 +117,13 @@ export default {
               // prevents fetching every coverage if no other filters are applied
               urls = urls.map((x) => `${x}&id=0`);
             }
-            urls.push(`${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/ort-geojson/?format=json&ids=${query.Place.split('+').join(',')}`);
-          } else urls.push(`${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/ort/?format=json&id=0`);
+            urls.push(
+              `${
+                import.meta.env.VITE_APP_MMP_API_BASE_URL
+              }/api/ort-geojson/?format=json&ids=${query.Place.split('+').join(',')}`
+            );
+          } else
+            urls.push(`${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/ort/?format=json&id=0`);
         }
 
         console.log('map urls', urls);
