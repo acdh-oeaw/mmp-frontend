@@ -1,8 +1,5 @@
 <template>
   <v-card color="transparent" width="100%" flat>
-    {{
-      [...new Set(items.map((item) => item.key_word.map((keyword) => keyword.stichwort)).flat(1))]
-    }}
     <v-data-table
       :items="items"
       :headers="headers"
