@@ -1426,7 +1426,7 @@ export function getKeywordByCenturyById(
 }
 
 export namespace GetKeywordGraph {
-  export type SearchParams = GetKeywords.SearchParams;
+  export type SearchParams = GetPassages.SearchParams;
   export type Response = {
     nodes: Array<{
       id: Keyword['id'];
@@ -1467,7 +1467,7 @@ export function getKeywordGraph(
 ): Promise<GetKeywordGraph.Response> {
   const url = createUrl({
     baseUrl: baseUrls.archiv,
-    pathname: 'keyword-data/',
+    pathname: 'keyword-network/',
     searchParams,
   });
   return request(url, options);
