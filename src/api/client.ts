@@ -1426,7 +1426,7 @@ export function getKeywordByCenturyById(
 }
 
 export namespace GetKeywordGraph {
-  export type SearchParams = GetKeywords.SearchParams;
+  export type SearchParams = GetPassages.SearchParams;
   export type Response = {
     nodes: Array<{
       id: Keyword['id'];
