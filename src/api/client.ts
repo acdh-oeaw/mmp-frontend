@@ -1467,7 +1467,7 @@ export function getKeywordGraph(
 ): Promise<GetKeywordGraph.Response> {
   const url = createUrl({
     baseUrl: baseUrls.archiv,
-    pathname: 'keyword-data/',
+    pathname: 'keyword-network/',
     searchParams,
   });
   return request(url, options);
