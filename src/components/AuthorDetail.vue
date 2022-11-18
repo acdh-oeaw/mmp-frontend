@@ -30,7 +30,7 @@
     </v-list-item>
     <v-divider />
     <v-container>
-      <div class="keyword-chip" v-for="keyword in keywords.results" :key="keyword.id">
+      <div v-for="keyword in keywords.results" :key="keyword.id" class="keyword-chip">
         <v-chip
           :color="keyColors.chips[keyword.art]"
           small
@@ -49,7 +49,7 @@
         <v-expansion-panel :disabled="!loading && !usecases.count">
           <v-expansion-panel-header>
             Use Cases
-            <template v-slot:actions>
+            <template #actions>
               <v-chip small :disabled="!usecases.count" color="amber lighten-3">{{
                 usecases.count
               }}</v-chip>
@@ -60,8 +60,8 @@
             <v-list v-if="!loading">
               <v-list-item
                 v-for="usecase in usecases.results"
-                three-line
                 :key="usecase.id"
+                three-line
                 :to="{
                   name: 'Case Study',
                   params: { id: usecase.id },
@@ -98,7 +98,7 @@
         <v-expansion-panel :disabled="!loading && !passages.count">
           <v-expansion-panel-header>
             Passages
-            <template v-slot:actions>
+            <template #actions>
               <v-chip small :disabled="!passages.count" color="teal lighten-4">{{
                 passages.count
               }}</v-chip>
@@ -109,8 +109,8 @@
             <v-list v-if="!loading">
               <v-list-item
                 v-for="passage in passages.results"
-                three-line
                 :key="passage.id"
+                three-line
                 :to="{
                   name: fullscreen ? 'Passage Detail Fullscreen' : 'Passage Detail',
                   query: addParamsToQuery({ Passage: passage.id }),
@@ -154,6 +154,7 @@ import helpers from '@/helpers';
 
 export default {
   name: 'AuthorDetail',
+  mixins: [helpers],
   data: () => ({
     loading: true,
     data: {},
@@ -161,7 +162,6 @@ export default {
     passages: [],
     keywords: {},
   }),
-  mixins: [helpers],
   watch: {
     '$route.params': {
       handler(params) {

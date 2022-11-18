@@ -15,19 +15,19 @@
     <visualization
       id="visId"
       :graph="weightedGraph"
-      :onNodeClick="nodeClick"
-      :onNodeDragEnd="nodeDragEnd"
-      :nodeCanvasObject="nodeObject"
-      :nodePointerAreaPaint="areaPaint"
-      :nodeCanvasObjectMode="() => 'replace'"
+      :on-node-click="nodeClick"
+      :on-node-drag-end="nodeDragEnd"
+      :node-canvas-object="nodeObject"
+      :node-pointer-area-paint="areaPaint"
+      :node-canvas-object-mode="() => 'replace'"
       :height="fullscreen ? undefined : '500'"
-      :zoomToFit="zoomToFit"
-      :linkDirectionalArrowLength="1.3"
+      :zoom-to-fit="zoomToFit"
+      :link-directional-arrow-length="1.3"
       :refresh="renderKey"
-      :autoPauseRedraw="false"
-      :nodeRelSize="4"
-      :forceCenter="() => null"
-      :forceLink="linkForces"
+      :auto-pause-redraw="false"
+      :node-rel-size="4"
+      :force-center="() => null"
+      :force-link="linkForces"
     />
     <router-view />
     <v-speed-dial
@@ -38,39 +38,39 @@
       direction="bottom"
       transition="slide-y-transition"
     >
-      <template v-slot:activator>
+      <template #activator>
         <v-btn v-model="fab.download" icon small>
           <v-icon v-if="fab.download"> mdi-close </v-icon>
           <v-icon v-else> mdi-tray-arrow-down </v-icon>
         </v-btn>
       </template>
       <v-tooltip left transition="slide-x-reverse-transition">
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn fab small @click="getCanvasData" v-bind="attrs" v-on="on">
+        <template #activator="{ on, attrs }">
+          <v-btn fab small v-bind="attrs" @click="getCanvasData" v-on="on">
             <v-icon>mdi-image</v-icon>
           </v-btn>
         </template>
         <span>Download canvas as .png</span>
       </v-tooltip>
       <v-tooltip left transition="slide-x-reverse-transition">
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn fab small @click="getJsonData" v-bind="attrs" v-on="on">
+        <template #activator="{ on, attrs }">
+          <v-btn fab small v-bind="attrs" @click="getJsonData" v-on="on">
             <v-icon>mdi-code-json</v-icon>
           </v-btn>
         </template>
         <span>Download node data as .json</span>
       </v-tooltip>
       <v-tooltip left transition="slide-x-reverse-transition">
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn fab small @click="getTextData" v-bind="attrs" v-on="on">
+        <template #activator="{ on, attrs }">
+          <v-btn fab small v-bind="attrs" @click="getTextData" v-on="on">
             <v-icon>mdi-text-box</v-icon>
           </v-btn>
         </template>
         <span>Download node data as .txt</span>
       </v-tooltip>
       <v-tooltip left transition="slide-x-reverse-transition">
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn fab small @click="getCsvData" v-bind="attrs" v-on="on">
+        <template #activator="{ on, attrs }">
+          <v-btn fab small v-bind="attrs" @click="getCsvData" v-on="on">
             <v-icon>mdi-file-delimited-outline</v-icon>
           </v-btn>
         </template>
@@ -86,15 +86,15 @@
       direction="bottom"
       transition="slide-y-transition"
     >
-      <template v-slot:activator>
+      <template #activator>
         <v-btn v-model="fab.control" icon small>
           <v-icon v-if="fab.control"> mdi-close </v-icon>
           <v-icon v-else> mdi-dots-vertical </v-icon>
         </v-btn>
       </template>
       <v-tooltip right transition="slide-x-transition">
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn fab small @click.stop="paused = !paused" v-bind="attrs" v-on="on">
+        <template #activator="{ on, attrs }">
+          <v-btn fab small v-bind="attrs" @click.stop="paused = !paused" v-on="on">
             <v-icon v-if="!paused">mdi-pause</v-icon>
             <v-icon v-else>mdi-play</v-icon>
           </v-btn>
@@ -102,16 +102,16 @@
         <span>{{ paused ? 'Unp' : 'P' /* hehehehe*/ }}ause Simulation</span>
       </v-tooltip>
       <v-tooltip right transition="slide-x-transition">
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn fab small @click.stop="zoomToFit = !zoomToFit" v-bind="attrs" v-on="on">
+        <template #activator="{ on, attrs }">
+          <v-btn fab small v-bind="attrs" @click.stop="zoomToFit = !zoomToFit" v-on="on">
             <v-icon>mdi-fit-to-screen-outline</v-icon>
           </v-btn>
         </template>
         <span>Fit Nodes to Screen</span>
       </v-tooltip>
       <v-tooltip right transition="slide-x-transition">
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn fab small @click.stop="refresh" v-bind="attrs" v-on="on">
+        <template #activator="{ on, attrs }">
+          <v-btn fab small v-bind="attrs" @click.stop="refresh" v-on="on">
             <v-icon>mdi-pin-off</v-icon>
           </v-btn>
         </template>
@@ -135,9 +135,11 @@
 </template>
 <script>
 import { forceLink } from 'd3';
+
 import helpers from '@/helpers';
-import Visualization from './Visualization2D';
+
 import FullscreenButton from './FullscreenButton';
+import Visualization from './Visualization2D';
 
 export default {
   name: 'NetworkGraphBeta',
@@ -145,6 +147,8 @@ export default {
     Visualization,
     FullscreenButton,
   },
+  mixins: [helpers],
+  props: ['usecase', 'keyword', 'passage', 'author', 'place'],
   data: () => ({
     fab: {
       download: false,
@@ -164,182 +168,6 @@ export default {
     zoomToFit: true,
     selectedAuthors: [],
   }),
-  props: ['usecase', 'keyword', 'passage', 'author', 'place'],
-  mixins: [helpers],
-  methods: {
-    getCanvasData() {
-      const link = document.createElement('a');
-      link.download = 'graph.png';
-      link.href = document.getElementById('visId').getElementsByTagName('canvas')[0].toDataURL();
-      link.click();
-      link.remove();
-    },
-    getJsonData() {
-      const link = document.createElement('a');
-      link.download = 'graph.json';
-      link.href = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(this.graph))}`;
-      link.click();
-      link.remove();
-    },
-    getCsvData() {
-      let csvContent = 'ID,Keyword,Authors,Type,Sources,Targets\r\n';
-      const toCsv = this.weightedGraph.nodes.map((node) => {
-        const csvObj = {
-          ID: this.getIdFromUrl(node.id),
-          Keyword: node.label.replace(',', ''),
-          Authors: [],
-          Type: node.keyword_type,
-          Sources: [],
-          Targets: [],
-        };
-        if (!node.keyword_type.includes('author')) {
-          this.weightedGraph.edges.forEach((edge) => {
-            if (edge.source.id === node.id) csvObj.Targets.push(this.removeRoot(edge.target.label));
-            else if (edge.target.id === node.id) {
-              if (edge.source.keyword_type === 'Author') csvObj.Authors.push(edge.source.label);
-              else csvObj.Sources.push(this.removeRoot(edge.source.label));
-            }
-          });
-        }
-        csvObj.Targets = [...new Set(csvObj.Targets)].join('/');
-        csvObj.Sources = [...new Set(csvObj.Sources)].join('/');
-        csvObj.Authors = [...new Set(csvObj.Authors)].join('/');
-        return csvObj;
-      });
-
-      toCsv.forEach((node) => {
-        csvContent += `${Object.values(node).join(',')}\r\n`;
-      });
-
-      const link = document.createElement('a');
-      link.download = 'graph.csv';
-      link.href = `data:text/csv;charset=utf-8,${csvContent}`;
-      link.click();
-      link.remove();
-    },
-    getTextData() {
-      const list = this.styledNodes.nodes;
-      const ret = {};
-      list.forEach((node) => {
-        if (ret[node.keyword_type]) ret[node.keyword_type].push(node.label);
-        else ret[node.keyword_type] = [node.label];
-      });
-
-      let retString = '';
-      Object.entries(ret).forEach(([type, labels]) => {
-        retString += `${type}s:\n`;
-        retString += labels.join(',\n');
-        retString += '\n\n';
-      });
-
-      const link = document.createElement('a');
-      link.download = 'graph.txt';
-      link.href = `data:attachment/text,${encodeURI(retString)}`;
-      link.click();
-      link.remove();
-    },
-    nodeObject(node, ctx, globalScale) {
-      ctx.beginPath();
-      const label = this.removeRoot(node.label);
-
-      const fontSize = ((Math.log2(node.conns) || 1) + 18) / globalScale;
-      ctx.font = `${fontSize}px Roboto, Sans-Serif`;
-
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-
-      let typeColor = this.keyColors.graph[node.keyword_type] || 'grey';
-      if (!node.isConnected && node.keyword_type !== 'Author')
-        typeColor = this.lightenColor(typeColor, 0.3);
-
-      if (this.$route.params.id?.toString(10).split('+').includes(node.id.replace(/\D/g, ''))) {
-        ctx.shadowColor = typeColor;
-        ctx.shadowBlur = 15;
-        ctx.fillStyle = '#F1F5FA';
-        ctx.strokeStyle = typeColor;
-        ctx.lineWidth = 2 / globalScale;
-      } else {
-        ctx.fillStyle = typeColor;
-        ctx.strokeStyle = node.isConnected ? '#F1F5FA' : this.lightenColor('#F1F5FA', 0.3);
-        ctx.lineWidth = 1.7 / globalScale;
-      }
-
-      ctx.strokeText(label, node.x, node.y);
-      ctx.fillText(label, node.x, node.y);
-
-      ctx.shadowBlur = 0;
-
-      node.area = [ctx.measureText(label).width, fontSize].map((n) => n + fontSize * 0.2); // for areapaint
-    },
-    areaPaint(node, color, ctx) {
-      ctx.fillStyle = color;
-      const bckgDimensions = node.area;
-      return (
-        bckgDimensions &&
-        ctx.fillRect(
-          node.x - bckgDimensions[0] / 2,
-          node.y - bckgDimensions[1] / 2,
-          ...bckgDimensions
-        )
-      );
-    },
-    nodeClick(node) {
-      console.log('node clicked', node);
-
-      // const q = node.detail_view_url.replace(/\D/g, '');
-
-      // code for implementing multiple selected nodes
-      let q = this.$route.params.id;
-      const id = node.id.replace(/[^0-9]/g, '');
-      console.log('q', q, 'id', id);
-      // add or remove specific node from query
-      if (q && !this.usecase) {
-        q = q.split('+');
-        if (q.includes(id)) q = q.filter((x) => x !== id);
-        else q.push(id);
-        q = q.join('+');
-      } else q = id;
-
-      if (q) {
-        if (node.type === 'Author') {
-          this.$router.push({
-            name: this.fullscreen
-              ? 'Compare Authors Author Detail Fullscreen'
-              : 'Compare Authors Author Detail',
-            params: { id: q },
-            query: this.usecase ? { 'Use Case': this.usecase } : this.$route.query,
-          });
-        } else {
-          this.$router.push({
-            name: this.fullscreen ? 'Compare Authors Detail Fullscreen' : 'Compare Authors Detail',
-            params: { id: q },
-            query: this.usecase ? { 'Use Case': this.usecase } : this.$route.query,
-          });
-        }
-      } else {
-        this.$router.push({
-          name: this.fullscreen ? 'Compare Authors Detail Fullscreen' : 'Compare Authors Detail',
-          query: this.$route.query,
-        });
-      }
-    },
-    nodeDragEnd(node, translate) {
-      console.log('nodeDrag', node, translate);
-      node.fx = node.x;
-      node.fy = node.y;
-    },
-    refresh() {
-      this.graph.nodes.forEach((node) => {
-        node.fx = undefined;
-        node.fy = undefined;
-      });
-      this.renderKey += 1;
-      console.log('nodes unpinned', this.renderKey);
-    },
-    linkForces() {
-      return forceLink().strength((link) => (link.source.id.includes('author') ? 0.2 : 0));
-    },
-  },
   computed: {
     nodeCount() {
       return this.graph?.nodes?.length;
@@ -540,19 +368,195 @@ export default {
       immediate: true,
     },
   },
+  methods: {
+    getCanvasData() {
+      const link = document.createElement('a');
+      link.download = 'graph.png';
+      link.href = document.getElementById('visId').getElementsByTagName('canvas')[0].toDataURL();
+      link.click();
+      link.remove();
+    },
+    getJsonData() {
+      const link = document.createElement('a');
+      link.download = 'graph.json';
+      link.href = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(this.graph))}`;
+      link.click();
+      link.remove();
+    },
+    getCsvData() {
+      let csvContent = 'ID,Keyword,Authors,Type,Sources,Targets\r\n';
+      const toCsv = this.weightedGraph.nodes.map((node) => {
+        const csvObj = {
+          ID: this.getIdFromUrl(node.id),
+          Keyword: node.label.replace(',', ''),
+          Authors: [],
+          Type: node.keyword_type,
+          Sources: [],
+          Targets: [],
+        };
+        if (!node.keyword_type.includes('author')) {
+          this.weightedGraph.edges.forEach((edge) => {
+            if (edge.source.id === node.id) csvObj.Targets.push(this.removeRoot(edge.target.label));
+            else if (edge.target.id === node.id) {
+              if (edge.source.keyword_type === 'Author') csvObj.Authors.push(edge.source.label);
+              else csvObj.Sources.push(this.removeRoot(edge.source.label));
+            }
+          });
+        }
+        csvObj.Targets = [...new Set(csvObj.Targets)].join('/');
+        csvObj.Sources = [...new Set(csvObj.Sources)].join('/');
+        csvObj.Authors = [...new Set(csvObj.Authors)].join('/');
+        return csvObj;
+      });
+
+      toCsv.forEach((node) => {
+        csvContent += `${Object.values(node).join(',')}\r\n`;
+      });
+
+      const link = document.createElement('a');
+      link.download = 'graph.csv';
+      link.href = `data:text/csv;charset=utf-8,${csvContent}`;
+      link.click();
+      link.remove();
+    },
+    getTextData() {
+      const list = this.styledNodes.nodes;
+      const ret = {};
+      list.forEach((node) => {
+        if (ret[node.keyword_type]) ret[node.keyword_type].push(node.label);
+        else ret[node.keyword_type] = [node.label];
+      });
+
+      let retString = '';
+      Object.entries(ret).forEach(([type, labels]) => {
+        retString += `${type}s:\n`;
+        retString += labels.join(',\n');
+        retString += '\n\n';
+      });
+
+      const link = document.createElement('a');
+      link.download = 'graph.txt';
+      link.href = `data:attachment/text,${encodeURI(retString)}`;
+      link.click();
+      link.remove();
+    },
+    nodeObject(node, ctx, globalScale) {
+      ctx.beginPath();
+      const label = this.removeRoot(node.label);
+
+      const fontSize = ((Math.log2(node.conns) || 1) + 18) / globalScale;
+      ctx.font = `${fontSize}px Roboto, Sans-Serif`;
+
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+
+      let typeColor = this.keyColors.graph[node.keyword_type] || 'grey';
+      if (!node.isConnected && node.keyword_type !== 'Author')
+        typeColor = this.lightenColor(typeColor, 0.3);
+
+      if (this.$route.params.id?.toString(10).split('+').includes(node.id.replace(/\D/g, ''))) {
+        ctx.shadowColor = typeColor;
+        ctx.shadowBlur = 15;
+        ctx.fillStyle = '#F1F5FA';
+        ctx.strokeStyle = typeColor;
+        ctx.lineWidth = 2 / globalScale;
+      } else {
+        ctx.fillStyle = typeColor;
+        ctx.strokeStyle = node.isConnected ? '#F1F5FA' : this.lightenColor('#F1F5FA', 0.3);
+        ctx.lineWidth = 1.7 / globalScale;
+      }
+
+      ctx.strokeText(label, node.x, node.y);
+      ctx.fillText(label, node.x, node.y);
+
+      ctx.shadowBlur = 0;
+
+      node.area = [ctx.measureText(label).width, fontSize].map((n) => n + fontSize * 0.2); // for areapaint
+    },
+    areaPaint(node, color, ctx) {
+      ctx.fillStyle = color;
+      const bckgDimensions = node.area;
+      return (
+        bckgDimensions &&
+        ctx.fillRect(
+          node.x - bckgDimensions[0] / 2,
+          node.y - bckgDimensions[1] / 2,
+          ...bckgDimensions
+        )
+      );
+    },
+    nodeClick(node) {
+      console.log('node clicked', node);
+
+      // const q = node.detail_view_url.replace(/\D/g, '');
+
+      // code for implementing multiple selected nodes
+      let q = this.$route.params.id;
+      const id = node.id.replace(/[^0-9]/g, '');
+      console.log('q', q, 'id', id);
+      // add or remove specific node from query
+      if (q && !this.usecase) {
+        q = q.split('+');
+        if (q.includes(id)) q = q.filter((x) => x !== id);
+        else q.push(id);
+        q = q.join('+');
+      } else q = id;
+
+      if (q) {
+        if (node.type === 'Author') {
+          this.$router.push({
+            name: this.fullscreen
+              ? 'Compare Authors Author Detail Fullscreen'
+              : 'Compare Authors Author Detail',
+            params: { id: q },
+            query: this.usecase ? { 'Use Case': this.usecase } : this.$route.query,
+          });
+        } else {
+          this.$router.push({
+            name: this.fullscreen ? 'Compare Authors Detail Fullscreen' : 'Compare Authors Detail',
+            params: { id: q },
+            query: this.usecase ? { 'Use Case': this.usecase } : this.$route.query,
+          });
+        }
+      } else {
+        this.$router.push({
+          name: this.fullscreen ? 'Compare Authors Detail Fullscreen' : 'Compare Authors Detail',
+          query: this.$route.query,
+        });
+      }
+    },
+    nodeDragEnd(node, translate) {
+      console.log('nodeDrag', node, translate);
+      node.fx = node.x;
+      node.fy = node.y;
+    },
+    refresh() {
+      this.graph.nodes.forEach((node) => {
+        node.fx = undefined;
+        node.fy = undefined;
+      });
+      this.renderKey += 1;
+      console.log('nodes unpinned', this.renderKey);
+    },
+    linkForces() {
+      return forceLink().strength((link) => (link.source.id.includes('author') ? 0.2 : 0));
+    },
+  },
 };
 </script>
 
 <style lang="css">
 .no-nodes {
-  color: rgba(0, 0, 0, 0.87);
+  color: rgb(0 0 0 / 87%);
 }
+
 .legend {
   width: min-content;
   position: absolute;
   bottom: 0;
 }
+
 div.v-input--selection-controls__input {
-  height: 0px;
+  height: 0;
 }
 </style>

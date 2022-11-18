@@ -7,8 +7,8 @@ g
           v-model="passage"
           label="Passage"
           type="number"
-          @change="renderKey += 1"
           min="0"
+          @change="renderKey += 1"
         />
       </v-col>
       <v-col>
@@ -16,8 +16,8 @@ g
           v-model="place"
           label="Place"
           type="number"
-          @change="renderKey += 1"
           min="0"
+          @change="renderKey += 1"
         />
       </v-col>
       <v-col>
@@ -25,8 +25,8 @@ g
           v-model="keyword"
           label="Keyword"
           type="number"
-          @change="renderKey += 1"
           min="0"
+          @change="renderKey += 1"
         />
       </v-col>
       <v-col>
@@ -34,8 +34,8 @@ g
           v-model="usecase"
           label="Use Case"
           type="number"
-          @change="renderKey += 1"
           min="0"
+          @change="renderKey += 1"
         />
       </v-col>
       <v-col>
@@ -43,8 +43,8 @@ g
           v-model="author"
           label="Author"
           type="number"
-          @change="renderKey += 1"
           min="0"
+          @change="renderKey += 1"
         />
       </v-col>
     </v-row>
@@ -99,13 +99,19 @@ g
   </v-container>
 </template>
 <script>
-import WordCloudWrapper from './WordCloudWrapper';
-import List from './List';
 import Graph from './GraphWrapperBeta';
+import List from './List';
 import MapWrapper from './MapWrapper';
+import WordCloudWrapper from './WordCloudWrapper';
 
 export default {
   name: 'Debug',
+  components: {
+    WordCloudWrapper,
+    List,
+    Graph,
+    MapWrapper,
+  },
   data: () => ({
     passage: 0,
     place: 0,
@@ -120,11 +126,5 @@ export default {
     },
     renderKey: 0,
   }),
-  components: {
-    WordCloudWrapper,
-    List,
-    Graph,
-    MapWrapper,
-  },
 };
 </script>

@@ -14,15 +14,15 @@
               :server-items-length="tab.pagination.count || 50"
               disable-sort
               disable-filtering
-              @update:page="updateOffset($event, i)"
-              @update:items-per-page="updateLimit($event, i)"
               :footer-props="{ 'items-per-page-options': [10, 20, 50, 100, 1000, -1] }"
               class="data-table"
+              @update:page="updateOffset($event, i)"
+              @update:items-per-page="updateLimit($event, i)"
             >
-              <template v-slot:item.id="{ item }">
+              <template #item.id="{ item }">
                 {{ item.id }}
               </template>
-              <template v-slot:item.name="{ item }">
+              <template #item.name="{ item }">
                 <v-chip
                   v-if="'gnd_id' in item"
                   :to="{ name: 'List', query: addParamsToQuery({ Author: item.id }) }"
@@ -38,12 +38,12 @@
                   {{ item.name }}&nbsp;<v-icon>mdi-chevron-right</v-icon>
                 </v-chip>
               </template>
-              <template v-slot:item.zitat="{ item }">
+              <template #item.zitat="{ item }">
                 <router-link :to="{ name: 'List', query: addParamsToQuery({ Passage: item.id }) }">
                   <b> {{ item.zitat }}&nbsp;<v-icon>mdi-chevron-right</v-icon> </b>
                 </router-link>
               </template>
-              <template v-slot:item.stichwort="{ item }">
+              <template #item.stichwort="{ item }">
                 <v-chip
                   :to="{ name: 'List', query: addParamsToQuery({ Keyword: item.id }) }"
                   color="blue lighten-4"
@@ -51,27 +51,27 @@
                   {{ item.stichwort }}&nbsp;<v-icon>mdi-chevron-right</v-icon>
                 </v-chip>
               </template>
-              <template v-slot:item.title="{ item }">
+              <template #item.title="{ item }">
                 <router-link
                   :to="{ name: 'Case Study', params: { id: item.id, query: $route.query } }"
                 >
                   <b> {{ item.title }}&nbsp;<v-icon>mdi-chevron-right</v-icon> </b>
                 </router-link>
               </template>
-              <template v-slot:item.complete="{ item }">
+              <template #item.complete="{ item }">
                 <v-icon v-if="$store.state.completeKeywords.includes(item.id)">
                   mdi-check-outline</v-icon
                 >
               </template>
-              <template v-slot:top>
+              <template #top>
                 <v-container>
                   <v-text-field
                     v-model="tabs[i].filter"
-                    @input="fetchEntities(i)"
                     append-icon="mdi-magnify"
                     label="Search"
                     single-line
                     hide-details
+                    @input="fetchEntities(i)"
                   />
                 </v-container>
               </template>
@@ -182,6 +182,14 @@ export default {
       },
     ],
   }),
+  watch: {
+    active: {
+      handler(val) {
+        this.fetchEntities(val);
+      },
+      immediate: true,
+    },
+  },
   methods: {
     fetchEntities(tabIndex) {
       this.tabs[tabIndex].loading = true;
@@ -217,14 +225,6 @@ export default {
     updateOffset(page, tabIndex) {
       this.tabs[tabIndex].pagination.offset = (page - 1) * this.tabs[tabIndex].pagination.limit;
       this.fetchEntities(tabIndex);
-    },
-  },
-  watch: {
-    active: {
-      handler(val) {
-        this.fetchEntities(val);
-      },
-      immediate: true,
     },
   },
 };

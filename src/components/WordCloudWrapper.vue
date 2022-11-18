@@ -1,7 +1,7 @@
 <template>
   <v-card width="100%" color="transparent" :height="fullscreen ? 'calc(100vh - 4px)' : 500">
     <v-overlay absolute opacity=".2" :value="loading">
-      <h1 class="no-nodes" v-if="loading">
+      <h1 v-if="loading" class="no-nodes">
         <v-progress-circular indeterminate color="#0F1226" />
       </h1>
       <h1 v-else class="no-nodes">No words found!</h1>
@@ -34,7 +34,7 @@
     </v-row>
     <v-navigation-drawer v-model="drawer" absolute right>
       <v-card :min-height="fullscreen ? 'calc(100vh - 4px)' : 498">
-        <v-btn absolute top right icon @click="drawer = false" style="z-index: 100">
+        <v-btn absolute top right icon style="z-index: 100" @click="drawer = false">
           <v-icon>mdi-close</v-icon>
         </v-btn>
         <v-card-text>
@@ -59,7 +59,7 @@
             >
               <v-expansion-panel-header>
                 {{ title }}
-                <template v-slot:actions>
+                <template #actions>
                   <v-chip small>{{ words[1 - i] ? words[1 - i].length : 0 }}</v-chip>
                   <v-icon> $expand </v-icon>
                 </template>
@@ -93,23 +93,23 @@
       direction="bottom"
       transition="slide-y-transition"
     >
-      <template v-slot:activator>
+      <template #activator>
         <v-btn v-model="speeddial" icon small>
           <v-icon v-if="speeddial"> mdi-close </v-icon>
           <v-icon v-else> mdi-dots-vertical </v-icon>
         </v-btn>
       </template>
       <v-tooltip right transition="slide-x-transition">
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn fab small @click="type = 'cloud'" v-bind="attrs" v-on="on">
+        <template #activator="{ on, attrs }">
+          <v-btn fab small v-bind="attrs" @click="type = 'cloud'" v-on="on">
             <v-icon>mdi-cloud</v-icon>
           </v-btn>
         </template>
         <span>Word Cloud</span>
       </v-tooltip>
       <v-tooltip right transition="slide-x-transition">
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn fab small @click="type = 'pie'" v-bind="attrs" v-on="on">
+        <template #activator="{ on, attrs }">
+          <v-btn fab small v-bind="attrs" @click="type = 'pie'" v-on="on">
             <v-icon>mdi-chart-pie</v-icon>
           </v-btn>
         </template>
@@ -122,9 +122,10 @@
 import Gradient from 'javascript-color-gradient';
 
 import helpers from '@/helpers';
+
+import FullscreenButton from './FullscreenButton';
 import PieChart from './PieChart';
 import WordCloudBeta from './WordCloudBeta';
-import FullscreenButton from './FullscreenButton';
 
 export default {
   name: 'WordCloudWrapper',
@@ -134,6 +135,7 @@ export default {
     PieChart,
     WordCloudBeta,
   },
+  mixins: [helpers],
   props: ['usecase', 'keyword', 'author', 'passage', 'place', 'height'],
   data: () => ({
     avgProgress: 0,
@@ -152,60 +154,6 @@ export default {
     type: 'cloud',
     words: [[], []],
   }),
-  mixins: [helpers],
-  methods: {
-    colorWords(word) {
-      const colors = ['#a91a1a', '#3a8d86', '#0c76ce', '#c09000', '#3b823e'];
-      const colorGradient = new Gradient();
-      colorGradient.setGradient(...colors);
-
-      colorGradient.setMidpoint(20);
-      // console.log(colorGradient.getArray());
-
-      return colorGradient.getColor(Math.floor((20 * word[1]) / this.maxOccurence));
-    },
-    crossRotate(word) {
-      if ([this.words[0][0][0], this.words[1][0][0]].includes(word[0])) {
-        return 0; // ensures the first word is always horizontal
-      }
-      switch (Math.floor(Math.random() * 4)) {
-        case 2:
-          return 0.25;
-        case 3:
-          return -0.25;
-        default:
-          return 0;
-      }
-    },
-    handleRes(res) {
-      console.log('word cloud res', res);
-      const words = [
-        Object.entries(res[0].token_dict),
-        res[1].token_dict.map((x) => Object.entries(x)[0]),
-      ];
-
-      console.log('words', words);
-      this.words = words.map((x) => x.sort(this.sortWords));
-      console.log('this.words', this.words);
-      for (let i = 0; i < words.length; i += 1) {
-        for (let j = 1; words[i].length > 75; j += 1) {
-          words[i] = words[i].filter((entry) => entry[0].match(/\w+/g) && entry[1] > j);
-        } // improves performance by a lot, removing unused and non words
-        words[i] = words[i].map((word) => [word[0].split(' (')[0], word[1]]); // removes unecessary tags
-      }
-      console.log('words', words);
-      this.loading -= 1;
-      this.filteredWords = words;
-    },
-    sortWords(a, b) {
-      // sorts after occurences, then alphabetically
-      if (a[1] < b[1]) return 1;
-      if (a[1] > b[1]) return -1;
-      if (a[0] > b[0]) return 1;
-      if (a[0] < b[0]) return -1;
-      return 0;
-    },
-  },
   computed: {
     maxOccurence() {
       console.log();
@@ -314,6 +262,59 @@ export default {
       immediate: true,
     },
   },
+  methods: {
+    colorWords(word) {
+      const colors = ['#a91a1a', '#3a8d86', '#0c76ce', '#c09000', '#3b823e'];
+      const colorGradient = new Gradient();
+      colorGradient.setGradient(...colors);
+
+      colorGradient.setMidpoint(20);
+      // console.log(colorGradient.getArray());
+
+      return colorGradient.getColor(Math.floor((20 * word[1]) / this.maxOccurence));
+    },
+    crossRotate(word) {
+      if ([this.words[0][0][0], this.words[1][0][0]].includes(word[0])) {
+        return 0; // ensures the first word is always horizontal
+      }
+      switch (Math.floor(Math.random() * 4)) {
+        case 2:
+          return 0.25;
+        case 3:
+          return -0.25;
+        default:
+          return 0;
+      }
+    },
+    handleRes(res) {
+      console.log('word cloud res', res);
+      const words = [
+        Object.entries(res[0].token_dict),
+        res[1].token_dict.map((x) => Object.entries(x)[0]),
+      ];
+
+      console.log('words', words);
+      this.words = words.map((x) => x.sort(this.sortWords));
+      console.log('this.words', this.words);
+      for (let i = 0; i < words.length; i += 1) {
+        for (let j = 1; words[i].length > 75; j += 1) {
+          words[i] = words[i].filter((entry) => entry[0].match(/\w+/g) && entry[1] > j);
+        } // improves performance by a lot, removing unused and non words
+        words[i] = words[i].map((word) => [word[0].split(' (')[0], word[1]]); // removes unecessary tags
+      }
+      console.log('words', words);
+      this.loading -= 1;
+      this.filteredWords = words;
+    },
+    sortWords(a, b) {
+      // sorts after occurences, then alphabetically
+      if (a[1] < b[1]) return 1;
+      if (a[1] > b[1]) return -1;
+      if (a[0] > b[0]) return 1;
+      if (a[0] < b[0]) return -1;
+      return 0;
+    },
+  },
 };
 </script>
 <style scoped>
@@ -321,9 +322,11 @@ export default {
   min-height: 500px;
   width: 50%;
 }
+
 .full-height {
   height: 100vh !important;
 }
+
 /* .graph-tooltip {
   position: absolute;
     transform: translate(-50%, 25px);

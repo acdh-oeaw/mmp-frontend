@@ -30,7 +30,7 @@
             {{ item.key }}
           </td>
           <td v-if="item.key === 'Keywords'">
-            <div class="keyword-chip" v-for="keyword in item.value" :key="keyword.id">
+            <div v-for="keyword in item.value" :key="keyword.id" class="keyword-chip">
               <v-chip
                 :color="keyColors.chips[keyword.art]"
                 small
@@ -78,6 +78,7 @@ import helpers from '@/helpers';
 
 export default {
   name: 'PassasgeDetail',
+  mixins: [helpers],
   data: () => ({
     headers: [
       { text: 'key', value: 'key' },
@@ -91,7 +92,38 @@ export default {
       author: null,
     },
   }),
-  mixins: [helpers],
+  watch: {
+    '$route.params': {
+      handler(params) {
+        console.log(params);
+        this.loading = true;
+        const address = `${process.env.VUE_APP_MMP_API_BASE_URL}/api/stelle/${params.id}/?format=json`;
+        const prefetched = this.$store.state.fetchedResults[address];
+
+        if (prefetched) {
+          console.log('prefetched', prefetched);
+          this.addRes(prefetched);
+          this.loading = false;
+        } else {
+          fetch(address)
+            .then((res) => res.json())
+            .then((res) => {
+              console.log(res);
+              this.$store.commit('addToResults', { req: address, res });
+              this.addRes(res);
+            })
+            .catch((err) => {
+              console.error(err);
+            })
+            .finally(() => {
+              this.loading = false;
+            });
+        }
+      },
+      deep: true,
+      immediate: true,
+    },
+  },
   methods: {
     addRes(res) {
       this.title.title = res.text.title;
@@ -147,38 +179,6 @@ export default {
           value: res.kommentar,
         },
       ];
-    },
-  },
-  watch: {
-    '$route.params': {
-      handler(params) {
-        console.log(params);
-        this.loading = true;
-        const address = `${process.env.VUE_APP_MMP_API_BASE_URL}/api/stelle/${params.id}/?format=json`;
-        const prefetched = this.$store.state.fetchedResults[address];
-
-        if (prefetched) {
-          console.log('prefetched', prefetched);
-          this.addRes(prefetched);
-          this.loading = false;
-        } else {
-          fetch(address)
-            .then((res) => res.json())
-            .then((res) => {
-              console.log(res);
-              this.$store.commit('addToResults', { req: address, res });
-              this.addRes(res);
-            })
-            .catch((err) => {
-              console.error(err);
-            })
-            .finally(() => {
-              this.loading = false;
-            });
-        }
-      },
-      deep: true,
-      immediate: true,
     },
   },
 };

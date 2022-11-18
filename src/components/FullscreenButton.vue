@@ -18,13 +18,16 @@ import helpers from '@/helpers';
 
 export default {
   name: 'FullscreenButton',
+  mixins: [helpers],
   props: ['usecase', 'left'],
   data() {
     return {
       back: null,
     };
   },
-  mixins: [helpers],
+  mounted() {
+    console.log('left', this.left);
+  },
   methods: {
     press() {
       console.log('FSButton press', this.back, this.$route);
@@ -51,9 +54,6 @@ export default {
       };
       return components[tab];
     },
-  },
-  mounted() {
-    console.log('left', this.left);
   },
 };
 </script>

@@ -5,6 +5,7 @@
         <v-autocomplete
           v-model="studyAuto"
           color="primary"
+          ref="case-autocomplete"
           placeholder="Search for case studies by authors or keywords"
           multiple
           return-object
@@ -15,14 +16,13 @@
           auto-select-first
           item-text="selected_text"
           no-data-text="No data found"
-          ref="case-autocomplete"
           :items="studySearch"
           :search-input.sync="textInput"
+          :loading="loading"
           @change="textInput = ''"
           @keyup.enter="pushQuery"
-          :loading="loading"
         >
-          <template v-slot:item="data">
+          <template #item="data">
             <v-list-item-content
               v-if="data.item.group === 'Keyword' && data.item.selected_text.includes(',')"
             >
@@ -41,8 +41,8 @@
               <v-list-item-subtitle>{{ data.item.group }}</v-list-item-subtitle>
             </v-list-item-content>
           </template>
-          <template v-slot:append>
-            <v-icon color="primary" @click="studyAuto = []" v-if="studyAuto.length"
+          <template #append>
+            <v-icon v-if="studyAuto.length" color="primary" @click="studyAuto = []"
               >mdi-close</v-icon
             >
           </template>
@@ -51,7 +51,7 @@
     </v-row>
     <v-row justify="center">
       <v-col cols="12" lg="8">
-        <v-card class="study-card" v-for="study in studies" :key="study.id">
+        <v-card v-for="study in studies" :key="study.id" class="study-card">
           <v-card-title>{{ study.title }}</v-card-title>
           <v-card-subtitle v-if="study.principal_investigator">{{
             study.principal_investigator
@@ -76,6 +76,7 @@ import helpers from '@/helpers';
 
 export default {
   name: 'Studies',
+  mixins: [helpers],
   data: () => ({
     studies: [],
     studySearch: [],
@@ -83,7 +84,6 @@ export default {
     textInput: '',
     loading: false,
   }),
-  mixins: [helpers],
   watch: {
     textInput(val) {
       if (!val || val.length < 1) return;

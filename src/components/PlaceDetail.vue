@@ -24,10 +24,10 @@
     </v-list-item>
     <v-divider />
     <v-container>
-      <v-expansion-panels flat accordion v-if="!loading" multiple :value="[0, 1]">
+      <v-expansion-panels v-if="!loading" flat accordion multiple :value="[0, 1]">
         <v-expansion-panel :disabled="!data.authors.count">
           <v-expansion-panel-header>
-            <template v-slot:actions>
+            <template #actions>
               <v-chip small color="red lighten-3" :disabled="!data.authors.count">{{
                 data.authors.count
               }}</v-chip>
@@ -60,7 +60,7 @@
         </v-expansion-panel>
         <v-expansion-panel :disabled="!data.texts.count">
           <v-expansion-panel-header>
-            <template v-slot:actions>
+            <template #actions>
               <v-chip small color="red darken-3" dark :disabled="!data.texts.count">
                 {{ data.texts.count }}
               </v-chip>
@@ -91,6 +91,7 @@ import helpers from '@/helpers';
 
 export default {
   name: 'PlaceDetail',
+  mixins: [helpers],
   data: () => ({
     loading: false,
     data: {
@@ -99,7 +100,6 @@ export default {
       authors: null,
     },
   }),
-  mixins: [helpers],
   watch: {
     '$route.params': {
       handler(params) {

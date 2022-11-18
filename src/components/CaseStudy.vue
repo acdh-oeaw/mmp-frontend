@@ -15,7 +15,7 @@
           <p v-if="study.description">{{ study.description }}</p>
           <v-tabs fixed-tabs show-arrows background-color="transparent">
             <v-tab exact :to="{ query: addParamsToQuery({ tab: 'timeline' }) }"> Timeline </v-tab>
-            <v-tab exact v-if="study.story_map" :to="{ query: addParamsToQuery({ tab: 'story' }) }">
+            <v-tab v-if="study.story_map" exact :to="{ query: addParamsToQuery({ tab: 'story' }) }">
               Story Map
             </v-tab>
             <v-tab exact :to="{ query: addParamsToQuery({ tab: 'graph' }) }"> Graph </v-tab>
@@ -34,15 +34,15 @@
                   :color="getIconFromType(event.ent_type).color"
                   :class="{ 'text-right': i % 2 == 1 && !$vuetify.breakpoint.mobile }"
                 >
-                  <span class="font-weight-medium" slot="opposite">
+                  <span slot="opposite" class="font-weight-medium">
                     {{ renderDates(event.start_date, event.end_date) }}
                   </span>
-                  <span class="font-weight-medium" v-if="$vuetify.breakpoint.mobile">
+                  <span v-if="$vuetify.breakpoint.mobile" class="font-weight-medium">
                     {{ renderDates(event.start_date, event.end_date) }}: <br />
                   </span>
                   <router-link
-                    class="font-weight-medium"
                     v-if="event.ent_type === 'autor'"
+                    class="font-weight-medium"
                     :to="{
                       name: 'List',
                       query: addParamsToQuery({ Author: event.id }),
@@ -88,55 +88,26 @@
 </template>
 
 <script>
-/* eslint-disable prefer-destructuring */
+ 
+import helpers from '../helpers';
 import Graph from './GraphWrapperBeta';
 import MapWrapper from './MapWrapper';
 import WordCloudWrapper from './WordCloudWrapper';
-import helpers from '../helpers';
 
 export default {
   name: 'Studies',
-  mixins: [helpers],
-  data: () => ({
-    study: {},
-    events: [],
-    loading: true,
-  }),
-  props: ['id'],
   components: {
     Graph,
     MapWrapper,
     WordCloudWrapper,
   },
-  methods: {
-    removeDatesFromTitle(title) {
-      const ret = title.split(' ');
-      ret.shift();
-      return ret.join(' ');
-    },
-    getIconFromType(type) {
-      const icons = {
-        autor: {
-          icon: 'mdi-pencil',
-          color: 'red',
-        },
-        event: {
-          icon: 'mdi-calendar',
-          color: 'green',
-        },
-        text: {
-          icon: 'mdi-book-open-variant',
-          color: 'blue',
-        },
-      };
-      return icons[type];
-    },
-    renderDates(start, end) {
-      if (start === end) return `${start} A.D.`;
-      if (start && end) return `${start} - ${end} A.D.`;
-      return `${start || end} A.D.`;
-    },
-  },
+  mixins: [helpers],
+  props: ['id'],
+  data: () => ({
+    study: {},
+    events: [],
+    loading: true,
+  }),
   mounted() {
     const id = this.id || this.$route.params.id;
 
@@ -171,6 +142,35 @@ export default {
           console.error(err);
         });
     }
+  },
+  methods: {
+    removeDatesFromTitle(title) {
+      const ret = title.split(' ');
+      ret.shift();
+      return ret.join(' ');
+    },
+    getIconFromType(type) {
+      const icons = {
+        autor: {
+          icon: 'mdi-pencil',
+          color: 'red',
+        },
+        event: {
+          icon: 'mdi-calendar',
+          color: 'green',
+        },
+        text: {
+          icon: 'mdi-book-open-variant',
+          color: 'blue',
+        },
+      };
+      return icons[type];
+    },
+    renderDates(start, end) {
+      if (start === end) return `${start} A.D.`;
+      if (start && end) return `${start} - ${end} A.D.`;
+      return `${start || end} A.D.`;
+    },
   },
 };
 </script>

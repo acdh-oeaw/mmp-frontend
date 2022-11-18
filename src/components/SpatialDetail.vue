@@ -12,9 +12,9 @@
       <v-list-item-title> Keyword(s) found at point </v-list-item-title>
     </v-list-item>
     <v-divider />
-    <v-list v-model="data" v-if="!loading">
+    <v-list v-if="!loading" v-model="data">
       <v-list v-for="d in data" :key="d.id">
-        <v-list-item v-on:mouseover="highlightSpatCov(d.id)" v-on:mouseout="playdownSpatCov(d.id)">
+        <v-list-item @mouseover="highlightSpatCov(d.id)" @mouseout="playdownSpatCov(d.id)">
           <v-list-item-content>
             <template v-if="!loading">
               <v-list-item-title class="text-h5">
@@ -85,12 +85,12 @@ import helpers from '@/helpers';
 
 export default {
   name: 'SpatialDetails',
+  mixins: [helpers],
   data: () => ({
     loading: false,
     data: [],
     strokeColor: '',
   }),
-  mixins: [helpers],
   watch: {
     '$route.params': {
       handler(params) {
@@ -137,7 +137,7 @@ export default {
       }
       if (document.getElementsByClassName(`labelText ${id}`)[0]) {
         const colour = 'rgb(255,255,0)';
-        // eslint-disable-next-line
+         
         for (let label of document.getElementsByClassName('labelText')) {
           label.style.opacity = 0.3;
         }
@@ -158,7 +158,7 @@ export default {
         document.getElementsByClassName(
           `labelText ${id}`
         )[0].style.textShadow = `0px 0px, ${colour} -2px 0px 0px, ${colour} 0px 2px 0px, ${colour} 0px -2px 0px, ${colour} 1px 1px, ${colour} -1px -1px 0px, ${colour} 1px -1px 0px, ${colour} -1px 1px 0px`;
-        // eslint-disable-next-line
+         
         for (let label of document.getElementsByClassName('labelText')) {
           label.style.opacity = 1;
         }

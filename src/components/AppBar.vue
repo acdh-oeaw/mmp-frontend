@@ -11,9 +11,9 @@
       <v-row justify="center">
         <v-col cols="12" md="2" class="title-wrapper">
           <v-app-bar-nav-icon
-            @click.stop="$store.commit('toggleDrawer')"
             class="d-inline d-md-none menu-button"
             :class="{ 'white--text': isHome }"
+            @click.stop="$store.commit('toggleDrawer')"
           />
           <v-toolbar-title class="d-inline fancy-font font-weight-bold text-decoration-none">
             <router-link
@@ -51,7 +51,7 @@
             </router-link>
           </div>
         </v-col>
-        <v-col cols="4" v-if="$route.name.includes('Detail')" />
+        <v-col v-if="$route.name.includes('Detail')" cols="4" />
       </v-row>
     </v-app-bar>
     <sidebar v-model="drawer" />
@@ -59,15 +59,15 @@
 </template>
 
 <script>
-import Sidebar from './Sidebar';
 import helpers from '../helpers';
+import Sidebar from './Sidebar';
 
 export default {
   name: 'AppBar',
-  mixins: [helpers],
   components: {
     Sidebar,
   },
+  mixins: [helpers],
   data: () => ({
     drawer: false,
   }),
@@ -88,26 +88,32 @@ export default {
 a.nav-link {
   color: white !important;
 }
+
 div.light a,
 .light.nav-link {
-  color: rgba(0, 0, 0, 0.87) !important;
+  color: rgb(0 0 0 / 87%) !important;
 }
+
 .app-bar {
   padding-top: 30px;
 }
+
 .fancy-font {
   font-family: 'Times New Roman', Times, serif;
   font-size: 2em !important;
 }
+
 .non-selectable {
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
+  user-select: none;
+  user-select: none;
+  user-select: none;
   user-select: none;
 }
+
 .title-wrapper {
-  padding: 0px !important;
+  padding: 0 !important;
 }
+
 .menu-button {
   height: 100% !important;
   vertical-align: bottom !important;

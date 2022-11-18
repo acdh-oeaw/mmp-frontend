@@ -65,10 +65,10 @@ import CaseStudy from './CaseStudy';
 
 export default {
   name: 'Home',
-  mixins: [helpers],
   components: {
     CaseStudy,
   },
+  mixins: [helpers],
 };
 </script>
 
@@ -78,18 +78,22 @@ export default {
   font-size: 1rem;
   vertical-align: top;
 }
+
 .home-content {
   margin-top: 50px;
 }
+
 .home-head {
   min-height: 600px;
   height: unset !important;
 }
+
 .home-head div.v-parallax__content {
-  background: linear-gradient(180deg, rgba(15, 18, 38, 1) 25%, rgba(15, 18, 38, 0.3) 100%);
+  background: linear-gradient(180deg, rgb(15 18 38 / 100%) 25%, rgb(15 18 38 / 30%) 100%);
   padding: 0;
   min-height: 600px;
 }
+
 span.home-title {
   text-decoration-line: underline;
   text-underline-offset: 3px;

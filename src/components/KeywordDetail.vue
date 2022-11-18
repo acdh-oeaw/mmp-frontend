@@ -66,20 +66,20 @@
                   {{ data.keywords.map((x) => x.stichwort).join(', ') }}
                   <v-icon small>mdi-arrow-left-right</v-icon> {{ conn.label }}
                 </span>
-                <template v-slot:actions>
+                <template #actions>
                   <v-chip small>{{ conn.count }} connections</v-chip>
                   <v-icon>mdi-chevron-down</v-icon>
                 </template>
               </v-expansion-panel-header>
               <v-expansion-panel-content>
                 <keyword-list-item
-                  :parentNodes="data.keywords.map((x) => x.id)"
-                  :siblingNode="conn.id"
+                  :parent-nodes="data.keywords.map((x) => x.id)"
+                  :sibling-node="conn.id"
                 />
               </v-expansion-panel-content>
             </v-expansion-panel>
           </v-expansion-panels>
-          <v-skeleton-loader type="list-item@5" class="transparent-skeleton" v-else />
+          <v-skeleton-loader v-else type="list-item@5" class="transparent-skeleton" />
         </v-col>
       </v-row>
       <v-row>
@@ -124,7 +124,7 @@
               </v-col>
             </v-row>
           </template>
-          <v-skeleton-loader type="button@2" v-else />
+          <v-skeleton-loader v-else type="button@2" />
         </v-col>
       </v-row>
     </v-container>
@@ -140,6 +140,12 @@ import Leaflet from './Leaflet';
 
 export default {
   name: 'KeywordDetail',
+  components: {
+    KeywordListItem,
+    KeywordOverTime,
+    Leaflet,
+  },
+  mixins: [helpers],
   data: () => ({
     loading: {
       keywords: true,
@@ -155,12 +161,6 @@ export default {
     },
     tab: null,
   }),
-  components: {
-    KeywordListItem,
-    KeywordOverTime,
-    Leaflet,
-  },
-  mixins: [helpers],
   computed: {
     connections() {
       console.log('keyword connections called', this.data);
@@ -329,20 +329,25 @@ export default {
 button.v-expansion-panel-header {
   padding: 6px;
 }
+
 .detail-button {
   padding: 5px;
 }
+
 .fixed-bottom {
   position: fixed;
   bottom: 0;
   width: 100%;
 }
+
 .v-skeleton-loader__button {
   width: 100%;
 }
+
 .theme--light.v-expansion-panels .v-expansion-panel {
   background-color: transparent;
 }
+
 .theme--light.v-tabs-items {
   background-color: transparent;
 }

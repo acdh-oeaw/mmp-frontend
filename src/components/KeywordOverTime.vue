@@ -26,7 +26,7 @@ export default {
         tooltip: {
           // split: true,
           // the only way the right 'this' object is passed to the formatter function
-          // eslint-disable-next-line object-shorthand
+           
           formatter: function lel() {
             const endings = ['st', 'nd', 'rd'];
             return `${this.point.x}${endings[this.point.x - 1] || 'th'} century<br />${

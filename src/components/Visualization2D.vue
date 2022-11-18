@@ -12,9 +12,6 @@ const d3 = require('d3'); // import wasnt working here
 
 export default {
   name: 'Visualization',
-  data: () => ({
-    graphDom: null,
-  }),
   props: {
     backgroundColor: String,
     dagMode: {
@@ -56,6 +53,41 @@ export default {
       type: Boolean,
       default: false,
     },
+  },
+  data: () => ({
+    graphDom: null,
+  }),
+  watch: {
+    graph: {
+      handler(val) {
+        this.graphDom.graphData(this.transformedData(val));
+      },
+      deep: true,
+    },
+    refresh() {
+      console.log('refresh called');
+      this.graphDom.d3ReheatSimulation();
+    },
+    zoomToFit() {
+      // cheap workaraound, change zoomToFit to !zoomToFit to zoom (to fit)
+      this.graphDom.zoomToFit(500);
+    },
+  },
+  mounted() {
+    console.log('Graph mounted, data:', this.graph);
+    // console.log('forceCollision:', this.forceCollision(), 'lel', d3.forceCollide());
+    console.log('forcelink', d3.forceLink);
+    this.graphDom = ForceGraph()(this.$refs.visWrapper);
+    this.setCanvas();
+
+    // resize canvas on div resize
+    const sizeOberserver = new ResizeObserver((entries) => {
+      const rect = entries[0].contentRect;
+      // console.log('resize detected', rect.width, rect.height);
+      this.graphDom.width(rect.width).height(rect.height);
+    });
+
+    sizeOberserver.observe(this.$refs.visWrapper);
   },
   methods: {
     transformedData(obj) {
@@ -126,38 +158,6 @@ export default {
     logSize() {
       console.log('ref', this.$refs.visWrapper.clientWidth);
     },
-  },
-  watch: {
-    graph: {
-      handler(val) {
-        this.graphDom.graphData(this.transformedData(val));
-      },
-      deep: true,
-    },
-    refresh() {
-      console.log('refresh called');
-      this.graphDom.d3ReheatSimulation();
-    },
-    zoomToFit() {
-      // cheap workaraound, change zoomToFit to !zoomToFit to zoom (to fit)
-      this.graphDom.zoomToFit(500);
-    },
-  },
-  mounted() {
-    console.log('Graph mounted, data:', this.graph);
-    // console.log('forceCollision:', this.forceCollision(), 'lel', d3.forceCollide());
-    console.log('forcelink', d3.forceLink);
-    this.graphDom = ForceGraph()(this.$refs.visWrapper);
-    this.setCanvas();
-
-    // resize canvas on div resize
-    const sizeOberserver = new ResizeObserver((entries) => {
-      const rect = entries[0].contentRect;
-      // console.log('resize detected', rect.width, rect.height);
-      this.graphDom.width(rect.width).height(rect.height);
-    });
-
-    sizeOberserver.observe(this.$refs.visWrapper);
   },
 };
 </script>

@@ -8,23 +8,23 @@
       disable-sort
       disable-filtering
       no-data-text="No passages found"
-      @update:page="updateOffset"
-      @update:items-per-page="updateLimit"
       :footer-props="{
         'items-per-page-options': [10, 20, 50, 100, 1000, -1],
       }"
       class="data-table"
+      @update:page="updateOffset"
+      @update:items-per-page="updateLimit"
     >
-      <template v-slot:[`item.text.autor`]="{ item }">
+      <template #[`item.text.autor`]="{ item }">
         <template v-if="item.text">
           <router-link
             v-for="(author, i) in item.text.autor"
+            :key="author.id"
             :to="{
               name: fullscreen ? 'Author Detail Fullscreen' : 'Author Detail',
               params: { id: author.id },
               query: $route.query,
             }"
-            :key="author.id"
             class="text-decoration-none"
           >
             <span v-if="i != 0">, </span>
@@ -33,7 +33,7 @@
           </router-link>
         </template>
       </template>
-      <template v-slot:[`item.text.title`]="{ item }">
+      <template #[`item.text.title`]="{ item }">
         <template v-if="item.text">
           <router-link
             :to="{
@@ -48,22 +48,22 @@
           </router-link>
         </template>
       </template>
-      <template v-slot:[`item.keywords`]="{ item }">
-        <div class="keyword-chip" v-for="keyword in item.key_word" :key="keyword.stichwort">
+      <template #[`item.keywords`]="{ item }">
+        <div v-for="keyword in item.key_word" :key="keyword.stichwort" class="keyword-chip">
           <v-chip small :color="keyColors.chips[keyword.art]" @click="addKeywordToInput(keyword)">
             {{ keyword.stichwort }}
           </v-chip>
         </div>
       </template>
-      <template v-slot:[`item.written`]="{ item }">
+      <template #[`item.written`]="{ item }">
         <!-- displays unkown if neither start nor end date are defined -->
         {{ item.text ? displayTimeRange(item.text.start_date, item.text.end_date) : 'unknown' }}
       </template>
-      <template v-slot:[`item.coverage`]="{ item }">
+      <template #[`item.coverage`]="{ item }">
         <!-- displays nothing if neither start nor end date are defined -->
         {{ displayTimeRange(item.start_date, item.end_date) }}
       </template>
-      <template v-slot:[`footer.prepend`]>
+      <template #[`footer.prepend`]>
         <fullscreen-button left />
       </template>
     </v-data-table>
@@ -73,11 +73,14 @@
 
 <script>
 import helpers from '@/helpers';
+
 import FullscreenButton from './FullscreenButton';
 
 export default {
-  components: { FullscreenButton },
   name: 'List',
+  components: { FullscreenButton },
+  mixins: [helpers],
+  props: ['keyword', 'passage', 'author', 'usecase', 'place'],
   data: () => ({
     headers: [
       { text: 'Author', value: 'text.autor', width: '150px' },
@@ -96,8 +99,15 @@ export default {
     },
     renderKey: 0,
   }),
-  mixins: [helpers],
-  props: ['keyword', 'passage', 'author', 'usecase', 'place'],
+  watch: {
+    '$route.query': {
+      handler(query) {
+        this.fetchList(query);
+      },
+      deep: true,
+      immediate: true,
+    },
+  },
   methods: {
     addKeywordToInput(obj) {
       this.$store.commit('addToItemsAndInput', {
@@ -201,15 +211,6 @@ export default {
       this.fetchList(this.$route.query);
     },
   },
-  watch: {
-    '$route.query': {
-      handler(query) {
-        this.fetchList(query);
-      },
-      deep: true,
-      immediate: true,
-    },
-  },
 };
 </script>
 
@@ -217,9 +218,11 @@ export default {
 a:hover {
   text-decoration: underline;
 }
+
 div.v-data-table.data-table {
   background-color: transparent;
 }
+
 .keyword-chip {
   display: inline-block;
   margin: 1.5px;

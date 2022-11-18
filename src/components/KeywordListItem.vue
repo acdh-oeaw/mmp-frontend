@@ -2,15 +2,15 @@
   <v-card flat color="rgba(0, 0, 0, 0)">
     <v-list two-line>
       <v-skeleton-loader
+        v-if="loading"
         type="list-item-three-line@3"
         class="transparent-skeleton"
-        v-if="loading"
       />
       <v-list-item
-        v-else-if="data.length"
         v-for="passage in data"
-        three-line
+        v-else-if="data.length"
         :key="passage.id"
+        three-line
         :to="{
           name: fullscreen ? 'Passage Detail Fullscreen' : 'Passage Detail',
           query: addParamsToQuery({ Passage: passage.id }),
@@ -41,12 +41,12 @@
 import helpers from '@/helpers';
 
 export default {
+  mixins: [helpers],
+  props: ['parentNodes', 'siblingNode'],
   data: () => ({
     data: [],
     loading: true,
   }),
-  props: ['parentNodes', 'siblingNode'],
-  mixins: [helpers],
   mounted() {
     const { intersect } = this.$store.state.apiParams;
     let url = `${process.env.VUE_APP_MMP_API_BASE_URL}/api/stelle/?${
@@ -90,9 +90,11 @@ export default {
 div.transparent-skeleton > div {
   background-color: transparent !important;
 }
+
 .v-expansion-panel-content__wrap {
-  padding-left: 0px;
+  padding-left: 0;
 }
+
 .list-item {
   margin-bottom: 10px;
 }

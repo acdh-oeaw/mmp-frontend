@@ -8,11 +8,11 @@ import { Chart } from 'highcharts-vue';
 
 export default {
   name: 'PieChart',
+  components: { Chart },
+  props: ['data', 'title', 'height'],
   data: () => ({
     renderKey: 0,
   }),
-  props: ['data', 'title', 'height'],
-  components: { Chart },
   computed: {
     pieOptions() {
       console.log(this.data, this.renderKey);

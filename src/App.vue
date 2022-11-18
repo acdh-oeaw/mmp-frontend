@@ -18,10 +18,10 @@ import AppBar from './components/AppBar';
 
 export default {
   name: 'App',
-  data: () => ({}),
   components: {
     AppBar,
   },
+  data: () => ({}),
   created() {
     const dictRev = {
       searchAuthors: 'author',
@@ -66,19 +66,24 @@ export default {
 a {
   text-decoration: none !important;
 }
+
 .v-card__title {
   word-break: keep-all !important;
 }
+
 .app-class {
   background-color: #f1f5fa !important;
 }
+
 .buffer {
   background-color: #0f1226;
   height: 140px;
 }
+
 .buffer.smaller {
   height: 130px;
 }
+
 .buffer.light {
   background: unset;
 }
