@@ -1,8 +1,7 @@
 # MMP Frontend
 
-A frontend component for [MMP](https://github.com/acdh-oeaw/mmp) written in VueJS.
-
-Deployed at [acdh-oeaw.github.io/mmp-frontend/](https://acdh-oeaw.github.io/mmp-frontend/).
+Web frontend for the [MMP project](https://github.com/acdh-oeaw/mmp). Deployed at
+<https://acdh-oeaw.github.io/mmp-frontend>.
 
 ## Project setup
 
@@ -15,6 +14,11 @@ npm install
 ```bash
 npm run dev
 ```
+
+To develop against a local backend instance, follow
+[the backend development guidelines](https://github.com/acdh-oeaw/mmp/blob/master/CONTRIBUTING.md),
+and set the `VITE_APP_MMP_API_BASE_URL` environment variable in `.env.local` to
+"http://localhost:8000".
 
 ### Compile and minify for production
 
