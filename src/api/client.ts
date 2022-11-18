@@ -45,6 +45,7 @@ import type {
   PageNumberPaginationSearchParams,
   PaginatedGeoJsonResponse,
   PaginatedResponse,
+  ResourceKind,
   SortableSearchParams,
   StringLookupSearchParams,
 } from '@/api/types';
@@ -54,15 +55,41 @@ import type {
 const baseUrl = import.meta.env.VITE_APP_MMP_API_BASE_URL;
 
 const baseUrls = {
-  autoComplete: new URL('archiv-ac/', baseUrl),
-  archiv: new URL('archiv/', baseUrl),
   api: new URL('api/', baseUrl),
+  archiv: new URL('archiv/', baseUrl),
+  archivAutoComplete: new URL('archiv-ac/', baseUrl),
+  autoComplete: new URL('ac/', baseUrl),
   vocabsAutoComplete: new URL('vocabs-ac/', baseUrl),
 };
 
 const options: RequestOptions = { responseType: 'json' };
 
 //
+
+export namespace GetAutoComplete {
+  export type SearchParams = {
+    /** Must be at least 3 characters. */
+    q: string;
+    kind?: Array<ResourceKind>;
+  };
+  export type Response = { q: string } & PaginatedResponse<{
+    id: number;
+    kind: ResourceKind;
+    app_name: string;
+    label: string;
+  }>;
+}
+
+export function getAutoComplete(
+  searchParams: GetAutoComplete.SearchParams
+): Promise<GetAutoComplete.Response> {
+  const url = createUrl({
+    baseUrl: baseUrls.autoComplete,
+    pathname: '',
+    searchParams,
+  });
+  return request(url, options);
+}
 
 export namespace GetAuthorsAutoComplete {
   export type SearchParams = AutoComplete.SearchParams;
@@ -73,7 +100,7 @@ export function getAuthorsAutoComplete(
   searchParams: GetAuthorsAutoComplete.SearchParams
 ): Promise<GetAuthorsAutoComplete.Response> {
   const url = createUrl({
-    baseUrl: baseUrls.autoComplete,
+    baseUrl: baseUrls.archivAutoComplete,
     pathname: 'autor-autocomplete/',
     searchParams,
   });
@@ -89,7 +116,7 @@ export function getKeywordsAutoComplete(
   searchParams: GetKeywordsAutoComplete.SearchParams
 ): Promise<GetKeywordsAutoComplete.Response> {
   const url = createUrl({
-    baseUrl: baseUrls.autoComplete,
+    baseUrl: baseUrls.archivAutoComplete,
     pathname: 'keyword-autocomplete/',
     searchParams,
   });
@@ -106,7 +133,7 @@ export function getRegionKeywordsAutoComplete(
   searchParams: GetRegionKeywordsAutoComplete.SearchParams
 ): Promise<GetRegionKeywordsAutoComplete.Response> {
   const url = createUrl({
-    baseUrl: baseUrls.autoComplete,
+    baseUrl: baseUrls.archivAutoComplete,
     pathname: 'region-autocomplete/',
     searchParams,
   });
@@ -123,7 +150,7 @@ export function getEthnonymKeywordsAutoComplete(
   searchParams: GetEthnonymKeywordsAutoComplete.SearchParams
 ): Promise<GetEthnonymKeywordsAutoComplete.Response> {
   const url = createUrl({
-    baseUrl: baseUrls.autoComplete,
+    baseUrl: baseUrls.archivAutoComplete,
     pathname: 'ethnonym-autocomplete/',
     searchParams,
   });
@@ -140,7 +167,7 @@ export function getNameKeywordsAutoComplete(
   searchParams: GetNameKeywordsAutoComplete.SearchParams
 ): Promise<GetNameKeywordsAutoComplete.Response> {
   const url = createUrl({
-    baseUrl: baseUrls.autoComplete,
+    baseUrl: baseUrls.archivAutoComplete,
     pathname: 'eigenname-autocomplete/',
     searchParams,
   });
@@ -157,7 +184,7 @@ export function getKeywordKeywordsAutoComplete(
   searchParams: GetKeywordKeywordsAutoComplete.SearchParams
 ): Promise<GetKeywordKeywordsAutoComplete.Response> {
   const url = createUrl({
-    baseUrl: baseUrls.autoComplete,
+    baseUrl: baseUrls.archivAutoComplete,
     pathname: 'schlagwort-autocomplete/',
     searchParams,
   });
@@ -173,7 +200,7 @@ export function getPlacesAutoComplete(
   searchParams: GetPlacesAutoComplete.SearchParams
 ): Promise<GetPlacesAutoComplete.Response> {
   const url = createUrl({
-    baseUrl: baseUrls.autoComplete,
+    baseUrl: baseUrls.archivAutoComplete,
     pathname: 'ort-autocomplete/',
     searchParams,
   });
@@ -189,7 +216,7 @@ export function getPassagesAutoComplete(
   searchParams: GetPassagesAutoComplete.SearchParams
 ): Promise<GetPassagesAutoComplete.Response> {
   const url = createUrl({
-    baseUrl: baseUrls.autoComplete,
+    baseUrl: baseUrls.archivAutoComplete,
     pathname: 'stelle-autocomplete/',
     searchParams,
   });
@@ -205,7 +232,7 @@ export function getTextsAutoComplete(
   searchParams: GetTextsAutoComplete.SearchParams
 ): Promise<GetTextsAutoComplete.Response> {
   const url = createUrl({
-    baseUrl: baseUrls.autoComplete,
+    baseUrl: baseUrls.archivAutoComplete,
     pathname: 'text-autocomplete/',
     searchParams,
   });
@@ -221,7 +248,7 @@ export function getUseCasesAutoComplete(
   searchParams: GetUseCasesAutoComplete.SearchParams
 ): Promise<GetUseCasesAutoComplete.Response> {
   const url = createUrl({
-    baseUrl: baseUrls.autoComplete,
+    baseUrl: baseUrls.archivAutoComplete,
     pathname: 'usecase-autocomplete/',
     searchParams,
   });
@@ -852,6 +879,12 @@ export namespace GetUseCases {
 
       /** Related keywords (AND query). */
       has_stelle__key_word?: Array<Keyword['id']>;
+
+      /** Additional GeoJSON layers associated with case study. */
+      layer?: Array<GeojsonLayer['id']>;
+
+      /** Should display labels for spatial coverages. */
+      show_labels?: boolean;
     };
   export type Response = PaginatedResponse<
     Omit<UseCase, 'knightlab_stoy_map' | 'layer'> & {
@@ -1159,8 +1192,6 @@ export type SpatialCoverageSearchParams = {
 
   stelle__text__autor__end_date_year?: number;
   stelle__text__autor__end_date_year__lookup?: DateLookupSearchParams;
-
-  show_labels?: boolean;
 };
 
 export type ConeGeojson = { id: SpatialCoverage['id'] } & Feature<
@@ -1200,14 +1231,7 @@ export function getConeGeojsonById(
 
 export type SpatialCoverageGeojson = { id: SpatialCoverage['id'] } & FeatureWithBoundingBox<
   Polygon,
-  SpatialCoverageGeojsonProperties & {
-    /**
-     * Display labels for coverage.
-     *
-     * @default true
-     */
-    show_labels: SpatialCoverage['show_labels'];
-  }
+  SpatialCoverageGeojsonProperties
 >;
 
 export namespace GetSpatialCoveragesGeojson {
