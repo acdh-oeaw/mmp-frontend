@@ -103,7 +103,9 @@ export default {
         this.data = [];
         arr.forEach((param) => {
           this.loading = true;
-          const address = `${process.env.VUE_APP_MMP_API_BASE_URL}/api/spatialcoverage/${param}`;
+          const address = `${
+            import.meta.env.VITE_APP_MMP_API_BASE_URL
+          }/api/spatialcoverage/${param}`;
           const prefetched = this.$store.state.fetchedResults[address];
           if (prefetched) {
             this.data.push(prefetched);
@@ -137,7 +139,7 @@ export default {
       }
       if (document.getElementsByClassName(`labelText ${id}`)[0]) {
         const colour = 'rgb(255,255,0)';
-         
+
         for (let label of document.getElementsByClassName('labelText')) {
           label.style.opacity = 0.3;
         }
@@ -158,7 +160,7 @@ export default {
         document.getElementsByClassName(
           `labelText ${id}`
         )[0].style.textShadow = `0px 0px, ${colour} -2px 0px 0px, ${colour} 0px 2px 0px, ${colour} 0px -2px 0px, ${colour} 1px 1px, ${colour} -1px -1px 0px, ${colour} 1px -1px 0px, ${colour} -1px 1px 0px`;
-         
+
         for (let label of document.getElementsByClassName('labelText')) {
           label.style.opacity = 1;
         }

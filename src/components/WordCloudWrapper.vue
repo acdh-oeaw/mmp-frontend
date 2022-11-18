@@ -13,11 +13,7 @@
           :key="JSON.stringify(filtered) + i"
           :cols="showWords.filter((x) => x).length >= 2 ? 6 : 12"
         >
-          <pie-chart
-            :data="filtered"
-            :title="['All Occurences', 'Keyword Occurences'][i]"
-            :height="fullscreen ? '100%' : '500px'"
-          />
+          <pie-chart :data="filtered" :title="titles[i]" :height="fullscreen ? '100%' : '500px'" />
         </v-col>
       </template>
     </v-row>
@@ -28,7 +24,7 @@
           :key="JSON.stringify(filtered) + i"
           :cols="showWords.filter((x) => x).length >= 2 ? 6 : 12"
         >
-          <word-cloud-beta :data="filtered" :title="['All Occurences', 'Keyword Occurences'][i]" />
+          <word-cloud-beta :data="filtered" :title="titles[i]" />
         </v-col>
       </template>
     </v-row>
@@ -151,6 +147,7 @@ export default {
     speeddial: false,
     progress: [0, 0],
     check: ['words', 'keywords'],
+    titles: ['All Words', 'Keywords'],
     type: 'cloud',
     words: [[], []],
   }),
@@ -169,8 +166,8 @@ export default {
         this.loading = 2;
         this.words = [];
         let urls = [
-          `${process.env.VUE_APP_MMP_API_BASE_URL}/archiv/nlp-data/?`,
-          `${process.env.VUE_APP_MMP_API_BASE_URL}/archiv/kw-stelle/?`,
+          `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/archiv/nlp-data/?`,
+          `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/archiv/kw-stelle/?`,
         ];
 
         const terms = {

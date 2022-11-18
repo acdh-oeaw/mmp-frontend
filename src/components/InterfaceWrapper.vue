@@ -241,9 +241,7 @@
           <v-row v-else>
             <router-view />
           </v-row>
-          <v-row
-            v-show="!['Network Graph', 'Network Graph Beta', 'Word Cloud'].includes($route.name)"
-          >
+          <v-row v-show="!['Network Graph', 'Word Cloud'].includes($route.name)">
             <v-col>
               <component
                 :is="sliderComponent"
@@ -315,7 +313,6 @@
 </template>
 
 <script>
- 
 import Fuse from 'fuse.js';
 import { VRangeSlider, VSlider } from 'vuetify/lib';
 
@@ -449,7 +446,9 @@ export default {
               const idCount = ids.length;
               this.skeletonChips += idCount;
               ids = ids.join(',');
-              fetch(`${process.env.VUE_APP_MMP_API_BASE_URL}/api/${apiParams[cat].url}/?ids=${ids}`)
+              fetch(
+                `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/${apiParams[cat].url}/?ids=${ids}`
+              )
                 .then((res) => res.json())
                 .then((res) => {
                   console.log('Query', cat, res);
@@ -480,17 +479,25 @@ export default {
       const urls = {};
       const filters = this.$store.state.searchFilters;
       if (filters.author)
-        urls.Author = `${process.env.VUE_APP_MMP_API_BASE_URL}/archiv-ac/autor-autocomplete/?q=${val}`;
+        urls.Author = `${
+          import.meta.env.VITE_APP_MMP_API_BASE_URL
+        }/archiv-ac/autor-autocomplete/?q=${val}`;
       if (filters.passage)
-        urls.Passage = `${process.env.VUE_APP_MMP_API_BASE_URL}/archiv-ac/stelle-autocomplete/?q=${val}`;
+        urls.Passage = `${
+          import.meta.env.VITE_APP_MMP_API_BASE_URL
+        }/archiv-ac/stelle-autocomplete/?q=${val}`;
       if (Object.values(filters.keyword).some((x) => x))
-        urls.Keyword = `${process.env.VUE_APP_MMP_API_BASE_URL}/archiv-ac/keyword-autocomplete/?q=${val}`;
+        urls.Keyword = `${
+          import.meta.env.VITE_APP_MMP_API_BASE_URL
+        }/archiv-ac/keyword-autocomplete/?q=${val}`;
       if (filters.usecase)
-        urls[
-          'Use Case'
-        ] = `${process.env.VUE_APP_MMP_API_BASE_URL}/archiv-ac/usecase-autocomplete/?q=${val}`;
+        urls['Use Case'] = `${
+          import.meta.env.VITE_APP_MMP_API_BASE_URL
+        }/archiv-ac/usecase-autocomplete/?q=${val}`;
       if (filters.place)
-        urls.Place = `${process.env.VUE_APP_MMP_API_BASE_URL}/archiv-ac/ort-autocomplete/?q=${val}`;
+        urls.Place = `${
+          import.meta.env.VITE_APP_MMP_API_BASE_URL
+        }/archiv-ac/ort-autocomplete/?q=${val}`;
 
       const labels = ['Author', 'Passage', 'Keyword', 'Use Case', 'Place'];
       const prefetched = this.$store.state.fetchedResults[JSON.stringify(urls)];
@@ -527,10 +534,6 @@ export default {
     },
   },
   methods: {
-    ee() {
-       
-      alert(':^)');
-    },
     pushQuery() {
       this.$refs.autocomplete.blur(); // this is the only working solution I found to unfocus autocomplete
       this.tooltip = false;

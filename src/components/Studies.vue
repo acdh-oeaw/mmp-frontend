@@ -3,9 +3,9 @@
     <v-row>
       <v-col offset="0" offset-lg="4" cols="12" lg="6">
         <v-autocomplete
+          ref="case-autocomplete"
           v-model="studyAuto"
           color="primary"
-          ref="case-autocomplete"
           placeholder="Search for case studies by authors or keywords"
           multiple
           return-object
@@ -90,9 +90,13 @@ export default {
       const urls = {};
       const filters = this.$store.state.searchFilters;
       if (filters.author)
-        urls.Author = `${process.env.VUE_APP_MMP_API_BASE_URL}/archiv-ac/autor-autocomplete/?q=${val}`;
+        urls.Author = `${
+          import.meta.env.VITE_APP_MMP_API_BASE_URL
+        }/archiv-ac/autor-autocomplete/?q=${val}`;
       if (Object.values(filters.keyword).some((x) => x))
-        urls.Keyword = `${process.env.VUE_APP_MMP_API_BASE_URL}/archiv-ac/keyword-autocomplete/?q=${val}`;
+        urls.Keyword = `${
+          import.meta.env.VITE_APP_MMP_API_BASE_URL
+        }/archiv-ac/keyword-autocomplete/?q=${val}`;
 
       // const labels = ['Author', 'Keyword'];
       const prefetched = this.$store.state.fetchedResults[JSON.stringify(urls)];
@@ -138,7 +142,7 @@ export default {
     studyAuto: {
       handler(val) {
         console.log('studyAuto', val);
-        let url = `${process.env.VUE_APP_MMP_API_BASE_URL}/api/usecase/?format=json`;
+        let url = `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/usecase/?format=json`;
         const apiParams = {
           author: 'has_stelle__text__autor',
           keyword: 'has_stelle__key_word',
@@ -165,7 +169,7 @@ export default {
     },
   },
   mounted() {
-    const address = `${process.env.VUE_APP_MMP_API_BASE_URL}/api/usecase/?format=json`;
+    const address = `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/usecase/?format=json`;
     const prefetched = this.$store.state.fetchedResults[address];
 
     if (prefetched) {

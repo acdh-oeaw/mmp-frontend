@@ -88,8 +88,8 @@
     >
       <template #activator>
         <v-btn v-model="fab.control" icon small>
-          <v-icon v-if="fab.control"> mdi-close </v-icon>
-          <v-icon v-else> mdi-dots-vertical </v-icon>
+          <v-icon v-if="fab.control">mdi-close</v-icon>
+          <v-icon v-else>mdi-dots-vertical</v-icon>
         </v-btn>
       </template>
       <v-tooltip right transition="slide-x-transition">
@@ -240,7 +240,7 @@ export default {
         if (authors.length >= 2) {
           this.selectedAuthors = authors;
           fetch(
-            `${process.env.VUE_APP_MMP_API_BASE_URL}/api/autor/?format=json&ids=${authors.join(
+            `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/autor/?format=json&ids=${authors.join(
               ','
             )}`
           )
@@ -251,7 +251,11 @@ export default {
               Promise.all(
                 authors.map((x) =>
                   fetch(
-                    `${process.env.VUE_APP_MMP_API_BASE_URL}/archiv/keyword-data/?has_usecase=${this.hasUsecase}&rvn_stelle_key_word_keyword__text__autor=${x}`
+                    `${
+                      import.meta.env.VITE_APP_MMP_API_BASE_URL
+                    }/archiv/keyword-data/?has_usecase=${
+                      this.hasUsecase
+                    }&rvn_stelle_key_word_keyword__text__autor=${x}`
                   )
                 )
               ).then((res) => {
@@ -494,6 +498,16 @@ export default {
       let q = this.$route.params.id;
       const id = node.id.replace(/[^0-9]/g, '');
       console.log('q', q, 'id', id);
+
+      if (node.keyword_type === 'Author') {
+        this.$router.push({
+          name: this.fullscreen
+            ? 'Compare Authors Author Detail Fullscreen'
+            : 'Compare Authors Author Detail',
+          params: { id: q },
+          query: this.usecase ? { 'Use Case': this.usecase } : this.$route.query,
+        });
+      }
       // add or remove specific node from query
       if (q && !this.usecase) {
         q = q.split('+');
@@ -503,21 +517,11 @@ export default {
       } else q = id;
 
       if (q) {
-        if (node.type === 'Author') {
-          this.$router.push({
-            name: this.fullscreen
-              ? 'Compare Authors Author Detail Fullscreen'
-              : 'Compare Authors Author Detail',
-            params: { id: q },
-            query: this.usecase ? { 'Use Case': this.usecase } : this.$route.query,
-          });
-        } else {
-          this.$router.push({
-            name: this.fullscreen ? 'Compare Authors Detail Fullscreen' : 'Compare Authors Detail',
-            params: { id: q },
-            query: this.usecase ? { 'Use Case': this.usecase } : this.$route.query,
-          });
-        }
+        this.$router.push({
+          name: this.fullscreen ? 'Compare Authors Detail Fullscreen' : 'Compare Authors Detail',
+          params: { id: q },
+          query: this.usecase ? { 'Use Case': this.usecase } : this.$route.query,
+        });
       } else {
         this.$router.push({
           name: this.fullscreen ? 'Compare Authors Detail Fullscreen' : 'Compare Authors Detail',
@@ -539,7 +543,7 @@ export default {
       console.log('nodes unpinned', this.renderKey);
     },
     linkForces() {
-      return forceLink().strength((link) => (link.source.id.includes('author') ? 0.2 : 0));
+      return forceLink().strength((link) => (link.source.id.includes('author') ? 0.7 : 0));
     },
   },
 };

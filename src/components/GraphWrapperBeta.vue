@@ -17,7 +17,8 @@
       :node-canvas-object-mode="() => 'replace'"
       :height="fullscreen ? undefined : '500'"
       :zoom-to-fit="zoomToFit"
-      :link-directional-arrow-length="2"
+      :link-directional-particles="1"
+      :link-directional-particle-width="1.7"
       :refresh="renderKey"
       :auto-pause-redraw="false"
       :node-rel-size="4"
@@ -213,8 +214,8 @@ export default {
         edge.color =
           this.lightenColor(this.keyColors.graph[targetNode?.keyword_type], 0.3) || '#D5D5D5';
 
-        if (targetNode?.val) targetNode.val += 1;
-        else if (targetNode) targetNode.val = 2;
+        if (targetNode?.targets) targetNode.targets += 1;
+        else if (targetNode) targetNode.targets = 2;
       });
 
       ret.nodes = ret.nodes.map((node) => {
@@ -233,7 +234,9 @@ export default {
   watch: {
     '$route.query': {
       handler(query) {
-        let address = `${process.env.VUE_APP_MMP_API_BASE_URL}/archiv/keyword-data/?has_usecase=${this.hasUsecase}`;
+        let address = `${
+          import.meta.env.VITE_APP_MMP_API_BASE_URL
+        }/archiv/keyword-data/?has_usecase=${this.hasUsecase}`;
         const terms = {
           Author: 'rvn_stelle_key_word_keyword__text__autor',
           Passage: 'rvn_stelle_key_word_keyword',
@@ -394,7 +397,7 @@ export default {
       ctx.beginPath();
       const label = this.removeRoot(node.label);
 
-      const fontSize = ((Math.log2(node.val) || 1) + 18) / globalScale;
+      const fontSize = ((Math.log2(node.targets) || 1) + 18) / globalScale;
       ctx.font = `${fontSize}px Roboto, Sans-Serif`;
 
       ctx.textAlign = 'center';

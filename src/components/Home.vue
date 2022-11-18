@@ -1,7 +1,7 @@
 <template>
   <!-- eslint-disable-next-line vue/max-attributes-per-line -->
   <div>
-    <v-parallax src="@/assets/europa.jpg" class="home-parallax text-center home-head">
+    <v-parallax :src="bgImage" class="home-parallax text-center home-head">
       <div class="parallax-wrapper">
         <v-container>
           <v-row align="center" justify="center">
@@ -60,6 +60,8 @@
 </template>
 
 <script>
+import bgImage from '@/assets/europa.jpg';
+
 import helpers from '../helpers';
 import CaseStudy from './CaseStudy';
 
@@ -69,6 +71,11 @@ export default {
     CaseStudy,
   },
   mixins: [helpers],
+  data() {
+    return {
+      bgImage,
+    };
+  },
 };
 </script>
 

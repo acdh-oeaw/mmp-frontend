@@ -225,7 +225,7 @@ export default {
 
         // Keywords
         let urls = ids.map(
-          (x) => `${process.env.VUE_APP_MMP_API_BASE_URL}/api/keyword/${x}/?format=json`
+          (x) => `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/keyword/${x}/?format=json`
         );
         let prefetched = this.$store.state.fetchedResults[urls.toString()];
         if (prefetched) {
@@ -253,7 +253,7 @@ export default {
 
         // Overtime
         urls = ids.map(
-          (x) => `${process.env.VUE_APP_MMP_API_BASE_URL}/archiv/keyword/century/${x}`
+          (x) => `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/archiv/keyword/century/${x}`
         );
         prefetched = this.$store.state.fetchedResults[urls.toString()];
         if (prefetched) {
@@ -281,9 +281,11 @@ export default {
 
         // Else
         urls = [
-          `${process.env.VUE_APP_MMP_API_BASE_URL}/archiv/keyword-data/?ids=${ids.join(',')}`,
-          `${process.env.VUE_APP_MMP_API_BASE_URL}/api/stelle/?format=json&has_usecase=${this.hasUsecase}`,
-          `${process.env.VUE_APP_MMP_API_BASE_URL}/api/spatialcoverage/?format=json`,
+          `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/archiv/keyword-data/?ids=${ids.join(',')}`,
+          `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/stelle/?format=json&has_usecase=${
+            this.hasUsecase
+          }`,
+          `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/spatialcoverage/?format=json`,
         ];
 
         ids.forEach((x) => {

@@ -25,7 +25,7 @@
 import Leaflet from './Leaflet';
 
 export default {
-  name: 'Map',
+  name: 'MapWrapper',
   components: {
     Leaflet,
   },
@@ -38,8 +38,8 @@ export default {
     '$route.query': {
       handler(query) {
         let urls = [
-          `${process.env.VUE_APP_MMP_API_BASE_URL}/api/spatialcoverage/?format=json`,
-          `${process.env.VUE_APP_MMP_API_BASE_URL}/api/cones/?format=json`,
+          `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/spatialcoverage/?format=json`,
+          `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/cones/?format=json`,
         ];
         const blankUrls = urls;
 
@@ -67,7 +67,9 @@ export default {
                   urls = urls.map((x) => `${x}&id=0`);
                 }
                 urls.push(
-                  `${process.env.VUE_APP_MMP_API_BASE_URL}/api/ort-geojson/?format=json&ids=${prop}`
+                  `${
+                    import.meta.env.VITE_APP_MMP_API_BASE_URL
+                  }/api/ort-geojson/?format=json&ids=${prop}`
                 );
               } else {
                 urls = urls.map((url) => `${url}&${Object.values(terms)[i]}=${prop}`);
@@ -117,10 +119,11 @@ export default {
             }
             urls.push(
               `${
-                process.env.VUE_APP_MMP_API_BASE_URL
+                import.meta.env.VITE_APP_MMP_API_BASE_URL
               }/api/ort-geojson/?format=json&ids=${query.Place.split('+').join(',')}`
             );
-          } else urls.push(`${process.env.VUE_APP_MMP_API_BASE_URL}/api/ort/?format=json&id=0`);
+          } else
+            urls.push(`${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/ort/?format=json&id=0`);
         }
 
         console.log('map urls', urls);

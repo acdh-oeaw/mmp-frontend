@@ -1,4 +1,4 @@
-import type { GeometryCollection, Point, Polygon } from 'geojson';
+import type { FeatureCollection, GeometryCollection, Point, Polygon } from 'geojson';
 
 import type { Normalized } from '@/api/types';
 
@@ -16,15 +16,33 @@ export type UseCase = {
   pi_norm_id: string;
 
   /** Story Map. */
-  story_map?: string | null;
+  story_map?: HtmlString | null;
   /** Knightlab Story Maps. */
   knightlab_stoy_map: Array<Story>;
 
-  /** Additional map layer. Needs to match predefined allowed layer names, e.g. '800'. */
-  custom_layer?: string | null;
+  /** Additional GeoJSON layers associated with case study. */
+  layer: Array<GeojsonLayer>;
+
+  /**
+   * Should display labels for spatial coverages.
+   *
+   * @default true
+   */
+  show_labels: boolean;
 };
 
-export type UseCaseNormalized = Normalized<UseCase, 'knightlab_stoy_map'>;
+export type UseCaseNormalized = Normalized<UseCase, 'knightlab_stoy_map' | 'layer'>;
+
+export type GeojsonLayer = {
+  id: number;
+
+  title: string;
+  attribution: string;
+  description?: string | null;
+  data: FeatureCollection;
+};
+
+export type GeojsonLayerNormalized = GeojsonLayer;
 
 export type Author = Omit<
   {
@@ -278,8 +296,7 @@ export type Text = Omit<
 
 export type TextNormalized = Normalized<Text, 'autor' | 'art' | 'ort'>;
 
-/** Currently not exposed via api. */
-type _Event = {
+export type Event = {
   id: number;
 
   /** Label. */
@@ -298,6 +315,8 @@ type _Event = {
   use_case: Array<UseCase>;
 };
 
+export type EventNormalized = Normalized<Event, 'use_case'>;
+
 /** Spatial Coverage of a Keyword bound to a specifc source document. */
 export type SpatialCoverage = {
   id: number;
@@ -313,12 +332,6 @@ export type SpatialCoverage = {
   geom_collection?: GeometryCollection | null;
   /** Uncertainty of location on a scale from 1 (very secure) to 10 (very insecure). */
   fuzzyness: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
-  /**
-   * Display labels for coverage.
-   *
-   * @default true
-   */
-  show_labels: boolean;
 
   /** Comment. */
   kommentar?: string | null;
@@ -326,9 +339,10 @@ export type SpatialCoverage = {
 
 export type SpatialCoverageNormalized = Normalized<SpatialCoverage, 'stelle' | 'key_word'>;
 
-type PlaceGeoJsonProperty = {
+export type PlaceGeojsonProperty = {
   id: Place['id'];
   name: Place['name'];
+  name_antik: Place['name_antik'];
   lat?: number | null;
   lng?: number | null;
   art?: {
@@ -337,7 +351,7 @@ type PlaceGeoJsonProperty = {
   } | null;
 };
 
-export type SpatialCoverageGeoJsonProperties = {
+export type SpatialCoverageGeojsonProperties = {
   /** Keyword associated with coverage. */
   key_word?: KeywordNormalized | null;
   /** Uncertainty of location on a scale from 1 (very secure) to 10 (very insecure). */
@@ -346,14 +360,14 @@ export type SpatialCoverageGeoJsonProperties = {
   texts: Array<{
     id: Text['id'];
     title: Text['title'];
-    places: Array<PlaceGeoJsonProperty>;
+    places: Array<PlaceGeojsonProperty>;
     authors: Array<{
       id: Author['id'];
       name: Author['name'];
-      place?: PlaceGeoJsonProperty | null;
+      place?: PlaceGeojsonProperty | null;
     }>;
   }>;
-  places: Array<PlaceGeoJsonProperty>;
+  places: Array<PlaceGeojsonProperty>;
 };
 
 /**
@@ -543,6 +557,14 @@ export type TextTopicRelation = {
 };
 
 export type TextTopicRelationNormalized = Normalized<TextTopicRelation, 'text' | 'topic'>;
+
+export type StopWord = {
+  id: number;
+
+  word: string;
+};
+
+export type StopWordNormalized = StopWord;
 
 /**
  * @see https://github.com/acdh-oeaw/django-story-map

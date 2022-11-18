@@ -1,15 +1,53 @@
 /* eslint @typescript-eslint/no-unused-vars: ["error", { "argsIgnorePattern": "^_" }] */
 
+import { assert } from '@stefanprobst/assert';
+import type { UseQueryOptions } from '@tanstack/vue-query';
 import { useQuery } from '@tanstack/vue-query';
 import type { Ref } from 'vue';
-import { unref } from 'vue';
 
 import * as api from '@/api/client';
 
 type MaybeRef<T> = T | Ref<T>;
 
+type Options = {
+  isEnabled?: UseQueryOptions['enabled'];
+  keepPreviousData?: UseQueryOptions['keepPreviousData'];
+};
+
+function getQueryOptions(options?: Options) {
+  const queryOptions: Pick<UseQueryOptions, 'enabled' | 'keepPreviousData'> = {};
+
+  if (options == null) return queryOptions;
+
+  if (options.isEnabled != null) {
+    queryOptions.enabled = options.isEnabled;
+  }
+
+  if (options.keepPreviousData != null) {
+    queryOptions.keepPreviousData = options.keepPreviousData;
+  }
+
+  return queryOptions;
+}
+
 const resources = [
   'author',
+  'autocomplete',
+  'autocomplete-author',
+  'autocomplete-keyword',
+  'autocomplete-keyword-region',
+  'autocomplete-keyword-ethnonym',
+  'autocomplete-keyword-keyword',
+  'autocomplete-keyword-name',
+  'autocomplete-place',
+  'autocomplete-passage',
+  'autocomplete-text',
+  'autocomplete-usecase',
+  'autocomplete-text-genre-type',
+  'autocomplete-place-type',
+  'autocomplete-place-category',
+  'event',
+  'geojson-layer',
   'geojson-place',
   'geojson-fuzzy-place',
   'geojson-cone',
@@ -42,332 +80,815 @@ function createKey<
   return [resource, scope, ...args] as const;
 }
 
-export function useAuthors(searchParams: MaybeRef<api.GetAuthors.SearchParams>) {
+function assertParams<T extends object, K extends keyof T>(params: T, keys: Array<K>) {
+  keys.forEach((key) => {
+    assert(params[key], `Param ${String(key)} is required.`);
+  });
+  return params as RequiredKeys<T, typeof keys[number]>;
+}
+
+export function useAuthors(
+  searchParams: MaybeRef<Partial<api.GetAuthors.SearchParams>>,
+  options?: Options
+) {
   return useQuery({
     queryKey: createKey('author', 'list', searchParams),
-    queryFn: () => api.getAuthors(unref(searchParams)),
+    queryFn: ({ queryKey: [, , searchParams] }) => {
+      return api.getAuthors(searchParams);
+    },
+    ...getQueryOptions(options),
   });
 }
 
-export function useAuthorById(params: MaybeRef<api.GetAuthorById.PathParams>) {
+export function useAuthorById(
+  params: MaybeRef<Partial<api.GetAuthorById.PathParams>>,
+  options?: Options
+) {
   return useQuery({
     queryKey: createKey('author', 'by-id', params),
-    queryFn: () => api.getAuthorById(unref(params)),
+    queryFn: ({ queryKey: [, , params] }) => {
+      return api.getAuthorById(assertParams(params, ['id']));
+    },
+    ...getQueryOptions(options),
   });
 }
 
-export function useKeywords(searchParams: MaybeRef<api.GetKeywords.SearchParams>) {
+export function useKeywords(
+  searchParams: MaybeRef<Partial<api.GetKeywords.SearchParams>>,
+  options?: Options
+) {
   return useQuery({
     queryKey: createKey('keyword', 'list', searchParams),
-    queryFn: () => api.getKeywords(unref(searchParams)),
+    queryFn: ({ queryKey: [, , searchParams] }) => {
+      return api.getKeywords(searchParams);
+    },
+    ...getQueryOptions(options),
   });
 }
 
-export function useKeywordById(params: MaybeRef<api.GetKeywordById.PathParams>) {
+export function useKeywordById(
+  params: MaybeRef<Partial<api.GetKeywordById.PathParams>>,
+  options?: Options
+) {
   return useQuery({
     queryKey: createKey('keyword', 'by-id', params),
-    queryFn: () => api.getKeywordById(unref(params)),
+    queryFn: ({ queryKey: [, , params] }) => {
+      return api.getKeywordById(assertParams(params, ['id']));
+    },
+    ...getQueryOptions(options),
   });
 }
 
-export function useKeywordByCenturyById(params: MaybeRef<api.GetKeywordById.PathParams>) {
+export function useKeywordByCenturyById(
+  params: MaybeRef<Partial<api.GetKeywordById.PathParams>>,
+  options?: Options
+) {
   return useQuery({
     queryKey: createKey('keyword', 'by-id', params, 'century'),
-    queryFn: () => api.getKeywordByCenturyById(unref(params)),
+    queryFn: ({ queryKey: [, , params] }) => {
+      return api.getKeywordByCenturyById(assertParams(params, ['id']));
+    },
+    ...getQueryOptions(options),
   });
 }
 
-export function useKeywordGraph(searchParams: MaybeRef<api.GetKeywordGraph.SearchParams>) {
+export function useKeywordGraph(
+  searchParams: MaybeRef<Partial<api.GetKeywordGraph.SearchParams>>,
+  options?: Options
+) {
   return useQuery({
     queryKey: createKey('keyword', 'list', searchParams, 'graph'),
-    queryFn: () => api.getKeywordGraph(unref(searchParams)),
+    queryFn: ({ queryKey: [, , searchParams] }) => {
+      return api.getKeywordGraph(searchParams);
+    },
+    ...getQueryOptions(options),
   });
 }
 
-export function usePassages(searchParams: MaybeRef<api.GetPassages.SearchParams>) {
+export function usePassages(
+  searchParams: MaybeRef<Partial<api.GetPassages.SearchParams>>,
+  options?: Options
+) {
   return useQuery({
     queryKey: createKey('passage', 'list', searchParams),
-    queryFn: () => api.getPassages(unref(searchParams)),
+    queryFn: ({ queryKey: [, , searchParams] }) => {
+      return api.getPassages(searchParams);
+    },
+    ...getQueryOptions(options),
   });
 }
 
-export function usePassageById(params: MaybeRef<api.GetPassageById.PathParams>) {
+export function usePassageById(
+  params: MaybeRef<Partial<api.GetPassageById.PathParams>>,
+  options?: Options
+) {
   return useQuery({
     queryKey: createKey('passage', 'by-id', params),
-    queryFn: () => api.getPassageById(unref(params)),
+    queryFn: ({ queryKey: [, , params] }) => {
+      return api.getPassageById(assertParams(params, ['id']));
+    },
+    ...getQueryOptions(options),
   });
 }
 
-export function usePassageKeywords(searchParams: MaybeRef<api.GetPassageKeywords.SearchParams>) {
+export function usePassageKeywords(
+  searchParams: MaybeRef<Partial<api.GetPassageKeywords.SearchParams>>,
+  options?: Options
+) {
   return useQuery({
     queryKey: createKey('passage', 'list', searchParams, 'keywords'),
-    queryFn: () => api.getPassageKeywords(unref(searchParams)),
+    queryFn: ({ queryKey: [, , searchParams] }) => {
+      return api.getPassageKeywords(searchParams);
+    },
+    ...getQueryOptions(options),
   });
 }
 
-export function usePassageNlpData(searchParams: MaybeRef<api.GetPassageNlpData.SearchParams>) {
+export function usePassageNlpData(
+  searchParams: MaybeRef<Partial<api.GetPassageNlpData.SearchParams>>,
+  options?: Options
+) {
   return useQuery({
     queryKey: createKey('passage', 'list', searchParams, 'nlp-data'),
-    queryFn: () => api.getPassageNlpData(unref(searchParams)),
+    queryFn: ({ queryKey: [, , searchParams] }) => {
+      return api.getPassageNlpData(searchParams);
+    },
+    ...getQueryOptions(options),
   });
 }
 
-export function usePlaces(searchParams: MaybeRef<api.GetPlaces.SearchParams>) {
+export function usePlaces(
+  searchParams: MaybeRef<Partial<api.GetPlaces.SearchParams>>,
+  options?: Options
+) {
   return useQuery({
     queryKey: createKey('place', 'list', searchParams),
-    queryFn: () => api.getPlaces(unref(searchParams)),
+    queryFn: ({ queryKey: [, , searchParams] }) => {
+      return api.getPlaces(searchParams);
+    },
+    ...getQueryOptions(options),
   });
 }
 
-export function usePlaceById(params: MaybeRef<api.GetPlaceById.PathParams>) {
+export function usePlaceById(
+  params: MaybeRef<Partial<api.GetPlaceById.PathParams>>,
+  options?: Options
+) {
   return useQuery({
     queryKey: createKey('place', 'by-id', params),
-    queryFn: () => api.getPlaceById(unref(params)),
+    queryFn: ({ queryKey: [, , params] }) => {
+      return api.getPlaceById(assertParams(params, ['id']));
+    },
+    ...getQueryOptions(options),
   });
 }
 
-export function useTexts(searchParams: MaybeRef<api.GetTexts.SearchParams>) {
+export function useTexts(
+  searchParams: MaybeRef<Partial<api.GetTexts.SearchParams>>,
+  options?: Options
+) {
   return useQuery({
     queryKey: createKey('text', 'list', searchParams),
-    queryFn: () => api.getTexts(unref(searchParams)),
+    queryFn: ({ queryKey: [, , searchParams] }) => {
+      return api.getTexts(searchParams);
+    },
+    ...getQueryOptions(options),
   });
 }
 
-export function useTextById(params: MaybeRef<api.GetTextById.PathParams>) {
+export function useTextById(
+  params: MaybeRef<Partial<api.GetTextById.PathParams>>,
+  options?: Options
+) {
   return useQuery({
     queryKey: createKey('text', 'by-id', params),
-    queryFn: () => api.getTextById(unref(params)),
+    queryFn: ({ queryKey: [, , params] }) => {
+      return api.getTextById(assertParams(params, ['id']));
+    },
+    ...getQueryOptions(options),
   });
 }
 
-export function useUseCases(searchParams: MaybeRef<api.GetUseCases.SearchParams>) {
+export function useUseCases(
+  searchParams: MaybeRef<Partial<api.GetUseCases.SearchParams>>,
+  options?: Options
+) {
   return useQuery({
     queryKey: createKey('use-case', 'list', searchParams),
-    queryFn: () => api.getUseCases(unref(searchParams)),
+    queryFn: ({ queryKey: [, , searchParams] }) => {
+      return api.getUseCases(searchParams);
+    },
+    ...getQueryOptions(options),
   });
 }
 
-export function useUseCaseById(params: MaybeRef<api.GetUseCaseById.PathParams>) {
+export function useUseCaseById(
+  params: MaybeRef<Partial<api.GetUseCaseById.PathParams>>,
+  options?: Options
+) {
   return useQuery({
     queryKey: createKey('use-case', 'by-id', params),
-    queryFn: () => api.getUseCaseById(unref(params)),
+    queryFn: ({ queryKey: [, , params] }) => {
+      return api.getUseCaseById(assertParams(params, ['id']));
+    },
+    ...getQueryOptions(options),
   });
 }
 
-export function useUseCaseTimeTableById(params: MaybeRef<api.GetSkosConceptSchemeById.PathParams>) {
+export function useUseCaseTimeTableById(
+  params: MaybeRef<Partial<api.GetSkosConceptSchemeById.PathParams>>,
+  options?: Options
+) {
   return useQuery({
     queryKey: createKey('use-case', 'by-id', params, 'timetable'),
-    queryFn: () => api.getUseCaseTimetableById(unref(params)),
+    queryFn: ({ queryKey: [, , params] }) => {
+      return api.getUseCaseTimetableById(assertParams(params, ['id']));
+    },
+    ...getQueryOptions(options),
+  });
+}
+
+export function useGeojsonLayers(
+  searchParams: MaybeRef<Partial<api.GetGeojsonLayers.SearchParams>>,
+  options?: Options
+) {
+  return useQuery({
+    queryKey: createKey('geojson-layer', 'list', searchParams),
+    queryFn: ({ queryKey: [, , searchParams] }) => {
+      return api.getGeojsonLayers(searchParams);
+    },
+    ...getQueryOptions(options),
+  });
+}
+
+export function useGeojsonLayerById(
+  params: MaybeRef<Partial<api.GetGeojsonLayerById.PathParams>>,
+  options?: Options
+) {
+  return useQuery({
+    queryKey: createKey('geojson-layer', 'by-id', params),
+    queryFn: ({ queryKey: [, , params] }) => {
+      return api.getGeojsonLayerById(assertParams(params, ['id']));
+    },
+    ...getQueryOptions(options),
+  });
+}
+
+export function useEvents(
+  searchParams: MaybeRef<Partial<api.GetEvents.SearchParams>>,
+  options?: Options
+) {
+  return useQuery({
+    queryKey: createKey('event', 'list', searchParams),
+    queryFn: ({ queryKey: [, , searchParams] }) => {
+      return api.getEvents(searchParams);
+    },
+    ...getQueryOptions(options),
+  });
+}
+
+export function useEventById(
+  params: MaybeRef<Partial<api.GetEventById.PathParams>>,
+  options?: Options
+) {
+  return useQuery({
+    queryKey: createKey('event', 'by-id', params),
+    queryFn: ({ queryKey: [, , params] }) => {
+      return api.getEventById(assertParams(params, ['id']));
+    },
+    ...getQueryOptions(options),
   });
 }
 
 export function useModelingProcesses(
-  searchParams: MaybeRef<api.GetModelingProcesses.SearchParams>
+  searchParams: MaybeRef<Partial<api.GetModelingProcesses.SearchParams>>,
+  options?: Options
 ) {
   return useQuery({
     queryKey: createKey('modeling-process', 'list', searchParams),
-    queryFn: () => api.getModelingProcesses(unref(searchParams)),
+    queryFn: ({ queryKey: [, , searchParams] }) => {
+      return api.getModelingProcesses(searchParams);
+    },
+    ...getQueryOptions(options),
   });
 }
 
-export function useModelingProcessById(params: MaybeRef<api.GetModelingProcessById.PathParams>) {
+export function useModelingProcessById(
+  params: MaybeRef<Partial<api.GetModelingProcessById.PathParams>>,
+  options?: Options
+) {
   return useQuery({
     queryKey: createKey('modeling-process', 'by-id', params),
-    queryFn: () => api.getModelingProcessById(unref(params)),
+    queryFn: ({ queryKey: [, , params] }) => {
+      return api.getModelingProcessById(assertParams(params, ['id']));
+    },
+    ...getQueryOptions(options),
   });
 }
 
-export function useStopWords() {
+export function useStopWords(
+  searchParams: MaybeRef<Partial<api.GetStopWords.SearchParams>>,
+  options?: Options
+) {
   return useQuery({
-    queryKey: createKey('stop-word', 'list'),
-    queryFn: () => api.getStopWords(),
+    queryKey: createKey('stop-word', 'list', searchParams),
+    queryFn: ({ queryKey: [, , searchParams] }) => {
+      return api.getStopWords(searchParams);
+    },
+    ...getQueryOptions(options),
   });
 }
 
 export function useTextTopicRelations(
-  searchParams: MaybeRef<api.GetTextTopicRelations.SearchParams>
+  searchParams: MaybeRef<Partial<api.GetTextTopicRelations.SearchParams>>,
+  options?: Options
 ) {
   return useQuery({
     queryKey: createKey('text-topic-relation', 'list', searchParams),
-    queryFn: () => api.getTextTopicRelations(unref(searchParams)),
+    queryFn: ({ queryKey: [, , searchParams] }) => {
+      return api.getTextTopicRelations(searchParams);
+    },
+    ...getQueryOptions(options),
   });
 }
 
 export function useTextTopicRelationById(
-  params: MaybeRef<api.GetTextTopicRelationById.PathParams>
+  params: MaybeRef<Partial<api.GetTextTopicRelationById.PathParams>>,
+  options?: Options
 ) {
   return useQuery({
     queryKey: createKey('text-topic-relation', 'by-id', params),
-    queryFn: () => api.getTextTopicRelationById(unref(params)),
+    queryFn: ({ queryKey: [, , params] }) => {
+      return api.getTextTopicRelationById(assertParams(params, ['id']));
+    },
+    ...getQueryOptions(options),
   });
 }
 
-export function useTopics(searchParams: MaybeRef<api.GetTopics.SearchParams>) {
+export function useTopics(
+  searchParams: MaybeRef<Partial<api.GetTopics.SearchParams>>,
+  options?: Options
+) {
   return useQuery({
     queryKey: createKey('topic', 'list', searchParams),
-    queryFn: () => api.getTopics(unref(searchParams)),
+    queryFn: ({ queryKey: [, , searchParams] }) => {
+      return api.getTopics(searchParams);
+    },
+    ...getQueryOptions(options),
   });
 }
 
-export function useTopicById(params: MaybeRef<api.GetTopicById.PathParams>) {
+export function useTopicById(
+  params: MaybeRef<Partial<api.GetTopicById.PathParams>>,
+  options?: Options
+) {
   return useQuery({
     queryKey: createKey('topic', 'by-id', params),
-    queryFn: () => api.getTopicById(unref(params)),
+    queryFn: ({ queryKey: [, , params] }) => {
+      return api.getTopicById(assertParams(params, ['id']));
+    },
+    ...getQueryOptions(options),
   });
 }
 
-export function usePlacesGeojson(searchParams: MaybeRef<api.GetPlacesGeojson.SearchParams>) {
+export function usePlacesGeojson(
+  searchParams: MaybeRef<Partial<api.GetPlacesGeojson.SearchParams>>,
+  options?: Options
+) {
   return useQuery({
     queryKey: createKey('geojson-place', 'list', searchParams),
-    queryFn: () => api.getPlacesGeojson(unref(searchParams)),
+    queryFn: ({ queryKey: [, , searchParams] }) => {
+      return api.getPlacesGeojson(searchParams);
+    },
+    ...getQueryOptions(options),
   });
 }
 
-export function usePlaceGeojsonById(params: MaybeRef<api.GetPlaceGeojsonById.PathParams>) {
+export function usePlaceGeojsonById(
+  params: MaybeRef<Partial<api.GetPlaceGeojsonById.PathParams>>,
+  options?: Options
+) {
   return useQuery({
     queryKey: createKey('geojson-place', 'by-id', params),
-    queryFn: () => api.getPlaceGeojsonById(unref(params)),
+    queryFn: ({ queryKey: [, , params] }) => {
+      return api.getPlaceGeojsonById(assertParams(params, ['id']));
+    },
+    ...getQueryOptions(options),
   });
 }
 
 export function useFuzzyPlacesGeojson(
-  searchParams: MaybeRef<api.GetFuzzyPlacesGeojson.SearchParams>
+  searchParams: MaybeRef<Partial<api.GetFuzzyPlacesGeojson.SearchParams>>,
+  options?: Options
 ) {
   return useQuery({
     queryKey: createKey('geojson-fuzzy-place', 'list', searchParams),
-    queryFn: () => api.getFuzzyPlacesGeojson(unref(searchParams)),
+    queryFn: ({ queryKey: [, , searchParams] }) => {
+      return api.getFuzzyPlacesGeojson(searchParams);
+    },
+    ...getQueryOptions(options),
   });
 }
 
 export function useFuzzyPlaceGeojsonById(
-  params: MaybeRef<api.GetFuzzyPlaceGeojsonById.PathParams>
+  params: MaybeRef<Partial<api.GetFuzzyPlaceGeojsonById.PathParams>>,
+  options?: Options
 ) {
   return useQuery({
     queryKey: createKey('geojson-fuzzy-place', 'by-id', params),
-    queryFn: () => api.getFuzzyPlaceGeojsonById(unref(params)),
+    queryFn: ({ queryKey: [, , params] }) => {
+      return api.getFuzzyPlaceGeojsonById(assertParams(params, ['id']));
+    },
+    ...getQueryOptions(options),
   });
 }
 
-export function useConesGeojson(searchParams: MaybeRef<api.GetConesGeojson.SearchParams>) {
+export function useConesGeojson(
+  searchParams: MaybeRef<Partial<api.GetConesGeojson.SearchParams>>,
+  options?: Options
+) {
   return useQuery({
     queryKey: createKey('geojson-cone', 'list', searchParams),
-    queryFn: () => api.getConesGeojson(unref(searchParams)),
+    queryFn: ({ queryKey: [, , searchParams] }) => {
+      return api.getConesGeojson(searchParams);
+    },
+    ...getQueryOptions(options),
   });
 }
 
-export function useConeGeojsonById(params: MaybeRef<api.GetConeGeojsonById.PathParams>) {
+export function useConeGeojsonById(
+  params: MaybeRef<Partial<api.GetConeGeojsonById.PathParams>>,
+  options?: Options
+) {
   return useQuery({
     queryKey: createKey('geojson-cone', 'by-id', params),
-    queryFn: () => api.getConeGeojsonById(unref(params)),
+    queryFn: ({ queryKey: [, , params] }) => {
+      return api.getConeGeojsonById(assertParams(params, ['id']));
+    },
+    ...getQueryOptions(options),
   });
 }
 
 export function useSpatialCoveragesGeojson(
-  searchParams: MaybeRef<api.GetSpatialCoveragesGeojson.SearchParams>
+  searchParams: MaybeRef<Partial<api.GetSpatialCoveragesGeojson.SearchParams>>,
+  options?: Options
 ) {
   return useQuery({
     queryKey: createKey('geojson-spatial-coverage', 'list', searchParams),
-    queryFn: () => api.getSpatialCoveragesGeojson(unref(searchParams)),
+    queryFn: ({ queryKey: [, , searchParams] }) => {
+      return api.getSpatialCoveragesGeojson(searchParams);
+    },
+    ...getQueryOptions(options),
   });
 }
 
 export function useSpatialCoverageGeojsonById(
-  params: MaybeRef<api.GetSpatialCoverageGeojsonById.PathParams>
+  params: MaybeRef<Partial<api.GetSpatialCoverageGeojsonById.PathParams>>,
+  options?: Options
 ) {
   return useQuery({
     queryKey: createKey('geojson-spatial-coverage', 'by-id', params),
-    queryFn: () => api.getSpatialCoverageGeojsonById(unref(params)),
+    queryFn: ({ queryKey: [, , params] }) => {
+      return api.getSpatialCoverageGeojsonById(assertParams(params, ['id']));
+    },
+    ...getQueryOptions(options),
   });
 }
 
 export function useLinesPointsGeojson(
-  searchParams: MaybeRef<api.GetLinesPointsGeojson.SearchParams>
+  searchParams: MaybeRef<Partial<api.GetLinesPointsGeojson.SearchParams>>,
+  options?: Options
 ) {
   return useQuery({
     queryKey: createKey('geojson-lines-points', 'list', searchParams),
-    queryFn: () => api.getLinesPointsGeojson(unref(searchParams)),
+    queryFn: ({ queryKey: [, , searchParams] }) => {
+      return api.getLinesPointsGeojson(searchParams);
+    },
+    ...getQueryOptions(options),
   });
 }
 
 export function useLinesPointsGeojsonById(
-  params: MaybeRef<api.GetLinesPointsGeojsonById.PathParams>
+  params: MaybeRef<Partial<api.GetLinesPointsGeojsonById.PathParams>>,
+  options?: Options
 ) {
   return useQuery({
     queryKey: createKey('geojson-lines-points', 'by-id', params),
-    queryFn: () => api.getLinesPointsGeojsonById(unref(params)),
+    queryFn: ({ queryKey: [, , params] }) => {
+      return api.getLinesPointsGeojsonById(assertParams(params, ['id']));
+    },
+    ...getQueryOptions(options),
   });
 }
 
-export function useStories(searchParams: MaybeRef<api.GetStories.SearchParams>) {
+export function useStories(
+  searchParams: MaybeRef<Partial<api.GetStories.SearchParams>>,
+  options?: Options
+) {
   return useQuery({
     queryKey: createKey('story', 'list', searchParams),
-    queryFn: () => api.getStories(unref(searchParams)),
+    queryFn: ({ queryKey: [, , searchParams] }) => {
+      return api.getStories(searchParams);
+    },
+    ...getQueryOptions(options),
   });
 }
 
-export function useStoryById(params: MaybeRef<api.GetStoryById.PathParams>) {
+export function useStoryById(
+  params: MaybeRef<Partial<api.GetStoryById.PathParams>>,
+  options?: Options
+) {
   return useQuery({
     queryKey: createKey('story', 'by-id', params),
-    queryFn: () => api.getStoryById(unref(params)),
+    queryFn: ({ queryKey: [, , params] }) => {
+      return api.getStoryById(assertParams(params, ['id']));
+    },
+    ...getQueryOptions(options),
   });
 }
 
-export function useStorySlides(searchParams: MaybeRef<api.GetStorySlides.SearchParams>) {
+export function useStorySlides(
+  searchParams: MaybeRef<Partial<api.GetStorySlides.SearchParams>>,
+  options?: Options
+) {
   return useQuery({
     queryKey: createKey('story-slide', 'list', searchParams),
-    queryFn: () => api.getStorySlides(unref(searchParams)),
+    queryFn: ({ queryKey: [, , searchParams] }) => {
+      return api.getStorySlides(searchParams);
+    },
+    ...getQueryOptions(options),
   });
 }
 
-export function useStorySlideById(params: MaybeRef<api.GetStorySlideById.PathParams>) {
+export function useStorySlideById(
+  params: MaybeRef<Partial<api.GetStorySlideById.PathParams>>,
+  options?: Options
+) {
   return useQuery({
     queryKey: createKey('story-slide', 'by-id', params),
-    queryFn: () => api.getStorySlideById(unref(params)),
+    queryFn: ({ queryKey: [, , params] }) => {
+      return api.getStorySlideById(assertParams(params, ['id']));
+    },
+    ...getQueryOptions(options),
   });
 }
 
-export function useSkosCollections(searchParams: MaybeRef<api.GetSkosCollections.SearchParams>) {
+export function useSkosCollections(
+  searchParams: MaybeRef<Partial<api.GetSkosCollections.SearchParams>>,
+  options?: Options
+) {
   return useQuery({
     queryKey: createKey('skos-collection', 'list', searchParams),
-    queryFn: () => api.getSkosCollections(unref(searchParams)),
+    queryFn: ({ queryKey: [, , searchParams] }) => {
+      return api.getSkosCollections(searchParams);
+    },
+    ...getQueryOptions(options),
   });
 }
 
-export function useSkosCollectionById(params: MaybeRef<api.GetSkosCollectionById.PathParams>) {
+export function useSkosCollectionById(
+  params: MaybeRef<Partial<api.GetSkosCollectionById.PathParams>>,
+  options?: Options
+) {
   return useQuery({
     queryKey: createKey('skos-collection', 'by-id', params),
-    queryFn: () => api.getSkosCollectionById(unref(params)),
+    queryFn: ({ queryKey: [, , params] }) => {
+      return api.getSkosCollectionById(assertParams(params, ['id']));
+    },
+    ...getQueryOptions(options),
   });
 }
 
-export function useSkosConcepts(searchParams: MaybeRef<api.GetSkosConcepts.SearchParams>) {
+export function useSkosConcepts(
+  searchParams: MaybeRef<Partial<api.GetSkosConcepts.SearchParams>>,
+  options?: Options
+) {
   return useQuery({
     queryKey: createKey('skos-concept', 'list', searchParams),
-    queryFn: () => api.getSkosConcepts(unref(searchParams)),
+    queryFn: ({ queryKey: [, , searchParams] }) => {
+      return api.getSkosConcepts(searchParams);
+    },
+    ...getQueryOptions(options),
   });
 }
 
-export function useSkosConceptById(params: MaybeRef<api.GetSkosConceptById.PathParams>) {
+export function useSkosConceptById(
+  params: MaybeRef<Partial<api.GetSkosConceptById.PathParams>>,
+  options?: Options
+) {
   return useQuery({
     queryKey: createKey('skos-concept', 'by-id', params),
-    queryFn: () => api.getSkosConceptById(unref(params)),
+    queryFn: ({ queryKey: [, , params] }) => {
+      return api.getSkosConceptById(assertParams(params, ['id']));
+    },
+    ...getQueryOptions(options),
   });
 }
 
 export function useSkosConceptSchemes(
-  searchParams: MaybeRef<api.GetSkosConceptSchemes.SearchParams>
+  searchParams: MaybeRef<Partial<api.GetSkosConceptSchemes.SearchParams>>,
+  options?: Options
 ) {
   return useQuery({
     queryKey: createKey('skos-concept-scheme', 'list', searchParams),
-    queryFn: () => api.getSkosConceptSchemes(unref(searchParams)),
+    queryFn: ({ queryKey: [, , searchParams] }) => {
+      return api.getSkosConceptSchemes(searchParams);
+    },
+    ...getQueryOptions(options),
   });
 }
 
 export function useSkosConceptSchemeById(
-  params: MaybeRef<api.GetSkosConceptSchemeById.PathParams>
+  params: MaybeRef<Partial<api.GetSkosConceptSchemeById.PathParams>>,
+  options?: Options
 ) {
   return useQuery({
     queryKey: createKey('skos-concept-scheme', 'by-id', params),
-    queryFn: () => api.getSkosConceptSchemeById(unref(params)),
+    queryFn: ({ queryKey: [, , params] }) => {
+      return api.getSkosConceptSchemeById(assertParams(params, ['id']));
+    },
+    ...getQueryOptions(options),
+  });
+}
+
+export function useAuthorsAutoComplete(
+  searchParams: MaybeRef<Partial<api.GetAuthorsAutoComplete.SearchParams>>,
+  options?: Options
+) {
+  return useQuery({
+    queryKey: createKey('autocomplete-author', 'list', searchParams),
+    queryFn: ({ queryKey: [, , searchParams] }) => {
+      return api.getAuthorsAutoComplete(searchParams);
+    },
+    ...getQueryOptions(options),
+  });
+}
+
+export function useKeywordsAutoComplete(
+  searchParams: MaybeRef<Partial<api.GetKeywordsAutoComplete.SearchParams>>,
+  options?: Options
+) {
+  return useQuery({
+    queryKey: createKey('autocomplete-keyword', 'list', searchParams),
+    queryFn: ({ queryKey: [, , searchParams] }) => {
+      return api.getKeywordsAutoComplete(searchParams);
+    },
+    ...getQueryOptions(options),
+  });
+}
+
+export function useRegionKeywordsAutoComplete(
+  searchParams: MaybeRef<Partial<api.GetRegionKeywordsAutoComplete.SearchParams>>,
+  options?: Options
+) {
+  return useQuery({
+    queryKey: createKey('autocomplete-keyword-region', 'list', searchParams),
+    queryFn: ({ queryKey: [, , searchParams] }) => {
+      return api.getRegionKeywordsAutoComplete(searchParams);
+    },
+    ...getQueryOptions(options),
+  });
+}
+
+export function useEthnonymKeywordsAutoComplete(
+  searchParams: MaybeRef<Partial<api.GetEthnonymKeywordsAutoComplete.SearchParams>>,
+  options?: Options
+) {
+  return useQuery({
+    queryKey: createKey('autocomplete-keyword-ethnonym', 'list', searchParams),
+    queryFn: ({ queryKey: [, , searchParams] }) => {
+      return api.getEthnonymKeywordsAutoComplete(searchParams);
+    },
+    ...getQueryOptions(options),
+  });
+}
+
+export function useKeywordKeywordsAutoComplete(
+  searchParams: MaybeRef<Partial<api.GetKeywordKeywordsAutoComplete.SearchParams>>,
+  options?: Options
+) {
+  return useQuery({
+    queryKey: createKey('autocomplete-keyword-keyword', 'list', searchParams),
+    queryFn: ({ queryKey: [, , searchParams] }) => {
+      return api.getKeywordKeywordsAutoComplete(searchParams);
+    },
+    ...getQueryOptions(options),
+  });
+}
+
+export function useNameKeywordsAutoComplete(
+  searchParams: MaybeRef<Partial<api.GetNameKeywordsAutoComplete.SearchParams>>,
+  options?: Options
+) {
+  return useQuery({
+    queryKey: createKey('autocomplete-keyword-name', 'list', searchParams),
+    queryFn: ({ queryKey: [, , searchParams] }) => {
+      return api.getNameKeywordsAutoComplete(searchParams);
+    },
+    ...getQueryOptions(options),
+  });
+}
+
+export function usePlacesAutoComplete(
+  searchParams: MaybeRef<Partial<api.GetPlacesAutoComplete.SearchParams>>,
+  options?: Options
+) {
+  return useQuery({
+    queryKey: createKey('autocomplete-place', 'list', searchParams),
+    queryFn: ({ queryKey: [, , searchParams] }) => {
+      return api.getPlacesAutoComplete(searchParams);
+    },
+    ...getQueryOptions(options),
+  });
+}
+
+export function usePassagesAutoComplete(
+  searchParams: MaybeRef<Partial<api.GetPassagesAutoComplete.SearchParams>>,
+  options?: Options
+) {
+  return useQuery({
+    queryKey: createKey('autocomplete-passage', 'list', searchParams),
+    queryFn: ({ queryKey: [, , searchParams] }) => {
+      return api.getPassagesAutoComplete(searchParams);
+    },
+    ...getQueryOptions(options),
+  });
+}
+
+export function useTextsAutoComplete(
+  searchParams: MaybeRef<Partial<api.GetTextsAutoComplete.SearchParams>>,
+  options?: Options
+) {
+  return useQuery({
+    queryKey: createKey('autocomplete-text', 'list', searchParams),
+    queryFn: ({ queryKey: [, , searchParams] }) => {
+      return api.getTextsAutoComplete(searchParams);
+    },
+    ...getQueryOptions(options),
+  });
+}
+
+export function useUseCasesAutoComplete(
+  searchParams: MaybeRef<Partial<api.GetUseCasesAutoComplete.SearchParams>>,
+  options?: Options
+) {
+  return useQuery({
+    queryKey: createKey('autocomplete-usecase', 'list', searchParams),
+    queryFn: ({ queryKey: [, , searchParams] }) => {
+      return api.getUseCasesAutoComplete(searchParams);
+    },
+    ...getQueryOptions(options),
+  });
+}
+
+export function useTextGenreTypesAutoComplete(
+  searchParams: MaybeRef<Partial<api.GetTextGenreTypesAutoComplete.SearchParams>>,
+  options?: Options
+) {
+  return useQuery({
+    queryKey: createKey('autocomplete-text-genre-type', 'list', searchParams),
+    queryFn: ({ queryKey: [, , searchParams] }) => {
+      return api.getTextGenreTypesAutoComplete(searchParams);
+    },
+    ...getQueryOptions(options),
+  });
+}
+
+export function usePlaceTypesAutoComplete(
+  searchParams: MaybeRef<Partial<api.GetPlaceTypesAutoComplete.SearchParams>>,
+  options?: Options
+) {
+  return useQuery({
+    queryKey: createKey('autocomplete-place-type', 'list', searchParams),
+    queryFn: ({ queryKey: [, , searchParams] }) => {
+      return api.getPlaceTypesAutoComplete(searchParams);
+    },
+    ...getQueryOptions(options),
+  });
+}
+
+export function usePlaceCategoriesAutoComplete(
+  searchParams: MaybeRef<Partial<api.GetPlaceCategoriesAutoComplete.SearchParams>>,
+  options?: Options
+) {
+  return useQuery({
+    queryKey: createKey('autocomplete-place-category', 'list', searchParams),
+    queryFn: ({ queryKey: [, , searchParams] }) => {
+      return api.getPlaceCategoriesAutoComplete(searchParams);
+    },
+    ...getQueryOptions(options),
+  });
+}
+
+export function useAutoComplete(
+  searchParams: MaybeRef<Partial<api.GetAutoComplete.SearchParams>>,
+  options?: Options
+) {
+  return useQuery({
+    queryKey: createKey('autocomplete', 'list', searchParams),
+    queryFn: ({ queryKey: [, , searchParams] }) => {
+      return api.getAutoComplete(assertParams(searchParams, ['q']));
+    },
+    ...getQueryOptions(options),
   });
 }

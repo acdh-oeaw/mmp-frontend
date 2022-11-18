@@ -68,7 +68,7 @@ export type Normalized<T, Keys extends keyof T, Id extends string | number = num
 };
 
 /** Django LookupChoiceFilter allow providing an optional lookup method. */
-export type StringLookupSearchParams = 'icontains' | 'iexact' | 'istartswith' | 'iendswith';
+export type StringLookupSearchParams = 'icontains' | 'iendswith' | 'iexact' | 'istartswith';
 /** Django LookupChoiceFilter allow providing an optional lookup method. */
 export type DateLookupSearchParams = 'exact' | 'gt' | 'lt';
 /** Django LookupChoiceFilter allow providing an optional lookup method. */
@@ -85,3 +85,5 @@ export type FeatureWithBoundingBox<
 > = Feature<G, P> & {
   bbox: [number, number, number, number];
 };
+
+export type ResourceKind = 'autor' | 'ort' | 'text' | 'stelle' | 'keyword' | 'geojsonlayer';

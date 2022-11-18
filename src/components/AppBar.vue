@@ -105,9 +105,6 @@ div.light a,
 
 .non-selectable {
   user-select: none;
-  user-select: none;
-  user-select: none;
-  user-select: none;
 }
 
 .title-wrapper {

@@ -3,7 +3,10 @@
     <v-list-item>
       <v-list-item-action>
         <router-link
-          :to="{ name: fullscreen ? 'List Fullscreen' : 'List', query: $route.query }"
+          :to="{
+            name: backButton,
+            query: $route.query,
+          }"
           class="text-decoration-none"
         >
           <v-icon>mdi-close</v-icon>
@@ -169,10 +172,18 @@ export default {
         this.loading = true;
 
         const urls = [
-          `${process.env.VUE_APP_MMP_API_BASE_URL}/api/autor/${params.id}/?format=json`,
-          `${process.env.VUE_APP_MMP_API_BASE_URL}/api/usecase/?has_stelle__text__autor=${params.id}&format=json`,
-          `${process.env.VUE_APP_MMP_API_BASE_URL}/api/stelle/?text__autor=${params.id}&format=json&has_usecase=${this.hasUsecase}`,
-          `${process.env.VUE_APP_MMP_API_BASE_URL}/api/keyword/?rvn_stelle_key_word_keyword__text__autor=${params.id}&format=json&has_usecase=${this.hasUsecase}`,
+          `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/autor/${params.id}/?format=json`,
+          `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/usecase/?has_stelle__text__autor=${
+            params.id
+          }&format=json`,
+          `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/stelle/?text__autor=${
+            params.id
+          }&format=json&has_usecase=${this.hasUsecase}`,
+          `${
+            import.meta.env.VITE_APP_MMP_API_BASE_URL
+          }/api/keyword/?rvn_stelle_key_word_keyword__text__autor=${
+            params.id
+          }&format=json&has_usecase=${this.hasUsecase}`,
         ];
         const prefetched = this.$store.state.fetchedResults[urls.toString()];
 
@@ -199,6 +210,15 @@ export default {
       },
       deep: true,
       immediate: true,
+    },
+  },
+  methods: {
+    backButton() {
+      let ret;
+      if (this.$route.name.includes('Compare')) ret = 'Compare Authors';
+      else ret = 'List';
+      if (this.$route.name.includes('Fullscreem')) ret += ' Fullscreen';
+      return ret;
     },
   },
 };

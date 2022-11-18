@@ -200,6 +200,8 @@ const routes = [
 ];
 
 const router = new VueRouter({
+  base: import.meta.env.BASE_URL,
+  mode: 'hash',
   routes,
 });
 

@@ -190,7 +190,7 @@
         :options="{ onEachFeature: onEach }"
         :options-style="spatialStyle"
       />
-      <v-marker-cluster
+      <l-marker-cluster
         ref="markerCluster"
         :options="clusterOptions"
         @animationend="resetSpatCov(cluster)"
@@ -203,7 +203,7 @@
           @layerremove="removeMarkerCluster()"
           @layeradd="refreshMarkerCluster()"
         />
-      </v-marker-cluster>
+      </l-marker-cluster>
       <l-geo-json
         v-if="data[1] && showLayers.cones"
         ref="cones"
@@ -306,7 +306,7 @@ import * as L from 'leaflet';
 import { Icon, latLng, latLngBounds } from 'leaflet';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 import { LControl, LGeoJson, LMap, LMarker, LTileLayer, LTooltip } from 'vue2-leaflet';
-import Vue2LeafletMarkercluster from 'vue2-leaflet-markercluster';
+import LMarkerCluster from 'vue2-leaflet-markercluster';
 import 'leaflet.markercluster.placementstrategies';
 
 import blueMarker from '@/assets/blue_marker_icon.png';
@@ -330,7 +330,7 @@ export default {
     LControl,
     LMarker,
     LTooltip,
-    'v-marker-cluster': Vue2LeafletMarkercluster,
+    LMarkerCluster,
   },
   mixins: [helpers],
   props: {
@@ -345,28 +345,6 @@ export default {
     },
     usecase: {
       default: '',
-    },
-    showLayers: {
-      default: {
-        spatial: true,
-        labels: true,
-        cones: true,
-        places: true,
-        relatedPlaces: true,
-        caseStudy: false,
-        romanRoads: false,
-        majorTowns: false,
-        langobardenPoints: false,
-      },
-    },
-    origins: {
-      default: {},
-    },
-    kingdoms: {
-      default: {},
-    },
-    cluster: {
-      default: {},
     },
   },
   data: () => ({
@@ -408,7 +386,6 @@ export default {
       [71.663663, 34.667969],
     ]),
     radioGroup: 1,
-    url: process.env.BASE_URL,
     tileOptions: {
       maxZoom: 10,
       minZoom: 4,
@@ -441,6 +418,20 @@ export default {
     ],
     menu: false,
     relatedPlaces: [],
+    showLayers: {
+      spatial: true,
+      labels: true,
+      cones: true,
+      places: true,
+      relatedPlaces: true,
+      caseStudy: false,
+      romanRoads: false,
+      majorTowns: false,
+      langobardenPoints: false,
+    },
+    origins: {},
+    kingdoms: {},
+    cluster: {},
   }),
   computed: {
     coneStyle() {
@@ -765,6 +756,8 @@ export default {
   watch: {
     data: {
       handler(to) {
+        if (!Array.isArray(to) || to.length < 2) return;
+
         console.log('to', to, this.data);
         this.spatial = JSON.parse(JSON.stringify(to[0]));
         this.cones = JSON.parse(JSON.stringify(to[1]));
@@ -926,7 +919,9 @@ export default {
 
         const study = this.$route.query['Use Case'];
         if (study) {
-          const url = `${process.env.VUE_APP_MMP_API_BASE_URL}/api/usecase/${study}?format=json`;
+          const url = `${
+            import.meta.env.VITE_APP_MMP_API_BASE_URL
+          }/api/usecase/${study}?format=json`;
           fetch(url)
             .then((res) => res.json())
             .then((jsonRes) => {
