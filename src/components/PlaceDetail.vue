@@ -2,8 +2,10 @@
   <v-navigation-drawer permanent fixed right color="#F1F5FA" :width="drawerWidth">
     <v-list-item>
       <v-list-item-action>
-        <router-link :to="{ name: fullscreen ? 'Map Fullscreen' : 'Map', query: $route.query }"
-          class="text-decoration-none">
+        <router-link
+          :to="{ name: fullscreen ? 'Map Fullscreen' : 'Map', query: $route.query }"
+          class="text-decoration-none"
+        >
           <v-icon>mdi-close</v-icon>
         </router-link>
       </v-list-item-action>
@@ -15,9 +17,7 @@
           <v-list-item-subtitle v-if="data.ort.name_antik">
             {{ data.ort.name_antik }}
           </v-list-item-subtitle>
-          <v-list-item-subtitle>
-            {{ data.ort.lat }}, {{ data.ort.long }}
-          </v-list-item-subtitle>
+          <v-list-item-subtitle> {{ data.ort.lat }}, {{ data.ort.long }} </v-list-item-subtitle>
         </template>
         <v-skeleton-loader v-else type="heading, text@2" />
       </v-list-item-content>
@@ -28,19 +28,28 @@
         <v-expansion-panel :disabled="!data.authors.count">
           <v-expansion-panel-header>
             <template v-slot:actions>
-              <v-chip small color="red lighten-3" :disabled="!data.authors.count">{{ data.authors.count }}</v-chip>
+              <v-chip small color="red lighten-3" :disabled="!data.authors.count">{{
+                data.authors.count
+              }}</v-chip>
               <v-icon>mdi-chevron-down</v-icon>
             </template>
             Authors
           </v-expansion-panel-header>
           <v-expansion-panel-content>
-            <v-list-item v-for="author in data.authors.results" :key="author.id" :to="{ name: fullscreen ? 'Author Detail Fullscreen' : 'Author Detail',
+            <v-list-item
+              v-for="author in data.authors.results"
+              :key="author.id"
+              :to="{
+                name: fullscreen ? 'Author Detail Fullscreen' : 'Author Detail',
                 query: addParamsToQuery({ Author: author.id }),
-                params: { id: author.id }
-              }">
+                params: { id: author.id },
+              }"
+            >
               <v-list-item-content>
                 <v-list-item-title>{{ getOptimalName(author) }}</v-list-item-title>
-                <v-list-item-subtitle v-if="author.kommentar">{{ author.kommentar }}</v-list-item-subtitle>
+                <v-list-item-subtitle v-if="author.kommentar">{{
+                  author.kommentar
+                }}</v-list-item-subtitle>
                 <v-list-item-subtitle>{{ author.jahrhundert }}</v-list-item-subtitle>
               </v-list-item-content>
               <v-list-item-icon>
@@ -63,7 +72,9 @@
             <v-list-item v-for="text in data.texts.results" :key="text.id" two-line>
               <v-list-item-content>
                 <v-list-item-title>{{ text.title }}</v-list-item-title>
-                <v-list-item-subtitle>{{ text.autor.map((x) => getOptimalName(x)).join(', ') }}</v-list-item-subtitle>
+                <v-list-item-subtitle>{{
+                  text.autor.map((x) => getOptimalName(x)).join(', ')
+                }}</v-list-item-subtitle>
                 <v-list-item-subtitle>{{ text.jahrhundert }}</v-list-item-subtitle>
               </v-list-item-content>
             </v-list-item>
@@ -105,21 +116,20 @@ export default {
           console.log('prefetched places', prefetched);
           this.loading = false;
         } else {
-          Promise.all(urls.map((x) => fetch(x)))
-            .then((res) => {
-              Promise.all(res.map((x) => x.json()))
-                .then((jsonRes) => {
-                  console.log('place res', jsonRes);
-                  this.$store.commit('addToResults', { req: urls.toString(), jsonRes });
-                  [this.data.ort, this.data.texts, this.data.authors] = jsonRes;
-                })
-                .catch((err) => {
-                  console.error(err);
-                })
-                .finally(() => {
-                  this.loading = false;
-                });
-            });
+          Promise.all(urls.map((x) => fetch(x))).then((res) => {
+            Promise.all(res.map((x) => x.json()))
+              .then((jsonRes) => {
+                console.log('place res', jsonRes);
+                this.$store.commit('addToResults', { req: urls.toString(), jsonRes });
+                [this.data.ort, this.data.texts, this.data.authors] = jsonRes;
+              })
+              .catch((err) => {
+                console.error(err);
+              })
+              .finally(() => {
+                this.loading = false;
+              });
+          });
         }
       },
       deep: true,

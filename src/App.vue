@@ -2,7 +2,10 @@
   <v-app class="app-class">
     <template v-if="!$route.name.includes('Fullscreen')">
       <app-bar />
-      <div class="buffer" :class="{ light: $route.name !== 'Home', smaller: $vuetify.breakpoint.mobile }" />
+      <div
+        class="buffer"
+        :class="{ light: $route.name !== 'Home', smaller: $vuetify.breakpoint.mobile }"
+      />
     </template>
     <v-main>
       <router-view />
@@ -15,9 +18,7 @@ import AppBar from './components/AppBar';
 
 export default {
   name: 'App',
-  data: () => ({
-
-  }),
+  data: () => ({}),
   components: {
     AppBar,
   },
@@ -43,9 +44,17 @@ export default {
       if (dictRev[key]) {
         this.$store.commit('setFilter', { cat: dictRev[key], val: val === 'true' }); // val === 'true' converts booleanlike strings to booleans
       } else if (keyDictRev[key]) {
-        this.$store.commit('setSpecificSubFilter', { cat: 'keyword', key: keyDictRev[key], val: val === 'true' });
+        this.$store.commit('setSpecificSubFilter', {
+          cat: 'keyword',
+          key: keyDictRev[key],
+          val: val === 'true',
+        });
       } else if (placeDictRev[key]) {
-        this.$store.commit('setSpecificSubFilter', { cat: 'place', key: placeDictRev[key], val: val === 'true' });
+        this.$store.commit('setSpecificSubFilter', {
+          cat: 'place',
+          key: placeDictRev[key],
+          val: val === 'true',
+        });
       } else if (['hasUsecase', 'slider', 'intersection'].includes(key)) {
         this.$store.commit('setApiParam', { key, val });
       }
@@ -54,23 +63,23 @@ export default {
 };
 </script>
 <style lang="css">
-  a {
-    text-decoration: none !important;
-  }
-  .v-card__title {
-    word-break: keep-all !important;
-  }
-  .app-class {
-    background-color: #f1f5fa !important;
-  }
-  .buffer {
-    background-color: #0F1226;
-    height: 140px;
-  }
-  .buffer.smaller {
-    height: 130px;
-  }
-  .buffer.light {
-    background: unset;
-  }
+a {
+  text-decoration: none !important;
+}
+.v-card__title {
+  word-break: keep-all !important;
+}
+.app-class {
+  background-color: #f1f5fa !important;
+}
+.buffer {
+  background-color: #0f1226;
+  height: 140px;
+}
+.buffer.smaller {
+  height: 130px;
+}
+.buffer.light {
+  background: unset;
+}
 </style>

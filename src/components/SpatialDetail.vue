@@ -2,14 +2,14 @@
   <v-navigation-drawer permanent fixed right color="#F1F5FA" :width="drawerWidth">
     <v-list-item>
       <v-list-item-action>
-        <router-link :to="{ name: fullscreen ? 'Map Fullscreen' : 'Map', query: $route.query }"
-          class="text-decoration-none">
+        <router-link
+          :to="{ name: fullscreen ? 'Map Fullscreen' : 'Map', query: $route.query }"
+          class="text-decoration-none"
+        >
           <v-icon>mdi-close</v-icon>
         </router-link>
       </v-list-item-action>
-      <v-list-item-title>
-        Keyword(s) found at point
-      </v-list-item-title>
+      <v-list-item-title> Keyword(s) found at point </v-list-item-title>
     </v-list-item>
     <v-divider />
     <v-list v-model="data" v-if="!loading">
@@ -44,10 +44,15 @@
           </v-list>
         </v-list-item>
         <v-subheader>Passages</v-subheader>
-        <v-list-item v-for="passage in d.properties.stelle" :key="passage.id" :to="{
-              name: fullscreen ? 'Passage Detail Fullscreen' : 'Passage Detail',
-              query: addParamsToQuery({ Passage: passage.id }),
-              params: { id: passage.id }}">
+        <v-list-item
+          v-for="passage in d.properties.stelle"
+          :key="passage.id"
+          :to="{
+            name: fullscreen ? 'Passage Detail Fullscreen' : 'Passage Detail',
+            query: addParamsToQuery({ Passage: passage.id }),
+            params: { id: passage.id },
+          }"
+        >
           <v-list-item-content>
             <v-list-item-title>
               {{ passage.display_label }}
@@ -136,7 +141,9 @@ export default {
         for (let label of document.getElementsByClassName('labelText')) {
           label.style.opacity = 0.3;
         }
-        document.getElementsByClassName(`labelText ${id}`)[0].style.textShadow = `0px 0px, ${colour} -2px 0px 0px, ${colour} 0px 2px 0px, ${colour} 0px -2px 0px, ${colour} 1px 1px, ${colour} -1px -1px 0px, ${colour} 1px -1px 0px, ${colour} -1px 1px 0px`;
+        document.getElementsByClassName(
+          `labelText ${id}`
+        )[0].style.textShadow = `0px 0px, ${colour} -2px 0px 0px, ${colour} 0px 2px 0px, ${colour} 0px -2px 0px, ${colour} 1px 1px, ${colour} -1px -1px 0px, ${colour} 1px -1px 0px, ${colour} -1px 1px 0px`;
         document.getElementsByClassName(`labelText ${id}`)[0].style.opacity = 1;
       }
     },
@@ -148,7 +155,9 @@ export default {
       }
       if (document.getElementsByClassName(`labelText ${id}`)[0]) {
         const colour = 'rgb(255,255,255)';
-        document.getElementsByClassName(`labelText ${id}`)[0].style.textShadow = `0px 0px, ${colour} -2px 0px 0px, ${colour} 0px 2px 0px, ${colour} 0px -2px 0px, ${colour} 1px 1px, ${colour} -1px -1px 0px, ${colour} 1px -1px 0px, ${colour} -1px 1px 0px`;
+        document.getElementsByClassName(
+          `labelText ${id}`
+        )[0].style.textShadow = `0px 0px, ${colour} -2px 0px 0px, ${colour} 0px 2px 0px, ${colour} 0px -2px 0px, ${colour} 1px 1px, ${colour} -1px -1px 0px, ${colour} 1px -1px 0px, ${colour} -1px 1px 0px`;
         // eslint-disable-next-line
         for (let label of document.getElementsByClassName('labelText')) {
           label.style.opacity = 1;

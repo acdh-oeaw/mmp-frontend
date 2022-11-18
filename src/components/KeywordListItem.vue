@@ -1,17 +1,29 @@
 <template>
   <v-card flat color="rgba(0, 0, 0, 0)">
     <v-list two-line>
-      <v-skeleton-loader type="list-item-three-line@3" class="transparent-skeleton" v-if="loading" />
-      <v-list-item v-else-if="data.length" v-for="passage in data" three-line :key="passage.id" :to="{
-              name: fullscreen ? 'Passage Detail Fullscreen' : 'Passage Detail',
-              query: addParamsToQuery({ Passage: passage.id }),
-              params: { id: passage.id }}">
+      <v-skeleton-loader
+        type="list-item-three-line@3"
+        class="transparent-skeleton"
+        v-if="loading"
+      />
+      <v-list-item
+        v-else-if="data.length"
+        v-for="passage in data"
+        three-line
+        :key="passage.id"
+        :to="{
+          name: fullscreen ? 'Passage Detail Fullscreen' : 'Passage Detail',
+          query: addParamsToQuery({ Passage: passage.id }),
+          params: { id: passage.id },
+        }"
+      >
         <v-list-item-content>
           <v-list-item-title>
             {{ passage.display_label }}
           </v-list-item-title>
           <v-list-item-subtitle v-if="passage.text.autor.length">
-            {{ passage.text.title }}, {{ passage.text.autor.map((x) => getOptimalName(x)).join(', ') }}
+            {{ passage.text.title }},
+            {{ passage.text.autor.map((x) => getOptimalName(x)).join(', ') }}
           </v-list-item-subtitle>
           <v-list-item-subtitle v-if="passage.text.jahrhundert">
             {{ passage.text.jahrhundert }} century
@@ -33,14 +45,13 @@ export default {
     data: [],
     loading: true,
   }),
-  props: [
-    'parentNodes',
-    'siblingNode',
-  ],
+  props: ['parentNodes', 'siblingNode'],
   mixins: [helpers],
   mounted() {
     const { intersect } = this.$store.state.apiParams;
-    let url = `${process.env.VUE_APP_MMP_API_BASE_URL}/api/stelle/?${intersect ? 'key_word_and' : 'key_word'}=${this.siblingNode}&has_usecase=${this.hasUsecase}`;
+    let url = `${process.env.VUE_APP_MMP_API_BASE_URL}/api/stelle/?${
+      intersect ? 'key_word_and' : 'key_word'
+    }=${this.siblingNode}&has_usecase=${this.hasUsecase}`;
     this.parentNodes.forEach((x) => {
       url += intersect ? `&key_word_and=${x}` : `&key_word=${x}`;
     });
@@ -76,13 +87,13 @@ export default {
 </script>
 
 <style>
-  div.transparent-skeleton > div {
-    background-color: transparent !important;
-  }
-  .v-expansion-panel-content__wrap {
-    padding-left: 0px;
-  }
-  .list-item {
-    margin-bottom: 10px;
-  }
+div.transparent-skeleton > div {
+  background-color: transparent !important;
+}
+.v-expansion-panel-content__wrap {
+  padding-left: 0px;
+}
+.list-item {
+  margin-bottom: 10px;
+}
 </style>

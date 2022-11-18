@@ -30,10 +30,16 @@ export default {
       console.log('FSButton press', this.back, this.$route);
       this.$router.push(
         this.back || {
-          name: this.fullscreen ? this.back || this.$route.name.replace(' Fullscreen', '') : `${this.usecase ? this.getComponentFromTab(this.$route.query.tab) : this.$route.name} Fullscreen`,
-          query: this.usecase ? this.addParamsToQuery({ 'Use Case': this.usecase }) : this.$route.query,
+          name: this.fullscreen
+            ? this.back || this.$route.name.replace(' Fullscreen', '')
+            : `${
+                this.usecase ? this.getComponentFromTab(this.$route.query.tab) : this.$route.name
+              } Fullscreen`,
+          query: this.usecase
+            ? this.addParamsToQuery({ 'Use Case': this.usecase })
+            : this.$route.query,
           params: this.$route.params,
-        },
+        }
       );
       // this.back = this.$route.fullPath; // maybe someday
     },

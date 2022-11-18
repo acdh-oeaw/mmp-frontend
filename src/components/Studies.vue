@@ -23,12 +23,17 @@
           :loading="loading"
         >
           <template v-slot:item="data">
-            <v-list-item-content v-if="data.item.group === 'Keyword' && data.item.selected_text.includes(',')">
+            <v-list-item-content
+              v-if="data.item.group === 'Keyword' && data.item.selected_text.includes(',')"
+            >
               <v-list-item-title>
                 {{ removeRoot(data.item.selected_text) }}
-                <span v-if="$store.state.completeKeywords.includes(parseInt(data.item.id))">(complete)</span>
+                <span v-if="$store.state.completeKeywords.includes(parseInt(data.item.id))"
+                  >(complete)</span
+                >
               </v-list-item-title>
-              <v-list-item-subtitle>Keyword ({{ data.item.selected_text.split(',')[1].replace(/\W/g, '') }})
+              <v-list-item-subtitle
+                >Keyword ({{ data.item.selected_text.split(',')[1].replace(/\W/g, '') }})
               </v-list-item-subtitle>
             </v-list-item-content>
             <v-list-item-content v-else>
@@ -37,11 +42,9 @@
             </v-list-item-content>
           </template>
           <template v-slot:append>
-            <v-icon
-              color="primary"
-              @click="studyAuto = []"
-              v-if="studyAuto.length"
-            >mdi-close</v-icon>
+            <v-icon color="primary" @click="studyAuto = []" v-if="studyAuto.length"
+              >mdi-close</v-icon
+            >
           </template>
         </v-autocomplete>
       </v-col>
@@ -50,10 +53,15 @@
       <v-col cols="12" lg="8">
         <v-card class="study-card" v-for="study in studies" :key="study.id">
           <v-card-title>{{ study.title }}</v-card-title>
-          <v-card-subtitle v-if="study.principal_investigator">{{ study.principal_investigator }}</v-card-subtitle>
+          <v-card-subtitle v-if="study.principal_investigator">{{
+            study.principal_investigator
+          }}</v-card-subtitle>
           <v-card-text v-if="study.description">{{ study.description }}</v-card-text>
           <v-card-actions>
-            <v-btn text :to="{ name: 'Case Study', params: { id: study.id, query: addParamsToQuery() }}">
+            <v-btn
+              text
+              :to="{ name: 'Case Study', params: { id: study.id, query: addParamsToQuery() } }"
+            >
               Read More
             </v-btn>
           </v-card-actions>
@@ -81,8 +89,10 @@ export default {
       if (!val || val.length < 1) return;
       const urls = {};
       const filters = this.$store.state.searchFilters;
-      if (filters.author) urls.Author = `${process.env.VUE_APP_MMP_API_BASE_URL}/archiv-ac/autor-autocomplete/?q=${val}`;
-      if (Object.values(filters.keyword).some((x) => x)) urls.Keyword = `${process.env.VUE_APP_MMP_API_BASE_URL}/archiv-ac/keyword-autocomplete/?q=${val}`;
+      if (filters.author)
+        urls.Author = `${process.env.VUE_APP_MMP_API_BASE_URL}/archiv-ac/autor-autocomplete/?q=${val}`;
+      if (Object.values(filters.keyword).some((x) => x))
+        urls.Keyword = `${process.env.VUE_APP_MMP_API_BASE_URL}/archiv-ac/keyword-autocomplete/?q=${val}`;
 
       // const labels = ['Author', 'Keyword'];
       const prefetched = this.$store.state.fetchedResults[JSON.stringify(urls)];
@@ -90,7 +100,10 @@ export default {
       if (prefetched) {
         this.studySearch = [];
         prefetched.forEach((x, i) => {
-          this.studySearch = [...this.studySearch, ...(x.results.map((result) => ({ ...result, type: ['author', 'keyword'][i] })))];
+          this.studySearch = [
+            ...this.studySearch,
+            ...x.results.map((result) => ({ ...result, type: ['author', 'keyword'][i] })),
+          ];
         });
       } else {
         this.loading = true;
@@ -103,7 +116,10 @@ export default {
                 console.log('urls', urls);
                 this.studySearch = [];
                 jsonRes.forEach((x, i) => {
-                  this.studySearch = [...this.studySearch, ...(x.results.map((result) => ({ ...result, type: ['author', 'keyword'][i] })))];
+                  this.studySearch = [
+                    ...this.studySearch,
+                    ...x.results.map((result) => ({ ...result, type: ['author', 'keyword'][i] })),
+                  ];
                 });
               })
               .catch((err) => {
@@ -167,7 +183,7 @@ export default {
 };
 </script>
 <style scoped>
-  .study-card {
-    margin-bottom: 20px;
-  }
+.study-card {
+  margin-bottom: 20px;
+}
 </style>

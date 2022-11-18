@@ -1,9 +1,5 @@
 <template>
-  <v-card
-    color="transparent"
-    width="100%"
-    flat
-  >
+  <v-card color="transparent" width="100%" flat>
     <v-data-table
       :items="items"
       :headers="headers"
@@ -15,14 +11,14 @@
       @update:page="updateOffset"
       @update:items-per-page="updateLimit"
       :footer-props="{
-        'items-per-page-options': [10, 20, 50, 100, 1000, -1]
+        'items-per-page-options': [10, 20, 50, 100, 1000, -1],
       }"
       class="data-table"
     >
       <template v-slot:[`item.text.autor`]="{ item }">
         <template v-if="item.text">
           <router-link
-            v-for="author, i in item.text.autor"
+            v-for="(author, i) in item.text.autor"
             :to="{
               name: fullscreen ? 'Author Detail Fullscreen' : 'Author Detail',
               params: { id: author.id },
@@ -42,32 +38,26 @@
           <router-link
             :to="{
               name: fullscreen ? 'Passage Detail Fullscreen' : 'Passage Detail',
-              params: { id: item.id }, query: $route.query
+              params: { id: item.id },
+              query: $route.query,
             }"
             class="text-decoration-none"
           >
-            <b>{{ item.text.title }}</b><v-icon>mdi-chevron-right</v-icon>
+            <b>{{ item.text.title }}</b
+            ><v-icon>mdi-chevron-right</v-icon>
           </router-link>
         </template>
       </template>
       <template v-slot:[`item.keywords`]="{ item }">
-        <div
-          class="keyword-chip"
-          v-for="(keyword) in item.key_word"
-          :key="keyword.stichwort"
-        >
-          <v-chip
-            small
-            :color="keyColors.chips[keyword.art]"
-            @click="addKeywordToInput(keyword)"
-          >
+        <div class="keyword-chip" v-for="keyword in item.key_word" :key="keyword.stichwort">
+          <v-chip small :color="keyColors.chips[keyword.art]" @click="addKeywordToInput(keyword)">
             {{ keyword.stichwort }}
           </v-chip>
         </div>
       </template>
       <template v-slot:[`item.written`]="{ item }">
         <!-- displays unkown if neither start nor end date are defined -->
-        {{ (item.text ? displayTimeRange(item.text.start_date, item.text.end_date) : 'unknown') }}
+        {{ item.text ? displayTimeRange(item.text.start_date, item.text.end_date) : 'unknown' }}
       </template>
       <template v-slot:[`item.coverage`]="{ item }">
         <!-- displays nothing if neither start nor end date are defined -->
@@ -134,13 +124,7 @@ export default {
       };
 
       let address = `${process.env.VUE_APP_MMP_API_BASE_URL}/api/stelle/?format=json&limit=${this.pagination.limit}&offset=${this.pagination.offset}&has_usecase=${this.hasUsecase}`;
-      const props = [
-        this.author,
-        this.passage,
-        this.keyword,
-        this.usecase,
-        this.place,
-      ];
+      const props = [this.author, this.passage, this.keyword, this.usecase, this.place];
 
       if (props.some((x) => x)) {
         console.debug('list props detected!', props);
@@ -148,7 +132,8 @@ export default {
         props.forEach((prop, i) => {
           if (prop && prop !== '0') {
             console.debug('list prop', prop);
-            if (i === 1) { // passage
+            if (i === 1) {
+              // passage
               address += `&ids=${prop.toString().split('+').join(',')}`;
             } else {
               if (i > 1) j = i - 1; // because terms is missing an element
@@ -229,14 +214,14 @@ export default {
 </script>
 
 <style>
-  a:hover {
-    text-decoration: underline;
-  }
-  div.v-data-table.data-table {
-    background-color: transparent;
-  }
-  .keyword-chip {
-    display: inline-block;
-    margin: 1.5px;
-  }
+a:hover {
+  text-decoration: underline;
+}
+div.v-data-table.data-table {
+  background-color: transparent;
+}
+.keyword-chip {
+  display: inline-block;
+  margin: 1.5px;
+}
 </style>

@@ -1,26 +1,13 @@
 <template>
-  <v-card
-    width="100%"
-    color="transparent"
-    :height="fullscreen ? 'calc(100vh - 4px)' : 500"
-  >
-    <v-overlay
-      absolute
-      opacity=".2"
-      :value="loading"
-    >
+  <v-card width="100%" color="transparent" :height="fullscreen ? 'calc(100vh - 4px)' : 500">
+    <v-overlay absolute opacity=".2" :value="loading">
       <h1 class="no-nodes" v-if="loading">
-        <v-progress-circular
-          indeterminate
-          color="#0F1226"
-        />
+        <v-progress-circular indeterminate color="#0F1226" />
       </h1>
-      <h1 v-else class="no-nodes">
-        No words found!
-      </h1>
+      <h1 v-else class="no-nodes">No words found!</h1>
     </v-overlay>
     <v-row v-if="type === 'pie'">
-      <template v-for="filtered, i in filteredWords">
+      <template v-for="(filtered, i) in filteredWords">
         <v-col
           v-if="showWords[i]"
           :key="JSON.stringify(filtered) + i"
@@ -35,7 +22,7 @@
       </template>
     </v-row>
     <v-row v-else>
-      <template v-for="filtered, i in filteredWords">
+      <template v-for="(filtered, i) in filteredWords">
         <v-col
           v-if="showWords[i]"
           :key="JSON.stringify(filtered) + i"
@@ -45,20 +32,9 @@
         </v-col>
       </template>
     </v-row>
-    <v-navigation-drawer
-      v-model="drawer"
-      absolute
-      right
-    >
-      <v-card :min-height="fullscreen ? 'calc(100vh - 4px)': 498">
-        <v-btn
-          absolute
-          top
-          right
-          icon
-          @click="drawer = false"
-          style="z-index: 100"
-        >
+    <v-navigation-drawer v-model="drawer" absolute right>
+      <v-card :min-height="fullscreen ? 'calc(100vh - 4px)' : 498">
+        <v-btn absolute top right icon @click="drawer = false" style="z-index: 100">
           <v-icon>mdi-close</v-icon>
         </v-btn>
         <v-card-text>
@@ -76,25 +52,21 @@
           />
         </v-card-text>
         <v-container>
-          <v-expansion-panels
-            flat
-            accordion
-          >
-            <v-expansion-panel v-for="title, i in ['Keyword occurences', 'All occurences']" :key="title">
+          <v-expansion-panels flat accordion>
+            <v-expansion-panel
+              v-for="(title, i) in ['Keyword occurences', 'All occurences']"
+              :key="title"
+            >
               <v-expansion-panel-header>
                 {{ title }}
                 <template v-slot:actions>
-                  <v-chip
-                    small
-                  >{{ words[1-i] ? words[1-i].length : 0 }}</v-chip>
-                  <v-icon>
-                    $expand
-                  </v-icon>
+                  <v-chip small>{{ words[1 - i] ? words[1 - i].length : 0 }}</v-chip>
+                  <v-icon> $expand </v-icon>
                 </template>
               </v-expansion-panel-header>
               <v-expansion-panel-content>
                 <v-list dense>
-                  <v-list-item v-for="entry in words[1-i]" :key="entry[0]">
+                  <v-list-item v-for="entry in words[1 - i]" :key="entry[0]">
                     <v-list-item-content>
                       <v-list-item-title>{{ entry[0] }}:&nbsp;{{ entry[1] }}</v-list-item-title>
                     </v-list-item-content>
@@ -105,28 +77,12 @@
           </v-expansion-panels>
         </v-container>
         <v-card-actions>
-          <v-btn
-            text
-            absolute
-            bottom
-            right
-            @click="drawer = false"
-          >
-            Close
-          </v-btn>
+          <v-btn text absolute bottom right @click="drawer = false"> Close </v-btn>
         </v-card-actions>
       </v-card>
     </v-navigation-drawer>
-    <v-btn
-      icon
-      absolute
-      top
-      right
-      @click="drawer = true"
-    >
-      <v-icon>
-        mdi-menu
-      </v-icon>
+    <v-btn icon absolute top right @click="drawer = true">
+      <v-icon> mdi-menu </v-icon>
     </v-btn>
     <fullscreen-button :usecase="usecase" />
     <v-speed-dial
@@ -138,48 +94,22 @@
       transition="slide-y-transition"
     >
       <template v-slot:activator>
-        <v-btn
-          v-model="speeddial"
-          icon
-          small
-        >
-          <v-icon v-if="speeddial">
-            mdi-close
-          </v-icon>
-          <v-icon v-else>
-            mdi-dots-vertical
-          </v-icon>
+        <v-btn v-model="speeddial" icon small>
+          <v-icon v-if="speeddial"> mdi-close </v-icon>
+          <v-icon v-else> mdi-dots-vertical </v-icon>
         </v-btn>
       </template>
-      <v-tooltip
-        right
-        transition="slide-x-transition"
-      >
+      <v-tooltip right transition="slide-x-transition">
         <template v-slot:activator="{ on, attrs }">
-          <v-btn
-            fab
-            small
-            @click="type = 'cloud'"
-            v-bind="attrs"
-            v-on="on"
-          >
+          <v-btn fab small @click="type = 'cloud'" v-bind="attrs" v-on="on">
             <v-icon>mdi-cloud</v-icon>
           </v-btn>
         </template>
         <span>Word Cloud</span>
       </v-tooltip>
-      <v-tooltip
-        right
-        transition="slide-x-transition"
-      >
+      <v-tooltip right transition="slide-x-transition">
         <template v-slot:activator="{ on, attrs }">
-          <v-btn
-            fab
-            small
-            @click="type = 'pie'"
-            v-bind="attrs"
-            v-on="on"
-          >
+          <v-btn fab small @click="type = 'pie'" v-bind="attrs" v-on="on">
             <v-icon>mdi-chart-pie</v-icon>
           </v-btn>
         </template>
@@ -225,13 +155,7 @@ export default {
   mixins: [helpers],
   methods: {
     colorWords(word) {
-      const colors = [
-        '#a91a1a',
-        '#3a8d86',
-        '#0c76ce',
-        '#c09000',
-        '#3b823e',
-      ];
+      const colors = ['#a91a1a', '#3a8d86', '#0c76ce', '#c09000', '#3b823e'];
       const colorGradient = new Gradient();
       colorGradient.setGradient(...colors);
 
@@ -273,7 +197,8 @@ export default {
       this.loading -= 1;
       this.filteredWords = words;
     },
-    sortWords(a, b) { // sorts after occurences, then alphabetically
+    sortWords(a, b) {
+      // sorts after occurences, then alphabetically
       if (a[1] < b[1]) return 1;
       if (a[1] > b[1]) return -1;
       if (a[0] > b[0]) return 1;
@@ -287,10 +212,7 @@ export default {
       return Math.max(...[...this.words[0], ...this.words[1]].map((word) => word[1])); // this returns the max occurence of all words and keywords
     },
     showWords() {
-      return [
-        this.check.includes('words'),
-        this.check.includes('keywords'),
-      ];
+      return [this.check.includes('words'), this.check.includes('keywords')];
     },
   },
   watch: {
@@ -311,13 +233,7 @@ export default {
           Place: 'text__ort',
         };
 
-        const props = [
-          this.author,
-          this.passage,
-          this.keyword,
-          this.usecase,
-          this.place,
-        ];
+        const props = [this.author, this.passage, this.keyword, this.usecase, this.place];
 
         console.log('map props', props);
 
@@ -327,7 +243,8 @@ export default {
           props.forEach((prop, i) => {
             if (prop && prop !== '0') {
               console.debug('cloud prop', prop);
-              if (i === 1) { // passage
+              if (i === 1) {
+                // passage
                 urls = urls.map((url) => `${url}&ids=${prop.toString().split('+').join(',')}`);
               } else {
                 if (i > 1) j = i - 1; // because terms is missing an element
@@ -347,14 +264,23 @@ export default {
             }
           });
 
-          if (query.Passage) urls = urls.map((x) => `${x}&ids=${query.Passage.replaceAll('+', ',')}`);
+          if (query.Passage)
+            urls = urls.map((x) => `${x}&ids=${query.Passage.replaceAll('+', ',')}`);
 
           if (query.time) {
             if (query.time.toString().includes('+')) {
               const times = query.time.split('+');
-              urls = urls.map((x) => `${x}&start_date=${times[0]}&start_date_lookup=gt&end_date=${times[1]}&end_date_lookup=lt`);
+              urls = urls.map(
+                (x) =>
+                  `${x}&start_date=${times[0]}&start_date_lookup=gt&end_date=${times[1]}&end_date_lookup=lt`
+              );
             } else {
-              urls = urls.map((x) => `${x}&start_date=${query.time - 5}&start_date_lookup=gt&end_date=${query.time + 4}&end_date_lookup=lt`);
+              urls = urls.map(
+                (x) =>
+                  `${x}&start_date=${query.time - 5}&start_date_lookup=gt&end_date=${
+                    query.time + 4
+                  }&end_date_lookup=lt`
+              );
             }
           }
           console.log('urls', urls);

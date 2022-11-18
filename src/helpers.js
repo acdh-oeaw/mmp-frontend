@@ -78,11 +78,21 @@ export default {
       };
       return colors[group];
     },
-    getOptimalName: (obj) => obj?.name_en || obj?.name_antik || obj?.name_lat || obj?.name || obj?.name_fr || obj?.name_it || obj?.name_gr,
+    getOptimalName: (obj) =>
+      obj?.name_en ||
+      obj?.name_antik ||
+      obj?.name_lat ||
+      obj?.name ||
+      obj?.name_fr ||
+      obj?.name_it ||
+      obj?.name_gr,
     getIdFromUrl: (url) => url.replace(/\D/g, ''),
     lightenColor(color, fade) {
       if (!color) return color;
-      const numArray = color.replace('#', '').match(/.{2}/g).map((hex) => parseInt(hex, 16));
+      const numArray = color
+        .replace('#', '')
+        .match(/.{2}/g)
+        .map((hex) => parseInt(hex, 16));
       return `rgba(${numArray.join(',')}, ${fade})`;
     },
     // this worked first try please clap
@@ -99,10 +109,14 @@ export default {
           newKeys = keys;
           break;
       }
-      return arr.filter((x, i, self) => i === self.findIndex((t) => {
-        const uneq = (key) => t[key] !== x[key];
-        return !newKeys.some(uneq);
-      }));
+      return arr.filter(
+        (x, i, self) =>
+          i ===
+          self.findIndex((t) => {
+            const uneq = (key) => t[key] !== x[key];
+            return !newKeys.some(uneq);
+          })
+      );
     },
     intersectArrays: (arr1, arr2, key) => arr1.filter((x) => arr2.some((y) => x[key] === y[key])),
     removeRoot: (label) => label.split(/, (\[|<)/)[0],

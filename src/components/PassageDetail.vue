@@ -2,8 +2,10 @@
   <v-navigation-drawer permanent fixed right color="#F1F5FA" :width="drawerWidth">
     <v-list-item>
       <v-list-item-action>
-        <router-link :to="{ name: fullscreen ? 'List Fullscreen' : 'List', query: $route.query }"
-          class="text-decoration-none">
+        <router-link
+          :to="{ name: fullscreen ? 'List Fullscreen' : 'List', query: $route.query }"
+          class="text-decoration-none"
+        >
           <v-icon>mdi-close</v-icon>
         </router-link>
       </v-list-item-action>
@@ -29,18 +31,31 @@
           </td>
           <td v-if="item.key === 'Keywords'">
             <div class="keyword-chip" v-for="keyword in item.value" :key="keyword.id">
-              <v-chip :color="keyColors.chips[keyword.art]" small
-                @click="$store.commit('addToItemsAndInput', { id: keyword.id, selected_text: keyword.stichwort, group: 'Keyword' })">
+              <v-chip
+                :color="keyColors.chips[keyword.art]"
+                small
+                @click="
+                  $store.commit('addToItemsAndInput', {
+                    id: keyword.id,
+                    selected_text: keyword.stichwort,
+                    group: 'Keyword',
+                  })
+                "
+              >
                 {{ keyword.stichwort }}
               </v-chip>
             </div>
           </td>
           <td v-else-if="['Place', 'Author'].includes(item.key)">
-            <router-link v-for="val, i in item.value" :key="val.id" :to="{
+            <router-link
+              v-for="(val, i) in item.value"
+              :key="val.id"
+              :to="{
                 name: fullscreen ? `${item.key} Detail Fullscreen` : `${item.key} Detail`,
                 query: item.key === 'Place' ? addParamsToQuery({ Place: val.id }) : $route.query,
-                params: { id: val.id }
-              }">
+                params: { id: val.id },
+              }"
+            >
               <span v-if="i != 0">, </span>
               {{ getOptimalName(val) }}
               <v-icon>mdi-chevron-right</v-icon>
@@ -80,7 +95,10 @@ export default {
   methods: {
     addRes(res) {
       this.title.title = res.text.title;
-      this.title.written = (res.text.start_date || res.text.end_date) ? `${res.text.start_date || 'unknown'} - ${res.text.end_date || 'unknown'}` : 'unknown';
+      this.title.written =
+        res.text.start_date || res.text.end_date
+          ? `${res.text.start_date || 'unknown'} - ${res.text.end_date || 'unknown'}`
+          : 'unknown';
       this.title.author = res.text.autor.map((x) => x.name_en).join(', ');
 
       this.items = [

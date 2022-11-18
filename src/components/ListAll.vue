@@ -3,58 +3,76 @@
     <v-row justify="center">
       <v-col cols="12" xl="8" class="grey-bg">
         <v-tabs v-model="active" background-color="transparent" grow>
-          <v-tab v-for="tab in tabs" :key="tab.name">
-            {{ tab.name }}s
-          </v-tab>
+          <v-tab v-for="tab in tabs" :key="tab.name"> {{ tab.name }}s </v-tab>
         </v-tabs>
         <v-tabs-items v-model="active">
           <v-tab-item v-for="(tab, i) in tabs" :key="tab.name">
-            <v-data-table :items="tab.items" :headers="tab.header" :loading="tab.loading"
-              :server-items-length="tab.pagination.count || 50" disable-sort disable-filtering
-              @update:page="updateOffset($event, i)" @update:items-per-page="updateLimit($event, i)"
-              :footer-props="{ 'items-per-page-options': [10, 20, 50, 100, 1000, -1] }" class="data-table">
+            <v-data-table
+              :items="tab.items"
+              :headers="tab.header"
+              :loading="tab.loading"
+              :server-items-length="tab.pagination.count || 50"
+              disable-sort
+              disable-filtering
+              @update:page="updateOffset($event, i)"
+              @update:items-per-page="updateLimit($event, i)"
+              :footer-props="{ 'items-per-page-options': [10, 20, 50, 100, 1000, -1] }"
+              class="data-table"
+            >
               <template v-slot:item.id="{ item }">
                 {{ item.id }}
               </template>
               <template v-slot:item.name="{ item }">
-                <v-chip v-if="'gnd_id' in item"
-                  :to="{ name: 'List', query: addParamsToQuery({ Author: item.id })}"
-                  color="red lighten-3">
+                <v-chip
+                  v-if="'gnd_id' in item"
+                  :to="{ name: 'List', query: addParamsToQuery({ Author: item.id }) }"
+                  color="red lighten-3"
+                >
                   {{ item.name }}&nbsp;<v-icon>mdi-chevron-right</v-icon>
                 </v-chip>
-                <v-chip v-else :to="{ name: 'List', query: addParamsToQuery({ Place: item.id })}"
-                  color="green lighten-3">
+                <v-chip
+                  v-else
+                  :to="{ name: 'List', query: addParamsToQuery({ Place: item.id }) }"
+                  color="green lighten-3"
+                >
                   {{ item.name }}&nbsp;<v-icon>mdi-chevron-right</v-icon>
                 </v-chip>
               </template>
               <template v-slot:item.zitat="{ item }">
-                <router-link :to="{ name: 'List', query: addParamsToQuery({ Passage: item.id })}">
-                  <b>
-                    {{ item.zitat }}&nbsp;<v-icon>mdi-chevron-right</v-icon>
-                  </b>
+                <router-link :to="{ name: 'List', query: addParamsToQuery({ Passage: item.id }) }">
+                  <b> {{ item.zitat }}&nbsp;<v-icon>mdi-chevron-right</v-icon> </b>
                 </router-link>
               </template>
               <template v-slot:item.stichwort="{ item }">
-                <v-chip :to="{ name: 'List', query: addParamsToQuery({ Keyword: item.id })}"
-                  color="blue lighten-4">
+                <v-chip
+                  :to="{ name: 'List', query: addParamsToQuery({ Keyword: item.id }) }"
+                  color="blue lighten-4"
+                >
                   {{ item.stichwort }}&nbsp;<v-icon>mdi-chevron-right</v-icon>
                 </v-chip>
               </template>
               <template v-slot:item.title="{ item }">
-                <router-link :to="{ name: 'Case Study', params: { id: item.id, query: $route.query }}">
-                  <b>
-                    {{ item.title }}&nbsp;<v-icon>mdi-chevron-right</v-icon>
-                  </b>
+                <router-link
+                  :to="{ name: 'Case Study', params: { id: item.id, query: $route.query } }"
+                >
+                  <b> {{ item.title }}&nbsp;<v-icon>mdi-chevron-right</v-icon> </b>
                 </router-link>
               </template>
               <template v-slot:item.complete="{ item }">
                 <v-icon v-if="$store.state.completeKeywords.includes(item.id)">
-                  mdi-check-outline</v-icon>
+                  mdi-check-outline</v-icon
+                >
               </template>
               <template v-slot:top>
                 <v-container>
-                  <v-text-field v-model="tabs[i].filter" @input="fetchEntities(i)" append-icon="mdi-magnify"
-                    label="Search" single-line hide-details />
+                  <v-text-field
+                    v-model="tabs[i].filter"
+                    @input="fetchEntities(i)"
+                    append-icon="mdi-magnify"
+                    label="Search"
+                    single-line
+                    hide-details
+                  />
                 </v-container>
               </template>
             </v-data-table>
@@ -73,94 +91,96 @@ export default {
   data: () => ({
     active: 0,
     loading: true,
-    tabs: [{
-      name: 'Author',
-      api: 'autor',
-      filter: '',
-      items: [],
-      loading: false,
-      header: [
-        { text: 'ID', value: 'id' },
-        { text: 'Name', value: 'name' },
-        { text: 'Comment', value: 'kommentar' },
-      ],
-      pagination: {
-        offset: 0,
-        limit: 10,
-        count: 0,
+    tabs: [
+      {
+        name: 'Author',
+        api: 'autor',
+        filter: '',
+        items: [],
+        loading: false,
+        header: [
+          { text: 'ID', value: 'id' },
+          { text: 'Name', value: 'name' },
+          { text: 'Comment', value: 'kommentar' },
+        ],
+        pagination: {
+          offset: 0,
+          limit: 10,
+          count: 0,
+        },
       },
-    },
-    {
-      name: 'Passage',
-      api: 'stelle',
-      filter: '',
-      items: [],
-      loading: false,
-      header: [
-        { text: 'ID', value: 'id' },
-        { text: 'Quote', value: 'zitat' },
-        { text: 'Comment', value: 'kommentar' },
-      ],
-      pagination: {
-        offset: 0,
-        limit: 10,
-        count: 0,
+      {
+        name: 'Passage',
+        api: 'stelle',
+        filter: '',
+        items: [],
+        loading: false,
+        header: [
+          { text: 'ID', value: 'id' },
+          { text: 'Quote', value: 'zitat' },
+          { text: 'Comment', value: 'kommentar' },
+        ],
+        pagination: {
+          offset: 0,
+          limit: 10,
+          count: 0,
+        },
       },
-    },
-    {
-      name: 'Keyword',
-      api: 'keyword',
-      filter: '',
-      items: [],
-      loading: false,
-      header: [
-        { text: 'ID', value: 'id' },
-        { text: 'Name', value: 'stichwort' },
-        { text: 'Type', value: 'art' },
-        { text: 'Complete?', value: 'complete' },
-      ],
-      pagination: {
-        offset: 0,
-        limit: 10,
-        count: 0,
+      {
+        name: 'Keyword',
+        api: 'keyword',
+        filter: '',
+        items: [],
+        loading: false,
+        header: [
+          { text: 'ID', value: 'id' },
+          { text: 'Name', value: 'stichwort' },
+          { text: 'Type', value: 'art' },
+          { text: 'Complete?', value: 'complete' },
+        ],
+        pagination: {
+          offset: 0,
+          limit: 10,
+          count: 0,
+        },
       },
-    },
-    {
-      name: 'Use Case',
-      api: 'usecase',
-      filter: '',
-      items: [],
-      loading: false,
-      header: [
-        { text: 'ID', value: 'id' },
-        { text: 'Title', value: 'title' },
-        { text: 'Description', value: 'description' },
-      ],
-      pagination: {
-        offset: 0,
-        limit: 10,
-        count: 0,
+      {
+        name: 'Use Case',
+        api: 'usecase',
+        filter: '',
+        items: [],
+        loading: false,
+        header: [
+          { text: 'ID', value: 'id' },
+          { text: 'Title', value: 'title' },
+          { text: 'Description', value: 'description' },
+        ],
+        pagination: {
+          offset: 0,
+          limit: 10,
+          count: 0,
+        },
       },
-    },
-    {
-      name: 'Place',
-      api: 'ort',
-      display: 'name',
-      sub: 'kommentar',
-      filter: '',
-      items: [],
-      loading: false,
-      header: [
-        { text: 'ID', value: 'id' },
-        { text: 'Name', value: 'name' },
-        { text: 'Comment', value: 'kommentar' },
-      ],
-      pagination: {
-        offset: 0,
-        limit: 10,
-        count: 0,
+      {
+        name: 'Place',
+        api: 'ort',
+        display: 'name',
+        sub: 'kommentar',
+        filter: '',
+        items: [],
+        loading: false,
+        header: [
+          { text: 'ID', value: 'id' },
+          { text: 'Name', value: 'name' },
+          { text: 'Comment', value: 'kommentar' },
+        ],
+        pagination: {
+          offset: 0,
+          limit: 10,
+          count: 0,
+        },
       },
-    }],
+    ],
   }),
   methods: {
     fetchEntities(tabIndex) {
@@ -190,7 +210,8 @@ export default {
       }
     },
     updateLimit(limit, tabIndex) {
-      this.tabs[tabIndex].pagination.limit = limit === -1 ? this.tabs[tabIndex].pagination.count : limit;
+      this.tabs[tabIndex].pagination.limit =
+        limit === -1 ? this.tabs[tabIndex].pagination.count : limit;
       this.fetchEntities(tabIndex);
     },
     updateOffset(page, tabIndex) {
