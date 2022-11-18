@@ -32,6 +32,7 @@ function getQueryOptions(options?: Options) {
 
 const resources = [
   'author',
+  'autocomplete',
   'autocomplete-author',
   'autocomplete-keyword',
   'autocomplete-keyword-region',
@@ -79,10 +80,11 @@ function createKey<
   return [resource, scope, ...args] as const;
 }
 
-function assertId<T extends { id?: string | number | null }>(params: T) {
-  const id = params.id;
-  assert(id, 'ID is required.');
-  return { ...params, id };
+function assertParams<T extends object, K extends keyof T>(params: T, keys: Array<K>) {
+  keys.forEach((key) => {
+    assert(params[key], `Param ${String(key)} is required.`);
+  });
+  return params as RequiredKeys<T, typeof keys[number]>;
 }
 
 export function useAuthors(
@@ -105,7 +107,7 @@ export function useAuthorById(
   return useQuery({
     queryKey: createKey('author', 'by-id', params),
     queryFn: ({ queryKey: [, , params] }) => {
-      return api.getAuthorById(assertId(params));
+      return api.getAuthorById(assertParams(params, ['id']));
     },
     ...getQueryOptions(options),
   });
@@ -131,7 +133,7 @@ export function useKeywordById(
   return useQuery({
     queryKey: createKey('keyword', 'by-id', params),
     queryFn: ({ queryKey: [, , params] }) => {
-      return api.getKeywordById(assertId(params));
+      return api.getKeywordById(assertParams(params, ['id']));
     },
     ...getQueryOptions(options),
   });
@@ -144,7 +146,7 @@ export function useKeywordByCenturyById(
   return useQuery({
     queryKey: createKey('keyword', 'by-id', params, 'century'),
     queryFn: ({ queryKey: [, , params] }) => {
-      return api.getKeywordByCenturyById(assertId(params));
+      return api.getKeywordByCenturyById(assertParams(params, ['id']));
     },
     ...getQueryOptions(options),
   });
@@ -183,7 +185,7 @@ export function usePassageById(
   return useQuery({
     queryKey: createKey('passage', 'by-id', params),
     queryFn: ({ queryKey: [, , params] }) => {
-      return api.getPassageById(assertId(params));
+      return api.getPassageById(assertParams(params, ['id']));
     },
     ...getQueryOptions(options),
   });
@@ -235,7 +237,7 @@ export function usePlaceById(
   return useQuery({
     queryKey: createKey('place', 'by-id', params),
     queryFn: ({ queryKey: [, , params] }) => {
-      return api.getPlaceById(assertId(params));
+      return api.getPlaceById(assertParams(params, ['id']));
     },
     ...getQueryOptions(options),
   });
@@ -261,7 +263,7 @@ export function useTextById(
   return useQuery({
     queryKey: createKey('text', 'by-id', params),
     queryFn: ({ queryKey: [, , params] }) => {
-      return api.getTextById(assertId(params));
+      return api.getTextById(assertParams(params, ['id']));
     },
     ...getQueryOptions(options),
   });
@@ -287,7 +289,7 @@ export function useUseCaseById(
   return useQuery({
     queryKey: createKey('use-case', 'by-id', params),
     queryFn: ({ queryKey: [, , params] }) => {
-      return api.getUseCaseById(assertId(params));
+      return api.getUseCaseById(assertParams(params, ['id']));
     },
     ...getQueryOptions(options),
   });
@@ -300,7 +302,7 @@ export function useUseCaseTimeTableById(
   return useQuery({
     queryKey: createKey('use-case', 'by-id', params, 'timetable'),
     queryFn: ({ queryKey: [, , params] }) => {
-      return api.getUseCaseTimetableById(assertId(params));
+      return api.getUseCaseTimetableById(assertParams(params, ['id']));
     },
     ...getQueryOptions(options),
   });
@@ -326,7 +328,7 @@ export function useGeojsonLayerById(
   return useQuery({
     queryKey: createKey('geojson-layer', 'by-id', params),
     queryFn: ({ queryKey: [, , params] }) => {
-      return api.getGeojsonLayerById(assertId(params));
+      return api.getGeojsonLayerById(assertParams(params, ['id']));
     },
     ...getQueryOptions(options),
   });
@@ -352,7 +354,7 @@ export function useEventById(
   return useQuery({
     queryKey: createKey('event', 'by-id', params),
     queryFn: ({ queryKey: [, , params] }) => {
-      return api.getEventById(assertId(params));
+      return api.getEventById(assertParams(params, ['id']));
     },
     ...getQueryOptions(options),
   });
@@ -378,7 +380,7 @@ export function useModelingProcessById(
   return useQuery({
     queryKey: createKey('modeling-process', 'by-id', params),
     queryFn: ({ queryKey: [, , params] }) => {
-      return api.getModelingProcessById(assertId(params));
+      return api.getModelingProcessById(assertParams(params, ['id']));
     },
     ...getQueryOptions(options),
   });
@@ -417,7 +419,7 @@ export function useTextTopicRelationById(
   return useQuery({
     queryKey: createKey('text-topic-relation', 'by-id', params),
     queryFn: ({ queryKey: [, , params] }) => {
-      return api.getTextTopicRelationById(assertId(params));
+      return api.getTextTopicRelationById(assertParams(params, ['id']));
     },
     ...getQueryOptions(options),
   });
@@ -443,7 +445,7 @@ export function useTopicById(
   return useQuery({
     queryKey: createKey('topic', 'by-id', params),
     queryFn: ({ queryKey: [, , params] }) => {
-      return api.getTopicById(assertId(params));
+      return api.getTopicById(assertParams(params, ['id']));
     },
     ...getQueryOptions(options),
   });
@@ -469,7 +471,7 @@ export function usePlaceGeojsonById(
   return useQuery({
     queryKey: createKey('geojson-place', 'by-id', params),
     queryFn: ({ queryKey: [, , params] }) => {
-      return api.getPlaceGeojsonById(assertId(params));
+      return api.getPlaceGeojsonById(assertParams(params, ['id']));
     },
     ...getQueryOptions(options),
   });
@@ -495,7 +497,7 @@ export function useFuzzyPlaceGeojsonById(
   return useQuery({
     queryKey: createKey('geojson-fuzzy-place', 'by-id', params),
     queryFn: ({ queryKey: [, , params] }) => {
-      return api.getFuzzyPlaceGeojsonById(assertId(params));
+      return api.getFuzzyPlaceGeojsonById(assertParams(params, ['id']));
     },
     ...getQueryOptions(options),
   });
@@ -521,7 +523,7 @@ export function useConeGeojsonById(
   return useQuery({
     queryKey: createKey('geojson-cone', 'by-id', params),
     queryFn: ({ queryKey: [, , params] }) => {
-      return api.getConeGeojsonById(assertId(params));
+      return api.getConeGeojsonById(assertParams(params, ['id']));
     },
     ...getQueryOptions(options),
   });
@@ -547,7 +549,7 @@ export function useSpatialCoverageGeojsonById(
   return useQuery({
     queryKey: createKey('geojson-spatial-coverage', 'by-id', params),
     queryFn: ({ queryKey: [, , params] }) => {
-      return api.getSpatialCoverageGeojsonById(assertId(params));
+      return api.getSpatialCoverageGeojsonById(assertParams(params, ['id']));
     },
     ...getQueryOptions(options),
   });
@@ -573,7 +575,7 @@ export function useLinesPointsGeojsonById(
   return useQuery({
     queryKey: createKey('geojson-lines-points', 'by-id', params),
     queryFn: ({ queryKey: [, , params] }) => {
-      return api.getLinesPointsGeojsonById(assertId(params));
+      return api.getLinesPointsGeojsonById(assertParams(params, ['id']));
     },
     ...getQueryOptions(options),
   });
@@ -599,7 +601,7 @@ export function useStoryById(
   return useQuery({
     queryKey: createKey('story', 'by-id', params),
     queryFn: ({ queryKey: [, , params] }) => {
-      return api.getStoryById(assertId(params));
+      return api.getStoryById(assertParams(params, ['id']));
     },
     ...getQueryOptions(options),
   });
@@ -625,7 +627,7 @@ export function useStorySlideById(
   return useQuery({
     queryKey: createKey('story-slide', 'by-id', params),
     queryFn: ({ queryKey: [, , params] }) => {
-      return api.getStorySlideById(assertId(params));
+      return api.getStorySlideById(assertParams(params, ['id']));
     },
     ...getQueryOptions(options),
   });
@@ -651,7 +653,7 @@ export function useSkosCollectionById(
   return useQuery({
     queryKey: createKey('skos-collection', 'by-id', params),
     queryFn: ({ queryKey: [, , params] }) => {
-      return api.getSkosCollectionById(assertId(params));
+      return api.getSkosCollectionById(assertParams(params, ['id']));
     },
     ...getQueryOptions(options),
   });
@@ -677,7 +679,7 @@ export function useSkosConceptById(
   return useQuery({
     queryKey: createKey('skos-concept', 'by-id', params),
     queryFn: ({ queryKey: [, , params] }) => {
-      return api.getSkosConceptById(assertId(params));
+      return api.getSkosConceptById(assertParams(params, ['id']));
     },
     ...getQueryOptions(options),
   });
@@ -703,7 +705,7 @@ export function useSkosConceptSchemeById(
   return useQuery({
     queryKey: createKey('skos-concept-scheme', 'by-id', params),
     queryFn: ({ queryKey: [, , params] }) => {
-      return api.getSkosConceptSchemeById(assertId(params));
+      return api.getSkosConceptSchemeById(assertParams(params, ['id']));
     },
     ...getQueryOptions(options),
   });
@@ -873,6 +875,19 @@ export function usePlaceCategoriesAutoComplete(
     queryKey: createKey('autocomplete-place-category', 'list', searchParams),
     queryFn: ({ queryKey: [, , searchParams] }) => {
       return api.getPlaceCategoriesAutoComplete(searchParams);
+    },
+    ...getQueryOptions(options),
+  });
+}
+
+export function useAutoComplete(
+  searchParams: MaybeRef<Partial<api.GetAutoComplete.SearchParams>>,
+  options?: Options
+) {
+  return useQuery({
+    queryKey: createKey('autocomplete', 'list', searchParams),
+    queryFn: ({ queryKey: [, , searchParams] }) => {
+      return api.getAutoComplete(assertParams(searchParams, ['q']));
     },
     ...getQueryOptions(options),
   });
