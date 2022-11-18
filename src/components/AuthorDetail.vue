@@ -33,13 +33,13 @@
     </v-list-item>
     <v-divider />
     <v-container>
-      <div v-for="keyword in keywords.results" :key="keyword.url" class="keyword-chip">
+      <div v-for="keyword in keywords.results" :key="keyword.id" class="keyword-chip">
         <v-chip
           :color="keyColors.chips[keyword.art]"
           small
           @click="
             $store.commit('addToItemsAndInput', {
-              id: keyword.url.replace(/\D/g, ''),
+              id: keyword.id,
               selected_text: keyword.stichwort,
               group: 'Keyword',
             })
@@ -63,11 +63,11 @@
             <v-list v-if="!loading">
               <v-list-item
                 v-for="usecase in usecases.results"
-                :key="usecase.url"
+                :key="usecase.id"
                 three-line
                 :to="{
                   name: 'Case Study',
-                  params: { id: getIdFromUrl(usecase.url) },
+                  params: { id: usecase.id },
                   query: addParamsToQuery(),
                 }"
               >
@@ -112,12 +112,12 @@
             <v-list v-if="!loading">
               <v-list-item
                 v-for="passage in passages.results"
-                :key="passage.url"
+                :key="passage.id"
                 three-line
                 :to="{
                   name: fullscreen ? 'Passage Detail Fullscreen' : 'Passage Detail',
-                  query: addParamsToQuery({ Passage: getIdFromUrl(passage.url) }),
-                  params: { id: getIdFromUrl(passage.url) },
+                  query: addParamsToQuery({ Passage: passage.id }),
+                  params: { id: passage.id },
                 }"
               >
                 <v-list-item-content>

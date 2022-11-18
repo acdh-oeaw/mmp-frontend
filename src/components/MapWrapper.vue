@@ -4,16 +4,16 @@
     <!-- <div v-for="(feature, i) in featureList">
       <div
       class="card"
-      :key="i+feature.properties.key_word.url"
+      :key="i+feature.properties.key_word.id"
       data-toggle="collapse"
-      :data-target="`#${i+feature.properties.key_word.url}`"
+      :data-target="`#${i+feature.properties.key_word.id}`"
       >
         <div class="card-header list">
           {{ feature.properties.key_word.stichwort }}
           <span class="badge badge-pill badge-primary">{{ feature.properties.stelle.length }}</span>
         </div>
       </div>
-      <div class="card-body collapse" :id="i+feature.properties.key_word.url">
+      <div class="card-body collapse" :id="i+feature.properties.key_word.id">
         <data-table :data="feature.properties.stelle" />
       </div>
     </div> -->

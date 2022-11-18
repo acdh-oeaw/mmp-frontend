@@ -299,19 +299,15 @@ export default {
                       }
                       console.log(
                         'author label data',
-                        authorData[i]?.url,
+                        authorData[i]?.id,
                         authors[i],
-                        authorData.filter(
-                          (author) => this.getIdFromUrl(author.url) === authors[i]
-                        )[0]
+                        authorData.filter((author) => author.id === authors[i])[0]
                       );
 
                       authorNodes.push({
                         id: `author_${authors[i]}`,
                         label: this.getOptimalName(
-                          authorData.filter(
-                            (author) => this.getIdFromUrl(author.url) === authors[i]
-                          )[0]
+                          authorData.filter((author) => author.id === authors[i])[0]
                         ),
                         keyword_type: 'Author',
                         fx: coords[i][0] * 150,

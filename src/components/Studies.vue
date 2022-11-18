@@ -51,7 +51,7 @@
     </v-row>
     <v-row justify="center">
       <v-col cols="12" lg="8">
-        <v-card v-for="study in studies" :key="study.url" class="study-card">
+        <v-card v-for="study in studies" :key="study.id" class="study-card">
           <v-card-title>{{ study.title }}</v-card-title>
           <v-card-subtitle v-if="study.principal_investigator">{{
             study.principal_investigator
@@ -60,10 +60,7 @@
           <v-card-actions>
             <v-btn
               text
-              :to="{
-                name: 'Case Study',
-                params: { id: getIdFromUrl(study.url), query: addParamsToQuery() },
-              }"
+              :to="{ name: 'Case Study', params: { id: study.id, query: addParamsToQuery() } }"
             >
               Read More
             </v-btn>

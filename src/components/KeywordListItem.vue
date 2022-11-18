@@ -9,12 +9,12 @@
       <v-list-item
         v-for="passage in data"
         v-else-if="data.length"
-        :key="passage.url"
+        :key="passage.id"
         three-line
         :to="{
           name: fullscreen ? 'Passage Detail Fullscreen' : 'Passage Detail',
-          query: addParamsToQuery({ Passage: getIdFromUrl(passage.url) }),
-          params: { id: getIdFromUrl(passage.url) },
+          query: addParamsToQuery({ Passage: passage.id }),
+          params: { id: passage.id },
         }"
       >
         <v-list-item-content>

@@ -454,7 +454,7 @@ export default {
                   console.log('Query', cat, res);
                   res.results.forEach((x) => {
                     this.$store.commit('addToItemsAndInput', {
-                      id: this.getIdFromUrl(x.url),
+                      id: x.id,
                       text: x[apiParams[cat].text],
                       selected_text: x[apiParams[cat].text],
                       group: cat,
@@ -534,9 +534,6 @@ export default {
     },
   },
   methods: {
-    ee() {
-      alert(':^)');
-    },
     pushQuery() {
       this.$refs.autocomplete.blur(); // this is the only working solution I found to unfocus autocomplete
       this.tooltip = false;
