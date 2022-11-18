@@ -46,6 +46,7 @@ const resources = [
   'autocomplete-place-type',
   'autocomplete-place-category',
   'event',
+  'geojson-layer',
   'geojson-place',
   'geojson-fuzzy-place',
   'geojson-cone',
@@ -300,6 +301,32 @@ export function useUseCaseTimeTableById(
     queryKey: createKey('use-case', 'by-id', params, 'timetable'),
     queryFn: ({ queryKey: [, , params] }) => {
       return api.getUseCaseTimetableById(assertId(params));
+    },
+    ...getQueryOptions(options),
+  });
+}
+
+export function useGeojsonLayers(
+  searchParams: MaybeRef<Partial<api.GetGeojsonLayers.SearchParams>>,
+  options?: Options
+) {
+  return useQuery({
+    queryKey: createKey('geojson-layer', 'list', searchParams),
+    queryFn: ({ queryKey: [, , searchParams] }) => {
+      return api.getGeojsonLayers(searchParams);
+    },
+    ...getQueryOptions(options),
+  });
+}
+
+export function useGeojsonLayerById(
+  params: MaybeRef<Partial<api.GetGeojsonLayerById.PathParams>>,
+  options?: Options
+) {
+  return useQuery({
+    queryKey: createKey('geojson-layer', 'by-id', params),
+    queryFn: ({ queryKey: [, , params] }) => {
+      return api.getGeojsonLayerById(assertId(params));
     },
     ...getQueryOptions(options),
   });

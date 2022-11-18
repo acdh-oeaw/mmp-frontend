@@ -1,4 +1,4 @@
-import type { GeometryCollection, Point, Polygon } from 'geojson';
+import type { FeatureCollection, GeometryCollection, Point, Polygon } from 'geojson';
 
 import type { Normalized } from '@/api/types';
 
@@ -20,11 +20,22 @@ export type UseCase = {
   /** Knightlab Story Maps. */
   knightlab_stoy_map: Array<Story>;
 
-  /** Additional map layer. Needs to match predefined allowed layer names, e.g. '800'. */
-  custom_layer?: string | null;
+  /** Additional GeoJSON layers associated with case study. */
+  layer: Array<GeojsonLayer>;
 };
 
-export type UseCaseNormalized = Normalized<UseCase, 'knightlab_stoy_map'>;
+export type UseCaseNormalized = Normalized<UseCase, 'knightlab_stoy_map' | 'layer'>;
+
+export type GeojsonLayer = {
+  id: number;
+
+  title: string;
+  attribution: string;
+  description?: string | null;
+  data: FeatureCollection;
+};
+
+export type GeojsonLayerNormalized = GeojsonLayer;
 
 export type Author = Omit<
   {

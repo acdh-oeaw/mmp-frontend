@@ -9,6 +9,8 @@ import type {
   AuthorNormalized,
   Event,
   EventNormalized,
+  GeojsonLayer,
+  GeojsonLayerNormalized,
   Keyword,
   KeywordNormalized,
   KeywordType,
@@ -852,8 +854,9 @@ export namespace GetUseCases {
       has_stelle__key_word?: Array<Keyword['id']>;
     };
   export type Response = PaginatedResponse<
-    Omit<UseCase, 'knightlab_stoy_map'> & {
+    Omit<UseCase, 'knightlab_stoy_map' | 'layer'> & {
       knightlab_stoy_map: Array<StoryNormalized>;
+      layer: Array<GeojsonLayerNormalized>;
     }
   >;
 }
@@ -876,6 +879,34 @@ export function getUseCaseById(
   params: GetUseCaseById.PathParams
 ): Promise<GetUseCaseById.Response> {
   const url = createUrl({ baseUrl: baseUrls.api, pathname: `usecase/${params.id}` });
+  return request(url, options);
+}
+
+export namespace GetGeojsonLayers {
+  export type SearchParams = LimitOffsetPaginationSearchParams & {
+    use_case?: Array<UseCase['id']>;
+  };
+  export type Response = PaginatedResponse<GeojsonLayerNormalized>;
+}
+
+export function getGeojsonLayers(
+  searchParams: GetGeojsonLayers.SearchParams
+): Promise<GetGeojsonLayers.Response> {
+  const url = createUrl({ baseUrl: baseUrls.api, pathname: 'layers/', searchParams });
+  return request(url, options);
+}
+
+export namespace GetGeojsonLayerById {
+  export type PathParams = {
+    id: GeojsonLayer['id'];
+  };
+  export type Response = GeojsonLayerNormalized;
+}
+
+export function getGeojsonLayerById(
+  params: GetGeojsonLayerById.PathParams
+): Promise<GetGeojsonLayerById.Response> {
+  const url = createUrl({ baseUrl: baseUrls.api, pathname: `layers/${params.id}` });
   return request(url, options);
 }
 
