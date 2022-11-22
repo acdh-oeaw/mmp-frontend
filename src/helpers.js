@@ -125,6 +125,9 @@ export default {
     isFullScreen() {
       return this.$route.name.includes('Fullscreen');
     },
+    parentRoute() {
+      return this.$route.matches.at(-2);
+    },
     drawerWidth() {
       const widths = {
         xs: '100vw',
