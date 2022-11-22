@@ -86,7 +86,6 @@ export default {
       obj?.name_fr ||
       obj?.name_it ||
       obj?.name_gr,
-    getIdFromUrl: (url) => url.replace(/\D/g, ''),
     lightenColor(color, fade) {
       if (!color) return color;
       const numArray = color

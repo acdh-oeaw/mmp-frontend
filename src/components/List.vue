@@ -111,7 +111,7 @@ export default {
   methods: {
     addKeywordToInput(obj) {
       this.$store.commit('addToItemsAndInput', {
-        id: obj.id,
+        id: parseInt(obj.id, 10),
         selected_text: obj.stichwort,
         group: 'Keyword',
       });
@@ -119,16 +119,17 @@ export default {
     addAuthorToInput(obj) {
       console.log(obj);
       this.$store.commit('addToItemsAndInput', {
-        id: obj.id,
+        id: parseInt(obj.id, 10),
         selected_text: obj.name,
         group: 'Author',
       });
     },
     fetchList(query) {
+      const { intersect } = this.$store.state.apiParams;
       const terms = {
-        Author: this.$store.state.apiParams.intersect ? 'text__autor' : 'text__autor_and',
+        Author: intersect ? 'text__autor_and' : 'text__autor',
         // Passage: 'id', // not used anymore
-        Keyword: this.$store.state.apiParams.intersect ? 'key_word' : 'key_word_and',
+        Keyword: intersect ? 'key_word_and' : 'key_word',
         'Use Case': 'use_case',
         Place: 'text__ort',
       };

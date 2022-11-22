@@ -60,7 +60,10 @@
           <v-card-actions>
             <v-btn
               text
-              :to="{ name: 'Case Study', params: { id: study.id, query: addParamsToQuery() } }"
+              :to="{
+                name: 'Case Study',
+                params: { id: study.id, query: addParamsToQuery() },
+              }"
             >
               Read More
             </v-btn>

@@ -236,13 +236,14 @@ export default {
       handler(query) {
         let address = `${
           import.meta.env.VITE_APP_MMP_API_BASE_URL
-        }/archiv/keyword-data/?has_usecase=${this.hasUsecase}`;
+        }/archiv/keyword-network/?has_usecase=${this.hasUsecase}`;
+        const { intersect } = this.$store.state.apiParams;
         const terms = {
-          Author: 'rvn_stelle_key_word_keyword__text__autor',
-          Passage: 'rvn_stelle_key_word_keyword',
-          // Keyword: 'id', // has been replaced with new multiple id functionality
-          'Use Case': 'rvn_stelle_key_word_keyword__use_case',
-          Place: 'rvn_stelle_key_word_keyword__text__autor__ort',
+          Author: intersect ? 'text__autor_and' : 'text__autor',
+          // Passage: 'rvn_stelle_key_word_keyword', // uses ids now
+          Keyword: intersect ? 'key_word_and' : 'key_word',
+          'Use Case': 'use_case',
+          Place: 'ort',
         };
 
         const props = [this.author, this.passage, this.keyword, this.usecase, this.place];
@@ -255,8 +256,8 @@ export default {
           props.forEach((prop, i) => {
             if (prop && prop !== '0') {
               console.debug('cloud prop', prop);
-              if (i === 2) {
-                // keyword
+              if (i === 1) {
+                // passage
                 address += `&ids=${prop.toString().split('+').join(',')}`;
               } else {
                 if (i > 2) j = i - 1; // because terms is missing an element
@@ -346,7 +347,7 @@ export default {
       let csvContent = 'ID,Keyword,Type,Sources,Targets\r\n';
       const toCsv = this.weightedGraph.nodes.map((node) => {
         const csvObj = {
-          ID: this.getIdFromUrl(node.id),
+          ID: node.id.replace(/\D/g, ''),
           Keyword: node.label.replace(',', ''),
           Type: node.keyword_type,
           Sources: [],

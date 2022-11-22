@@ -94,7 +94,9 @@
                   class="detail-button"
                   :to="{
                     name: fullscreen ? 'List Fullscreen' : 'List',
-                    query: addParamsToQuery({ Keyword: data.keywords.map((x) => x.id).join('+') }),
+                    query: addParamsToQuery({
+                      Keyword: data.keywords.map((x) => x.id).join('+'),
+                    }),
                   }"
                 >
                   {{
@@ -281,7 +283,9 @@ export default {
 
         // Else
         urls = [
-          `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/archiv/keyword-data/?ids=${ids.join(',')}`,
+          `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/archiv/keyword-network/?ids=${ids.join(
+            ','
+          )}`,
           `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/stelle/?format=json&has_usecase=${
             this.hasUsecase
           }`,

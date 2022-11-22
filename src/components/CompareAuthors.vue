@@ -212,7 +212,7 @@ export default {
         ];
 
         retNode.isConnected = authorIds.length === this.selectedAuthors.length;
-        // console.log('authorIds', authorIds, node.isConnected);
+        console.log('authorIds', authorIds, node.isConnected);
 
         retNode.color = this.keyColors.graph[node.keyword_type];
         return retNode;
@@ -253,9 +253,7 @@ export default {
                   fetch(
                     `${
                       import.meta.env.VITE_APP_MMP_API_BASE_URL
-                    }/archiv/keyword-data/?has_usecase=${
-                      this.hasUsecase
-                    }&rvn_stelle_key_word_keyword__text__autor=${x}`
+                    }/archiv/keyword-network/?has_usecase=${this.hasUsecase}&text__autor=${x}`
                   )
                 )
               ).then((res) => {
@@ -297,17 +295,19 @@ export default {
                         const rad = (i / jsonRes.length) * 2 * Math.PI;
                         coords.push([Math.cos(rad), Math.sin(rad)]);
                       }
+                      console.log('authors', authorData, authors);
+
                       console.log(
                         'author label data',
                         authorData[i]?.id,
                         authors[i],
-                        authorData.filter((author) => author.id === authors[i])[0]
+                        authorData.filter((author) => author.id === parseInt(authors[i], 10))[0]
                       );
 
                       authorNodes.push({
                         id: `author_${authors[i]}`,
                         label: this.getOptimalName(
-                          authorData.filter((author) => author.id === authors[i])[0]
+                          authorData.filter((author) => author.id === parseInt(authors[i], 10))[0]
                         ),
                         keyword_type: 'Author',
                         fx: coords[i][0] * 150,
@@ -391,7 +391,7 @@ export default {
       let csvContent = 'ID,Keyword,Authors,Type,Sources,Targets\r\n';
       const toCsv = this.weightedGraph.nodes.map((node) => {
         const csvObj = {
-          ID: this.getIdFromUrl(node.id),
+          ID: node.id.replace(/\D/g, ''),
           Keyword: node.label.replace(',', ''),
           Authors: [],
           Type: node.keyword_type,
@@ -446,6 +446,8 @@ export default {
     },
     nodeObject(node, ctx, globalScale) {
       ctx.beginPath();
+      // console.log(node);
+
       const label = this.removeRoot(node.label);
 
       const fontSize = ((Math.log2(node.conns) || 1) + 18) / globalScale;
