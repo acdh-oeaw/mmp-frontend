@@ -4,7 +4,7 @@
       <v-list-item-action>
         <router-link
           :to="{
-            name: backButton,
+            name: parentRoute.name,
             query: $route.query,
           }"
           class="text-decoration-none"
@@ -211,15 +211,6 @@ export default {
       },
       deep: true,
       immediate: true,
-    },
-  },
-  methods: {
-    backButton() {
-      let ret;
-      if (this.$route.name.includes('Compare')) ret = 'Compare Authors';
-      else ret = 'List';
-      if (this.isFullScreen) ret += ' Fullscreen';
-      return ret;
     },
   },
 };
