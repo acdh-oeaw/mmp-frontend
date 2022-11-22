@@ -114,11 +114,11 @@
     </v-speed-dial>
     <div absolute bottom left class="legend">
       <v-list dense color="transparent">
-        <v-list-item v-for="type in types" :key="type" dense style="min-height: unset">
+        <v-list-item v-for="key in types" :key="key" dense style="min-height: unset">
           <v-checkbox
-            v-model="typefilters[type]"
-            :color="keyColors.graph[type]"
-            :label="type"
+            v-model="typefilters[key]"
+            :color="keyColors.graph[key]"
+            :label="key"
             dense
             hide-details
           />
