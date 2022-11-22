@@ -3,7 +3,7 @@
     <l-map
       ref="map"
       :style="`height: ${
-        fullscreen && $route.name !== 'Keyword Detail Fullscreen' ? '100vh' : height + 'px'
+        isFullScreen && $route.name !== 'Keyword Detail Fullscreen' ? '100vh' : height + 'px'
       }; width: 100%; z-index: 4`"
       :bounds="bounds"
       :options="{ zoomControl: false }"
@@ -26,11 +26,11 @@
           fab
           small
           :to="{
-            name: fullscreen ? 'Map' : 'Map Fullscreen',
+            name: isFullScreen ? 'Map' : 'Map Fullscreen',
             query: usecase ? addParamsToQuery({ 'Use Case': usecase }) : $route.query,
           }"
         >
-          <v-icon v-if="fullscreen">mdi-fullscreen-exit</v-icon>
+          <v-icon v-if="isFullScreen">mdi-fullscreen-exit</v-icon>
           <v-icon v-else>mdi-fullscreen</v-icon>
         </v-btn>
       </l-control>
@@ -247,7 +247,7 @@
           :lat-lng="returnLatLng(place.coords.coordinates)"
           @click="
             $router.push({
-              name: fullscreen ? 'Place Detail Fullscreen' : 'Place Detail',
+              name: isFullScreen ? 'Place Detail Fullscreen' : 'Place Detail',
               query: $route.query,
               params: { id: place.id },
             })
@@ -470,7 +470,7 @@ export default {
           .on({
             click: () => {
               this.$router.push({
-                name: this.fullscreen ? 'Spatial Detail Fullscreen' : 'Spatial Detail',
+                name: this.isFullScreen ? 'Spatial Detail Fullscreen' : 'Spatial Detail',
                 query: this.usecase
                   ? this.addParamsToQuery({ 'Use Case': this.usecase })
                   : this.$route.query,
@@ -554,7 +554,7 @@ export default {
             click: () => {
               // features.properties.id doesn't exist yet
               this.$router.push({
-                name: this.fullscreen ? 'Place Detail Fullscreen' : 'Place Detail',
+                name: this.isFullScreen ? 'Place Detail Fullscreen' : 'Place Detail',
                 query: this.$route.query,
                 params: { id: feature.id },
               });
@@ -576,7 +576,7 @@ export default {
           .on({
             click: () => {
               this.$router.push({
-                name: this.fullscreen ? 'Spatial Detail Fullscreen' : 'Spatial Detail',
+                name: this.isFullScreen ? 'Spatial Detail Fullscreen' : 'Spatial Detail',
                 query: this.usecase
                   ? this.addParamsToQuery({ 'Use Case': this.usecase })
                   : this.$route.query,
@@ -1015,7 +1015,7 @@ export default {
       }
       if (arr.length > 0) {
         this.$router.push({
-          name: this.fullscreen ? 'Spatial Detail Fullscreen' : 'Spatial Detail',
+          name: this.isFullScreen ? 'Spatial Detail Fullscreen' : 'Spatial Detail',
           query: this.usecase
             ? this.addParamsToQuery({ 'Use Case': this.usecase })
             : this.$route.query,

@@ -1,6 +1,6 @@
 <template>
   <v-app class="app-class">
-    <template v-if="!$route.name.includes('Fullscreen')">
+    <template v-if="!isFullScreen">
       <app-bar />
       <div
         class="buffer"
@@ -14,13 +14,15 @@
 </template>
 
 <script>
-import AppBar from './components/AppBar';
+import AppBar from '@/components/AppBar';
+import helpers from '@/helpers';
 
 export default {
   name: 'App',
   components: {
     AppBar,
   },
+  mixins: [helpers],
   data: () => ({}),
   created() {
     const dictRev = {

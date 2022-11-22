@@ -15,7 +15,7 @@
             Mentioned in
             <router-link
               :to="{
-                name: fullscreen ? 'List Fullscreen' : 'List',
+                name: isFullScreen ? 'List Fullscreen' : 'List',
                 query: addParamsToQuery({ Keyword: $route.params.id }),
               }"
             >
@@ -93,7 +93,7 @@
                   block
                   class="detail-button"
                   :to="{
-                    name: fullscreen ? 'List Fullscreen' : 'List',
+                    name: isFullScreen ? 'List Fullscreen' : 'List',
                     query: addParamsToQuery({
                       Keyword: data.keywords.map((x) => x.id).join('+'),
                     }),
@@ -116,7 +116,7 @@
                   block
                   class="detail-button"
                   :to="{
-                    name: fullscreen ? 'Keyword Detail Beta Fullscreen' : 'Keyword Detail Beta',
+                    name: isFullScreen ? 'Keyword Detail Beta Fullscreen' : 'Keyword Detail Beta',
                     params: { id: $route.params.id },
                     query: addParamsToQuery({ Keyword: $route.params.id }),
                   }"
@@ -206,10 +206,10 @@ export default {
     },
     xPressLinkName() {
       if (this.$route.name.includes('compare')) {
-        if (this.fullscreen) return 'Compare Authors Fullscreen';
+        if (this.isFullScreen) return 'Compare Authors Fullscreen';
         return 'Compare Authors';
       }
-      if (this.fullscreen) return 'Network Graph Beta Fullscreen';
+      if (this.isFullScreen) return 'Network Graph Beta Fullscreen';
       return 'Network Graph Beta';
     },
   },

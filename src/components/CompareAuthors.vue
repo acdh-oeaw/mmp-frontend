@@ -20,7 +20,7 @@
       :node-canvas-object="nodeObject"
       :node-pointer-area-paint="areaPaint"
       :node-canvas-object-mode="() => 'replace'"
-      :height="fullscreen ? undefined : '500'"
+      :height="isFullScreen ? undefined : '500'"
       :zoom-to-fit="zoomToFit"
       :link-directional-arrow-length="1.3"
       :refresh="renderKey"
@@ -136,10 +136,9 @@
 <script>
 import { forceLink } from 'd3';
 
+import FullscreenButton from '@/components/FullscreenButton';
+import Visualization from '@/components/Visualization2D';
 import helpers from '@/helpers';
-
-import FullscreenButton from './FullscreenButton';
-import Visualization from './Visualization2D';
 
 export default {
   name: 'NetworkGraphBeta',
@@ -503,7 +502,7 @@ export default {
 
       if (node.keyword_type === 'Author') {
         this.$router.push({
-          name: this.fullscreen
+          name: this.isFullScreen
             ? 'Compare Authors Author Detail Fullscreen'
             : 'Compare Authors Author Detail',
           params: { id: q },
@@ -520,13 +519,13 @@ export default {
 
       if (q) {
         this.$router.push({
-          name: this.fullscreen ? 'Compare Authors Detail Fullscreen' : 'Compare Authors Detail',
+          name: this.isFullScreen ? 'Compare Authors Detail Fullscreen' : 'Compare Authors Detail',
           params: { id: q },
           query: this.usecase ? { 'Use Case': this.usecase } : this.$route.query,
         });
       } else {
         this.$router.push({
-          name: this.fullscreen ? 'Compare Authors Detail Fullscreen' : 'Compare Authors Detail',
+          name: this.isFullScreen ? 'Compare Authors Detail Fullscreen' : 'Compare Authors Detail',
           query: this.$route.query,
         });
       }

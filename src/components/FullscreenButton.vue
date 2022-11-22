@@ -8,7 +8,7 @@
     icon
     @click="press"
   >
-    <v-icon v-if="fullscreen">mdi-fullscreen-exit</v-icon>
+    <v-icon v-if="isFullScreen">mdi-fullscreen-exit</v-icon>
     <v-icon v-else>mdi-fullscreen</v-icon>
   </v-btn>
 </template>
@@ -33,7 +33,7 @@ export default {
       console.log('FSButton press', this.back, this.$route);
       this.$router.push(
         this.back || {
-          name: this.fullscreen
+          name: this.isFullScreen
             ? this.back || this.$route.name.replace(' Fullscreen', '')
             : `${
                 this.usecase ? this.getComponentFromTab(this.$route.query.tab) : this.$route.name

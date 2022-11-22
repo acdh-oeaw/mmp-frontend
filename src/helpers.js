@@ -122,7 +122,7 @@ export default {
     shorten: (str, n) => (str.length > n ? `${str.substring(0, n)}...` : str),
   },
   computed: {
-    fullscreen() {
+    isFullScreen() {
       return this.$route.name.includes('Fullscreen');
     },
     drawerWidth() {

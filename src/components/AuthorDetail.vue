@@ -115,7 +115,7 @@
                 :key="passage.id"
                 three-line
                 :to="{
-                  name: fullscreen ? 'Passage Detail Fullscreen' : 'Passage Detail',
+                  name: isFullScreen ? 'Passage Detail Fullscreen' : 'Passage Detail',
                   query: addParamsToQuery({ Passage: passage.id }),
                   params: { id: passage.id },
                 }"
@@ -217,7 +217,7 @@ export default {
       let ret;
       if (this.$route.name.includes('Compare')) ret = 'Compare Authors';
       else ret = 'List';
-      if (this.$route.name.includes('Fullscreem')) ret += ' Fullscreen';
+      if (this.isFullScreen) ret += ' Fullscreen';
       return ret;
     },
   },

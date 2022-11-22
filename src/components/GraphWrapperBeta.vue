@@ -15,7 +15,7 @@
       :node-canvas-object="nodeObject"
       :node-pointer-area-paint="areaPaint"
       :node-canvas-object-mode="() => 'replace'"
-      :height="fullscreen ? undefined : '500'"
+      :height="isFullScreen ? undefined : '500'"
       :zoom-to-fit="zoomToFit"
       :link-directional-particles="1"
       :link-directional-particle-width="1.7"
@@ -456,13 +456,13 @@ export default {
 
       if (q) {
         this.$router.push({
-          name: this.fullscreen ? 'Keyword Detail Beta Fullscreen' : 'Keyword Detail Beta',
+          name: this.isFullScreen ? 'Keyword Detail Beta Fullscreen' : 'Keyword Detail Beta',
           params: { id: q },
           query: this.usecase ? { 'Use Case': this.usecase } : this.$route.query,
         });
       } else {
         this.$router.push({
-          name: this.fullscreen ? 'Network Graph Beta Fullscreen' : 'Network Graph Beta',
+          name: this.isFullScreen ? 'Network Graph Beta Fullscreen' : 'Network Graph Beta',
           query: this.$route.query,
         });
       }

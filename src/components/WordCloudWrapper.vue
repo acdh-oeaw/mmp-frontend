@@ -1,5 +1,5 @@
 <template>
-  <v-card width="100%" color="transparent" :height="fullscreen ? 'calc(100vh - 4px)' : 500">
+  <v-card width="100%" color="transparent" :height="isFullScreen ? 'calc(100vh - 4px)' : 500">
     <v-overlay absolute opacity=".2" :value="loading">
       <h1 v-if="loading" class="no-nodes">
         <v-progress-circular indeterminate color="#0F1226" />
@@ -13,7 +13,11 @@
           :key="JSON.stringify(filtered) + i"
           :cols="showWords.filter((x) => x).length >= 2 ? 6 : 12"
         >
-          <pie-chart :data="filtered" :title="titles[i]" :height="fullscreen ? '100%' : '500px'" />
+          <pie-chart
+            :data="filtered"
+            :title="titles[i]"
+            :height="isFullScreen ? '100%' : '500px'"
+          />
         </v-col>
       </template>
     </v-row>
@@ -29,7 +33,7 @@
       </template>
     </v-row>
     <v-navigation-drawer v-model="drawer" absolute right>
-      <v-card :min-height="fullscreen ? 'calc(100vh - 4px)' : 498">
+      <v-card :min-height="isFullScreen ? 'calc(100vh - 4px)' : 498">
         <v-btn absolute top right icon style="z-index: 100" @click="drawer = false">
           <v-icon>mdi-close</v-icon>
         </v-btn>

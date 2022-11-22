@@ -12,7 +12,7 @@
         :key="passage.id"
         three-line
         :to="{
-          name: fullscreen ? 'Passage Detail Fullscreen' : 'Passage Detail',
+          name: isFullScreen ? 'Passage Detail Fullscreen' : 'Passage Detail',
           query: addParamsToQuery({ Passage: passage.id }),
           params: { id: passage.id },
         }"

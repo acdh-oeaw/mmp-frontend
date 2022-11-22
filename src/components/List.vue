@@ -21,7 +21,7 @@
             v-for="(author, i) in item.text.autor"
             :key="author.id"
             :to="{
-              name: fullscreen ? 'Author Detail Fullscreen' : 'Author Detail',
+              name: isFullScreen ? 'Author Detail Fullscreen' : 'Author Detail',
               params: { id: author.id },
               query: $route.query,
             }"
@@ -37,7 +37,7 @@
         <template v-if="item.text">
           <router-link
             :to="{
-              name: fullscreen ? 'Passage Detail Fullscreen' : 'Passage Detail',
+              name: isFullScreen ? 'Passage Detail Fullscreen' : 'Passage Detail',
               params: { id: item.id },
               query: $route.query,
             }"
@@ -72,9 +72,8 @@
 </template>
 
 <script>
+import FullscreenButton from '@/components/FullscreenButton';
 import helpers from '@/helpers';
-
-import FullscreenButton from './FullscreenButton';
 
 export default {
   name: 'List',
