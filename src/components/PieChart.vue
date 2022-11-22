@@ -16,8 +16,6 @@ export default {
   }),
   computed: {
     pieOptions() {
-      console.log(this.data, this.renderKey);
-
       const reducedData = this.data.filter((x, i) => i < 25);
       for (let i = 0; i < reducedData.length; i += 1) {
         for (let j = 1; reducedData[i].length > 30; j += 1)
@@ -61,7 +59,6 @@ export default {
     },
   },
   mounted() {
-    console.log('pie mounted', this.data);
     this.renderKey -= -1; // this makes this component work, i dont know why
   },
 };

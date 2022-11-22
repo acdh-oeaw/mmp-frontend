@@ -19,9 +19,6 @@ export default {
     },
   }),
   methods: {
-    debug: (message, name) => {
-      console.debug('debug', name, message);
-    },
     addParamsToQuery(obj) {
       const ret = obj || {};
       const entries = Object.entries(this.$store.state.searchFilters);
@@ -44,12 +41,10 @@ export default {
         if (typeof val === 'object') {
           Object.entries(val).forEach(([subKey, subVal]) => {
             if (!subVal) {
-              console.log('subentry', subKey, subVal);
               ret[subDict[subKey]] = 'false';
             } else delete ret[subDict[subKey]];
           });
         } else if (!val) {
-          console.log('entry bool', key, val);
           ret[dict[key]] = 'false';
         } else delete ret[dict[key]];
       });

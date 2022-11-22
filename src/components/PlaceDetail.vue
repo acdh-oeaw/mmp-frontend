@@ -103,7 +103,6 @@ export default {
   watch: {
     '$route.params': {
       handler(params) {
-        console.log('place params', params);
         this.loading = true;
         const urls = [
           `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/ort/${params.id}/?format=json`,
@@ -117,13 +116,11 @@ export default {
         const prefetched = this.$store.state.fetchedResults[urls.toString()];
 
         if (prefetched) {
-          console.log('prefetched places', prefetched);
           this.loading = false;
         } else {
           Promise.all(urls.map((x) => fetch(x))).then((res) => {
             Promise.all(res.map((x) => x.json()))
               .then((jsonRes) => {
-                console.log('place res', jsonRes);
                 this.$store.commit('addToResults', { req: urls.toString(), jsonRes });
                 [this.data.ort, this.data.texts, this.data.authors] = jsonRes;
               })

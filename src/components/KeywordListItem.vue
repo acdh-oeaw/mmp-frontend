@@ -63,7 +63,6 @@ export default {
       this.loading = false;
       // const texts = prefetched.results.map((x) => ({ ...x.text, keywords: x.key_word }));
       const passages = prefetched.results;
-      console.log('stored passages', passages);
       this.data = this.removeDuplicates(passages, 'url');
     } else {
       fetch(url)
@@ -73,9 +72,7 @@ export default {
 
           // const texts = jsonRes.results.map((x) => ({ ...x.text, keywords: x.key_word }));
           const passages = jsonRes.results;
-          console.log('passages', passages);
           this.data = this.removeDuplicates(passages, 'url');
-          console.log('Keyword List Item data', this.data);
         })
         .catch((err) => {
           console.error(err);

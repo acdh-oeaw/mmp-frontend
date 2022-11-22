@@ -165,10 +165,6 @@ export default {
     weightedGraph() {
       if (!this.graph) return null;
       const ret = { ...this.graph };
-      console.log(
-        'weightedGraph',
-        ret.edges.map((edge) => edge.target)
-      );
 
       const blacklist = [];
 
@@ -177,7 +173,6 @@ export default {
         const neighborNodes = this.$route.params.id
           .split('+')
           .map((nodeId) => `archiv__keyword__${nodeId}`);
-        console.log(neighborNodes);
 
         if (neighborNodes.length && this.$route.query.showNeighborsOnly) {
           ret.nodes = ret.nodes.filter((node) => {
@@ -201,8 +196,6 @@ export default {
         blacklist.push(node.id);
         return false;
       });
-
-      console.log('blacklist, filtered', blacklist, ret.edges, ret.nodes);
 
       ret.edges = ret.edges.filter(
         (edge) => !blacklist.includes(edge.target.id) && !blacklist.includes(edge.source.id)
@@ -248,14 +241,10 @@ export default {
 
         const props = [this.author, this.passage, this.keyword, this.usecase, this.place];
 
-        console.log('map props', props);
-
         if (props.some((x) => x)) {
-          console.debug('cloud props detected!');
           let j;
           props.forEach((prop, i) => {
             if (prop && prop !== '0') {
-              console.debug('cloud prop', prop);
               if (i === 1) {
                 // passage
                 address += `&ids=${prop.toString().split('+').join(',')}`;
@@ -267,7 +256,6 @@ export default {
             }
           });
         } else {
-          console.log('query', query);
           Object.keys(terms).forEach((cat) => {
             if (query[cat] && cat !== 'time') {
               const arr = query[cat].split('+');
@@ -283,7 +271,6 @@ export default {
 
           if (query.Keyword) address += `&ids=${query.Keyword.replaceAll('+', ',')}`;
 
-          console.log('query.time', query.time);
           if (query.time) {
             const key =
               this.$store.state.slider === 'passage'
@@ -300,8 +287,6 @@ export default {
           }
         }
 
-        console.log('address', address);
-
         const prefetched = this.$store.state.fetchedResults[address];
         if (prefetched) {
           this.graph = prefetched;
@@ -310,7 +295,6 @@ export default {
           fetch(address)
             .then((res) => res.json())
             .then((res) => {
-              console.log('node-data', res);
               this.$store.commit('addToResults', { req: address, res });
               this.graph = res;
             })
@@ -438,14 +422,11 @@ export default {
       );
     },
     nodeClick(node) {
-      console.log('node clicked', node);
-
       // const q = node.detail_view_url.replace(/\D/g, '');
 
       // code for implementing multiple selected nodes
       let q = this.$route.params.id;
       const id = node.id.replace(/[^0-9]/g, '');
-      console.log('q', q, 'id', id);
       // add or remove specific node from query
       if (q && !this.usecase) {
         q = q.split('+');
@@ -467,8 +448,7 @@ export default {
         });
       }
     },
-    nodeDragEnd(node, translate) {
-      console.log('nodeDrag', node, translate);
+    nodeDragEnd(node) {
       node.fx = node.x;
       node.fy = node.y;
     },
@@ -478,7 +458,6 @@ export default {
         node.fy = undefined;
       });
       this.renderKey += 1;
-      console.log('nodes unpinned', this.renderKey);
     },
   },
 };

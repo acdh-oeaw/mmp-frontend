@@ -384,13 +384,11 @@ export default {
       let fuse = new Fuse(filterArr, { keys: ['selected_text'] });
       fuse = fuse.search(this.textInput);
       fuse = fuse.map((res) => res.item);
-      console.log('searched, sorted, filtered', fuse);
 
       return fuse;
     },
     currentView: {
       get() {
-        console.log('currentView', this.$route.name);
         return this.$route.name;
       },
       set(val) {
@@ -406,7 +404,6 @@ export default {
       },
     },
     query() {
-      console.log('query changed', this.$route.query);
       return this.$route.query;
     },
   },
@@ -420,8 +417,6 @@ export default {
         );
         if (this.autoQuery) {
           // you can disable this process
-          console.log('route', this.$route);
-          console.log('query', filteredParams, val);
           this.$store.commit('clearItems');
           this.$store.commit('clearInput');
           // Add query from url to Autocomplete
@@ -435,12 +430,8 @@ export default {
 
           Object.keys(filteredParams).forEach((cat) => {
             if (cat === 'time' && filteredParams[cat]) {
-              console.log('time debug', cat, filteredParams);
               this.range = filteredParams[cat].split('+').map((x) => parseInt(x, 10) / 10);
             } else if (filteredParams[cat]) {
-              console.log('cat', cat, apiParams[cat]);
-              console.log(cat, 'found:', filteredParams[cat]);
-
               let ids = filteredParams[cat].toString().split('+');
               const idCount = ids.length;
               this.skeletonChips += idCount;
@@ -450,7 +441,6 @@ export default {
               )
                 .then((res) => res.json())
                 .then((res) => {
-                  console.log('Query', cat, res);
                   res.results.forEach((x) => {
                     this.$store.commit('addToItemsAndInput', {
                       id: x.id,
@@ -511,9 +501,7 @@ export default {
           .then((res) => {
             Promise.all(res.map((x) => x.json()))
               .then((jsonRes) => {
-                console.log('promise all autocomplete', jsonRes);
                 this.$store.commit('addToResults', { req: JSON.stringify(urls), res: jsonRes });
-                console.log('urls', urls);
                 jsonRes.forEach((x, i) => {
                   this.$store.commit('addItems', { items: x.results, label: Object.keys(urls)[i] });
                 });

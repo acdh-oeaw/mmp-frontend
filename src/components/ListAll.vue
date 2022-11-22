@@ -211,7 +211,6 @@ export default {
         fetch(address)
           .then((res) => res.json())
           .then((res) => {
-            console.log('list all res', res);
             this.tabs[tabIndex].items = res.results;
             this.tabs[tabIndex].pagination.count = res.count;
             this.$store.commit('addToResults', { req: address, res });

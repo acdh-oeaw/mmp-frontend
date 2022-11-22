@@ -169,7 +169,6 @@ export default {
   watch: {
     '$route.params': {
       handler(params) {
-        console.log('params', params);
         this.loading = true;
 
         const urls = [
@@ -189,14 +188,12 @@ export default {
         const prefetched = this.$store.state.fetchedResults[urls.toString()];
 
         if (prefetched) {
-          console.log('author prefetched', prefetched);
           [this.data, this.usecases, this.passages] = prefetched;
           this.loading = false;
         } else {
           Promise.all(urls.map((x) => fetch(x))).then((res) => {
             Promise.all(res.map((x) => x.json()))
               .then((jsonRes) => {
-                console.log('author res', jsonRes);
                 this.$store.commit('addToResults', { req: urls.toString(), res: jsonRes });
                 [this.data, this.usecases, this.passages, this.keywords] = jsonRes;
               })

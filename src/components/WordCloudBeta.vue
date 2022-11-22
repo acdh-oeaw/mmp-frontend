@@ -28,7 +28,6 @@ export default {
   }),
   computed: {
     words() {
-      console.log(this.renderKey);
       return this.data.map(([text, value]) => ({ text, value }));
     },
     maxOccurences() {
@@ -36,12 +35,10 @@ export default {
     },
   },
   mounted() {
-    console.log('cloudbeta mounted', this.data);
     this.renderKey -= -1; // this makes this component work, i dont know why
 
     // resize canvas on div resize
     const sizeOberserver = new ResizeObserver((entries) => {
-      console.log('oberserver', entries);
       this.width = entries[0].contentRect.width;
       this.height = entries[0].contentRect.height;
       this.renderKey += 1;
@@ -56,7 +53,6 @@ export default {
   },
 };
 </script>
-z
 
 <style>
 .cloud-wrapper {

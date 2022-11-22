@@ -175,7 +175,6 @@ export default {
     weightedGraph() {
       if (!this.graph) return null;
       const ret = JSON.parse(JSON.stringify(this.graph));
-      console.log('weightedGraph', ret);
 
       // filter types
       const blacklist = [];
@@ -184,8 +183,6 @@ export default {
         blacklist.push(node.id);
         return false;
       });
-
-      console.log('blacklist', blacklist);
 
       ret.edges = ret.edges.filter(
         (edge) => !blacklist.includes(edge.target) && !blacklist.includes(edge.source)
@@ -212,7 +209,6 @@ export default {
         ];
 
         retNode.isConnected = authorIds.length === this.selectedAuthors.length;
-        console.log('authorIds', authorIds, node.isConnected);
 
         retNode.color = this.keyColors.graph[node.keyword_type];
         return retNode;
@@ -222,7 +218,6 @@ export default {
     },
     types() {
       const ret = this.graph?.nodes?.map((x) => x.keyword_type);
-      // console.log('types', ret);
       return [...new Set(ret)]; // removes duplicates
     },
   },
@@ -247,7 +242,6 @@ export default {
             .then((res) => res.json())
             .then((authorJsonRes) => {
               const authorData = authorJsonRes.results;
-              console.log('Author Data', authorData);
               Promise.all(
                 authors.map((x) =>
                   fetch(
@@ -259,7 +253,6 @@ export default {
               ).then((res) => {
                 Promise.all(res.map((x) => x.json()))
                   .then((jsonRes) => {
-                    console.log('Author Graph Results', jsonRes);
                     let intersectedNodes = [];
                     const authorNodes = [];
                     const allEdges = [];
@@ -290,19 +283,10 @@ export default {
                         break;
                     }
                     jsonRes.forEach((json, i) => {
-                      console.log('coords pre', coords);
                       if (coords.length === i) {
                         const rad = (i / jsonRes.length) * 2 * Math.PI;
                         coords.push([Math.cos(rad), Math.sin(rad)]);
                       }
-                      console.log('authors', authorData, authors);
-
-                      console.log(
-                        'author label data',
-                        authorData[i]?.id,
-                        authors[i],
-                        authorData.filter((author) => author.id === parseInt(authors[i], 10))[0]
-                      );
 
                       authorNodes.push({
                         id: `author_${authors[i]}`,
@@ -332,7 +316,6 @@ export default {
                           [...intersectedNodes, ...json.nodes],
                           'id'
                         );
-                      console.log('intersections', intersectedNodes);
                     });
                     const allNodes = [...intersectedNodes, ...authorNodes];
                     const nodeIds = allNodes.map((x) => x.id);
@@ -342,7 +325,6 @@ export default {
                       ),
                       ['source', 'target']
                     );
-                    console.log('filters', nodeIds, allNodes, filteredEdges);
 
                     this.graph = {
                       edges: filteredEdges,
@@ -492,14 +474,11 @@ export default {
       );
     },
     nodeClick(node) {
-      console.log('node clicked', node);
-
       // const q = node.detail_view_url.replace(/\D/g, '');
 
       // code for implementing multiple selected nodes
       let q = this.$route.params.id;
       const id = node.id.replace(/[^0-9]/g, '');
-      console.log('q', q, 'id', id);
 
       if (node.keyword_type === 'Author') {
         this.$router.push({
@@ -531,8 +510,7 @@ export default {
         });
       }
     },
-    nodeDragEnd(node, translate) {
-      console.log('nodeDrag', node, translate);
+    nodeDragEnd(node) {
       node.fx = node.x;
       node.fy = node.y;
     },
@@ -542,7 +520,6 @@ export default {
         node.fy = undefined;
       });
       this.renderKey += 1;
-      console.log('nodes unpinned', this.renderKey);
     },
     linkForces() {
       return forceLink().strength((link) => (link.source.id.includes('author') ? 0.7 : 0));

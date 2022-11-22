@@ -150,7 +150,7 @@
       "simple-import-sort/imports": "error",
       "vue/multi-word-component-names": "off",
       "vue/no-mutating-props": "off",
-      "vue/no-v-text-v-html-on-component": "off",
+      "vue/no-v-html": "off",
       "vue/require-default-prop": "off",
       "vue/require-prop-types": "off",
       "vue/valid-v-slot": "off"

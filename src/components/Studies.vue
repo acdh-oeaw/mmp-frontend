@@ -118,9 +118,7 @@ export default {
           .then((res) => {
             Promise.all(res.map((x) => x.json()))
               .then((jsonRes) => {
-                console.log('promise all autocomplete studies', jsonRes);
                 this.$store.commit('addToResults', { req: JSON.stringify(urls), res: jsonRes });
-                console.log('urls', urls);
                 this.studySearch = [];
                 jsonRes.forEach((x, i) => {
                   this.studySearch = [
@@ -144,7 +142,6 @@ export default {
     },
     studyAuto: {
       handler(val) {
-        console.log('studyAuto', val);
         let url = `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/usecase/?format=json`;
         const apiParams = {
           author: 'has_stelle__text__autor',
@@ -153,7 +150,6 @@ export default {
         val.forEach((value) => {
           url += `&${apiParams[value.type]}=${value.id}`;
         });
-        console.log('study url', url);
 
         const prefetched = this.$store.state.fetchedResults[url];
         if (prefetched) {
@@ -162,7 +158,6 @@ export default {
           fetch(url)
             .then((res) => res.json())
             .then((res) => {
-              console.log('studies', res);
               this.$store.commit('addToResults', { req: url, res });
               this.studies = res.results;
             });
@@ -181,7 +176,6 @@ export default {
       fetch(address)
         .then((res) => res.json())
         .then((res) => {
-          console.log('studies', res);
           this.$store.commit('addToResults', { req: address, res });
           this.studies = res.results;
         });

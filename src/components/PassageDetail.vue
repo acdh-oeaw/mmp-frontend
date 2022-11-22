@@ -95,7 +95,6 @@ export default {
   watch: {
     '$route.params': {
       handler(params) {
-        console.log(params);
         this.loading = true;
         const address = `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/stelle/${
           params.id
@@ -103,14 +102,12 @@ export default {
         const prefetched = this.$store.state.fetchedResults[address];
 
         if (prefetched) {
-          console.log('prefetched', prefetched);
           this.addRes(prefetched);
           this.loading = false;
         } else {
           fetch(address)
             .then((res) => res.json())
             .then((res) => {
-              console.log(res);
               this.$store.commit('addToResults', { req: address, res });
               this.addRes(res);
             })

@@ -130,7 +130,6 @@ import helpers from '@/helpers';
 export default {
   name: 'WordCloudWrapper',
   components: {
-    // WordCloud,
     FullscreenButton,
     PieChart,
     WordCloudBeta,
@@ -157,7 +156,6 @@ export default {
   }),
   computed: {
     maxOccurence() {
-      console.log();
       return Math.max(...[...this.words[0], ...this.words[1]].map((word) => word[1])); // this returns the max occurence of all words and keywords
     },
     showWords() {
@@ -184,14 +182,10 @@ export default {
 
         const props = [this.author, this.passage, this.keyword, this.usecase, this.place];
 
-        console.log('map props', props);
-
         if (props.some((x) => x)) {
-          console.debug('cloud props detected!');
           let j;
           props.forEach((prop, i) => {
             if (prop && prop !== '0') {
-              console.debug('cloud prop', prop);
               if (i === 1) {
                 // passage
                 urls = urls.map((url) => `${url}&ids=${prop.toString().split('+').join(',')}`);
@@ -205,7 +199,6 @@ export default {
         } else {
           Object.keys(query).forEach((cat) => {
             if (query[cat] && cat !== 'time') {
-              console.log(query[cat]);
               const arr = query[cat].toString().split('+');
               arr.forEach((val) => {
                 urls = urls.map((x) => `${x}&${terms[cat]}=${val}`);
@@ -232,7 +225,6 @@ export default {
               );
             }
           }
-          console.log('urls', urls);
         }
         const prefetched = this.$store.state.fetchedResults[urls.toString()];
 
@@ -288,22 +280,18 @@ export default {
       }
     },
     handleRes(res) {
-      console.log('word cloud res', res);
       const words = [
         Object.entries(res[0].token_dict),
         res[1].token_dict.map((x) => Object.entries(x)[0]),
       ];
 
-      console.log('words', words);
       this.words = words.map((x) => x.sort(this.sortWords));
-      console.log('this.words', this.words);
       for (let i = 0; i < words.length; i += 1) {
         for (let j = 1; words[i].length > 75; j += 1) {
           words[i] = words[i].filter((entry) => entry[0].match(/\w+/g) && entry[1] > j);
         } // improves performance by a lot, removing unused and non words
         words[i] = words[i].map((word) => [word[0].split(' (')[0], word[1]]); // removes unecessary tags
       }
-      console.log('words', words);
       this.loading -= 1;
       this.filteredWords = words;
     },
@@ -328,28 +316,4 @@ export default {
 .full-height {
   height: 100vh !important;
 }
-
-/* .graph-tooltip {
-  position: absolute;
-    transform: translate(-50%, 25px);
-    font-family: sans-serif;
-    font-size: 16px;
-    padding: 4px;
-    border-radius: 3px;
-    color: #eee;
-    background: rgba(0,0,0,0.65);
-    visibility: hidden;
-}
-.word {
-  cursor: pointer;
-}
-.wordHover {
-  display: none;
-  position: absolute;
-  background: white;
-  font-size: 2rem;
-}
-.word:hover + div.wordHover {
-  display: unset;
-} */
 </style>

@@ -64,7 +64,9 @@
               </v-timeline>
             </v-tab-item>
             <v-tab-item v-if="study.story_map" value="story">
-              <v-card color="transparent" v-html="study.story_map" />
+              <v-card color="transparent">
+                <div v-html="study.story_map" />
+              </v-card>
             </v-tab-item>
             <v-tab-item value="graph">
               <v-card color="transparent">
@@ -123,12 +125,9 @@ export default {
         .then((res) => {
           Promise.all(res.map((x) => x.json()))
             .then((jsonRes) => {
-              console.log('Study', jsonRes);
               if (jsonRes[0].story_map)
                 jsonRes[0].story_map = jsonRes[0].story_map.replaceAll('/explore/', '/view/');
               [this.study, this.events] = jsonRes;
-
-              console.log('route', this.$route);
             })
             .catch((err) => {
               console.error(err);

@@ -5,7 +5,6 @@
 </template>
 
 <script>
-import * as d3 from 'd3';
 import ForceGraph from 'force-graph';
 
 export default {
@@ -40,7 +39,7 @@ export default {
       type: Boolean,
       default: true,
     },
-    selectedNodeIds: Set, // TODO
+    selectedNodeIds: Set, // TODO:
     showNeighborsOnly: {
       type: Boolean,
       default: false,
@@ -63,7 +62,6 @@ export default {
       deep: true,
     },
     refresh() {
-      console.log('refresh called');
       this.graphDom.d3ReheatSimulation();
     },
     zoomToFit() {
@@ -72,9 +70,6 @@ export default {
     },
   },
   mounted() {
-    console.log('Graph mounted, data:', this.graph);
-    // console.log('forceCollision:', this.forceCollision(), 'lel', d3.forceCollide());
-    console.log('forcelink', d3.forceLink);
     this.graphDom = ForceGraph()(this.$refs.visWrapper);
     this.setCanvas();
 
@@ -109,7 +104,6 @@ export default {
       return retArr;
     },
     setCanvas() {
-      console.log('Setting Canvas');
       this.graphDom
         .nodeLabel('label')
         .height(this.height || undefined)
@@ -150,11 +144,6 @@ export default {
       if (this.forceLink !== undefined) this.graphDom.d3Force('link', this.forceLink());
       if (this.forceCollision !== undefined)
         this.graphDom.d3Force('collide', this.forceCollision());
-
-      console.log('speed', this.graphDom.linkDirectionalParticleSpeed());
-    },
-    logSize() {
-      console.log('ref', this.$refs.visWrapper.clientWidth);
     },
   },
 };

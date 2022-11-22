@@ -164,7 +164,6 @@ export default {
   }),
   computed: {
     connections() {
-      console.log('keyword connections called', this.data);
       const retArr = [];
 
       if (!this.data.keywords || !this.data.nodes) return retArr;
@@ -182,7 +181,6 @@ export default {
       targets.forEach((target) => {
         count[target] = count[target] ? count[target] + 1 : 1;
       });
-      console.log('keyword connections', edges, targets, count);
 
       Object.entries(count).forEach((entry) => {
         retArr.push({
@@ -194,7 +192,6 @@ export default {
         });
       });
 
-      console.log('connections', retArr);
       // priorise connections with keyword in query
       // return retArr.sort((a) => (this.$route.query?.Keyword.split('+').includes(a.id) ? -1 : 1));
 
@@ -215,8 +212,6 @@ export default {
   watch: {
     '$route.params': {
       handler(params) {
-        console.log(params);
-
         // set all keys to true
         Object.keys(this.loading).forEach((x) => {
           this.loading[x] = true;
@@ -236,7 +231,6 @@ export default {
             .then((res) => {
               Promise.all(res.map((x) => x.json()))
                 .then((jsonRes) => {
-                  console.log('promise all keyword1', jsonRes);
                   this.$store.commit('addToResults', { req: urls.toString(), res: jsonRes });
                   this.data.keywords = jsonRes;
                 })
@@ -264,7 +258,6 @@ export default {
             .then((res) => {
               Promise.all(res.map((x) => x.json()))
                 .then((jsonRes) => {
-                  console.log('promise all overtimes', jsonRes);
                   this.$store.commit('addToResults', { req: urls.toString(), res: jsonRes });
                   this.data.overtime = jsonRes;
                 })
@@ -306,11 +299,8 @@ export default {
             .then((res) => {
               Promise.all(res.map((x) => x.json()))
                 .then((jsonRes) => {
-                  console.log('promise all keyword-', jsonRes);
                   this.$store.commit('addToResults', { req: urls.toString(), res: jsonRes });
                   [this.data.nodes, this.data.passages, , this.data.geography] = jsonRes;
-                  console.log('keyword data', this.data);
-                  // console.log('connections', this.connections);
                 })
                 .catch((err) => {
                   console.error(err);

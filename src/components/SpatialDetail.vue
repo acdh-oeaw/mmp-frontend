@@ -99,7 +99,6 @@ export default {
           const arr2 = [arr];
           arr = arr2;
         }
-        console.log('place params', params, typeof params, arr, typeof arr);
         this.data = [];
         arr.forEach((param) => {
           this.loading = true;

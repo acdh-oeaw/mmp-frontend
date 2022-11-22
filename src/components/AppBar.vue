@@ -76,7 +76,7 @@ export default {
     backgroundColor() {
       return this.isHome ? '#0f1226' : '#f1f5fa';
     },
-    // check ig route is on lanfing page
+    // check if route is on landing page
     isHome() {
       return this.$route.name === 'Home';
     },

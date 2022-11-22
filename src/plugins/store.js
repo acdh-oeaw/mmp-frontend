@@ -64,7 +64,6 @@ export default new Vuex.Store({
     },
     clearItems: (state) => {
       state.autocomplete.items = [];
-      console.log('items cleared', state);
     },
     toggleDrawer: (state) => {
       state.interface.sidebarDrawer = !state.interface.sidebarDrawer;
