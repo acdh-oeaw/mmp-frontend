@@ -99,10 +99,10 @@
 </template>
 
 <script>
-import Graph from '@/components/GraphWrapperBeta';
-import List from '@/components/List';
-import MapWrapper from '@/components/MapWrapper';
-import WordCloudWrapper from '@/components/WordCloudWrapper';
+import Graph from '@/components/GraphWrapperBeta.vue';
+import List from '@/components/List.vue';
+import MapWrapper from '@/components/MapWrapper.vue';
+import WordCloudWrapper from '@/components/WordCloudWrapper.vue';
 
 export default {
   name: 'Debug',

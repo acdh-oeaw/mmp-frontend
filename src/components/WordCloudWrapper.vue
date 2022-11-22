@@ -122,9 +122,9 @@
 <script>
 import Gradient from 'javascript-color-gradient';
 
-import FullscreenButton from '@/components/FullscreenButton';
-import PieChart from '@/components/PieChart';
-import WordCloudBeta from '@/components/WordCloudBeta';
+import FullscreenButton from '@/components/FullscreenButton.vue';
+import PieChart from '@/components/PieChart.vue';
+import WordCloudBeta from '@/components/WordCloudBeta.vue';
 import helpers from '@/helpers';
 
 export default {

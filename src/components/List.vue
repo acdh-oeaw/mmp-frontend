@@ -72,7 +72,7 @@
 </template>
 
 <script>
-import FullscreenButton from '@/components/FullscreenButton';
+import FullscreenButton from '@/components/FullscreenButton.vue';
 import helpers from '@/helpers';
 
 export default {

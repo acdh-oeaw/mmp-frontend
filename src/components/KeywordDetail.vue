@@ -134,9 +134,9 @@
 </template>
 
 <script>
-import KeywordListItem from '@/components/KeywordListItem';
-import KeywordOverTime from '@/components/KeywordOverTime';
-import Leaflet from '@/components/Leaflet';
+import KeywordListItem from '@/components/KeywordListItem.vue';
+import KeywordOverTime from '@/components/KeywordOverTime.vue';
+import Leaflet from '@/components/Leaflet.vue';
 import helpers from '@/helpers';
 
 export default {

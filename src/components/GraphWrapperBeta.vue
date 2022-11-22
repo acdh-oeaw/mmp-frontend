@@ -129,8 +129,8 @@
 </template>
 
 <script>
-import FullscreenButton from '@/components/FullscreenButton';
-import Visualization from '@/components/Visualization2D';
+import FullscreenButton from '@/components/FullscreenButton.vue';
+import Visualization from '@/components/Visualization2D.vue';
 import helpers from '@/helpers';
 
 export default {

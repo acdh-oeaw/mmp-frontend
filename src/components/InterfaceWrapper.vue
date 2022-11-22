@@ -316,7 +316,7 @@
 import Fuse from 'fuse.js';
 import { VRangeSlider, VSlider } from 'vuetify/lib';
 
-import SearchOptions from '@/components/SearchOptions';
+import SearchOptions from '@/components/SearchOptions.vue';
 import helpers from '@/helpers';
 
 export default {

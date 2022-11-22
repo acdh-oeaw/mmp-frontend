@@ -13,7 +13,7 @@
     },
     "types": ["d3", "leaflet", "vuetify"]
   },
-  "include": ["app.d.ts", "./src/**/*", "./src/**/*.vue"],
+  "include": ["./app.d.ts", "./src/**/*.js", "./src/**/*.ts", "./src/**/*.vue"],
   "references": [{ "path": "./tsconfig.node.json" }],
   "vueCompilerOptions": {
     "target": 2.7

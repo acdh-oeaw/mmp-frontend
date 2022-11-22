@@ -61,7 +61,7 @@
 
 <script>
 import bgImage from '@/assets/europa.jpg';
-import CaseStudy from '@/components/CaseStudy';
+import CaseStudy from '@/components/CaseStudy.vue';
 import helpers from '@/helpers';
 
 export default {

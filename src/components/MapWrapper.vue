@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import Leaflet from '@/components/Leaflet';
+import Leaflet from '@/components/Leaflet.vue';
 
 export default {
   name: 'MapWrapper',

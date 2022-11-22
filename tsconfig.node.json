@@ -4,7 +4,7 @@
     "composite": true,
     "types": ["node"]
   },
-  "include": ["vite.config.ts", "./config/**/*.ts", "./scripts/**/*.ts"],
+  "include": ["./vite.config.ts", "./config/**/*.ts", "./scripts/**/*.ts"],
   "ts-node": {
     "esm": true,
     "experimentalSpecifierResolution": "node",

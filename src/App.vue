@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import AppBar from '@/components/AppBar';
+import AppBar from '@/components/AppBar.vue';
 import helpers from '@/helpers';
 
 export default {

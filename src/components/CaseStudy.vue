@@ -90,9 +90,9 @@
 </template>
 
 <script>
-import Graph from '@/components/GraphWrapperBeta';
-import MapWrapper from '@/components/MapWrapper';
-import WordCloudWrapper from '@/components/WordCloudWrapper';
+import Graph from '@/components/GraphWrapperBeta.vue';
+import MapWrapper from '@/components/MapWrapper.vue';
+import WordCloudWrapper from '@/components/WordCloudWrapper.vue';
 import helpers from '@/helpers';
 
 export default {
