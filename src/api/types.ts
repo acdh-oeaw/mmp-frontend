@@ -85,3 +85,5 @@ export type FeatureWithBoundingBox<
 > = Feature<G, P> & {
   bbox: [number, number, number, number];
 };
+
+export type ResourceKind = 'autor' | 'ort' | 'text' | 'stelle' | 'keyword' | 'geojsonlayer';

@@ -19,44 +19,33 @@
               @update:page="updateOffset($event, i)"
               @update:items-per-page="updateLimit($event, i)"
             >
-              <template #item.url="{ item }">
+              <template #item.id="{ item }">
                 {{ item.id }}
               </template>
               <template #item.name="{ item }">
-                <v-chip
-                  v-if="item.coords !== undefined"
-                  :to="{ name: 'List', query: addParamsToQuery({ Place: item.id }) }"
-                  color="green lighten-3"
+                <v-chip"green lighten-3"
+                  v-if="'gnd_id' in item"
+                  :to="{ name: 'List', query: addParamsToQuery({ Author: item.id }) }"
+                  color="red lighten-3"
                 >
                   {{ item.name }}&nbsp;<v-icon>mdi-chevron-right</v-icon>
                 </v-chip>
                 <v-chip
                   v-else
-                  :to="{
-                    name: 'List',
-                    query: addParamsToQuery({ Author: item.id }),
-                  }"
-                  color="red lighten-3"
+                  :to="{ name: 'List', query: addParamsToQuery({ Place: item.id }) }"
+                  color="green lighten-3"
                 >
                   {{ item.name }}&nbsp;<v-icon>mdi-chevron-right</v-icon>
                 </v-chip>
               </template>
               <template #item.zitat="{ item }">
-                <router-link
-                  :to="{
-                    name: 'List',
-                    query: addParamsToQuery({ Passage: item.id }),
-                  }"
-                >
+                <router-link :to="{ name: 'List', query: addParamsToQuery({ Passage: item.id }) }">
                   <b> {{ item.zitat }}&nbsp;<v-icon>mdi-chevron-right</v-icon> </b>
                 </router-link>
               </template>
               <template #item.stichwort="{ item }">
                 <v-chip
-                  :to="{
-                    name: 'List',
-                    query: addParamsToQuery({ Keyword: item.id }),
-                  }"
+                  :to="{ name: 'List', query: addParamsToQuery({ Keyword: item.id }) }"
                   color="blue lighten-4"
                 >
                   {{ item.stichwort }}&nbsp;<v-icon>mdi-chevron-right</v-icon>
@@ -64,16 +53,13 @@
               </template>
               <template #item.title="{ item }">
                 <router-link
-                  :to="{
-                    name: 'Case Study',
-                    params: { id: item.id, query: $route.query },
-                  }"
+                  :to="{ name: 'Case Study', params: { id: item.id, query: $route.query } }"
                 >
                   <b> {{ item.title }}&nbsp;<v-icon>mdi-chevron-right</v-icon> </b>
                 </router-link>
               </template>
               <template #item.complete="{ item }">
-                <v-icon v-if="$store.state.completeKeywords.includes(parseInt(item.id))">
+                <v-icon v-if="$store.state.completeKeywords.includes(item.id)">
                   mdi-check-outline</v-icon
                 >
               </template>
@@ -113,7 +99,7 @@ export default {
         items: [],
         loading: false,
         header: [
-          { text: 'ID', value: 'url' },
+          { text: 'ID', value: 'id' },
           { text: 'Name', value: 'name' },
           { text: 'Comment', value: 'kommentar' },
         ],
@@ -130,7 +116,7 @@ export default {
         items: [],
         loading: false,
         header: [
-          { text: 'ID', value: 'url' },
+          { text: 'ID', value: 'id' },
           { text: 'Quote', value: 'zitat' },
           { text: 'Comment', value: 'kommentar' },
         ],
@@ -147,7 +133,7 @@ export default {
         items: [],
         loading: false,
         header: [
-          { text: 'ID', value: 'url' },
+          { text: 'ID', value: 'id' },
           { text: 'Name', value: 'stichwort' },
           { text: 'Type', value: 'art' },
           { text: 'Complete?', value: 'complete' },
@@ -165,7 +151,7 @@ export default {
         items: [],
         loading: false,
         header: [
-          { text: 'ID', value: 'url' },
+          { text: 'ID', value: 'id' },
           { text: 'Title', value: 'title' },
           { text: 'Description', value: 'description' },
         ],
@@ -184,7 +170,7 @@ export default {
         items: [],
         loading: false,
         header: [
-          { text: 'ID', value: 'url' },
+          { text: 'ID', value: 'id' },
           { text: 'Name', value: 'name' },
           { text: 'Comment', value: 'kommentar' },
         ],

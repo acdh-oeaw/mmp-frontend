@@ -22,6 +22,13 @@ export type UseCase = {
 
   /** Additional GeoJSON layers associated with case study. */
   layer: Array<GeojsonLayer>;
+
+  /**
+   * Should display labels for spatial coverages.
+   *
+   * @default true
+   */
+  show_labels: boolean;
 };
 
 export type UseCaseNormalized = Normalized<UseCase, 'knightlab_stoy_map' | 'layer'>;
@@ -325,12 +332,6 @@ export type SpatialCoverage = {
   geom_collection?: GeometryCollection | null;
   /** Uncertainty of location on a scale from 1 (very secure) to 10 (very insecure). */
   fuzzyness: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
-  /**
-   * Display labels for coverage.
-   *
-   * @default true
-   */
-  show_labels: boolean;
 
   /** Comment. */
   kommentar?: string | null;

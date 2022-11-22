@@ -534,9 +534,6 @@ export default {
     },
   },
   methods: {
-    ee() {
-      alert(':^)');
-    },
     pushQuery() {
       this.$refs.autocomplete.blur(); // this is the only working solution I found to unfocus autocomplete
       this.tooltip = false;

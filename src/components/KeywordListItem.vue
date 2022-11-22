@@ -14,7 +14,7 @@
         :to="{
           name: fullscreen ? 'Passage Detail Fullscreen' : 'Passage Detail',
           query: addParamsToQuery({ Passage: passage.id }),
-          params: { id: getIdFromUrl(passage.id) },
+          params: { id: passage.id },
         }"
       >
         <v-list-item-content>
