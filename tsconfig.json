@@ -4,7 +4,8 @@
     "allowJs": true,
     "baseUrl": ".",
     "checkJs": false,
-    "lib": ["dom", "dom.iterable", "es2020"],
+    "lib": ["dom", "dom.iterable", "es2022"],
+    "noEmit": true,
     "noUncheckedIndexedAccess": true,
     "paths": {
       "@/*": ["./src/*"],
@@ -13,5 +14,8 @@
     "types": ["d3", "leaflet", "vuetify"]
   },
   "include": ["app.d.ts", "./src/**/*", "./src/**/*.vue"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  "references": [{ "path": "./tsconfig.node.json" }],
+  "vueCompilerOptions": {
+    "target": 2.7
+  }
 }
