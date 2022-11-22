@@ -23,7 +23,7 @@
                 {{ item.id }}
               </template>
               <template #item.name="{ item }">
-                <v-chip"green lighten-3"
+                <v-chip
                   v-if="'gnd_id' in item"
                   :to="{ name: 'List', query: addParamsToQuery({ Author: item.id }) }"
                   color="red lighten-3"
