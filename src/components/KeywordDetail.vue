@@ -73,7 +73,7 @@
               </v-expansion-panel-header>
               <v-expansion-panel-content>
                 <keyword-list-item
-                  :parent-nodes="data.keywords.map((x) => getIdFromUrl(x.url))"
+                  :parent-nodes="data.keywords.map((x) => x.id)"
                   :sibling-node="conn.id"
                 />
               </v-expansion-panel-content>
@@ -95,7 +95,7 @@
                   :to="{
                     name: fullscreen ? 'List Fullscreen' : 'List',
                     query: addParamsToQuery({
-                      Keyword: data.keywords.map((x) => x.url.replace(/\D/g, '')).join('+'),
+                      Keyword: data.keywords.map((x) => x.id).join('+'),
                     }),
                   }"
                 >
@@ -170,7 +170,7 @@ export default {
 
       if (!this.data.keywords || !this.data.nodes) return retArr;
 
-      // const keyIds = this.data.keywords.map((x) => this.getIdFromUrl(x.url));
+      // const keyIds = this.data.keywords.map((x) => x.id);
       const edges = this.data.nodes.edges.map((edge) => ({
         source: this.getIdFromUrl(edge.source),
         target: this.getIdFromUrl(edge.target),
@@ -283,7 +283,9 @@ export default {
 
         // Else
         urls = [
-          `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/archiv/keyword-data/?ids=${ids.join(',')}`,
+          `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/archiv/keyword-network/?ids=${ids.join(
+            ','
+          )}`,
           `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/stelle/?format=json&has_usecase=${
             this.hasUsecase
           }`,

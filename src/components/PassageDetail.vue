@@ -30,13 +30,13 @@
             {{ item.key }}
           </td>
           <td v-if="item.key === 'Keywords'">
-            <div v-for="keyword in item.value" :key="keyword.url" class="keyword-chip">
+            <div v-for="keyword in item.value" :key="keyword.id" class="keyword-chip">
               <v-chip
                 :color="keyColors.chips[keyword.art]"
                 small
                 @click="
                   $store.commit('addToItemsAndInput', {
-                    id: keyword.url.replace(/\D/g, ''),
+                    id: keyword.id,
                     selected_text: keyword.stichwort,
                     group: 'Keyword',
                   })
@@ -49,14 +49,11 @@
           <td v-else-if="['Place', 'Author'].includes(item.key)">
             <router-link
               v-for="(val, i) in item.value"
-              :key="val.url"
+              :key="val.id"
               :to="{
                 name: fullscreen ? `${item.key} Detail Fullscreen` : `${item.key} Detail`,
-                query:
-                  item.key === 'Place'
-                    ? addParamsToQuery({ Place: getIdFromUrl(val.url) })
-                    : $route.query,
-                params: { id: getIdFromUrl(val.url) },
+                query: item.key === 'Place' ? addParamsToQuery({ Place: val.id }) : $route.query,
+                params: { id: val.id },
               }"
             >
               <span v-if="i != 0">, </span>

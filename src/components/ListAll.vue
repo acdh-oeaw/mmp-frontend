@@ -20,23 +20,23 @@
               @update:items-per-page="updateLimit($event, i)"
             >
               <template #item.url="{ item }">
-                {{ getIdFromUrl(item.url) }}
+                {{ item.id }}
               </template>
               <template #item.name="{ item }">
                 <v-chip
-                  v-if="item.url.includes('autor')"
-                  :to="{
-                    name: 'List',
-                    query: addParamsToQuery({ Author: getIdFromUrl(item.url) }),
-                  }"
-                  color="red lighten-3"
+                  v-if="item.coords !== undefined"
+                  :to="{ name: 'List', query: addParamsToQuery({ Place: item.id }) }"
+                  color="green lighten-3"
                 >
                   {{ item.name }}&nbsp;<v-icon>mdi-chevron-right</v-icon>
                 </v-chip>
                 <v-chip
                   v-else
-                  :to="{ name: 'List', query: addParamsToQuery({ Place: getIdFromUrl(item.url) }) }"
-                  color="green lighten-3"
+                  :to="{
+                    name: 'List',
+                    query: addParamsToQuery({ Author: item.id }),
+                  }"
+                  color="red lighten-3"
                 >
                   {{ item.name }}&nbsp;<v-icon>mdi-chevron-right</v-icon>
                 </v-chip>
@@ -45,7 +45,7 @@
                 <router-link
                   :to="{
                     name: 'List',
-                    query: addParamsToQuery({ Passage: getIdFromUrl(item.url) }),
+                    query: addParamsToQuery({ Passage: item.id }),
                   }"
                 >
                   <b> {{ item.zitat }}&nbsp;<v-icon>mdi-chevron-right</v-icon> </b>
@@ -55,7 +55,7 @@
                 <v-chip
                   :to="{
                     name: 'List',
-                    query: addParamsToQuery({ Keyword: getIdFromUrl(item.url) }),
+                    query: addParamsToQuery({ Keyword: item.id }),
                   }"
                   color="blue lighten-4"
                 >
@@ -66,16 +66,14 @@
                 <router-link
                   :to="{
                     name: 'Case Study',
-                    params: { id: getIdFromUrl(item.url), query: $route.query },
+                    params: { id: item.id, query: $route.query },
                   }"
                 >
                   <b> {{ item.title }}&nbsp;<v-icon>mdi-chevron-right</v-icon> </b>
                 </router-link>
               </template>
               <template #item.complete="{ item }">
-                <v-icon
-                  v-if="$store.state.completeKeywords.includes(parseInt(getIdFromUrl(item.url)))"
-                >
+                <v-icon v-if="$store.state.completeKeywords.includes(parseInt(item.id))">
                   mdi-check-outline</v-icon
                 >
               </template>

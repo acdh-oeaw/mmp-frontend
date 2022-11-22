@@ -454,7 +454,7 @@ export default {
                   console.log('Query', cat, res);
                   res.results.forEach((x) => {
                     this.$store.commit('addToItemsAndInput', {
-                      id: this.getIdFromUrl(x.url),
+                      id: x.id,
                       text: x[apiParams[cat].text],
                       selected_text: x[apiParams[cat].text],
                       group: cat,
