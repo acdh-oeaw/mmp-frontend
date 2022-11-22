@@ -59,8 +59,8 @@
 </template>
 
 <script>
-import helpers from '../helpers';
-import Sidebar from './Sidebar';
+import Sidebar from '@/components/Sidebar';
+import helpers from '@/helpers';
 
 export default {
   name: 'AppBar',

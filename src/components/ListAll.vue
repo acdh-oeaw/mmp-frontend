@@ -82,8 +82,9 @@
     </v-row>
   </v-container>
 </template>
+
 <script>
-import helpers from '../helpers';
+import helpers from '@/helpers';
 
 export default {
   name: 'ListAll',

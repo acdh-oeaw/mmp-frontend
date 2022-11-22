@@ -37,6 +37,7 @@
     </v-list>
   </v-card>
 </template>
+
 <script>
 import helpers from '@/helpers';
 

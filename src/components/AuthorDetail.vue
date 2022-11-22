@@ -152,6 +152,7 @@
     </v-container>
   </v-navigation-drawer>
 </template>
+
 <script>
 import helpers from '@/helpers';
 

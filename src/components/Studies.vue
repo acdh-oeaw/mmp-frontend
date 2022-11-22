@@ -189,6 +189,7 @@ export default {
   },
 };
 </script>
+
 <style scoped>
 .study-card {
   margin-bottom: 20px;

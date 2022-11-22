@@ -64,7 +64,8 @@ export default {
   },
 };
 </script>
-<style lang="css">
+
+<style>
 a {
   text-decoration: none !important;
 }

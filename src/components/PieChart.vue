@@ -3,6 +3,7 @@
     <chart :options="pieOptions" />
   </div>
 </template>
+
 <script>
 import { Chart } from 'highcharts-vue';
 
@@ -65,6 +66,7 @@ export default {
   },
 };
 </script>
+
 <style>
 div.pieWrapper {
   margin: 20px;

@@ -118,14 +118,14 @@
     </v-speed-dial>
   </v-card>
 </template>
+
 <script>
 import Gradient from 'javascript-color-gradient';
 
+import FullscreenButton from '@/components/FullscreenButton';
+import PieChart from '@/components/PieChart';
+import WordCloudBeta from '@/components/WordCloudBeta';
 import helpers from '@/helpers';
-
-import FullscreenButton from './FullscreenButton';
-import PieChart from './PieChart';
-import WordCloudBeta from './WordCloudBeta';
 
 export default {
   name: 'WordCloudWrapper',
@@ -318,6 +318,7 @@ export default {
   },
 };
 </script>
+
 <style scoped>
 .word-cloud {
   min-height: 500px;

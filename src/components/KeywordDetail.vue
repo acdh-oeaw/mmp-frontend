@@ -134,11 +134,10 @@
 </template>
 
 <script>
+import KeywordListItem from '@/components/KeywordListItem';
+import KeywordOverTime from '@/components/KeywordOverTime';
+import Leaflet from '@/components/Leaflet';
 import helpers from '@/helpers';
-
-import KeywordListItem from './KeywordListItem';
-import KeywordOverTime from './KeywordOverTime';
-import Leaflet from './Leaflet';
 
 export default {
   name: 'KeywordDetail',
@@ -331,6 +330,7 @@ export default {
   },
 };
 </script>
+
 <style>
 button.v-expansion-panel-header {
   padding: 6px;

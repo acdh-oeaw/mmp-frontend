@@ -133,6 +133,7 @@
     </div>
   </v-card>
 </template>
+
 <script>
 import { forceLink } from 'd3';
 
@@ -550,7 +551,7 @@ export default {
 };
 </script>
 
-<style lang="css">
+<style>
 .no-nodes {
   color: rgb(0 0 0 / 87%);
 }

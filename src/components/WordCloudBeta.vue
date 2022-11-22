@@ -13,6 +13,7 @@
     />
   </div>
 </template>
+
 <script>
 import cloud from 'vue-d3-cloud';
 
@@ -55,6 +56,8 @@ export default {
   },
 };
 </script>
+z
+
 <style>
 .cloud-wrapper {
   height: 460px;

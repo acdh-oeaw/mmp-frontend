@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import Leaflet from './Leaflet';
+import Leaflet from '@/components/Leaflet';
 
 export default {
   name: 'MapWrapper',

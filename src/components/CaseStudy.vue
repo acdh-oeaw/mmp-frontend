@@ -88,10 +88,10 @@
 </template>
 
 <script>
-import helpers from '../helpers';
-import Graph from './GraphWrapperBeta';
-import MapWrapper from './MapWrapper';
-import WordCloudWrapper from './WordCloudWrapper';
+import Graph from '@/components/GraphWrapperBeta';
+import MapWrapper from '@/components/MapWrapper';
+import WordCloudWrapper from '@/components/WordCloudWrapper';
+import helpers from '@/helpers';
 
 export default {
   name: 'Studies',

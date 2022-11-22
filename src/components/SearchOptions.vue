@@ -191,6 +191,7 @@ export default {
   },
 };
 </script>
+
 <style scoped>
 .option-card {
   max-height: 50vh;

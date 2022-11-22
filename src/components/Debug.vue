@@ -1,4 +1,3 @@
-g
 <template>
   <v-container>
     <v-row>
@@ -98,11 +97,12 @@ g
     </v-row>
   </v-container>
 </template>
+
 <script>
-import Graph from './GraphWrapperBeta';
-import List from './List';
-import MapWrapper from './MapWrapper';
-import WordCloudWrapper from './WordCloudWrapper';
+import Graph from '@/components/GraphWrapperBeta';
+import List from '@/components/List';
+import MapWrapper from '@/components/MapWrapper';
+import WordCloudWrapper from '@/components/WordCloudWrapper';
 
 export default {
   name: 'Debug',

@@ -127,11 +127,11 @@
     </div>
   </v-card>
 </template>
-<script>
-import helpers from '@/helpers';
 
-import FullscreenButton from './FullscreenButton';
-import Visualization from './Visualization2D';
+<script>
+import FullscreenButton from '@/components/FullscreenButton';
+import Visualization from '@/components/Visualization2D';
+import helpers from '@/helpers';
 
 export default {
   name: 'NetworkGraphBeta',
@@ -484,7 +484,7 @@ export default {
 };
 </script>
 
-<style lang="css">
+<style>
 .no-nodes {
   color: rgb(0 0 0 / 87%);
 }
