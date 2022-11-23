@@ -68,7 +68,7 @@
                 :to="{
                   name: 'Case Study',
                   params: { id: usecase.id },
-                  query: addParamsToQuery(),
+                  query: $route.query,
                 }"
               >
                 <v-list-item-content>

@@ -62,7 +62,7 @@
               text
               :to="{
                 name: 'Case Study',
-                params: { id: study.id, query: addParamsToQuery() },
+                params: { id: study.id, query: $route.query },
               }"
             >
               Read More
