@@ -21,6 +21,9 @@
             <v-tab exact :to="{ query: addParamsToQuery({ tab: 'graph' }) }"> Graph </v-tab>
             <v-tab exact :to="{ query: addParamsToQuery({ tab: 'map' }) }"> Map </v-tab>
             <v-tab exact :to="{ query: addParamsToQuery({ tab: 'cloud' }) }"> Word Cloud </v-tab>
+            <v-tab exact :to="{ query: addParamsToQuery({ tab: 'texts' }) }">
+              Texts & Authors
+            </v-tab>
           </v-tabs>
           <br />
           <v-tabs-items :value="$route.query.tab || 'timeline'">
@@ -79,6 +82,39 @@
             <v-tab-item value="cloud">
               <word-cloud-wrapper :usecase="id || $route.params.id" />
             </v-tab-item>
+            <v-tab-item value="texts">
+              <v-expansion-panels>
+                <v-expansion-panel v-for="author in authors" :key="author.id">
+                  <v-card>
+                    <v-card-title>
+                      {{ getOptimalName(author) }}
+                    </v-card-title>
+                    <v-card-text>
+                      <ul>
+                        <li
+                          v-for="text in texts.filter((text) =>
+                            text.autor.map((autor) => autor.id).includes(author.id)
+                          )"
+                          :key="text.id"
+                        >
+                          {{ text.title }}
+                          <ul>
+                            <li
+                              v-for="passage in passages.results.filter(
+                                (passage) => passage.text.id === text.id
+                              )"
+                              :key="passage.id"
+                            >
+                              {{ passage.display_label }}
+                            </li>
+                          </ul>
+                        </li>
+                      </ul>
+                    </v-card-text>
+                  </v-card>
+                </v-expansion-panel>
+              </v-expansion-panels>
+            </v-tab-item>
           </v-tabs-items>
         </template>
         <v-skeleton-loader v-else type="text, heading, text@11" />
@@ -105,14 +141,27 @@ export default {
   data: () => ({
     study: {},
     events: [],
+    passages: {},
     loading: true,
   }),
+  computed: {
+    texts() {
+      return this.removeDuplicates(
+        this.passages.results.map((passage) => passage.text),
+        'id'
+      );
+    },
+    authors() {
+      return this.removeDuplicates(this.texts.map((text) => text.autor).flat(1), 'id');
+    },
+  },
   mounted() {
     const id = this.id || this.$route.params.id;
 
     const urls = [
       `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/usecase/${id}?format=json`,
       `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/archiv/usecase-timetable-data/${id}`,
+      `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/stelle/?use_case=${id}&limit=200`, // limit is not ideal
     ];
 
     const prefetched = this.$store.state.fetchedResults[urls.toString()];
@@ -126,7 +175,7 @@ export default {
               console.log('Study', jsonRes);
               if (jsonRes[0].story_map)
                 jsonRes[0].story_map = jsonRes[0].story_map.replaceAll('/explore/', '/view/');
-              [this.study, this.events] = jsonRes;
+              [this.study, this.events, this.passages] = jsonRes;
 
               console.log('route', this.$route);
             })
