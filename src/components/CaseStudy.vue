@@ -2,7 +2,7 @@
   <v-container>
     <v-row justify="center">
       <v-col cols="12" xl="8">
-        <template v-if="!loading">
+        <template v-if="!isLoading">
           <p class="text-h7 grey--text">
             <v-btn icon plain :to="{ name: 'Studies' }">
               <v-icon>mdi-chevron-left</v-icon>
@@ -88,13 +88,17 @@
 </template>
 
 <script>
-import helpers from '../helpers';
-import Graph from './GraphWrapperBeta';
-import MapWrapper from './MapWrapper';
-import WordCloudWrapper from './WordCloudWrapper';
+import { computed } from 'vue';
+import { useRoute } from 'vue-router/composables';
+
+import { useCaseStudyById, useCaseStudyTimeTableById } from '@/api';
+import Graph from '@/components/GraphWrapperBeta';
+import MapWrapper from '@/components/MapWrapper';
+import WordCloudWrapper from '@/components/WordCloudWrapper';
+import helpers from '@/helpers';
 
 export default {
-  name: 'Studies',
+  name: 'CaseStudy',
   components: {
     Graph,
     MapWrapper,
@@ -102,45 +106,38 @@ export default {
   },
   mixins: [helpers],
   props: ['id'],
-  data: () => ({
-    study: {},
-    events: [],
-    loading: true,
-  }),
-  mounted() {
-    const id = this.id || this.$route.params.id;
+  setup(props) {
+    const route = useRoute();
+    const id = computed(() => props.id ?? route.params.id);
 
-    const urls = [
-      `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/usecase/${id}?format=json`,
-      `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/archiv/usecase-timetable-data/${id}`,
-    ];
+    const caseStudyQuery = useCaseStudyById({ id });
+    const caseStudyTimeTableQuery = useCaseStudyTimeTableById({ id });
 
-    const prefetched = this.$store.state.fetchedResults[urls.toString()];
-    if (prefetched) {
-      [this.study, this.events] = prefetched;
-    } else {
-      Promise.all(urls.map((x) => fetch(x)))
-        .then((res) => {
-          Promise.all(res.map((x) => x.json()))
-            .then((jsonRes) => {
-              console.log('Study', jsonRes);
-              if (jsonRes[0].story_map)
-                jsonRes[0].story_map = jsonRes[0].story_map.replaceAll('/explore/', '/view/');
-              [this.study, this.events] = jsonRes;
+    const isLoading = computed(() => {
+      return [caseStudyQuery, caseStudyTimeTableQuery].some(
+        (query) => query.isInitialLoading.value
+      );
+    });
 
-              console.log('route', this.$route);
-            })
-            .catch((err) => {
-              console.error(err);
-            })
-            .finally(() => {
-              this.loading = false;
-            });
-        })
-        .catch((err) => {
-          console.error(err);
-        });
-    }
+    const study = computed(() => {
+      if (caseStudyQuery.data.value == null) return caseStudyQuery.data.value;
+
+      return {
+        ...caseStudyQuery.data.value,
+        // FIXME: why is this necessary?
+        story_map: caseStudyQuery.data.value.story_map?.replaceAll('/explore/', '/view/'),
+      };
+    });
+
+    const events = computed(() => {
+      return caseStudyTimeTableQuery.data.value;
+    });
+
+    return {
+      isLoading,
+      study,
+      events,
+    };
   },
   methods: {
     removeDatesFromTitle(title) {

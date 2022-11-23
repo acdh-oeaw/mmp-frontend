@@ -2,7 +2,7 @@
   <v-card flat color="rgba(0, 0, 0, 0)">
     <v-list two-line>
       <v-skeleton-loader
-        v-if="loading"
+        v-if="isLoading"
         type="list-item-three-line@3"
         class="transparent-skeleton"
       />
@@ -38,50 +38,37 @@
   </v-card>
 </template>
 <script>
+import { computed } from 'vue';
+
+import { usePassages } from '@/api';
 import helpers from '@/helpers';
+import { useStore } from '@/lib/use-store';
 
 export default {
   mixins: [helpers],
   props: ['parentNodes', 'siblingNode'],
-  data: () => ({
-    data: [],
-    loading: true,
-  }),
-  mounted() {
-    const { intersect } = this.$store.state.apiParams;
-    let url = `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/stelle/?${
-      intersect ? 'key_word_and' : 'key_word'
-    }=${this.siblingNode}&has_usecase=${this.hasUsecase}`;
-    this.parentNodes.forEach((x) => {
-      url += intersect ? `&key_word_and=${x}` : `&key_word=${x}`;
-    });
+  setup(props) {
+    const store = useStore();
 
-    const prefetched = this.$store.state.fetchedResults[url];
-    if (prefetched) {
-      this.loading = false;
-      // const texts = prefetched.results.map((x) => ({ ...x.text, keywords: x.key_word }));
-      const passages = prefetched.results;
-      console.log('stored passages', passages);
-      this.data = this.removeDuplicates(passages, 'url');
-    } else {
-      fetch(url)
-        .then((res) => res.json())
-        .then((jsonRes) => {
-          this.$store.commit('addToResults', { req: url, jsonRes });
+    const passagesQuery = usePassages(
+      computed(() => ({
+        [store.state.apiParams.intersect ? 'key_word_and' : 'key_word']: [
+          props.siblingNode,
+          ...props.parentNodes,
+        ],
+        has_usecase: store.state.apiParams.hasUsecase,
+      }))
+    );
 
-          // const texts = jsonRes.results.map((x) => ({ ...x.text, keywords: x.key_word }));
-          const passages = jsonRes.results;
-          console.log('passages', passages);
-          this.data = this.removeDuplicates(passages, 'url');
-          console.log('Keyword List Item data', this.data);
-        })
-        .catch((err) => {
-          console.error(err);
-        })
-        .finally(() => {
-          this.loading = false;
-        });
-    }
+    const isLoading = computed(() => passagesQuery.isInitialLoading.value);
+
+    // FIXME: why removeDuplicates(passages, 'url');
+    const passages = computed(() => passagesQuery.data.value?.results ?? []);
+
+    return {
+      isLoading,
+      data: passages,
+    };
   },
 };
 </script>

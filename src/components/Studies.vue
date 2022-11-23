@@ -18,7 +18,7 @@
           no-data-text="No data found"
           :items="studySearch"
           :search-input.sync="textInput"
-          :loading="loading"
+          :loading="isLoading"
           @change="textInput = ''"
           @keyup.enter="pushQuery"
         >
@@ -28,9 +28,9 @@
             >
               <v-list-item-title>
                 {{ removeRoot(data.item.selected_text) }}
-                <span v-if="$store.state.completeKeywords.includes(parseInt(data.item.id))"
-                  >(complete)</span
-                >
+                <span v-if="$store.state.completeKeywords.includes(parseInt(data.item.id))">
+                  (complete)
+                </span>
               </v-list-item-title>
               <v-list-item-subtitle
                 >Keyword ({{ data.item.selected_text.split(',')[1].replace(/\W/g, '') }})
@@ -42,9 +42,9 @@
             </v-list-item-content>
           </template>
           <template #append>
-            <v-icon v-if="studyAuto.length" color="primary" @click="studyAuto = []"
-              >mdi-close</v-icon
-            >
+            <v-icon v-if="studyAuto.length" color="primary" @click="studyAuto = []">
+              mdi-close
+            </v-icon>
           </template>
         </v-autocomplete>
       </v-col>
@@ -53,9 +53,9 @@
       <v-col cols="12" lg="8">
         <v-card v-for="study in studies" :key="study.id" class="study-card">
           <v-card-title>{{ study.title }}</v-card-title>
-          <v-card-subtitle v-if="study.principal_investigator">{{
-            study.principal_investigator
-          }}</v-card-subtitle>
+          <v-card-subtitle v-if="study.principal_investigator">
+            {{ study.principal_investigator }}
+          </v-card-subtitle>
           <v-card-text v-if="study.description">{{ study.description }}</v-card-text>
           <v-card-actions>
             <v-btn
@@ -75,17 +75,30 @@
 </template>
 
 <script>
+import { computed } from 'vue';
+
+import { useCaseStudies } from '@/api';
 import helpers from '@/helpers';
 
 export default {
-  name: 'Studies',
+  name: 'CaseStudies',
   mixins: [helpers],
+  setup() {
+    const caseStudiesQuery = useCaseStudies();
+
+    const isLoading = computed(() => caseStudiesQuery.isInitialLoading.value);
+
+    const studies = computed(() => caseStudiesQuery.data.value?.results ?? []);
+
+    return {
+      isLoading,
+      studies,
+    };
+  },
   data: () => ({
-    studies: [],
     studySearch: [],
     studyAuto: [],
     textInput: '',
-    loading: false,
   }),
   watch: {
     textInput(val) {
@@ -170,22 +183,6 @@ export default {
       },
       deep: true,
     },
-  },
-  mounted() {
-    const address = `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/usecase/?format=json`;
-    const prefetched = this.$store.state.fetchedResults[address];
-
-    if (prefetched) {
-      this.studies = prefetched.results;
-    } else {
-      fetch(address)
-        .then((res) => res.json())
-        .then((res) => {
-          console.log('studies', res);
-          this.$store.commit('addToResults', { req: address, res });
-          this.studies = res.results;
-        });
-    }
   },
 };
 </script>
