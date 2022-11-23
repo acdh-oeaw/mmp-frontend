@@ -3,46 +3,31 @@
     <v-row>
       <v-col offset="0" offset-lg="4" cols="12" lg="6">
         <v-autocomplete
-          ref="case-autocomplete"
-          v-model="studyAuto"
-          color="primary"
-          placeholder="Search for case studies by authors or keywords"
-          multiple
-          return-object
-          no-filter
-          chips
-          deletable-chips
-          autofocus
+          v-model="selectedValues"
           auto-select-first
-          item-text="selected_text"
-          no-data-text="No data found"
-          :items="studySearch"
-          :search-input.sync="textInput"
-          :loading="isLoading"
-          @change="textInput = ''"
-          @keyup.enter="pushQuery"
+          chips
+          color="primary"
+          deletable-chips
+          item-text="label"
+          :items="items"
+          :loading="isFetching"
+          multiple
+          no-data-text="Nothing found"
+          no-filter
+          placeholder="Search for case studies by authors or keywords"
+          return-object
+          :search-input="searchTerm"
+          @update:search-input="(value) => (searchTerm = value ?? '')"
+          @change="searchTerm = ''"
         >
-          <template #item="data">
-            <v-list-item-content
-              v-if="data.item.group === 'Keyword' && data.item.selected_text.includes(',')"
-            >
-              <v-list-item-title>
-                {{ removeRoot(data.item.selected_text) }}
-                <span v-if="$store.state.completeKeywords.includes(parseInt(data.item.id))">
-                  (complete)
-                </span>
-              </v-list-item-title>
-              <v-list-item-subtitle
-                >Keyword ({{ data.item.selected_text.split(',')[1].replace(/\W/g, '') }})
-              </v-list-item-subtitle>
-            </v-list-item-content>
-            <v-list-item-content v-else>
-              <v-list-item-title>{{ data.item.selected_text }}</v-list-item-title>
-              <v-list-item-subtitle>{{ data.item.group }}</v-list-item-subtitle>
+          <template #item="{ item }">
+            <v-list-item-content>
+              <v-list-item-title>{{ item.label }}</v-list-item-title>
+              <v-list-item-subtitle>{{ item.kind }}</v-list-item-subtitle>
             </v-list-item-content>
           </template>
           <template #append>
-            <v-icon v-if="studyAuto.length" color="primary" @click="studyAuto = []">
+            <v-icon v-if="selectedValues.length" color="primary" @click="selectedValues = []">
               mdi-close
             </v-icon>
           </template>
@@ -51,6 +36,7 @@
     </v-row>
     <v-row justify="center">
       <v-col cols="12" lg="8">
+        <!-- TODO: loading indicator, nothing found message -->
         <v-card v-for="study in studies" :key="study.id" class="study-card">
           <v-card-title>{{ study.title }}</v-card-title>
           <v-card-subtitle v-if="study.principal_investigator">
@@ -75,114 +61,56 @@
 </template>
 
 <script>
-import { computed } from 'vue';
+import { groupBy } from '@stefanprobst/group-by';
+import { computed, ref } from 'vue';
 
-import { useCaseStudies } from '@/api';
+import { useAutoComplete, useCaseStudies } from '@/api';
 import helpers from '@/helpers';
 
 export default {
   name: 'CaseStudies',
   mixins: [helpers],
   setup() {
-    const caseStudiesQuery = useCaseStudies();
+    const searchTerm = ref('');
+    const selectedValues = ref([]);
 
+    const autoCompleteQuery = useAutoComplete(
+      computed(() => ({ q: searchTerm.value.trim(), kind: ['autor', 'keyword'] }))
+    );
+    const isFetching = computed(() => autoCompleteQuery.isFetching.value);
+    const items = computed(() => {
+      // FIXME: backend returns errors as 200 OK
+      if (autoCompleteQuery.data.value?.error) {
+        return selectedValues.value;
+      }
+
+      // selected values must always be included in items, otherwise the chips will not be displayed.
+      // TODO: deduplicate
+      return (
+        autoCompleteQuery.data.value?.results.concat(selectedValues.value) ?? selectedValues.value
+      );
+    });
+
+    const searchFilters = computed(() => groupBy(selectedValues.value, (value) => value.kind));
+
+    const caseStudiesQuery = useCaseStudies(
+      computed(() => ({
+        has_stelle__text__autor: searchFilters.value['autor']?.map((value) => value.id),
+        has_stelle__key_word: searchFilters.value['keyword']?.map((value) => value.id),
+      }))
+    );
     const isLoading = computed(() => caseStudiesQuery.isInitialLoading.value);
-
     const studies = computed(() => caseStudiesQuery.data.value?.results ?? []);
 
     return {
+      searchTerm,
+      selectedValues,
+      isFetching,
+      items,
+
       isLoading,
       studies,
     };
-  },
-  data: () => ({
-    studySearch: [],
-    studyAuto: [],
-    textInput: '',
-  }),
-  watch: {
-    textInput(val) {
-      if (!val || val.length < 1) return;
-      const urls = {};
-      const filters = this.$store.state.searchFilters;
-      if (filters.author)
-        urls.Author = `${
-          import.meta.env.VITE_APP_MMP_API_BASE_URL
-        }/archiv-ac/autor-autocomplete/?q=${val}`;
-      if (Object.values(filters.keyword).some((x) => x))
-        urls.Keyword = `${
-          import.meta.env.VITE_APP_MMP_API_BASE_URL
-        }/archiv-ac/keyword-autocomplete/?q=${val}`;
-
-      // const labels = ['Author', 'Keyword'];
-      const prefetched = this.$store.state.fetchedResults[JSON.stringify(urls)];
-
-      if (prefetched) {
-        this.studySearch = [];
-        prefetched.forEach((x, i) => {
-          this.studySearch = [
-            ...this.studySearch,
-            ...x.results.map((result) => ({ ...result, type: ['author', 'keyword'][i] })),
-          ];
-        });
-      } else {
-        this.loading = true;
-        Promise.all(Object.values(urls).map((x) => fetch(x)))
-          .then((res) => {
-            Promise.all(res.map((x) => x.json()))
-              .then((jsonRes) => {
-                console.log('promise all autocomplete studies', jsonRes);
-                this.$store.commit('addToResults', { req: JSON.stringify(urls), res: jsonRes });
-                console.log('urls', urls);
-                this.studySearch = [];
-                jsonRes.forEach((x, i) => {
-                  this.studySearch = [
-                    ...this.studySearch,
-                    ...x.results.map((result) => ({ ...result, type: ['author', 'keyword'][i] })),
-                  ];
-                });
-              })
-              .catch((err) => {
-                console.error(err);
-              })
-              .finally(() => {
-                this.loading = false;
-              });
-          })
-          .catch((err) => {
-            this.loading = false;
-            console.error(err);
-          });
-      }
-    },
-    studyAuto: {
-      handler(val) {
-        console.log('studyAuto', val);
-        let url = `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/usecase/?format=json`;
-        const apiParams = {
-          author: 'has_stelle__text__autor',
-          keyword: 'has_stelle__key_word',
-        };
-        val.forEach((value) => {
-          url += `&${apiParams[value.type]}=${value.id}`;
-        });
-        console.log('study url', url);
-
-        const prefetched = this.$store.state.fetchedResults[url];
-        if (prefetched) {
-          this.studies = prefetched.results;
-        } else {
-          fetch(url)
-            .then((res) => res.json())
-            .then((res) => {
-              console.log('studies', res);
-              this.$store.commit('addToResults', { req: url, res });
-              this.studies = res.results;
-            });
-        }
-      },
-      deep: true,
-    },
   },
 };
 </script>

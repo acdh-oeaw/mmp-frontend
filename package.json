@@ -29,6 +29,7 @@
     "@fontsource/roboto-flex": "^4.5.2",
     "@mdi/font": "^7.0.96",
     "@stefanprobst/assert": "^1.0.3",
+    "@stefanprobst/group-by": "^1.1.0",
     "@stefanprobst/request": "^0.2.1",
     "@tanstack/vue-query": "^4.14.3",
     "@turf/turf": "^6.5.0",
