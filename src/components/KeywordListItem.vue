@@ -62,7 +62,6 @@ export default {
 
     const isLoading = computed(() => passagesQuery.isInitialLoading.value);
 
-    // FIXME: why removeDuplicates(passages, 'url');
     const passages = computed(() => passagesQuery.data.value?.results ?? []);
 
     return {

@@ -17,7 +17,8 @@
           placeholder="Search for case studies by authors or keywords"
           return-object
           :search-input="searchTerm"
-          @update:search-input="(value) => (searchTerm = value ?? '')"
+          type="search"
+          @update:search-input="onUpdateSearchTerm"
           @change="searchTerm = ''"
         >
           <template #item="{ item }">
@@ -60,37 +61,41 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import { groupBy } from '@stefanprobst/group-by';
 import { computed, ref } from 'vue';
 
 import { useAutoComplete, useCaseStudies } from '@/api';
 import helpers from '@/helpers';
+import type { Item } from '@/lib/search/types';
+import { uniqueItems } from '@/lib/search/unique-items';
 
 export default {
   name: 'CaseStudies',
   mixins: [helpers],
   setup() {
     const searchTerm = ref('');
-    const selectedValues = ref([]);
+    const selectedValues = ref<Array<Item>>([]);
+
+    function onUpdateSearchTerm(value: string | null) {
+      searchTerm.value = value ?? '';
+    }
 
     const autoCompleteQuery = useAutoComplete(
       computed(() => ({ q: searchTerm.value.trim(), kind: ['autor', 'keyword'] }))
     );
     const isFetching = computed(() => autoCompleteQuery.isFetching.value);
     const items = computed(() => {
-      // FIXME: backend returns errors as 200 OK
-      if (autoCompleteQuery.data.value?.error) {
+      // selected values must always be included in items, otherwise the chips for selected values
+      // will not be displayed when they are no longer in the items list matching the current search term.
+      if (autoCompleteQuery.data.value == null) {
         return selectedValues.value;
       }
 
-      // selected values must always be included in items, otherwise the chips will not be displayed.
-      // TODO: deduplicate
-      return (
-        autoCompleteQuery.data.value?.results.concat(selectedValues.value) ?? selectedValues.value
-      );
+      return uniqueItems(autoCompleteQuery.data.value.results, selectedValues.value);
     });
 
+    // TODO: debounce, or require explicit form submit
     const searchFilters = computed(() => groupBy(selectedValues.value, (value) => value.kind));
 
     const caseStudiesQuery = useCaseStudies(
@@ -104,6 +109,7 @@ export default {
 
     return {
       searchTerm,
+      onUpdateSearchTerm,
       selectedValues,
       isFetching,
       items,

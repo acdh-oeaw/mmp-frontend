@@ -2,6 +2,7 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 
 import AuthorDetail from '@/components/AuthorDetail';
+import CaseStudies from '@/components/CaseStudies';
 import CaseStudy from '@/components/CaseStudy';
 import CompareAuthors from '@/components/CompareAuthors';
 import Debug from '@/components/Debug';
@@ -16,7 +17,6 @@ import Map from '@/components/MapWrapper';
 import PassageDetail from '@/components/PassageDetail';
 import PlaceDetail from '@/components/PlaceDetail';
 import SpatialDetail from '@/components/SpatialDetail';
-import Studies from '@/components/Studies';
 import WordCloudWrapper from '@/components/WordCloudWrapper';
 
 Vue.use(VueRouter);
@@ -34,8 +34,8 @@ const routes = [
   },
   {
     path: '/studies/',
-    name: 'Studies',
-    component: Studies,
+    name: 'Case Studies',
+    component: CaseStudies,
   },
   {
     path: '/studies/:id',

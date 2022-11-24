@@ -22,7 +22,7 @@
           <v-list-item-title>About the Project</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item :to="{ name: 'Studies', query: $route.query }" link>
+      <v-list-item :to="{ name: 'Case Studies', query: $route.query }" link>
         <v-list-item-content>
           <v-list-item-title>Case Studies</v-list-item-title>
         </v-list-item-content>

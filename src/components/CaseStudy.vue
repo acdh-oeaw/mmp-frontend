@@ -4,7 +4,7 @@
       <v-col cols="12" xl="8">
         <template v-if="!isLoading">
           <p class="text-h7 grey--text">
-            <v-btn icon plain :to="{ name: 'Studies' }">
+            <v-btn icon plain :to="{ name: 'Case Studies' }">
               <v-icon>mdi-chevron-left</v-icon>
             </v-btn>
             CASE STUDY<span v-if="study.principal_investigator"

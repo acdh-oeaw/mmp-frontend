@@ -37,7 +37,7 @@
             <span class="non-selectable" :class="{ 'white--text': isHome }">
               &nbsp;&nbsp;&bull;&nbsp;&nbsp;
             </span>
-            <router-link :to="{ name: 'Studies', query: $route.query }" class="nav-link">
+            <router-link :to="{ name: 'Case Studies', query: $route.query }" class="nav-link">
               Case&nbsp;Studies
             </router-link>
             <span class="non-selectable" :class="{ 'white--text': isHome }">
