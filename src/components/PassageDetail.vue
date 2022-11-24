@@ -10,7 +10,7 @@
         </router-link>
       </v-list-item-action>
       <v-list-item-content>
-        <div v-if="!loading">
+        <div v-if="!isLoading">
           <v-list-item-title class="text-h5">
             {{ title.title }}
           </v-list-item-title>
@@ -23,7 +23,7 @@
       </v-list-item-content>
     </v-list-item>
     <v-divider />
-    <v-simple-table v-if="!loading" class="data-table">
+    <v-simple-table v-if="!isLoading" class="data-table">
       <tbody>
         <tr v-for="item in items" :key="item.key">
           <td class="grey--text text--darken-1">
@@ -74,114 +74,102 @@
 </template>
 
 <script>
+import { computed } from 'vue';
+import { useRoute } from 'vue-router/composables';
+
+import { usePassageById } from '@/api';
 import helpers from '@/helpers';
 
 export default {
   name: 'PassasgeDetail',
   mixins: [helpers],
+  setup() {
+    const route = useRoute();
+    const id = computed(() => Number(route.params.id));
+
+    const passageQuery = usePassageById({ id });
+
+    const isLoading = computed(() => passageQuery.isInitialLoading.value);
+    const passage = computed(() => passageQuery.data.value);
+
+    const title = computed(() => {
+      if (passage.value == null) return {};
+
+      return {
+        title: passage.value.text.title,
+        written:
+          passage.value.text.start_date || passage.value.text.end_date
+            ? `${passage.value.text.start_date || 'unknown'} - ${
+                passage.value.text.end_date || 'unknown'
+              }`
+            : 'unknown',
+        author: passage.value.text.autor.map((x) => x.name_en).join(', '),
+      };
+    });
+
+    const items = computed(() => {
+      if (passage.value == null) return [];
+
+      return [
+        {
+          key: 'Keywords',
+          value: passage.value.key_word,
+        },
+        {
+          key: 'Translation',
+          value: passage.value.translation,
+        },
+        {
+          key: 'Original quote',
+          value: passage.value.zitat,
+        },
+        {
+          key: 'Title',
+          value: title.value.title,
+        },
+        {
+          key: 'Cited',
+          value: passage.value.zitat_stelle,
+        },
+        {
+          key: 'Summary',
+          value: passage.value.summary,
+        },
+        {
+          key: 'Author',
+          value: passage.value.text.autor,
+        },
+        {
+          key: 'Place',
+          value: passage.value.text.ort,
+        },
+        {
+          key: 'Edition',
+          value: passage.value.text.edition,
+        },
+        {
+          key: 'Text written in',
+          value: title.value.written,
+        },
+        {
+          key: 'Comment',
+          value: passage.value.kommentar,
+        },
+      ];
+    });
+
+    return {
+      isLoading,
+      passage,
+      items,
+      title,
+    };
+  },
   data: () => ({
     headers: [
       { text: 'key', value: 'key' },
       { text: 'value', value: 'value' },
     ],
-    items: [],
-    loading: false,
-    title: {
-      title: null,
-      written: null,
-      author: null,
-    },
   }),
-  watch: {
-    '$route.params': {
-      handler(params) {
-        console.log(params);
-        this.loading = true;
-        const address = `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/stelle/${
-          params.id
-        }/?format=json`;
-        const prefetched = this.$store.state.fetchedResults[address];
-
-        if (prefetched) {
-          console.log('prefetched', prefetched);
-          this.addRes(prefetched);
-          this.loading = false;
-        } else {
-          fetch(address)
-            .then((res) => res.json())
-            .then((res) => {
-              console.log(res);
-              this.$store.commit('addToResults', { req: address, res });
-              this.addRes(res);
-            })
-            .catch((err) => {
-              console.error(err);
-            })
-            .finally(() => {
-              this.loading = false;
-            });
-        }
-      },
-      deep: true,
-      immediate: true,
-    },
-  },
-  methods: {
-    addRes(res) {
-      this.title.title = res.text.title;
-      this.title.written =
-        res.text.start_date || res.text.end_date
-          ? `${res.text.start_date || 'unknown'} - ${res.text.end_date || 'unknown'}`
-          : 'unknown';
-      this.title.author = res.text.autor.map((x) => x.name_en).join(', ');
-
-      this.items = [
-        {
-          key: 'Keywords',
-          value: res.key_word,
-        },
-        {
-          key: 'Translation',
-          value: res.translation,
-        },
-        {
-          key: 'Original quote',
-          value: res.zitat,
-        },
-        {
-          key: 'Title',
-          value: this.title.title,
-        },
-        {
-          key: 'Cited',
-          value: res.zitat_stelle,
-        },
-        {
-          key: 'Summary',
-          value: res.summary,
-        },
-        {
-          key: 'Author',
-          value: res.text.autor,
-        },
-        {
-          key: 'Place',
-          value: res.text.ort,
-        },
-        {
-          key: 'Edition',
-          value: res.text.edition,
-        },
-        {
-          key: 'Text written in',
-          value: this.title.written,
-        },
-        {
-          key: 'Comment',
-          value: res.kommentar,
-        },
-      ];
-    },
-  },
 };
 </script>

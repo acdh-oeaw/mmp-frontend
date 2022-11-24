@@ -313,12 +313,6 @@ import blueMarker from '@/assets/blue_marker_icon.png';
 import greenMarker from '@/assets/recolored_marker_icon.png';
 import greenMarker2x from '@/assets/recolored_marker_icon_2x.png';
 import redMarker from '@/assets/red_marker_icon.png';
-import majorTowns800 from '@/assets/geojson/darmc-medieval-world-814.json';
-import majorTowns1000 from '@/assets/geojson/darmc-medieval-world-1000.json';
-import kingdoms800 from '@/assets/geojson/kingdoms-800.json';
-import kingdomsMid800 from '@/assets/geojson/kingdoms-mid-800.json';
-import langobards from '@/assets/geojson/langobards.json';
-import romanRoads from '@/assets/geojson/roman-roads.json';
 import helpers from '@/helpers';
 
 export default {
@@ -380,7 +374,7 @@ export default {
     sources: '',
     romanRoads: {},
     majorTowns: {},
-    langobardenPoints: JSON.parse(JSON.stringify(langobards)),
+    langobardenPoints: {},
     bounds: latLngBounds([
       [34.016242, 5.488281],
       [71.663663, 34.667969],
@@ -809,7 +803,7 @@ export default {
           const relatedCoords = this.relatedPlaces.map((x) => x.coords.coordinates);
           this.bounds = this.getBounds(allCoords.concat(relatedCoords));
 
-          this.romanRoads = JSON.parse(JSON.stringify(romanRoads));
+          this.romanRoads = {};
 
           this.polygonCenters = JSON.parse(JSON.stringify(to[0]));
           this.polygonCenters.features.forEach((feature) => {
@@ -911,42 +905,6 @@ export default {
               }
             });
           });
-        }
-
-        console.log(this.$route.query['Use Case'], 'hereee');
-
-        console.log(this.$store.state, this.$route.query['Use Case'], 'study');
-
-        const study = this.$route.query['Use Case'];
-        if (study) {
-          const url = `${
-            import.meta.env.VITE_APP_MMP_API_BASE_URL
-          }/api/usecase/${study}?format=json`;
-          fetch(url)
-            .then((res) => res.json())
-            .then((jsonRes) => {
-              const layer = jsonRes.custom_layer;
-              if (layer === '800') {
-                this.kingdomsLayer = JSON.parse(JSON.stringify(kingdoms800));
-                this.majorTowns = JSON.parse(JSON.stringify(majorTowns800));
-                this.sources =
-                  'Kingdoms:<br> Scientific direction Thomas Lienhard (Paris 1, LaMOP),<br> Production and classification of data, computer developments by Pierre Brochard (CNRS, LaMOP), Mathieu Beaud (Paris 1, LaMOP).<br><br> Roman Roads & Major Towns:<br> Michael McCormick et al. (eds.), The Digital Atlas of Roman and Medieval Civilizations, Cambridge (Massachusetts), 2007.';
-              } else if (layer === '850') {
-                this.kingdomsLayer = JSON.parse(JSON.stringify(kingdomsMid800));
-                this.majorTowns = JSON.parse(JSON.stringify(majorTowns1000));
-                this.sources =
-                  'Kingdoms:<br> Scientific direction Thomas Lienhard (Paris 1, LaMOP),<br> Production and classification of data, computer developments by Pierre Brochard (CNRS, LaMOP), Mathieu Beaud (Paris 1, LaMOP).<br><br> Roman Roads & Major Towns:<br> Michael McCormick et al. (eds.), The Digital Atlas of Roman and Medieval Civilizations, Cambridge (Massachusetts), 2007.';
-              }
-            })
-            .catch((err) => {
-              console.error(err);
-            })
-            .finally(() => {
-              this.loading = false;
-            });
-        } else {
-          this.sources =
-            'Roman Roads:<br> Michael McCormick et al. (eds.), The Digital Atlas of Roman and Medieval Civilizations, Cambridge (Massachusetts), 2007.';
         }
       },
       deep: true,
