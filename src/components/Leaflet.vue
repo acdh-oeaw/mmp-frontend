@@ -279,7 +279,12 @@
         />
       </l-control>
     </l-map>
-    <v-overlay absolute class="overlay" opacity=".2" :value="loading || !data.some((d) => d.count)">
+    <v-overlay
+      absolute
+      class="overlay"
+      opacity=".2"
+      :value="loading || !data.some((d) => d.features.length)"
+    >
       <h1 v-if="!loading" class="no-nodes">No locations found!</h1>
       <h1 v-else>
         <v-progress-circular indeterminate color="#0F1226" />

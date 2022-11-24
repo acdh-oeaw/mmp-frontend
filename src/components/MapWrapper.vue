@@ -76,20 +76,26 @@ export default {
     const spatialCoveragesQuery = useSpatialCoveragesGeojson(searchFilters);
     const conesQuery = useConesGeojson(searchFilters);
 
-    // FIXME: what if we have multiple case studies in route.query
-    const id = computed(() => ({ id: props.usecase ?? route.query['Use Case'] }));
-    const caseStudyQuery = useCaseStudyById({ id });
-
     const isLoading = computed(() => {
-      return [spatialCoveragesQuery, conesQuery, caseStudyQuery].some(
-        (query) => query.isInitialLoading.value
-      );
+      return [spatialCoveragesQuery, conesQuery].some((query) => query.isInitialLoading.value);
     });
 
     const spatialCoverages = computed(() => spatialCoveragesQuery.data.value?.features ?? []);
     const cones = computed(() => conesQuery.data.value?.features ?? []);
 
+    // FIXME: what if we have multiple case studies in route.query
+    const id = computed(() => props.usecase ?? route.query['Use Case']);
+    const caseStudyQuery = useCaseStudyById(
+      { id },
+      { isEnabled: computed(() => id.value != null) }
+    );
+
     const layers = computed(() => caseStudyQuery.data.value?.layer ?? []);
+
+    // FIXME: only temporary because the map component requires this shape
+    const entries = computed(() => {
+      return [{ features: spatialCoverages.value }, { features: cones.value }];
+    });
 
     return {
       isLoading,
@@ -97,8 +103,7 @@ export default {
       cones,
       layers,
 
-      // FIXME:
-      entries: [{ features: spatialCoverages }, { features: cones }],
+      entries,
     };
   },
   created() {

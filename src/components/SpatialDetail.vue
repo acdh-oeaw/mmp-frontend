@@ -89,7 +89,13 @@ export default {
   mixins: [helpers],
   setup() {
     const route = useRoute();
-    const id = computed(() => Number(route.params.id));
+    // FIXME: currently the map view encodes multiple ids as path param when a point is clicked
+    // which has multiple overlapping spatial coverages, which is a really bad idea
+    const id = computed(() =>
+      route.params.id.startsWith('[')
+        ? route.params.id.slice(1, -1).split(',').map(Number)[0]
+        : Number(route.params.id)
+    );
 
     const spatialCoverageQuery = useSpatialCoverageGeojsonById({ id });
 
@@ -97,9 +103,15 @@ export default {
 
     const spatialCoverage = computed(() => spatialCoverageQuery.data.value);
 
+    // FIXME: only temporary
+    const data = computed(() => {
+      if (spatialCoverage.value == null) return [];
+      return [spatialCoverage.value];
+    });
+
     return {
       isLoading,
-      data: [spatialCoverage],
+      data,
     };
   },
   data: () => ({
