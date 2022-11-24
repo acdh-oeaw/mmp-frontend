@@ -21,11 +21,11 @@
           <v-list-item-title>
             {{ passage.display_label }}
           </v-list-item-title>
-          <v-list-item-subtitle v-if="passage.text.autor.length">
+          <v-list-item-subtitle v-if="passage.text?.autor?.length">
             {{ passage.text.title }},
             {{ passage.text.autor.map((x) => getOptimalName(x)).join(', ') }}
           </v-list-item-subtitle>
-          <v-list-item-subtitle v-if="passage.text.jahrhundert">
+          <v-list-item-subtitle v-if="passage.text?.jahrhundert">
             {{ passage.text.jahrhundert }} century
           </v-list-item-subtitle>
         </v-list-item-content>

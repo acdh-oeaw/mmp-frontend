@@ -51,7 +51,9 @@
               <v-skeleton-loader v-else type="image@2" />
             </v-tab-item>
             <v-tab-item key="Geography">
-              <leaflet v-if="!isLoading" :data="geography" height="400" />
+              <!-- TODO: leaflet currently expects to always be wrapped in mapwrapper (expects $root.$refs.mapwrap) -->
+              <!-- <leaflet v-if="!isLoading" :data="geography" height="400" /> -->
+              <div v-if="!isLoading">Not yet implemented</div>
               <v-skeleton-loader v-else type="image@2" />
             </v-tab-item>
           </v-tabs-items>
@@ -149,21 +151,25 @@ import { useStore } from '@/lib/use-store';
 
 import KeywordListItem from './KeywordListItem';
 import KeywordOverTime from './KeywordOverTime';
-import Leaflet from './Leaflet';
+// import Leaflet from './Leaflet';
 
 export default {
   name: 'KeywordDetail',
   components: {
     KeywordListItem,
     KeywordOverTime,
-    Leaflet,
+    // Leaflet,
   },
   mixins: [helpers],
   setup() {
     const route = useRoute();
     const store = useStore();
-    // FIXME: does this really accept multiple ids?
-    const id = computed(() => Number(route.params.id));
+    // FIXME: does this really accept multiple ids? when clicking a node on the network graph it does, but this looks accidental?
+    const id = computed(() =>
+      route.params.id.includes('+')
+        ? route.params.id.split('+').map(Number)[0]
+        : Number(route.params.id)
+    );
 
     const keywordQuery = useKeywordById({ id });
     const keywordByCenturyQuery = useKeywordByCenturyById({ id });
@@ -199,11 +205,21 @@ export default {
     const passages = computed(() => passagesQuery.data.value?.results ?? []);
     const spatialCoverages = computed(() => spatialCoveragesQuery.data.value?.features ?? []);
 
+    // FIXME: only temporary, unclear if intentional
+    const keywords = computed(() => {
+      if (keyword.value == null) return [];
+      return [keyword.value];
+    });
+    const keywordsByCentury = computed(() => {
+      if (keywordByCentury.value == null) return [];
+      return [keywordByCentury.value];
+    });
+
     return {
       isLoading,
 
-      keywords: keyword,
-      overtime: keywordByCentury,
+      keywords,
+      overtime: keywordsByCentury,
 
       graph: keywordGraph,
       passages,
@@ -262,6 +278,11 @@ export default {
       }
       if (this.fullscreen) return 'Network Graph Beta Fullscreen';
       return 'Network Graph Beta';
+    },
+  },
+  methods: {
+    getIdFromUrl(url) {
+      return url.replace(/\D+/, '');
     },
   },
 };
