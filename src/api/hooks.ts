@@ -957,7 +957,7 @@ export function useAutoComplete(
     queryKey: createKey('autocomplete', 'list', searchParams),
     queryFn: ({ queryKey: [, , searchParams] }) => {
       // @ts-expect-error Upstream type error.
-      return api.getAutoComplete(assertParams(searchParams, ['q']));
+      return api.getAutoComplete(searchParams);
     },
     ...getQueryOptions(options),
   });
