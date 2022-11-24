@@ -51,9 +51,7 @@
               <v-skeleton-loader v-else type="image@2" />
             </v-tab-item>
             <v-tab-item key="Geography">
-              <!-- TODO: leaflet currently expects to always be wrapped in mapwrapper (expects $root.$refs.mapwrap) -->
-              <!-- <leaflet v-if="!isLoading" :data="geography" height="400" /> -->
-              <div v-if="!isLoading">Not yet implemented</div>
+              <leaflet v-if="!isLoading" :data="geography" />
               <v-skeleton-loader v-else type="image@2" />
             </v-tab-item>
           </v-tabs-items>
@@ -151,14 +149,14 @@ import { useStore } from '@/lib/use-store';
 
 import KeywordListItem from './KeywordListItem';
 import KeywordOverTime from './KeywordOverTime';
-// import Leaflet from './Leaflet';
+import Leaflet from './Leaflet';
 
 export default {
   name: 'KeywordDetail',
   components: {
     KeywordListItem,
     KeywordOverTime,
-    // Leaflet,
+    Leaflet,
   },
   mixins: [helpers],
   setup() {
@@ -215,6 +213,10 @@ export default {
       return [keywordByCentury.value];
     });
 
+    const geography = computed(() => {
+      return [{ features: spatialCoverages.value }, { features: [] }];
+    });
+
     return {
       isLoading,
 
@@ -224,7 +226,7 @@ export default {
       graph: keywordGraph,
       passages,
       passageCount: passagesQuery.data.value?.count,
-      geography: spatialCoverages,
+      geography,
     };
   },
   data: () => ({

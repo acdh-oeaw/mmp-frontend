@@ -28,12 +28,13 @@ export default {
     const searchFilters = computed(() => {
       // FIXME:
       if (Object.values(props).some(isNotNullable)) {
+        /** @type {import('@/api').SpatialCoverageSearchParams} */
         return {
           stelle__text__autor: props.author,
           stelle: props.passage,
           key_word: props.keyword,
           stelle__use_case: props.usecase,
-          // place ?
+          stelle__ort: props.place,
         };
       }
 
@@ -67,7 +68,7 @@ export default {
         stelle: route.query['Passage']?.toString().split('+').join(','),
         key_word: route.query['Keyword']?.toString().split('+').join(','),
         stelle__use_case: route.query['Use Case']?.toString().split('+').join(','),
-        // place ?,
+        stelle__ort: route.query['Place']?.toString().split('+').join(','),
         ...getDateFilters(),
         // TODO: respect other config options like intersect
       };

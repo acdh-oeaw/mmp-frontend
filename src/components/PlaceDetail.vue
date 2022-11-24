@@ -24,6 +24,11 @@
     </v-list-item>
     <v-divider />
     <v-container>
+      <div :style="{ height: '400px' }">
+        <place-map :point="{ lat: place.lat, lng: place.long }" />
+      </div>
+    </v-container>
+    <v-container>
       <v-expansion-panels v-if="!isLoading" flat accordion multiple :value="[0, 1]">
         <v-expansion-panel :disabled="!authorCount">
           <v-expansion-panel-header>
@@ -91,11 +96,13 @@ import { computed } from 'vue';
 import { useRoute } from 'vue-router/composables';
 
 import { useAuthors, usePlaceById, useTexts } from '@/api';
+import PlaceMap from '@/components/PlaceMap.vue';
 import helpers from '@/helpers';
 import { useStore } from '@/lib/use-store';
 
 export default {
   name: 'PlaceDetail',
+  components: { PlaceMap },
   mixins: [helpers],
   setup() {
     const route = useRoute();

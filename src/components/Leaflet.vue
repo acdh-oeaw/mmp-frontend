@@ -184,7 +184,7 @@
         </v-menu>
       </l-control>
       <l-geo-json
-        v-if="data[0] && showLayers.spatial && $root.$refs.mapWrap.$route.query['Use Case'] !== '3'"
+        v-if="data[0] && showLayers.spatial"
         ref="spatCov"
         :geojson="data[0]"
         :options="{ onEachFeature: onEach }"
