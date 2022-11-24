@@ -68,8 +68,7 @@ const options: RequestOptions = { responseType: 'json' };
 
 export namespace GetAutoComplete {
   export type SearchParams = {
-    /** Must be at least 3 characters. */
-    q: string;
+    q?: string;
     kind?: Array<ResourceKind>;
   };
   export type Response = { q: string; filter_on: Array<ResourceKind> } & PaginatedResponse<{
