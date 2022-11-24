@@ -2,7 +2,7 @@ import type { FeatureCollection, GeometryCollection, Point, Polygon } from 'geoj
 
 import type { Normalized } from '@/api/types';
 
-export type UseCase = {
+export type CaseStudy = {
   id: number;
 
   /** Title. */
@@ -31,7 +31,7 @@ export type UseCase = {
   show_labels: boolean;
 };
 
-export type UseCaseNormalized = Normalized<UseCase, 'knightlab_stoy_map' | 'layer'>;
+export type CaseStudyNormalized = Normalized<CaseStudy, 'knightlab_stoy_map' | 'layer'>;
 
 export type GeojsonLayer = {
   id: number;
@@ -213,7 +213,7 @@ export type Passage = Omit<
     /** Places of composition. */
     ort: Array<Place>;
     /** Associated usecases. */
-    use_case: Array<UseCase>;
+    use_case: Array<CaseStudy>;
 
     /** Start date or earliest possible date (year). */
     start_date?: number | null;
@@ -312,7 +312,7 @@ export type Event = {
   written_date?: string | null;
 
   /** Associated usecases. */
-  use_case: Array<UseCase>;
+  use_case: Array<CaseStudy>;
 };
 
 export type EventNormalized = Normalized<Event, 'use_case'>;

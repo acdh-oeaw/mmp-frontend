@@ -7,6 +7,7 @@ import type { GeometryCollection, Point, Polygon } from 'geojson';
 import type {
   Author,
   AuthorNormalized,
+  CaseStudy,
   Event,
   EventNormalized,
   GeojsonLayer,
@@ -33,7 +34,6 @@ import type {
   TextTopicRelation,
   Topic,
   TopicNormalized,
-  UseCase,
 } from '@/api/models';
 import type {
   AutoComplete,
@@ -369,6 +369,9 @@ export namespace GetAuthors {
        * @see '/vocabs-ac/specific-concept-ac/art'
        */
       rvn_text_autor_autor__art?: Array<SkosConcept['id']>;
+
+      /** Associated case studies (AND query). */
+      rvn_text_autor_autor__rvn_stelle_text_text__use_case?: Array<CaseStudy['id']>;
     };
   export type Response = PaginatedResponse<
     Omit<Author, 'ort'> & {
@@ -460,7 +463,7 @@ export namespace GetKeywords {
       rvn_stelle_key_word_keyword__end_date_lookup?: DateLookupSearchParams;
 
       /** Keywords are associated with these usecases (AND query). */
-      rvn_stelle_key_word_keyword__use_case?: Array<UseCase['id']>;
+      rvn_stelle_key_word_keyword__use_case?: Array<CaseStudy['id']>;
     };
   export type Response = PaginatedResponse<KeywordNormalized>;
 }
@@ -537,7 +540,7 @@ export namespace GetPlaces {
       rvn_text_ort_ort__rvn_stelle_text_text__key_word?: Array<Keyword['id']>;
 
       /** Places related to these usecases (AND query). */
-      rvn_text_ort_ort__rvn_stelle_text_text__use_case?: Array<UseCase['id']>;
+      rvn_text_ort_ort__rvn_stelle_text_text__use_case?: Array<CaseStudy['id']>;
 
       /** Places related to these passages (AND query). */
       rvn_text_ort_ort__rvn_stelle_text_text?: Array<Passage['id']>;
@@ -621,7 +624,7 @@ export namespace GetPassages {
       key_word__art?: KeywordType;
 
       /** Related usecases (AND query). */
-      use_case?: Array<UseCase['id']>;
+      use_case?: Array<CaseStudy['id']>;
 
       /** Passage contains these keywords (AND query). */
       key_word_and?: Array<Keyword['id']>;
@@ -680,7 +683,7 @@ export namespace GetPassages {
       >;
       /** Associated usecases. */
       use_case: Array<
-        Omit<UseCase, 'knightlab_stoy_map'> & {
+        Omit<CaseStudy, 'knightlab_stoy_map'> & {
           /** Knightlab Story Maps. */
           knightlab_stoy_map: Array<StoryNormalized>;
         }
@@ -727,7 +730,7 @@ export namespace GetPassageById {
     >;
     /** Associated usecases. */
     use_case: Array<
-      Omit<UseCase, 'knightlab_stoy_map'> & {
+      Omit<CaseStudy, 'knightlab_stoy_map'> & {
         /** Knightlab Story Maps. */
         knightlab_stoy_map: Array<StoryNormalized>;
       }
@@ -797,6 +800,9 @@ export namespace GetTexts {
 
       /** Keyword type. */
       rvn_stelle_text_text__key_word__art?: KeywordType;
+
+      /** Associated case studies (AND query). */
+      rvn_stelle_text_text__use_case?: Array<CaseStudy['id']>;
     };
   export type Response = PaginatedResponse<
     Omit<Text, 'autor' | 'art' | 'ort'> & {
@@ -847,7 +853,7 @@ export function getTextById(params: GetTextById.PathParams): Promise<GetTextById
 export namespace GetCaseStudies {
   export type SearchParams = LimitOffsetPaginationSearchParams &
     SortableSearchParams & {
-      id?: UseCase['id'];
+      id?: CaseStudy['id'];
       /** Comma-separated list of IDs. */
       ids?: string;
 
@@ -887,7 +893,7 @@ export namespace GetCaseStudies {
       show_labels?: boolean;
     };
   export type Response = PaginatedResponse<
-    Omit<UseCase, 'knightlab_stoy_map' | 'layer'> & {
+    Omit<CaseStudy, 'knightlab_stoy_map' | 'layer'> & {
       knightlab_stoy_map: Array<StoryNormalized>;
       layer: Array<GeojsonLayerNormalized>;
     }
@@ -903,9 +909,9 @@ export function getCaseStudies(
 
 export namespace GetCaseStudyById {
   export type PathParams = {
-    id: UseCase['id'];
+    id: CaseStudy['id'];
   };
-  export type Response = Omit<UseCase, 'knightlab_stoy_map'> & {
+  export type Response = Omit<CaseStudy, 'knightlab_stoy_map'> & {
     knightlab_stoy_map: Array<StoryNormalized>;
   };
 }
@@ -919,7 +925,7 @@ export function getCaseStudyById(
 
 export namespace GetGeojsonLayers {
   export type SearchParams = LimitOffsetPaginationSearchParams & {
-    use_case?: Array<UseCase['id']>;
+    use_case?: Array<CaseStudy['id']>;
   };
   export type Response = PaginatedResponse<GeojsonLayerNormalized>;
 }
@@ -960,7 +966,7 @@ export namespace GetEvents {
       end_date?: number;
       end_date_lookup?: DateLookupSearchParams;
 
-      use_case?: Array<UseCase['id']>;
+      use_case?: Array<CaseStudy['id']>;
     };
   export type Response = PaginatedResponse<EventNormalized>;
 }
@@ -1162,7 +1168,7 @@ export type SpatialCoverageSearchParams = {
   /** Passages (AND query). */
   stelle?: Array<Passage['id']>;
   /** Usecases (AND query). */
-  stelle__use_case?: Array<UseCase['id']>;
+  stelle__use_case?: Array<CaseStudy['id']>;
   /** Places mentioned in passage (AND query). */
   stelle__ort?: Array<Place['id']>;
   /** Places mentioned in related texts (AND query). */
@@ -1438,10 +1444,10 @@ export function getSkosConceptSchemeById(
 
 export namespace GetCaseStudyTimetableById {
   export type PathParams = {
-    id: UseCase['id'];
+    id: CaseStudy['id'];
   };
   export type Response = Array<{
-    id: UseCase['id'];
+    id: CaseStudy['id'];
     start_date: number;
     end_date: number;
     ent_type: 'autor' | 'event' | 'text';
