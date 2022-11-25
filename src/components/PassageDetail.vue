@@ -35,10 +35,10 @@
                 :color="keyColors.chips[keyword.art]"
                 small
                 @click="
-                  $store.commit('addToItemsAndInput', {
+                  $store.commit('addAutoCompleteSelectedValues', {
                     id: keyword.id,
-                    selected_text: keyword.stichwort,
-                    group: 'Keyword',
+                    label: keyword.stichwort,
+                    kind: 'keyword',
                   })
                 "
               >

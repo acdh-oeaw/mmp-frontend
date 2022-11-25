@@ -1241,8 +1241,4 @@ export default {
 .leaflet-left {
   left: 2%;
 }
-
-.v-icon.v-icon.v-icon--link {
-  color: white;
-}
 </style>

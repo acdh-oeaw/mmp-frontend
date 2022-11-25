@@ -98,7 +98,7 @@ import { useRoute } from 'vue-router/composables';
 import { useAuthors, usePlaceById, useTexts } from '@/api';
 import PlaceMap from '@/components/PlaceMap.vue';
 import helpers from '@/helpers';
-import { useStore } from '@/lib/use-store';
+import { useSearchFilters } from '@/lib/search/use-search-filters';
 
 export default {
   name: 'PlaceDetail',
@@ -106,20 +106,20 @@ export default {
   mixins: [helpers],
   setup() {
     const route = useRoute();
-    const store = useStore();
     const id = computed(() => Number(route.params.id));
+    const { searchFilters } = useSearchFilters();
 
     const placeQuery = usePlaceById({ id });
     const textsQuery = useTexts(
       computed(() => ({
         ort: id.value,
-        has_usecase: store.state.apiParams.hasUsecase,
+        has_usecase: searchFilters.value['dataset'] === 'case-studies',
       }))
     );
     const authorsQuery = useAuthors(
       computed(() => ({
         ort: id.value,
-        has_usecase: store.state.apiParams.hasUsecase,
+        has_usecase: searchFilters.value['dataset'] === 'case-studies',
       }))
     );
 

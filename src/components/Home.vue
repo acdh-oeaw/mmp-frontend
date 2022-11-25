@@ -1,5 +1,9 @@
+<script lang="ts" setup>
+import bgImage from '@/assets/images/europe.jpg';
+import CaseStudy from '@/components/CaseStudy.vue';
+</script>
+
 <template>
-  <!-- eslint-disable-next-line vue/max-attributes-per-line -->
   <div>
     <v-parallax :src="bgImage" class="home-parallax text-center home-head">
       <div class="parallax-wrapper">
@@ -16,13 +20,13 @@
               <p class="text-subtitle-1 font-weight-bold">
                 In the turbulent world of the early Middle Ages, ethnicity became a key resource in
                 the reorganization of the political landscape. Mapping Medieval Peoples (MMP)
-                proposes an innovative technical solution to analyze and visualize the ‘mental maps’
-                and the semantic fields that emerge from the analysis of late antique and early
-                medieval source material.
+                proposes an innovative technical solution to analyze and visualize the &quot;mental
+                maps&quot; and the semantic fields that emerge from the analysis of late antique and
+                early medieval source material.
               </p>
               <p class="text-subtitle-1">
-                We attempt to reconstruct ‘mental maps’ of a world of peoples, and will offer
-                insights into the interplay between ethnonyms, religious terms, as well as
+                We attempt to reconstruct &quot;mental maps&quot; of a world of peoples, and will
+                offer insights into the interplay between ethnonyms, religious terms, as well as
                 attributes, traits and stereotypes, thus surveying the language employed to create
                 ethnic entities and to distinguish them from each other.
               </p>
@@ -58,25 +62,6 @@
     <case-study :id="Math.floor(Math.random() * 8) + 2" />
   </div>
 </template>
-
-<script>
-import bgImage from '@/assets/europa.jpg';
-import CaseStudy from '@/components/CaseStudy.vue';
-import helpers from '@/helpers';
-
-export default {
-  name: 'Home',
-  components: {
-    CaseStudy,
-  },
-  mixins: [helpers],
-  data() {
-    return {
-      bgImage,
-    };
-  },
-};
-</script>
 
 <style>
 .button-subtitle {

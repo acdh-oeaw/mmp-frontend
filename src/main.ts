@@ -6,9 +6,9 @@ import { VueQueryPlugin } from '@tanstack/vue-query';
 import Vue from 'vue';
 
 import App from '@/App.vue';
-import router from '@/plugins/router';
-import store from '@/plugins/store';
-import vuetify from '@/plugins/vuetify';
+import { router } from '@/plugins/router';
+import { store } from '@/plugins/store';
+import { vuetify } from '@/plugins/vuetify';
 
 Vue.config.productionTip = false;
 

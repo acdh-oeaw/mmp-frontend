@@ -109,17 +109,17 @@ export default {
   },
   methods: {
     addKeywordToInput(obj) {
-      this.$store.commit('addToItemsAndInput', {
-        id: parseInt(obj.id, 10),
-        selected_text: obj.stichwort,
-        group: 'Keyword',
+      this.$store.commit('addAutoCompleteSelectedValues', {
+        id: obj.id,
+        label: obj.stichwort,
+        kind: 'keyword',
       });
     },
     addAuthorToInput(obj) {
-      this.$store.commit('addToItemsAndInput', {
-        id: parseInt(obj.id, 10),
-        selected_text: obj.name,
-        group: 'Author',
+      this.$store.commit('addAutoCompleteSelectedValues', {
+        id: obj.id,
+        label: obj.name,
+        kind: 'author',
       });
     },
     fetchList(query) {

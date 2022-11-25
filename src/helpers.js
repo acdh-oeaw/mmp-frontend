@@ -19,45 +19,6 @@ export default {
     },
   }),
   methods: {
-    addParamsToQuery(obj) {
-      const ret = obj || {};
-      const entries = Object.entries(this.$store.state.searchFilters);
-      const { apiParams } = this.$store.state;
-
-      const dict = {
-        author: 'searchAuthors',
-        passage: 'searchPassages',
-        usecase: 'searchUsecases',
-        place: 'searchPlaces',
-      };
-      const subDict = {
-        ethnonym: 'searchEthnonyms',
-        name: 'searchNames',
-        phrase: 'searchPhrases',
-        region: 'searchRegions',
-      };
-
-      entries.forEach(([key, val]) => {
-        if (typeof val === 'object') {
-          Object.entries(val).forEach(([subKey, subVal]) => {
-            if (!subVal) {
-              ret[subDict[subKey]] = 'false';
-            } else delete ret[subDict[subKey]];
-          });
-        } else if (!val) {
-          ret[dict[key]] = 'false';
-        } else delete ret[dict[key]];
-      });
-      if (apiParams.hasUsecase !== 'true') ret.hasUsecase = apiParams.hasUsecase;
-      else delete ret.hasUsecase;
-      if (!apiParams.intersect) ret.intersect = 'false';
-      else delete ret.intersect;
-      if (apiParams.slider !== 'passage') ret.slider = 'text';
-      else delete ret.slider;
-
-      // console.log('addParams', entries, ret);
-      return ret;
-    },
     displayTimeRange: (start, end) => {
       if (!start && !end) return 'unknown';
       if (start === end) return start;
@@ -130,9 +91,6 @@ export default {
         md: '50vw',
       };
       return widths[this.$vuetify.breakpoint.name] || '33vw';
-    },
-    hasUsecase() {
-      return this.$store.state.apiParams.hasUsecase;
     },
   },
 };

@@ -1,3 +1,26 @@
+<script lang="ts" setup>
+import { computed, ref } from 'vue';
+import { useRoute } from 'vue-router/composables';
+
+import Sidebar from '@/components/Sidebar.vue';
+
+const route = useRoute();
+
+const drawer = ref(false);
+
+const isHomePage = computed(() => {
+  return route.name === 'Home';
+});
+
+const isDetailPage = computed(() => {
+  return route.name?.includes('Detail');
+});
+
+const backgroundColor = computed(() => {
+  return isHomePage.value ? '#0f1226' : '#f1f5fa';
+});
+</script>
+
 <template>
   <div>
     <v-app-bar
@@ -12,21 +35,21 @@
         <v-col cols="12" md="2" class="title-wrapper">
           <v-app-bar-nav-icon
             class="d-inline d-md-none menu-button"
-            :class="{ 'white--text': isHome }"
+            :class="{ 'white--text': isHomePage }"
             @click.stop="$store.commit('toggleDrawer')"
           />
           <v-toolbar-title class="d-inline fancy-font font-weight-bold text-decoration-none">
             <router-link
               :to="{ name: 'Home', query: $route.query }"
               class="nav-link"
-              :class="{ light: !isHome }"
+              :class="{ light: !isHomePage }"
             >
               MMP
             </router-link>
           </v-toolbar-title>
         </v-col>
-        <v-col :cols="$route.name.includes('Detail') ? 4 : 8" class="text-right d-none d-md-inline">
-          <div :class="{ light: !isHome }">
+        <v-col :cols="isDetailPage ? 4 : 8" class="text-right d-none d-md-inline">
+          <div :class="{ light: !isHomePage }">
             <router-link
               color="white"
               :to="{ name: '', params: {}, query: $route.query }"
@@ -34,13 +57,13 @@
             >
               About the Project
             </router-link>
-            <span class="non-selectable" :class="{ 'white--text': isHome }">
+            <span class="non-selectable" :class="{ 'white--text': isHomePage }">
               &nbsp;&nbsp;&bull;&nbsp;&nbsp;
             </span>
             <router-link :to="{ name: 'Case Studies', query: $route.query }" class="nav-link">
               Case&nbsp;Studies
             </router-link>
-            <span class="non-selectable" :class="{ 'white--text': isHome }">
+            <span class="non-selectable" :class="{ 'white--text': isHomePage }">
               &nbsp;&nbsp;&bull;&nbsp;&nbsp;
             </span>
             <router-link
@@ -51,38 +74,12 @@
             </router-link>
           </div>
         </v-col>
-        <v-col v-if="$route.name.includes('Detail')" cols="4" />
+        <v-col v-if="isDetailPage" cols="4" />
       </v-row>
     </v-app-bar>
     <sidebar v-model="drawer" />
   </div>
 </template>
-
-<script>
-import Sidebar from '@/components/Sidebar.vue';
-import helpers from '@/helpers';
-
-export default {
-  name: 'AppBar',
-  components: {
-    Sidebar,
-  },
-  mixins: [helpers],
-  data: () => ({
-    drawer: false,
-  }),
-  computed: {
-    // set the background color to dark blue if on the landing page
-    backgroundColor() {
-      return this.isHome ? '#0f1226' : '#f1f5fa';
-    },
-    // check if route is on landing page
-    isHome() {
-      return this.$route.name === 'Home';
-    },
-  },
-};
-</script>
 
 <style>
 a.nav-link {
