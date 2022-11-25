@@ -7,6 +7,7 @@ import type { GeometryCollection, Point, Polygon } from 'geojson';
 import type {
   Author,
   AuthorNormalized,
+  CaseStudy,
   Event,
   EventNormalized,
   GeojsonLayer,
@@ -33,7 +34,6 @@ import type {
   TextTopicRelation,
   Topic,
   TopicNormalized,
-  UseCase,
 } from '@/api/models';
 import type {
   AutoComplete,
@@ -67,16 +67,24 @@ const options: RequestOptions = { responseType: 'json' };
 //
 
 export namespace GetAutoComplete {
-  export type SearchParams = {
-    /** Must be at least 3 characters. */
+  export type SearchParams =
+    // note that `page_size` is set for each `kind`, so `?kind=autor&kind=keyword&page_size=10` will
+    // return 20 results. results are first sorted by `kind` (in the order they are defined in the
+    // backend config), then by the model-specific sort field.
+    PageNumberPaginationSearchParams & {
+      q?: string;
+      kind?: Array<ResourceKind>;
+    };
+  export type Response = {
     q: string;
-    kind?: Array<ResourceKind>;
-  };
-  export type Response = { q: string } & PaginatedResponse<{
+    filter_on: Array<ResourceKind>;
+    page_size: number;
+  } & PaginatedResponse<{
     id: number;
     kind: ResourceKind;
     app_name: string;
     label: string;
+    url: string;
   }>;
 }
 
@@ -239,14 +247,14 @@ export function getTextsAutoComplete(
   return request(url, options);
 }
 
-export namespace GetUseCasesAutoComplete {
+export namespace GetCaseStudiesAutoComplete {
   export type SearchParams = AutoComplete.SearchParams;
   export type Response = AutoComplete.Response;
 }
 
-export function getUseCasesAutoComplete(
-  searchParams: GetUseCasesAutoComplete.SearchParams
-): Promise<GetUseCasesAutoComplete.Response> {
+export function getCaseStudiesAutoComplete(
+  searchParams: GetCaseStudiesAutoComplete.SearchParams
+): Promise<GetCaseStudiesAutoComplete.Response> {
   const url = createUrl({
     baseUrl: baseUrls.archivAutoComplete,
     pathname: 'usecase-autocomplete/',
@@ -315,43 +323,43 @@ export namespace GetAuthors {
       has_usecase?: boolean;
 
       gnd_id?: string;
-      gnd_id__lookup?: StringLookupSearchParams;
+      gnd_id_lookup?: StringLookupSearchParams;
 
       name?: string;
-      name__lookup?: StringLookupSearchParams;
+      name_lookup?: StringLookupSearchParams;
 
       name_lat?: string;
-      name_lat__lookup?: StringLookupSearchParams;
+      name_lat_lookup?: StringLookupSearchParams;
 
       name_en?: string;
-      name_en__lookup?: StringLookupSearchParams;
+      name_en_lookup?: StringLookupSearchParams;
 
       name_fr?: string;
-      name_fr__lookup?: StringLookupSearchParams;
+      name_fr_lookup?: StringLookupSearchParams;
 
       name_it?: string;
-      name_it__lookup?: StringLookupSearchParams;
+      name_it_lookup?: StringLookupSearchParams;
 
       jahrhundert?: string;
-      jahrhundert__lookup?: StringLookupSearchParams;
+      jahrhundert_lookup?: StringLookupSearchParams;
 
       start_date?: string;
-      start_date__lookup?: DateLookupSearchParams;
+      start_date_lookup?: DateLookupSearchParams;
 
       start_date_year?: number;
-      start_date_year__lookup?: DateLookupSearchParams;
+      start_date_year_lookup?: DateLookupSearchParams;
 
       end_date?: string;
-      end_date__lookup?: DateLookupSearchParams;
+      end_date_lookup?: DateLookupSearchParams;
 
       end_date_year?: string;
-      end_date_year__lookup?: DateLookupSearchParams;
+      end_date_year_lookup?: DateLookupSearchParams;
 
       /** Places (AND query). */
       ort?: Array<Place['id']>;
 
       kommentar?: string;
-      kommentar__lookup?: StringLookupSearchParams;
+      kommentar_lookup?: StringLookupSearchParams;
 
       /** Keywords for texts by these authors (AND query). */
       rvn_text_autor_autor__rvn_stelle_text_text__key_word?: Array<Keyword['id']>;
@@ -369,6 +377,9 @@ export namespace GetAuthors {
        * @see '/vocabs-ac/specific-concept-ac/art'
        */
       rvn_text_autor_autor__art?: Array<SkosConcept['id']>;
+
+      /** Associated case studies (AND query). */
+      rvn_text_autor_autor__rvn_stelle_text_text__use_case?: Array<CaseStudy['id']>;
     };
   export type Response = PaginatedResponse<
     Omit<Author, 'ort'> & {
@@ -410,16 +421,16 @@ export namespace GetKeywords {
       art?: KeywordType;
 
       stichwort?: string;
-      stichwort__lookup?: StringLookupSearchParams;
+      stichwort_lookup?: StringLookupSearchParams;
 
       wurzel?: string;
-      wurzel__lookup?: StringLookupSearchParams;
+      wurzel_lookup?: StringLookupSearchParams;
 
       kommentar?: string;
-      kommentar__lookup?: StringLookupSearchParams;
+      kommentar_lookup?: StringLookupSearchParams;
 
       varianten?: string;
-      varianten__lookup?: StringLookupSearchParams;
+      varianten_lookup?: StringLookupSearchParams;
 
       /** Keywords used by these authors (AND query). */
       rvn_stelle_key_word_keyword__text__autor?: Array<Author['id']>;
@@ -442,25 +453,25 @@ export namespace GetKeywords {
       rvn_stelle_key_word_keyword__text__autor__ort?: Array<Place['id']>;
 
       rvn_stelle_key_word_keyword__text__autor__start_date_year?: string;
-      rvn_stelle_key_word_keyword__text__autor__start_date_year__lookup?: DateLookupSearchParams;
+      rvn_stelle_key_word_keyword__text__autor__start_date_year_lookup?: DateLookupSearchParams;
 
       rvn_stelle_key_word_keyword__text__autor__end_date_year?: string;
-      rvn_stelle_key_word_keyword__text__autor__end_date_year__lookup?: DateLookupSearchParams;
+      rvn_stelle_key_word_keyword__text__autor__end_date_year_lookup?: DateLookupSearchParams;
 
       rvn_stelle_key_word_keyword__text__not_before?: string;
-      rvn_stelle_key_word_keyword__text__not_before__lookup?: DateLookupSearchParams;
+      rvn_stelle_key_word_keyword__text__not_before_lookup?: DateLookupSearchParams;
 
       rvn_stelle_key_word_keyword__text__not_after?: string;
-      rvn_stelle_key_word_keyword__text__not_after__lookup?: DateLookupSearchParams;
+      rvn_stelle_key_word_keyword__text__not_after_lookup?: DateLookupSearchParams;
 
       rvn_stelle_key_word_keyword__start_date?: string;
-      rvn_stelle_key_word_keyword__start_date__lookup?: DateLookupSearchParams;
+      rvn_stelle_key_word_keyword__start_date_lookup?: DateLookupSearchParams;
 
       rvn_stelle_key_word_keyword__end_date?: string;
-      rvn_stelle_key_word_keyword__end_date__lookup?: DateLookupSearchParams;
+      rvn_stelle_key_word_keyword__end_date_lookup?: DateLookupSearchParams;
 
       /** Keywords are associated with these usecases (AND query). */
-      rvn_stelle_key_word_keyword__use_case?: Array<UseCase['id']>;
+      rvn_stelle_key_word_keyword__use_case?: Array<CaseStudy['id']>;
     };
   export type Response = PaginatedResponse<KeywordNormalized>;
 }
@@ -491,22 +502,22 @@ export namespace GetPlaces {
       /** Comma-separated list of IDs. */
       ids?: string;
       norm_id?: string;
-      norm_id__lookup?: StringLookupSearchParams;
+      norm_id_lookup?: StringLookupSearchParams;
 
       name?: string;
-      name__lookup?: StringLookupSearchParams;
+      name_lookup?: StringLookupSearchParams;
 
       name_antik?: string;
-      name_antik__lookup?: StringLookupSearchParams;
+      name_antik_lookup?: StringLookupSearchParams;
 
       name_de?: string;
-      name_de__lookup?: StringLookupSearchParams;
+      name_de_lookup?: StringLookupSearchParams;
 
       name_fr?: string;
-      name_fr__lookup?: StringLookupSearchParams;
+      name_fr_lookup?: StringLookupSearchParams;
 
       name_it?: string;
-      name_it__lookup?: StringLookupSearchParams;
+      name_it_lookup?: StringLookupSearchParams;
 
       /**
        * Place types (AND query).
@@ -525,7 +536,7 @@ export namespace GetPlaces {
       kategorie?: Array<SkosConcept['id']>;
 
       kommentar?: string;
-      kommentar__lookup?: StringLookupSearchParams;
+      kommentar_lookup?: StringLookupSearchParams;
 
       /** Related authors (AND query). */
       rvn_autor_ort_ort?: Array<Author['id']>;
@@ -537,7 +548,7 @@ export namespace GetPlaces {
       rvn_text_ort_ort__rvn_stelle_text_text__key_word?: Array<Keyword['id']>;
 
       /** Places related to these usecases (AND query). */
-      rvn_text_ort_ort__rvn_stelle_text_text__use_case?: Array<UseCase['id']>;
+      rvn_text_ort_ort__rvn_stelle_text_text__use_case?: Array<CaseStudy['id']>;
 
       /** Places related to these passages (AND query). */
       rvn_text_ort_ort__rvn_stelle_text_text?: Array<Passage['id']>;
@@ -609,19 +620,19 @@ export namespace GetPassages {
       ort?: Array<Place['id']>;
 
       summary?: string;
-      summary__lookup?: StringLookupSearchParams;
+      summary_lookup?: StringLookupSearchParams;
 
       zitat?: string;
-      zitat__lookup?: StringLookupSearchParams;
+      zitat_lookup?: StringLookupSearchParams;
 
       translation?: string;
-      translation__lookup?: StringLookupSearchParams;
+      translation_lookup?: StringLookupSearchParams;
 
       /** Keyword type. */
       key_word__art?: KeywordType;
 
       /** Related usecases (AND query). */
-      use_case?: Array<UseCase['id']>;
+      use_case?: Array<CaseStudy['id']>;
 
       /** Passage contains these keywords (AND query). */
       key_word_and?: Array<Keyword['id']>;
@@ -630,25 +641,25 @@ export namespace GetPassages {
       key_word?: Array<Keyword['id']>;
 
       kommentar?: string;
-      kommentar__lookup?: StringLookupSearchParams;
+      kommentar_lookup?: StringLookupSearchParams;
 
       start_date?: number;
-      start_date__lookup?: DateLookupSearchParams;
+      start_date_lookup?: DateLookupSearchParams;
 
       end_date?: number;
-      end_date__lookup?: DateLookupSearchParams;
+      end_date_lookup?: DateLookupSearchParams;
 
       text__start_date?: string;
-      text__start_date__lookup?: DateLookupSearchParams;
+      text__start_date_lookup?: DateLookupSearchParams;
 
       text__end_date?: string;
-      text__end_date__lookup?: DateLookupSearchParams;
+      text__end_date_lookup?: DateLookupSearchParams;
 
       text__autor__start_date_year?: string;
-      text__autor__start_date_year__lookup?: DateLookupSearchParams;
+      text__autor__start_date_year_lookup?: DateLookupSearchParams;
 
       text__autor__end_date_year?: string;
-      text__autor__end_date_year__lookup?: DateLookupSearchParams;
+      text__autor__end_date_year_lookup?: DateLookupSearchParams;
     };
   export type Response = PaginatedResponse<
     Omit<Passage, 'key_word' | 'ort' | 'use_case'> & {
@@ -680,7 +691,7 @@ export namespace GetPassages {
       >;
       /** Associated usecases. */
       use_case: Array<
-        Omit<UseCase, 'knightlab_stoy_map'> & {
+        Omit<CaseStudy, 'knightlab_stoy_map'> & {
           /** Knightlab Story Maps. */
           knightlab_stoy_map: Array<StoryNormalized>;
         }
@@ -727,7 +738,7 @@ export namespace GetPassageById {
     >;
     /** Associated usecases. */
     use_case: Array<
-      Omit<UseCase, 'knightlab_stoy_map'> & {
+      Omit<CaseStudy, 'knightlab_stoy_map'> & {
         /** Knightlab Story Maps. */
         knightlab_stoy_map: Array<StoryNormalized>;
       }
@@ -758,25 +769,25 @@ export namespace GetTexts {
       autor?: Array<Author['id']>;
 
       autor__start_date_year?: string;
-      autor__start_date_year__lookup?: DateLookupSearchParams;
+      autor__start_date_year_lookup?: DateLookupSearchParams;
 
       autor__end_date_year?: string;
-      autor__end_date_year__lookup?: DateLookupSearchParams;
+      autor__end_date_year_lookup?: DateLookupSearchParams;
 
       title?: string;
-      title__lookup?: StringLookupSearchParams;
+      title_lookup?: StringLookupSearchParams;
 
       jahrhundert?: string;
-      jahrhundert__lookup?: StringLookupSearchParams;
+      jahrhundert_lookup?: StringLookupSearchParams;
 
       not_before?: number;
-      not_before__lookup?: DateLookupSearchParams;
+      not_before_lookup?: DateLookupSearchParams;
 
       not_after?: number;
-      not_after__lookup?: DateLookupSearchParams;
+      not_after_lookup?: DateLookupSearchParams;
 
       edition?: string;
-      edition__lookup?: StringLookupSearchParams;
+      edition_lookup?: StringLookupSearchParams;
 
       /**
        * Genres (AND query).
@@ -790,13 +801,16 @@ export namespace GetTexts {
       ort?: Array<Place['id']>;
 
       kommentar?: string;
-      kommentar__lookup?: StringLookupSearchParams;
+      kommentar_lookup?: StringLookupSearchParams;
 
       /** Keywords (AND query). */
       rvn_stelle_text_text__key_word?: Array<Keyword['id']>;
 
       /** Keyword type. */
       rvn_stelle_text_text__key_word__art?: KeywordType;
+
+      /** Associated case studies (AND query). */
+      rvn_stelle_text_text__use_case?: Array<CaseStudy['id']>;
     };
   export type Response = PaginatedResponse<
     Omit<Text, 'autor' | 'art' | 'ort'> & {
@@ -844,24 +858,24 @@ export function getTextById(params: GetTextById.PathParams): Promise<GetTextById
   return request(url, options);
 }
 
-export namespace GetUseCases {
+export namespace GetCaseStudies {
   export type SearchParams = LimitOffsetPaginationSearchParams &
     SortableSearchParams & {
-      id?: UseCase['id'];
+      id?: CaseStudy['id'];
       /** Comma-separated list of IDs. */
       ids?: string;
 
       title?: string;
-      title__lookup?: StringLookupSearchParams;
+      title_lookup?: StringLookupSearchParams;
 
       principal_investigator?: string;
-      principal_investigator__lookup?: StringLookupSearchParams;
+      principal_investigator_lookup?: StringLookupSearchParams;
 
       pi_norm_id?: string;
-      pi_norm_id__lookup?: StringLookupSearchParams;
+      pi_norm_id_lookup?: StringLookupSearchParams;
 
       description?: string;
-      description__lookup?: StringLookupSearchParams;
+      description_lookup?: StringLookupSearchParams;
 
       /** Related texts (AND query). */
       has_stelle__text?: Array<Text['id']>;
@@ -887,37 +901,39 @@ export namespace GetUseCases {
       show_labels?: boolean;
     };
   export type Response = PaginatedResponse<
-    Omit<UseCase, 'knightlab_stoy_map' | 'layer'> & {
+    Omit<CaseStudy, 'knightlab_stoy_map' | 'layer'> & {
       knightlab_stoy_map: Array<StoryNormalized>;
       layer: Array<GeojsonLayerNormalized>;
     }
   >;
 }
 
-export function getUseCases(searchParams: GetUseCases.SearchParams): Promise<GetUseCases.Response> {
+export function getCaseStudies(
+  searchParams: GetCaseStudies.SearchParams
+): Promise<GetCaseStudies.Response> {
   const url = createUrl({ baseUrl: baseUrls.api, pathname: 'usecase/', searchParams });
   return request(url, options);
 }
 
-export namespace GetUseCaseById {
+export namespace GetCaseStudyById {
   export type PathParams = {
-    id: UseCase['id'];
+    id: CaseStudy['id'];
   };
-  export type Response = Omit<UseCase, 'knightlab_stoy_map'> & {
+  export type Response = Omit<CaseStudy, 'knightlab_stoy_map'> & {
     knightlab_stoy_map: Array<StoryNormalized>;
   };
 }
 
-export function getUseCaseById(
-  params: GetUseCaseById.PathParams
-): Promise<GetUseCaseById.Response> {
+export function getCaseStudyById(
+  params: GetCaseStudyById.PathParams
+): Promise<GetCaseStudyById.Response> {
   const url = createUrl({ baseUrl: baseUrls.api, pathname: `usecase/${params.id}` });
   return request(url, options);
 }
 
 export namespace GetGeojsonLayers {
   export type SearchParams = LimitOffsetPaginationSearchParams & {
-    use_case?: Array<UseCase['id']>;
+    use_case?: Array<CaseStudy['id']>;
   };
   export type Response = PaginatedResponse<GeojsonLayerNormalized>;
 }
@@ -947,18 +963,18 @@ export namespace GetEvents {
   export type SearchParams = LimitOffsetPaginationSearchParams &
     SortableSearchParams & {
       title?: string;
-      title__lookup?: StringLookupSearchParams;
+      title_lookup?: StringLookupSearchParams;
 
       description?: string;
-      description__lookup?: StringLookupSearchParams;
+      description_lookup?: StringLookupSearchParams;
 
       start_date?: number;
-      start_date__lookup?: DateLookupSearchParams;
+      start_date_lookup?: DateLookupSearchParams;
 
       end_date?: number;
-      end_date__lookup?: DateLookupSearchParams;
+      end_date_lookup?: DateLookupSearchParams;
 
-      use_case?: Array<UseCase['id']>;
+      use_case?: Array<CaseStudy['id']>;
     };
   export type Response = PaginatedResponse<EventNormalized>;
 }
@@ -1160,7 +1176,7 @@ export type SpatialCoverageSearchParams = {
   /** Passages (AND query). */
   stelle?: Array<Passage['id']>;
   /** Usecases (AND query). */
-  stelle__use_case?: Array<UseCase['id']>;
+  stelle__use_case?: Array<CaseStudy['id']>;
   /** Places mentioned in passage (AND query). */
   stelle__ort?: Array<Place['id']>;
   /** Places mentioned in related texts (AND query). */
@@ -1176,22 +1192,22 @@ export type SpatialCoverageSearchParams = {
   stelle__text__art?: Array<SkosConcept['id']>;
 
   stelle__start_date?: number;
-  stelle__start_date__lookup?: DateLookupSearchParams;
+  stelle__start_date_lookup?: DateLookupSearchParams;
 
   stelle__end_date?: number;
-  stelle__end_date__lookup?: DateLookupSearchParams;
+  stelle__end_date_lookup?: DateLookupSearchParams;
 
   stelle__text__not_before?: number;
-  stelle__text__not_before__lookup?: DateLookupSearchParams;
+  stelle__text__not_before_lookup?: DateLookupSearchParams;
 
   stelle__text__not_after?: number;
-  stelle__text__not_after__lookup?: DateLookupSearchParams;
+  stelle__text__not_after_lookup?: DateLookupSearchParams;
 
   stelle__text__autor__start_date_year?: number;
-  stelle__text__autor__start_date_year__lookup?: DateLookupSearchParams;
+  stelle__text__autor__start_date_year_lookup?: DateLookupSearchParams;
 
   stelle__text__autor__end_date_year?: number;
-  stelle__text__autor__end_date_year__lookup?: DateLookupSearchParams;
+  stelle__text__autor__end_date_year_lookup?: DateLookupSearchParams;
 };
 
 export type ConeGeojson = { id: SpatialCoverage['id'] } & Feature<
@@ -1434,15 +1450,15 @@ export function getSkosConceptSchemeById(
 
 //
 
-export namespace GetUseCaseTimetableById {
+export namespace GetCaseStudyTimetableById {
   export type PathParams = {
-    id: UseCase['id'];
+    id: CaseStudy['id'];
   };
   export type Response = Array<{
-    id: UseCase['id'];
+    id: CaseStudy['id'];
     start_date: number;
     end_date: number;
-    ent_type: 'event';
+    ent_type: 'autor' | 'event' | 'text';
     ent_title: string;
     ent_description: string;
     /** Pathname only */
@@ -1450,9 +1466,9 @@ export namespace GetUseCaseTimetableById {
   }>;
 }
 
-export function getUseCaseTimetableById(
-  params: GetUseCaseTimetableById.PathParams
-): Promise<GetUseCaseTimetableById.Response> {
+export function getCaseStudyTimetableById(
+  params: GetCaseStudyTimetableById.PathParams
+): Promise<GetCaseStudyTimetableById.Response> {
   const url = createUrl({
     baseUrl: baseUrls.archiv,
     pathname: `usecase-timetable-data/${params.id}`,
