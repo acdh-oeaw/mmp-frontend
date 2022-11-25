@@ -1,13 +1,13 @@
 <template>
   <v-card width="100%" color="transparent" :height="isFullScreen ? 'calc(100vh - 4px)' : 500">
-    <v-overlay absolute opacity=".2" :value="loading">
-      <h1 v-if="loading" class="no-nodes">
+    <v-overlay absolute opacity=".2" :value="isLoading">
+      <h1 v-if="isLoading" class="no-nodes">
         <v-progress-circular indeterminate color="#0F1226" />
       </h1>
       <h1 v-else class="no-nodes">No words found!</h1>
     </v-overlay>
     <v-row v-if="type === 'pie'">
-      <template v-for="(filtered, i) in filteredWords">
+      <template v-for="(filtered, i) in data.filteredWords">
         <v-col
           v-if="showWords[i]"
           :key="JSON.stringify(filtered) + i"
@@ -22,7 +22,7 @@
       </template>
     </v-row>
     <v-row v-else>
-      <template v-for="(filtered, i) in filteredWords">
+      <template v-for="(filtered, i) in data.filteredWords">
         <v-col
           v-if="showWords[i]"
           :key="JSON.stringify(filtered) + i"
@@ -60,13 +60,13 @@
               <v-expansion-panel-header>
                 {{ title }}
                 <template #actions>
-                  <v-chip small>{{ words[1 - i] ? words[1 - i].length : 0 }}</v-chip>
+                  <v-chip small>{{ data.words[1 - i] ? data.words[1 - i].length : 0 }}</v-chip>
                   <v-icon> $expand </v-icon>
                 </template>
               </v-expansion-panel-header>
               <v-expansion-panel-content>
                 <v-list dense>
-                  <v-list-item v-for="entry in words[1 - i]" :key="entry[0]">
+                  <v-list-item v-for="entry in data.words[1 - i]" :key="entry[0]">
                     <v-list-item-content>
                       <v-list-item-title>{{ entry[0] }}:&nbsp;{{ entry[1] }}</v-list-item-title>
                     </v-list-item-content>
@@ -121,11 +121,16 @@
 
 <script>
 import Gradient from 'javascript-color-gradient';
+import { computed } from 'vue';
+import { useRoute } from 'vue-router/composables';
 
-import FullscreenButton from '@/components/FullscreenButton.vue';
-import PieChart from '@/components/PieChart.vue';
-import WordCloudBeta from '@/components/WordCloudBeta.vue';
+import { usePassageKeywords, usePassageNlpData } from '@/api';
 import helpers from '@/helpers';
+import { isNotNullable } from '@/lib/is-not-nullable';
+
+import FullscreenButton from './FullscreenButton.vue';
+import PieChart from './PieChart.vue';
+import WordCloudBeta from './WordCloudBeta.vue';
 
 export default {
   name: 'WordCloudWrapper',
@@ -135,12 +140,103 @@ export default {
     WordCloudBeta,
   },
   mixins: [helpers],
-  props: ['usecase', 'keyword', 'author', 'passage', 'place', 'height'],
+  props: ['author', 'passage', 'keyword', 'usecase', 'place', 'height'],
+  setup(props) {
+    const route = useRoute();
+    const searchFilters = computed(() => {
+      // FIXME:
+      if (Object.values(props).some(isNotNullable)) {
+        return {
+          ids: props.passage?.toString().split('+').join(','),
+          text__autor: props.author,
+          key_word: props.keyword,
+          use_case: props.usecase,
+          text__ort: props.place,
+        };
+      }
+
+      function getDateFilters() {
+        if (route.query['time'] == null) return {};
+
+        const [start, end] = route.query['time'].toString().includes('+')
+          ? route.query['time'].split('+')
+          : [route.query['time'] - 5, route.query['time'] + 4];
+
+        const dateFilters = {
+          start_date: start,
+          start_date_lookup: 'gt',
+          end_date: end,
+          end_date_lookup: 'lt',
+        };
+
+        return dateFilters;
+      }
+
+      return {
+        ids: route.query['Passage']?.toString().split('+').join(','),
+        text__autor: route.query['Author']?.toString().split('+'),
+        key_word: route.query['Keyword']?.toString().split('+'),
+        use_case: route.query['Use Case']?.toString().split('+'),
+        text__ort: route.query['Place']?.toString().split('+'),
+        ...getDateFilters(),
+      };
+    });
+
+    const passageNlpDataQuery = usePassageNlpData(searchFilters);
+    const passageKeywordsQuery = usePassageKeywords(searchFilters);
+
+    const isLoading = computed(() => {
+      return [passageNlpDataQuery, passageKeywordsQuery].some((query) => {
+        return query.isInitialLoading.value;
+      });
+    });
+
+    const data = computed(() => {
+      // TODO: check this
+
+      const nlpData = passageNlpDataQuery.data.value;
+      const keywords = passageKeywordsQuery.data.value;
+
+      if (nlpData == null || keywords == null) {
+        return { words: [[], []], filteredWords: [[], []] };
+      }
+
+      const allWords = [
+        Object.entries(nlpData.token_dict),
+        keywords.token_dict.map((x) => Object.entries(x)[0]),
+      ];
+
+      function sortWords(a, b) {
+        // sorts after occurences, then alphabetically
+        if (a[1] < b[1]) return 1;
+        if (a[1] > b[1]) return -1;
+        if (a[0] > b[0]) return 1;
+        if (a[0] < b[0]) return -1;
+        return 0;
+      }
+
+      const words = allWords.map((x) => x.sort(sortWords));
+
+      for (let i = 0; i < allWords.length; i += 1) {
+        // improves performance by a lot, removing unused and non words
+        for (let j = 1; allWords[i].length > 75; j += 1) {
+          allWords[i] = allWords[i].filter((entry) => entry[0].match(/\w+/g) && entry[1] > j);
+        }
+        // removes unecessary tags
+        allWords[i] = allWords[i].map((word) => [word[0].split(' (')[0], word[1]]);
+      }
+
+      return { words, filteredWords: allWords };
+    });
+
+    return {
+      isLoading,
+      data,
+    };
+  },
   data: () => ({
     avgProgress: 0,
-    filteredWords: [[], []],
     drawer: false,
-    loading: true,
     overlay: {
       active: false,
       x: 0,
@@ -152,7 +248,6 @@ export default {
     check: ['words', 'keywords'],
     titles: ['All Words', 'Keywords'],
     type: 'cloud',
-    words: [[], []],
   }),
   computed: {
     maxOccurence() {
@@ -160,99 +255,6 @@ export default {
     },
     showWords() {
       return [this.check.includes('words'), this.check.includes('keywords')];
-    },
-  },
-  watch: {
-    '$route.query': {
-      handler(query) {
-        this.loading = 2;
-        this.words = [];
-        let urls = [
-          `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/archiv/nlp-data/?`,
-          `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/archiv/kw-stelle/?`,
-        ];
-
-        const terms = {
-          Author: 'text__autor',
-          // Passage: 'id', // not used anymore
-          Keyword: 'key_word',
-          'Use Case': 'use_case',
-          Place: 'text__ort',
-        };
-
-        const props = [this.author, this.passage, this.keyword, this.usecase, this.place];
-
-        if (props.some((x) => x)) {
-          let j;
-          props.forEach((prop, i) => {
-            if (prop && prop !== '0') {
-              if (i === 1) {
-                // passage
-                urls = urls.map((url) => `${url}&ids=${prop.toString().split('+').join(',')}`);
-              } else {
-                if (i > 1) j = i - 1; // because terms is missing an element
-                else j = i;
-                urls = urls.map((url) => `${url}&${terms[Object.keys(terms)[j]]}=${prop}`);
-              }
-            }
-          });
-        } else {
-          Object.keys(query).forEach((cat) => {
-            if (query[cat] && cat !== 'time') {
-              const arr = query[cat].toString().split('+');
-              arr.forEach((val) => {
-                urls = urls.map((x) => `${x}&${terms[cat]}=${val}`);
-              });
-            }
-          });
-
-          if (query.Passage)
-            urls = urls.map((x) => `${x}&ids=${query.Passage.replaceAll('+', ',')}`);
-
-          if (query.time) {
-            if (query.time.toString().includes('+')) {
-              const times = query.time.split('+');
-              urls = urls.map(
-                (x) =>
-                  `${x}&start_date=${times[0]}&start_date_lookup=gt&end_date=${times[1]}&end_date_lookup=lt`
-              );
-            } else {
-              urls = urls.map(
-                (x) =>
-                  `${x}&start_date=${query.time - 5}&start_date_lookup=gt&end_date=${
-                    query.time + 4
-                  }&end_date_lookup=lt`
-              );
-            }
-          }
-        }
-        const prefetched = this.$store.state.fetchedResults[urls.toString()];
-
-        if (prefetched) {
-          this.handleRes(prefetched);
-          this.loading = false;
-        } else {
-          Promise.all(urls.map((x) => fetch(x)))
-            .then((res) => {
-              Promise.all(res.map((x) => x.json()))
-                .then((jsonRes) => {
-                  this.handleRes(jsonRes);
-                  this.$store.commit('addToResults', { req: urls.toString(), res: jsonRes });
-                })
-                .catch((err) => {
-                  console.error(err);
-                })
-                .finally(() => {
-                  this.loading -= 1;
-                });
-            })
-            .catch((err) => {
-              console.error(err);
-            });
-        }
-      },
-      deep: true,
-      immediate: true,
     },
   },
   methods: {
@@ -278,30 +280,6 @@ export default {
         default:
           return 0;
       }
-    },
-    handleRes(res) {
-      const words = [
-        Object.entries(res[0].token_dict),
-        res[1].token_dict.map((x) => Object.entries(x)[0]),
-      ];
-
-      this.words = words.map((x) => x.sort(this.sortWords));
-      for (let i = 0; i < words.length; i += 1) {
-        for (let j = 1; words[i].length > 75; j += 1) {
-          words[i] = words[i].filter((entry) => entry[0].match(/\w+/g) && entry[1] > j);
-        } // improves performance by a lot, removing unused and non words
-        words[i] = words[i].map((word) => [word[0].split(' (')[0], word[1]]); // removes unecessary tags
-      }
-      this.loading -= 1;
-      this.filteredWords = words;
-    },
-    sortWords(a, b) {
-      // sorts after occurences, then alphabetically
-      if (a[1] < b[1]) return 1;
-      if (a[1] > b[1]) return -1;
-      if (a[0] > b[0]) return 1;
-      if (a[0] < b[0]) return -1;
-      return 0;
     },
   },
 };

@@ -1,5 +1,5 @@
 <template>
-  <v-navigation-drawer permanent fixed right color="#F1F5FA" :width="drawerWidth">
+  <v-navigation-drawer permanent fixed right color="#f1f5fa" :width="drawerWidth">
     <v-list-item>
       <v-list-item-action>
         <router-link :to="{ name: xPressLinkName, query: $route.query }">
@@ -7,9 +7,9 @@
         </router-link>
       </v-list-item-action>
       <v-list-item-content>
-        <div v-if="!loading.keywords && !loading.passages">
+        <div v-if="!isLoading">
           <v-list-item-title class="text-h5">
-            {{ data.keywords.map((x) => x.stichwort).join(', ') }}
+            {{ keywords.map((x) => x.stichwort).join(', ') }}
           </v-list-item-title>
           <v-list-item-subtitle>
             Mentioned in
@@ -19,9 +19,9 @@
                 query: addParamsToQuery({ Keyword: $route.params.id }),
               }"
             >
-              <span v-if="data.passages">
-                {{ data.passages.count }} passage{{ data.passages.count === 1 ? '' : 's'
-                }}<v-icon small>mdi-link</v-icon>,
+              <span v-if="passageCount">
+                {{ passageCount }} passage{{ passageCount === 1 ? '' : 's' }}
+                <v-icon small>mdi-link</v-icon>,
               </span>
             </router-link>
             <router-link
@@ -47,11 +47,11 @@
           </v-tabs>
           <v-tabs-items v-model="tab" background-color="transparent">
             <v-tab-item key="Over Time">
-              <keyword-over-time v-if="!loading.overtime" :data="data.overtime" />
+              <keyword-over-time v-if="!isLoading" :data="overtime" />
               <v-skeleton-loader v-else type="image@2" />
             </v-tab-item>
             <v-tab-item key="Geography">
-              <leaflet v-if="!loading.geography" :data="data.geography" height="400" />
+              <leaflet v-if="!isLoading" :data="geography" />
               <v-skeleton-loader v-else type="image@2" />
             </v-tab-item>
           </v-tabs-items>
@@ -59,11 +59,11 @@
       </v-row>
       <v-row>
         <v-col>
-          <v-expansion-panels v-if="!loading.else" accordion flat>
+          <v-expansion-panels v-if="!isLoading" accordion flat>
             <v-expansion-panel v-for="conn in connections" :key="conn.id">
               <v-expansion-panel-header>
                 <span>
-                  {{ data.keywords.map((x) => x.stichwort).join(', ') }}
+                  {{ keywords.map((x) => x.stichwort).join(', ') }}
                   <v-icon small>mdi-arrow-left-right</v-icon> {{ conn.label }}
                 </span>
                 <template #actions>
@@ -73,7 +73,7 @@
               </v-expansion-panel-header>
               <v-expansion-panel-content>
                 <keyword-list-item
-                  :parent-nodes="data.keywords.map((x) => x.id)"
+                  :parent-nodes="keywords.map((x) => x.id)"
                   :sibling-node="conn.id"
                 />
               </v-expansion-panel-content>
@@ -84,7 +84,7 @@
       </v-row>
       <v-row>
         <v-col>
-          <template v-if="!loading.keywords">
+          <template v-if="!isLoading">
             <v-row>
               <v-col>
                 <v-btn
@@ -95,13 +95,13 @@
                   :to="{
                     name: isFullScreen ? 'List Fullscreen' : 'List',
                     query: addParamsToQuery({
-                      Keyword: data.keywords.map((x) => x.id).join('+'),
+                      Keyword: keywords.map((x) => x.id).join('+'),
                     }),
                   }"
                 >
                   {{
                     shorten(
-                      `Show all Passages for ${data.keywords.map((x) => x.stichwort).join(', ')}`,
+                      `Show all Passages for ${keywords.map((x) => x.stichwort).join(', ')}`,
                       40
                     )
                   }}
@@ -134,10 +134,22 @@
 </template>
 
 <script>
-import KeywordListItem from '@/components/KeywordListItem.vue';
-import KeywordOverTime from '@/components/KeywordOverTime.vue';
-import Leaflet from '@/components/Leaflet.vue';
+import { computed } from 'vue';
+import { useRoute } from 'vue-router/composables';
+
+import {
+  useKeywordByCenturyById,
+  useKeywordById,
+  useKeywordGraph,
+  usePassages,
+  useSpatialCoveragesGeojson,
+} from '@/api';
 import helpers from '@/helpers';
+import { useStore } from '@/lib/use-store';
+
+import KeywordListItem from './KeywordListItem.vue';
+import KeywordOverTime from './KeywordOverTime.vue';
+import Leaflet from './Leaflet.vue';
 
 export default {
   name: 'KeywordDetail',
@@ -147,29 +159,87 @@ export default {
     Leaflet,
   },
   mixins: [helpers],
+  setup() {
+    const route = useRoute();
+    const store = useStore();
+    // FIXME: does this really accept multiple ids? when clicking a node on the network graph it does, but this looks accidental?
+    const id = computed(() =>
+      route.params.id.includes('+')
+        ? route.params.id.split('+').map(Number)[0]
+        : Number(route.params.id)
+    );
+
+    const keywordQuery = useKeywordById({ id });
+    const keywordByCenturyQuery = useKeywordByCenturyById({ id });
+    const keywordGraphQuery = useKeywordGraph({ id });
+    const passagesQuery = usePassages(
+      computed(() => ({
+        [store.state.apiParams.intersect ? 'key_word_and' : 'key_word']: id.value,
+      }))
+    );
+    const spatialCoveragesQuery = useSpatialCoveragesGeojson(
+      computed(() => ({
+        // FIXME: should this respect apiParams.intersect?
+        key_word: id.value,
+      }))
+    );
+
+    // TODO: granular loading states
+    const isLoading = computed(() => {
+      return [
+        keywordQuery,
+        keywordByCenturyQuery,
+        keywordGraphQuery,
+        passagesQuery,
+        spatialCoveragesQuery,
+      ].some((query) => {
+        return query.isInitialLoading.value;
+      });
+    });
+
+    const keyword = computed(() => keywordQuery.data.value);
+    const keywordByCentury = computed(() => keywordByCenturyQuery.data.value);
+    const keywordGraph = computed(() => keywordGraphQuery.data.value);
+    const passages = computed(() => passagesQuery.data.value?.results ?? []);
+    const spatialCoverages = computed(() => spatialCoveragesQuery.data.value?.features ?? []);
+
+    // FIXME: only temporary, unclear if intentional
+    const keywords = computed(() => {
+      if (keyword.value == null) return [];
+      return [keyword.value];
+    });
+    const keywordsByCentury = computed(() => {
+      if (keywordByCentury.value == null) return [];
+      return [keywordByCentury.value];
+    });
+
+    const geography = computed(() => {
+      return [{ features: spatialCoverages.value }, { features: [] }];
+    });
+
+    return {
+      isLoading,
+
+      keywords,
+      overtime: keywordsByCentury,
+
+      graph: keywordGraph,
+      passages,
+      passageCount: passagesQuery.data.value?.count,
+      geography,
+    };
+  },
   data: () => ({
-    loading: {
-      keywords: true,
-      overtime: true,
-      else: true,
-    },
-    data: {
-      overtime: [],
-      geography: null,
-      keywords: [],
-      url: '',
-      passages: { count: 0 },
-    },
     tab: null,
   }),
   computed: {
     connections() {
       const retArr = [];
 
-      if (!this.data.keywords || !this.data.nodes) return retArr;
+      if (!this.keywords || !this.graph) return retArr;
 
-      // const keyIds = this.data.keywords.map((x) => x.id);
-      const edges = this.data.nodes.edges.map((edge) => ({
+      // const keyIds = this.keywords.map((x) => x.id);
+      const edges = this.graph.edges.map((edge) => ({
         source: this.getIdFromUrl(edge.source),
         target: this.getIdFromUrl(edge.target),
       }));
@@ -186,7 +256,7 @@ export default {
         retArr.push({
           id: entry[0],
           label: this.removeRoot(
-            this.data.nodes.nodes.filter((node) => this.getIdFromUrl(node.id) === entry[0])[0].label
+            this.graph.nodes.filter((node) => this.getIdFromUrl(node.id) === entry[0])[0].label
           ),
           count: entry[1],
         });
@@ -209,113 +279,9 @@ export default {
       return 'Network Graph Beta';
     },
   },
-  watch: {
-    '$route.params': {
-      handler(params) {
-        // set all keys to true
-        Object.keys(this.loading).forEach((x) => {
-          this.loading[x] = true;
-        });
-
-        const ids = params.id.toString(10).split('+');
-
-        // Keywords
-        let urls = ids.map(
-          (x) => `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/keyword/${x}/?format=json`
-        );
-        let prefetched = this.$store.state.fetchedResults[urls.toString()];
-        if (prefetched) {
-          this.data.keywords = prefetched;
-        } else {
-          Promise.all(urls.map((x) => fetch(x)))
-            .then((res) => {
-              Promise.all(res.map((x) => x.json()))
-                .then((jsonRes) => {
-                  this.$store.commit('addToResults', { req: urls.toString(), res: jsonRes });
-                  this.data.keywords = jsonRes;
-                })
-                .catch((err) => {
-                  console.error(err);
-                })
-                .finally(() => {
-                  this.loading.keywords = false;
-                });
-            })
-            .catch((err) => {
-              console.error(err);
-            });
-        }
-
-        // Overtime
-        urls = ids.map(
-          (x) => `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/archiv/keyword/century/${x}`
-        );
-        prefetched = this.$store.state.fetchedResults[urls.toString()];
-        if (prefetched) {
-          this.data.overtime = prefetched;
-        } else {
-          Promise.all(urls.map((x) => fetch(x)))
-            .then((res) => {
-              Promise.all(res.map((x) => x.json()))
-                .then((jsonRes) => {
-                  this.$store.commit('addToResults', { req: urls.toString(), res: jsonRes });
-                  this.data.overtime = jsonRes;
-                })
-                .catch((err) => {
-                  console.error(err);
-                })
-                .finally(() => {
-                  this.loading.overtime = false;
-                });
-            })
-            .catch((err) => {
-              console.error(err);
-            });
-        }
-
-        // Else
-        urls = [
-          `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/archiv/keyword-network/?ids=${ids.join(
-            ','
-          )}`,
-          `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/stelle/?format=json&has_usecase=${
-            this.hasUsecase
-          }`,
-          `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/spatialcoverage/?format=json`,
-        ];
-
-        ids.forEach((x) => {
-          urls[1] += this.$store.state.apiParams.intersect
-            ? `&key_word_and=${x}`
-            : `&key_word=${x}`;
-          urls[2] += `&key_word=${x}`;
-        });
-
-        prefetched = this.$store.state.fetchedResults[urls.toString()];
-        if (prefetched) {
-          [this.data.nodes, this.data.passages, , this.data.geography] = prefetched;
-        } else {
-          Promise.all(urls.map((x) => fetch(x)))
-            .then((res) => {
-              Promise.all(res.map((x) => x.json()))
-                .then((jsonRes) => {
-                  this.$store.commit('addToResults', { req: urls.toString(), res: jsonRes });
-                  [this.data.nodes, this.data.passages, , this.data.geography] = jsonRes;
-                })
-                .catch((err) => {
-                  console.error(err);
-                })
-                .finally(() => {
-                  this.loading.else = false;
-                });
-            })
-            .catch((err) => {
-              console.error(err);
-            });
-        }
-      },
-      deep: true,
-      immediate: true,
+  methods: {
+    getIdFromUrl(url) {
+      return url.replace(/\D+/, '');
     },
   },
 };

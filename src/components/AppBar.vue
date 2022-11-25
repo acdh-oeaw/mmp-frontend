@@ -17,7 +17,7 @@
           />
           <v-toolbar-title class="d-inline fancy-font font-weight-bold text-decoration-none">
             <router-link
-              :to="{ name: 'Home', query: addParamsToQuery() }"
+              :to="{ name: 'Home', query: $route.query }"
               class="nav-link"
               :class="{ light: !isHome }"
             >
@@ -29,7 +29,7 @@
           <div :class="{ light: !isHome }">
             <router-link
               color="white"
-              :to="{ name: '', params: {}, query: addParamsToQuery() }"
+              :to="{ name: '', params: {}, query: $route.query }"
               class="nav-link"
             >
               About the Project
@@ -37,14 +37,14 @@
             <span class="non-selectable" :class="{ 'white--text': isHome }">
               &nbsp;&nbsp;&bull;&nbsp;&nbsp;
             </span>
-            <router-link :to="{ name: 'Studies', query: addParamsToQuery() }" class="nav-link">
+            <router-link :to="{ name: 'Case Studies', query: $route.query }" class="nav-link">
               Case&nbsp;Studies
             </router-link>
             <span class="non-selectable" :class="{ 'white--text': isHome }">
               &nbsp;&nbsp;&bull;&nbsp;&nbsp;
             </span>
             <router-link
-              :to="{ name: $store.state.interface.currentView, query: addParamsToQuery() }"
+              :to="{ name: $store.state.interface.currentView, query: $route.query }"
               class="nav-link"
             >
               Explore&nbsp;the&nbsp;Data

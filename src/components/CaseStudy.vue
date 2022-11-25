@@ -2,9 +2,9 @@
   <v-container>
     <v-row justify="center">
       <v-col cols="12" xl="8">
-        <template v-if="!loading">
+        <template v-if="!isLoading">
           <p class="text-h7 grey--text">
-            <v-btn icon plain :to="{ name: 'Studies' }">
+            <v-btn icon plain :to="{ name: 'Case Studies' }">
               <v-icon>mdi-chevron-left</v-icon>
             </v-btn>
             CASE STUDY<span v-if="study.principal_investigator"
@@ -86,7 +86,7 @@
             </v-tab-item>
             <v-tab-item value="texts">
               <v-list color="transparent">
-                <div v-for="author in authors" :key="author.id">
+                <div v-for="author in removeDuplicates(authors, 'id')" :key="author.id">
                   <v-list-group prepend-icon="mdi-account-edit">
                     <template #activator>
                       <v-list-item>
@@ -155,13 +155,17 @@
 </template>
 
 <script>
+import { computed } from 'vue';
+import { useRoute } from 'vue-router/composables';
+
+import { useCaseStudyById, useCaseStudyTimeTableById, usePassages } from '@/api';
 import Graph from '@/components/GraphWrapperBeta.vue';
 import MapWrapper from '@/components/MapWrapper.vue';
 import WordCloudWrapper from '@/components/WordCloudWrapper.vue';
 import helpers from '@/helpers';
 
 export default {
-  name: 'Studies',
+  name: 'CaseStudy',
   components: {
     Graph,
     MapWrapper,
@@ -169,59 +173,64 @@ export default {
   },
   mixins: [helpers],
   props: ['id'],
-  data: () => ({
-    study: {},
-    events: [],
-    passages: {},
-    loading: true,
-  }),
-  computed: {
-    texts() {
-      return this.removeDuplicates(
-        this.passages.results.map((passage) => passage.text),
-        'id'
+  setup(props) {
+    const route = useRoute();
+    const id = computed(() => props.id ?? route.params.id);
+
+    const caseStudyQuery = useCaseStudyById({ id });
+    const caseStudyTimeTableQuery = useCaseStudyTimeTableById({ id });
+
+    const passageQuery = usePassages({ use_case: props.usecase ?? route.params.id, limit: 200 }); // limit is not ideal here, TODO
+
+    const isLoading = computed(() => {
+      return [caseStudyQuery, caseStudyTimeTableQuery, passageQuery].some(
+        (query) => query.isInitialLoading.value
       );
-    },
-    authors() {
-      return this.removeDuplicates(this.texts.map((text) => text.autor).flat(1), 'id');
-    },
-  },
-  mounted() {
-    const id = this.id || this.$route.params.id;
+    });
 
-    const urls = [
-      `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/usecase/${id}?format=json`,
-      `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/archiv/usecase-timetable-data/${id}`,
-      `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/stelle/?use_case=${id}&limit=200`, // limit is not ideal, i already created a ticket for the backend to improve this
-    ];
+    const study = computed(() => {
+      if (caseStudyQuery.data.value == null) return caseStudyQuery.data.value;
 
-    const prefetched = this.$store.state.fetchedResults[urls.toString()];
-    if (prefetched) {
-      [this.study, this.events] = prefetched;
-    } else {
-      Promise.all(urls.map((x) => fetch(x)))
-        .then((res) => {
-          Promise.all(res.map((x) => x.json()))
-            .then((jsonRes) => {
-              if (jsonRes[0].story_map)
-                jsonRes[0].story_map = jsonRes[0].story_map.replaceAll('/explore/', '/view/');
-              [this.study, this.events, this.passages] = jsonRes;
-            })
-            .catch((err) => {
-              console.error(err);
-            })
-            .finally(() => {
-              this.loading = false;
-            });
-        })
-        .catch((err) => {
-          console.error(err);
-        });
-    }
+      return {
+        ...caseStudyQuery.data.value,
+        // FIXME: why is this necessary?
+        story_map: caseStudyQuery.data.value.story_map?.replaceAll('/explore/', '/view/'),
+      };
+    });
+
+    const events = computed(() => {
+      return caseStudyTimeTableQuery.data.value;
+    });
+
+    const passages = computed(() => {
+      return passageQuery.data.value;
+    });
+    console.log('passages', passages);
+
+    const texts = computed(() => {
+      if (passages.value == null) return caseStudyQuery.data.value;
+      return passages.value.results.map((passage) => passage.text);
+    });
+
+    const authors = computed(() => {
+      if (texts.value == null) return caseStudyQuery.data.value;
+      return texts.value.map((text) => text.autor).flat(1);
+    });
+
+    return {
+      isLoading,
+      study,
+      events,
+      passages,
+      texts,
+      authors,
+    };
   },
   methods: {
     getTextsByAuthor(authorID) {
-      return this.texts.filter((text) => text.autor.map((autor) => autor.id).includes(authorID));
+      return this.removeDuplicates(this.texts, 'id').filter((text) =>
+        text.autor.map((autor) => autor.id).includes(authorID)
+      );
     },
     getPassagesByText(textID) {
       return this.passages.results.filter((passage) => passage.text.id === textID);

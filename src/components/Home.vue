@@ -34,7 +34,7 @@
                 large
                 block
                 color="secondary"
-                :to="{ name: $store.state.interface.currentView, query: addParamsToQuery() }"
+                :to="{ name: $store.state.interface.currentView, query: $route.query }"
                 >Search our Data</v-btn
               >
               <span class="button-subtitle"> For Interactive Analyses </span>
@@ -45,7 +45,7 @@
                   large
                   block
                   color="primary"
-                  :to="{ name: 'Case Study', params: { id: 6 }, query: addParamsToQuery() }"
+                  :to="{ name: 'Case Study', params: { id: 6 }, query: $route.query }"
                   >Read &bdquo;Spain and the Bible&ldquo;</v-btn
                 >
                 <span class="button-subtitle"> A Case Study </span>

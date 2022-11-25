@@ -12,19 +12,16 @@
       <v-list-item-title> Keyword(s) found at point </v-list-item-title>
     </v-list-item>
     <v-divider />
-    <v-list v-if="!loading" v-model="data">
+    <v-list v-if="!isLoading" v-model="data">
       <v-list v-for="d in data" :key="d.id">
         <v-list-item @mouseover="highlightSpatCov(d.id)" @mouseout="playdownSpatCov(d.id)">
           <v-list-item-content>
-            <template v-if="!loading">
-              <v-list-item-title class="text-h5">
-                Keyword: {{ d.properties.key_word.stichwort }}
-              </v-list-item-title>
-              <v-list-item-subtitle>
-                {{ d.properties.key_word.art }}
-              </v-list-item-subtitle>
-            </template>
-            <v-skeleton-loader v-else type="heading, text@2" />
+            <v-list-item-title class="text-h5">
+              Keyword: {{ d.properties.key_word.stichwort }}
+            </v-list-item-title>
+            <v-list-item-subtitle>
+              {{ d.properties.key_word.art }}
+            </v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
         <v-subheader hide-details>Texts</v-subheader>
@@ -81,54 +78,45 @@
 </template>
 
 <script>
+import { computed } from 'vue';
+import { useRoute } from 'vue-router/composables';
+
+import { useSpatialCoverageGeojsonById } from '@/api';
 import helpers from '@/helpers';
 
 export default {
   name: 'SpatialDetails',
   mixins: [helpers],
+  setup() {
+    const route = useRoute();
+    // FIXME: currently the map view encodes multiple ids as path param when a point is clicked
+    // which has multiple overlapping spatial coverages, which is a really bad idea
+    const id = computed(() =>
+      route.params.id.startsWith('[')
+        ? route.params.id.slice(1, -1).split(',').map(Number)[0]
+        : Number(route.params.id)
+    );
+
+    const spatialCoverageQuery = useSpatialCoverageGeojsonById({ id });
+
+    const isLoading = computed(() => spatialCoverageQuery.isInitialLoading.value);
+
+    const spatialCoverage = computed(() => spatialCoverageQuery.data.value);
+
+    // FIXME: only temporary
+    const data = computed(() => {
+      if (spatialCoverage.value == null) return [];
+      return [spatialCoverage.value];
+    });
+
+    return {
+      isLoading,
+      data,
+    };
+  },
   data: () => ({
-    loading: false,
-    data: [],
     strokeColor: '',
   }),
-  watch: {
-    '$route.params': {
-      handler(params) {
-        let arr = JSON.parse(params.id);
-        if (typeof arr === 'number') {
-          const arr2 = [arr];
-          arr = arr2;
-        }
-        this.data = [];
-        arr.forEach((param) => {
-          this.loading = true;
-          const address = `${
-            import.meta.env.VITE_APP_MMP_API_BASE_URL
-          }/api/spatialcoverage/${param}`;
-          const prefetched = this.$store.state.fetchedResults[address];
-          if (prefetched) {
-            this.data.push(prefetched);
-            this.loading = false;
-          } else {
-            fetch(address)
-              .then((res) => res.json())
-              .then((jsonRes) => {
-                this.data.push(jsonRes);
-                this.$store.commit('addToResults', { req: address, res: jsonRes });
-              })
-              .catch((err) => {
-                console.error(err);
-              })
-              .finally(() => {
-                this.loading = false;
-              });
-          }
-        });
-      },
-      deep: true,
-      immediate: true,
-    },
-  },
   methods: {
     highlightSpatCov(id) {
       if (this.$root.$refs.map.$refs.spatCov !== undefined) {
@@ -136,6 +124,7 @@ export default {
       } else {
         this.$root.$refs.map.enableSpatCov(id);
       }
+
       if (document.getElementsByClassName(`labelText ${id}`)[0]) {
         const colour = 'rgb(255,255,0)';
 

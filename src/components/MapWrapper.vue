@@ -1,137 +1,111 @@
 <template>
   <v-card color="transparent" width="100%">
-    <leaflet :data="entries" :loading="loading" :usecase="usecase" />
+    <leaflet :data="entries" :loading="isLoading" :usecase="usecase" />
     <router-view />
   </v-card>
 </template>
 
 <script>
-import Leaflet from '@/components/Leaflet.vue';
+import { computed } from 'vue';
+import { useRoute } from 'vue-router/composables';
+
+import { useCaseStudyById, useConesGeojson, useSpatialCoveragesGeojson } from '@/api';
+import { isNotNullable } from '@/lib/is-not-nullable';
+import { useStore } from '@/lib/use-store';
+
+import Leaflet from './Leaflet.vue';
 
 export default {
   name: 'MapWrapper',
   components: {
     Leaflet,
   },
-  props: ['passage', 'author', 'keyword', 'place', 'usecase'],
-  data: () => ({
-    entries: [],
-    loading: false,
-  }),
-  watch: {
-    '$route.query': {
-      handler(query) {
-        let urls = [
-          `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/spatialcoverage/?format=json`,
-          `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/cones/?format=json`,
-        ];
-        const blankUrls = urls;
+  props: ['author', 'passage', 'keyword', 'usecase', 'place'],
+  setup(props) {
+    const route = useRoute();
+    const store = useStore();
 
-        const terms = {
-          Author: 'stelle__text__autor',
-          Passage: 'stelle',
-          Keyword: 'key_word',
-          'Use Case': 'stelle__use_case',
-          // Place: 'unused',
+    const searchFilters = computed(() => {
+      // FIXME:
+      if (Object.values(props).some(isNotNullable)) {
+        /** @type {import('@/api').SpatialCoverageSearchParams} */
+        return {
+          stelle__text__autor: props.author,
+          stelle: props.passage,
+          key_word: props.keyword,
+          stelle__use_case: props.usecase,
+          stelle__ort: props.place,
         };
+      }
 
-        const props = [this.author, this.passage, this.keyword, this.usecase, this.place];
+      function getDateFilters() {
+        if (route.query['time'] == null) return {};
 
-        if (props.some((x) => x)) {
-          props.forEach((prop, i) => {
-            if (prop && prop !== '0') {
-              if (i === 4) {
-                // place
-                if (JSON.stringify(urls) === JSON.stringify(blankUrls)) {
-                  // prevents fetching every coverage if no other filters are applied
-                  urls = urls.map((x) => `${x}&id=0`);
-                }
-                urls.push(
-                  `${
-                    import.meta.env.VITE_APP_MMP_API_BASE_URL
-                  }/api/ort-geojson/?format=json&ids=${prop}`
-                );
-              } else {
-                urls = urls.map((url) => `${url}&${Object.values(terms)[i]}=${prop}`);
+        const [start, end] = route.query['time'].toString().includes('+')
+          ? route.query['time'].split('+')
+          : [route.query['time'] - 5, route.query['time'] + 4];
+
+        const dateFilters =
+          store.state.slider === 'passage'
+            ? {
+                stelle__start_date: start,
+                stelle__start_date_lookup: 'gt',
+                stelle__end_date: end,
+                stelle__end_date_lookup: 'lt',
               }
-            }
-          });
-        } else {
-          Object.keys(query).forEach((cat) => {
-            if (query[cat] && !['Place', 'time'].includes(cat)) {
-              const arr = query[cat].split('+');
-              arr.forEach((val) => {
-                urls = urls.map((url) => `${url}&${terms[cat]}=${val}`);
-              });
-            }
-          });
+            : {
+                stelle__text__not_before: start,
+                stelle__text__not_before_lookup: 'gt',
+                stelle__text__not_after: end,
+                stelle__text__not_after_lookup: 'lt',
+              };
 
-          if (query.time) {
-            const startKey =
-              this.$store.state.slider === 'passage'
-                ? 'stelle__start_date'
-                : 'stelle__text__not_before';
-            const endKey =
-              this.$store.state.slider === 'passage'
-                ? 'stelle__end_date'
-                : 'stelle__text__not_after';
+        return dateFilters;
+      }
 
-            if (query.time.toString().includes('+')) {
-              const times = query.time.split('+');
-              urls = urls.map(
-                (url) =>
-                  `${url}&${startKey}=${times[0]}&${startKey}_lookup=gt&${endKey}=${times[1]}&${endKey}_lookup=lt`
-              );
-            } else {
-              urls = urls.map(
-                (url) =>
-                  `${url}&${startKey}=${query.time - 5}&${startKey}_lookup=gt&${endKey}=${
-                    query.time + 4
-                  }&${endKey}_lookup=g`
-              );
-            }
-          }
-          if (query.Place) {
-            if (JSON.stringify(urls) === JSON.stringify(blankUrls)) {
-              // prevents fetching every coverage if no other filters are applied
-              urls = urls.map((x) => `${x}&id=0`);
-            }
-            urls.push(
-              `${
-                import.meta.env.VITE_APP_MMP_API_BASE_URL
-              }/api/ort-geojson/?format=json&ids=${query.Place.split('+').join(',')}`
-            );
-          } else
-            urls.push(`${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/ort/?format=json&id=0`);
-        }
+      return {
+        stelle__text__autor: route.query['Author']?.toString().split('+').join(','),
+        stelle: route.query['Passage']?.toString().split('+').join(','),
+        key_word: route.query['Keyword']?.toString().split('+').join(','),
+        stelle__use_case: route.query['Use Case']?.toString().split('+').join(','),
+        stelle__ort: route.query['Place']?.toString().split('+').join(','),
+        ...getDateFilters(),
+        // TODO: respect other config options like intersect
+      };
+    });
 
-        const prefetched = this.$store.state.fetchedResults[urls.toString()];
-        if (prefetched) {
-          this.entries = prefetched;
-        } else {
-          this.loading = true;
-          Promise.all(urls.map((x) => fetch(x)))
-            .then((res) => {
-              Promise.all(res.map((x) => x.json()))
-                .then((jsonRes) => {
-                  this.$store.commit('addToResults', { req: urls.toString(), res: jsonRes });
-                  this.entries = jsonRes;
-                })
-                .catch((err) => {
-                  console.error('err', err);
-                })
-                .finally(() => {
-                  this.loading = false;
-                });
-            })
-            .catch((err) => {
-              console.error('err', err);
-            });
-        }
-      },
-      deep: true,
-      immediate: true,
-    },
+    const spatialCoveragesQuery = useSpatialCoveragesGeojson(searchFilters);
+    const conesQuery = useConesGeojson(searchFilters);
+
+    const isLoading = computed(() => {
+      return [spatialCoveragesQuery, conesQuery].some((query) => query.isInitialLoading.value);
+    });
+
+    const spatialCoverages = computed(() => spatialCoveragesQuery.data.value?.features ?? []);
+    const cones = computed(() => conesQuery.data.value?.features ?? []);
+
+    // FIXME: what if we have multiple case studies in route.query
+    const id = computed(() => props.usecase ?? route.query['Use Case']);
+    const caseStudyQuery = useCaseStudyById(
+      { id },
+      { isEnabled: computed(() => id.value != null) }
+    );
+
+    const layers = computed(() => caseStudyQuery.data.value?.layer ?? []);
+
+    // FIXME: only temporary because the map component requires this shape
+    const entries = computed(() => {
+      return [{ features: spatialCoverages.value }, { features: cones.value }];
+    });
+
+    return {
+      isLoading,
+      spatialCoverages,
+      cones,
+      layers,
+
+      entries,
+    };
   },
   created() {
     this.$root.$refs.mapWrap = this;
