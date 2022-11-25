@@ -3,7 +3,7 @@
     <v-list-item>
       <v-list-item-action>
         <router-link
-          :to="{ name: fullscreen ? 'List Fullscreen' : 'List', query: $route.query }"
+          :to="{ name: isFullScreen ? 'List Fullscreen' : 'List', query: $route.query }"
           class="text-decoration-none"
         >
           <v-icon>mdi-close</v-icon>
@@ -51,7 +51,7 @@
               v-for="(val, i) in item.value"
               :key="val.id"
               :to="{
-                name: fullscreen ? `${item.key} Detail Fullscreen` : `${item.key} Detail`,
+                name: isFullScreen ? `${item.key} Detail Fullscreen` : `${item.key} Detail`,
                 query: item.key === 'Place' ? addParamsToQuery({ Place: val.id }) : $route.query,
                 params: { id: val.id },
               }"

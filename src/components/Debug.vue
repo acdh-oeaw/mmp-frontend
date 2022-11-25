@@ -1,4 +1,3 @@
-g
 <template>
   <v-container>
     <v-row>
@@ -98,11 +97,12 @@ g
     </v-row>
   </v-container>
 </template>
+
 <script>
-import Graph from './GraphWrapperBeta';
-import List from './List';
-import MapWrapper from './MapWrapper';
-import WordCloudWrapper from './WordCloudWrapper';
+import Graph from '@/components/GraphWrapperBeta.vue';
+import List from '@/components/List.vue';
+import MapWrapper from '@/components/MapWrapper.vue';
+import WordCloudWrapper from '@/components/WordCloudWrapper.vue';
 
 export default {
   name: 'Debug',

@@ -21,7 +21,7 @@
             v-for="(author, i) in item.text.autor"
             :key="author.id"
             :to="{
-              name: fullscreen ? 'Author Detail Fullscreen' : 'Author Detail',
+              name: isFullScreen ? 'Author Detail Fullscreen' : 'Author Detail',
               params: { id: author.id },
               query: $route.query,
             }"
@@ -37,7 +37,7 @@
         <template v-if="item.text">
           <router-link
             :to="{
-              name: fullscreen ? 'Passage Detail Fullscreen' : 'Passage Detail',
+              name: isFullScreen ? 'Passage Detail Fullscreen' : 'Passage Detail',
               params: { id: item.id },
               query: $route.query,
             }"
@@ -72,9 +72,8 @@
 </template>
 
 <script>
+import FullscreenButton from '@/components/FullscreenButton.vue';
 import helpers from '@/helpers';
-
-import FullscreenButton from './FullscreenButton';
 
 export default {
   name: 'List',
@@ -117,7 +116,6 @@ export default {
       });
     },
     addAuthorToInput(obj) {
-      console.log(obj);
       this.$store.commit('addToItemsAndInput', {
         id: parseInt(obj.id, 10),
         selected_text: obj.name,
@@ -140,11 +138,9 @@ export default {
       const props = [this.author, this.passage, this.keyword, this.usecase, this.place];
 
       if (props.some((x) => x)) {
-        console.debug('list props detected!', props);
         let j;
         props.forEach((prop, i) => {
           if (prop && prop !== '0') {
-            console.debug('list prop', prop);
             if (i === 1) {
               // passage
               address += `&ids=${prop.toString().split('+').join(',')}`;
@@ -158,7 +154,6 @@ export default {
       } else {
         Object.keys(query).forEach((cat) => {
           if (query[cat] && cat !== 'time') {
-            console.log(query[cat]);
             const arr = query[cat].toString(10).split('+');
             arr.forEach((val) => {
               address += `&${terms[cat]}=${val}`;
@@ -181,8 +176,6 @@ export default {
         }
       }
 
-      console.log('address', address);
-
       const prefetched = this.$store.state.fetchedResults[address];
       if (prefetched) {
         this.items = prefetched.results;
@@ -192,7 +185,6 @@ export default {
         fetch(address)
           .then((res) => res.json())
           .then((res) => {
-            console.log('list-data', res);
             this.$store.commit('addToResults', { req: address, res });
             this.items = res.results;
             this.pagination.count = res.count;

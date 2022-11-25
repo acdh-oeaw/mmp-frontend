@@ -15,7 +15,7 @@
             Mentioned in
             <router-link
               :to="{
-                name: fullscreen ? 'List Fullscreen' : 'List',
+                name: isFullScreen ? 'List Fullscreen' : 'List',
                 query: addParamsToQuery({ Keyword: $route.params.id }),
               }"
             >
@@ -93,7 +93,7 @@
                   block
                   class="detail-button"
                   :to="{
-                    name: fullscreen ? 'List Fullscreen' : 'List',
+                    name: isFullScreen ? 'List Fullscreen' : 'List',
                     query: addParamsToQuery({
                       Keyword: keywords.map((x) => x.id).join('+'),
                     }),
@@ -116,7 +116,7 @@
                   block
                   class="detail-button"
                   :to="{
-                    name: fullscreen ? 'Keyword Detail Beta Fullscreen' : 'Keyword Detail Beta',
+                    name: isFullScreen ? 'Keyword Detail Beta Fullscreen' : 'Keyword Detail Beta',
                     params: { id: $route.params.id },
                     query: addParamsToQuery({ Keyword: $route.params.id }),
                   }"
@@ -147,9 +147,9 @@ import {
 import helpers from '@/helpers';
 import { useStore } from '@/lib/use-store';
 
-import KeywordListItem from './KeywordListItem';
-import KeywordOverTime from './KeywordOverTime';
-import Leaflet from './Leaflet';
+import KeywordListItem from './KeywordListItem.vue';
+import KeywordOverTime from './KeywordOverTime.vue';
+import Leaflet from './Leaflet.vue';
 
 export default {
   name: 'KeywordDetail',
@@ -234,7 +234,6 @@ export default {
   }),
   computed: {
     connections() {
-      console.log('keyword connections called', this.data);
       const retArr = [];
 
       if (!this.keywords || !this.graph) return retArr;
@@ -252,7 +251,6 @@ export default {
       targets.forEach((target) => {
         count[target] = count[target] ? count[target] + 1 : 1;
       });
-      console.log('keyword connections', edges, targets, count);
 
       Object.entries(count).forEach((entry) => {
         retArr.push({
@@ -264,7 +262,6 @@ export default {
         });
       });
 
-      console.log('connections', retArr);
       // priorise connections with keyword in query
       // return retArr.sort((a) => (this.$route.query?.Keyword.split('+').includes(a.id) ? -1 : 1));
 
@@ -275,10 +272,10 @@ export default {
     },
     xPressLinkName() {
       if (this.$route.name.includes('compare')) {
-        if (this.fullscreen) return 'Compare Authors Fullscreen';
+        if (this.isFullScreen) return 'Compare Authors Fullscreen';
         return 'Compare Authors';
       }
-      if (this.fullscreen) return 'Network Graph Beta Fullscreen';
+      if (this.isFullScreen) return 'Network Graph Beta Fullscreen';
       return 'Network Graph Beta';
     },
   },
@@ -289,6 +286,7 @@ export default {
   },
 };
 </script>
+
 <style>
 button.v-expansion-panel-header {
   padding: 6px;

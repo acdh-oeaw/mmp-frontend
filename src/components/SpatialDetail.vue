@@ -3,7 +3,7 @@
     <v-list-item>
       <v-list-item-action>
         <router-link
-          :to="{ name: fullscreen ? 'Map Fullscreen' : 'Map', query: $route.query }"
+          :to="{ name: isFullScreen ? 'Map Fullscreen' : 'Map', query: $route.query }"
           class="text-decoration-none"
         >
           <v-icon>mdi-close</v-icon>
@@ -45,7 +45,7 @@
           v-for="passage in d.properties.stelle"
           :key="passage.id"
           :to="{
-            name: fullscreen ? 'Passage Detail Fullscreen' : 'Passage Detail',
+            name: isFullScreen ? 'Passage Detail Fullscreen' : 'Passage Detail',
             query: addParamsToQuery({ Passage: passage.id }),
             params: { id: passage.id },
           }"

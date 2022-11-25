@@ -1,23 +1,23 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 
-import AuthorDetail from '@/components/AuthorDetail';
-import CaseStudies from '@/components/CaseStudies';
-import CaseStudy from '@/components/CaseStudy';
-import CompareAuthors from '@/components/CompareAuthors';
-import Debug from '@/components/Debug';
-import FullscreenView from '@/components/FullscreenView';
-import GraphBeta from '@/components/GraphWrapperBeta';
-import Home from '@/components/Home';
-import Interface from '@/components/InterfaceWrapper';
-import KeywordDetail from '@/components/KeywordDetail';
-import List from '@/components/List';
-import ListAll from '@/components/ListAll';
-import Map from '@/components/MapWrapper';
-import PassageDetail from '@/components/PassageDetail';
-import PlaceDetail from '@/components/PlaceDetail';
-import SpatialDetail from '@/components/SpatialDetail';
-import WordCloudWrapper from '@/components/WordCloudWrapper';
+import AuthorDetail from '@/components/AuthorDetail.vue';
+import CaseStudies from '@/components/CaseStudies.vue';
+import CaseStudy from '@/components/CaseStudy.vue';
+import CompareAuthors from '@/components/CompareAuthors.vue';
+import Debug from '@/components/Debug.vue';
+import FullscreenView from '@/components/FullscreenView.vue';
+import GraphBeta from '@/components/GraphWrapperBeta.vue';
+import Home from '@/components/Home.vue';
+import Interface from '@/components/InterfaceWrapper.vue';
+import KeywordDetail from '@/components/KeywordDetail.vue';
+import List from '@/components/List.vue';
+import ListAll from '@/components/ListAll.vue';
+import Map from '@/components/MapWrapper.vue';
+import PassageDetail from '@/components/PassageDetail.vue';
+import PlaceDetail from '@/components/PlaceDetail.vue';
+import SpatialDetail from '@/components/SpatialDetail.vue';
+import WordCloudWrapper from '@/components/WordCloudWrapper.vue';
 
 Vue.use(VueRouter);
 

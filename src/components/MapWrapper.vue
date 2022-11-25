@@ -13,7 +13,7 @@ import { useCaseStudyById, useConesGeojson, useSpatialCoveragesGeojson } from '@
 import { isNotNullable } from '@/lib/is-not-nullable';
 import { useStore } from '@/lib/use-store';
 
-import Leaflet from './Leaflet';
+import Leaflet from './Leaflet.vue';
 
 export default {
   name: 'MapWrapper',

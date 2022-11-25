@@ -1,5 +1,5 @@
 <template>
-  <v-card width="100%" color="transparent" :height="fullscreen ? 'calc(100vh - 4px)' : 500">
+  <v-card width="100%" color="transparent" :height="isFullScreen ? 'calc(100vh - 4px)' : 500">
     <v-overlay absolute opacity=".2" :value="isLoading">
       <h1 v-if="isLoading" class="no-nodes">
         <v-progress-circular indeterminate color="#0F1226" />
@@ -13,7 +13,11 @@
           :key="JSON.stringify(filtered) + i"
           :cols="showWords.filter((x) => x).length >= 2 ? 6 : 12"
         >
-          <pie-chart :data="filtered" :title="titles[i]" :height="fullscreen ? '100%' : '500px'" />
+          <pie-chart
+            :data="filtered"
+            :title="titles[i]"
+            :height="isFullScreen ? '100%' : '500px'"
+          />
         </v-col>
       </template>
     </v-row>
@@ -29,7 +33,7 @@
       </template>
     </v-row>
     <v-navigation-drawer v-model="drawer" absolute right>
-      <v-card :min-height="fullscreen ? 'calc(100vh - 4px)' : 498">
+      <v-card :min-height="isFullScreen ? 'calc(100vh - 4px)' : 498">
         <v-btn absolute top right icon style="z-index: 100" @click="drawer = false">
           <v-icon>mdi-close</v-icon>
         </v-btn>
@@ -114,6 +118,7 @@
     </v-speed-dial>
   </v-card>
 </template>
+
 <script>
 import Gradient from 'javascript-color-gradient';
 import { computed } from 'vue';
@@ -123,14 +128,13 @@ import { usePassageKeywords, usePassageNlpData } from '@/api';
 import helpers from '@/helpers';
 import { isNotNullable } from '@/lib/is-not-nullable';
 
-import FullscreenButton from './FullscreenButton';
-import PieChart from './PieChart';
-import WordCloudBeta from './WordCloudBeta';
+import FullscreenButton from './FullscreenButton.vue';
+import PieChart from './PieChart.vue';
+import WordCloudBeta from './WordCloudBeta.vue';
 
 export default {
   name: 'WordCloudWrapper',
   components: {
-    // WordCloud,
     FullscreenButton,
     PieChart,
     WordCloudBeta,
@@ -280,6 +284,7 @@ export default {
   },
 };
 </script>
+
 <style scoped>
 .word-cloud {
   min-height: 500px;
@@ -289,28 +294,4 @@ export default {
 .full-height {
   height: 100vh !important;
 }
-
-/* .graph-tooltip {
-  position: absolute;
-    transform: translate(-50%, 25px);
-    font-family: sans-serif;
-    font-size: 16px;
-    padding: 4px;
-    border-radius: 3px;
-    color: #eee;
-    background: rgba(0,0,0,0.65);
-    visibility: hidden;
-}
-.word {
-  cursor: pointer;
-}
-.wordHover {
-  display: none;
-  position: absolute;
-  background: white;
-  font-size: 2rem;
-}
-.word:hover + div.wordHover {
-  display: unset;
-} */
 </style>

@@ -3,7 +3,7 @@
     <v-list-item>
       <v-list-item-action>
         <router-link
-          :to="{ name: fullscreen ? 'Map Fullscreen' : 'Map', query: $route.query }"
+          :to="{ name: isFullScreen ? 'Map Fullscreen' : 'Map', query: $route.query }"
           class="text-decoration-none"
         >
           <v-icon>mdi-close</v-icon>
@@ -45,7 +45,7 @@
               v-for="author in authors"
               :key="author.id"
               :to="{
-                name: fullscreen ? 'Author Detail Fullscreen' : 'Author Detail',
+                name: isFullScreen ? 'Author Detail Fullscreen' : 'Author Detail',
                 query: addParamsToQuery({ Author: author.id }),
                 params: { id: author.id },
               }"

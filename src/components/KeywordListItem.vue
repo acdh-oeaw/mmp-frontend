@@ -12,7 +12,7 @@
         :key="passage.id"
         three-line
         :to="{
-          name: fullscreen ? 'Passage Detail Fullscreen' : 'Passage Detail',
+          name: isfullscreen ? 'Passage Detail Fullscreen' : 'Passage Detail',
           query: addParamsToQuery({ Passage: passage.id }),
           params: { id: passage.id },
         }"
@@ -37,6 +37,7 @@
     </v-list>
   </v-card>
 </template>
+
 <script>
 import { computed } from 'vue';
 

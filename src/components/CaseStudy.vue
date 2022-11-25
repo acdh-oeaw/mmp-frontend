@@ -21,6 +21,9 @@
             <v-tab exact :to="{ query: addParamsToQuery({ tab: 'graph' }) }"> Graph </v-tab>
             <v-tab exact :to="{ query: addParamsToQuery({ tab: 'map' }) }"> Map </v-tab>
             <v-tab exact :to="{ query: addParamsToQuery({ tab: 'cloud' }) }"> Word Cloud </v-tab>
+            <v-tab exact :to="{ query: addParamsToQuery({ tab: 'texts' }) }">
+              Texts & Authors
+            </v-tab>
           </v-tabs>
           <br />
           <v-tabs-items :value="$route.query.tab || 'timeline'">
@@ -64,7 +67,9 @@
               </v-timeline>
             </v-tab-item>
             <v-tab-item v-if="study.story_map" value="story">
-              <v-card color="transparent" v-html="study.story_map" />
+              <v-card color="transparent">
+                <div v-html="study.story_map" />
+              </v-card>
             </v-tab-item>
             <v-tab-item value="graph">
               <v-card color="transparent">
@@ -79,6 +84,68 @@
             <v-tab-item value="cloud">
               <word-cloud-wrapper :usecase="id || $route.params.id" />
             </v-tab-item>
+            <v-tab-item value="texts">
+              <v-list color="transparent">
+                <div v-for="author in removeDuplicates(authors, 'id')" :key="author.id">
+                  <v-list-group prepend-icon="mdi-account-edit">
+                    <template #activator>
+                      <v-list-item>
+                        <v-list-item-content>
+                          <v-list-item-title>
+                            {{ getOptimalName(author) }}
+                          </v-list-item-title>
+                          <v-list-item-subtitle>
+                            {{ getTextsByAuthor(author.id).length }}
+                            text{{ getTextsByAuthor(author.id).length === 1 ? '' : 's' }} and
+                          </v-list-item-subtitle>
+                          <v-list-item-subtitle>
+                            {{ getPassagesByAuthor(author.id).length }} passage{{
+                              getPassagesByAuthor(author.id).length === 1 ? '' : 's'
+                            }}
+                            found in this case study
+                          </v-list-item-subtitle>
+                        </v-list-item-content>
+                      </v-list-item>
+                    </template>
+                    <v-list-group
+                      v-for="text in getTextsByAuthor(author.id)"
+                      :key="text.id"
+                      :ripple="false"
+                      prepend-icon="mdi-book-open-variant"
+                      sub-group
+                      no-action
+                    >
+                      <template #activator>
+                        <v-list-item>
+                          <v-list-item-content>
+                            <v-list-item-title>
+                              {{ text.title }}
+                            </v-list-item-title>
+                            <v-list-item-subtitle>
+                              {{ getPassagesByText(text.id).length }} passage{{
+                                getPassagesByText(text.id).length === 1 ? '' : 's'
+                              }}
+                            </v-list-item-subtitle>
+                          </v-list-item-content>
+                        </v-list-item>
+                      </template>
+                      <v-list-item
+                        v-for="passage in getPassagesByText(text.id)"
+                        :key="passage.id"
+                        :to="{
+                          name: 'List',
+                          query: addParamsToQuery({ Passage: passage.id }),
+                        }"
+                        prepend-icon="mdi-format-quote-close"
+                      >
+                        {{ passage.display_label }}
+                      </v-list-item>
+                    </v-list-group>
+                  </v-list-group>
+                  <v-divider inset />
+                </div>
+              </v-list>
+            </v-tab-item>
           </v-tabs-items>
         </template>
         <v-skeleton-loader v-else type="text, heading, text@11" />
@@ -91,10 +158,10 @@
 import { computed } from 'vue';
 import { useRoute } from 'vue-router/composables';
 
-import { useCaseStudyById, useCaseStudyTimeTableById } from '@/api';
-import Graph from '@/components/GraphWrapperBeta';
-import MapWrapper from '@/components/MapWrapper';
-import WordCloudWrapper from '@/components/WordCloudWrapper';
+import { useCaseStudyById, useCaseStudyTimeTableById, usePassages } from '@/api';
+import Graph from '@/components/GraphWrapperBeta.vue';
+import MapWrapper from '@/components/MapWrapper.vue';
+import WordCloudWrapper from '@/components/WordCloudWrapper.vue';
 import helpers from '@/helpers';
 
 export default {
@@ -113,8 +180,10 @@ export default {
     const caseStudyQuery = useCaseStudyById({ id });
     const caseStudyTimeTableQuery = useCaseStudyTimeTableById({ id });
 
+    const passageQuery = usePassages({ use_case: props.usecase ?? route.params.id, limit: 200 }); // limit is not ideal here, TODO
+
     const isLoading = computed(() => {
-      return [caseStudyQuery, caseStudyTimeTableQuery].some(
+      return [caseStudyQuery, caseStudyTimeTableQuery, passageQuery].some(
         (query) => query.isInitialLoading.value
       );
     });
@@ -133,13 +202,44 @@ export default {
       return caseStudyTimeTableQuery.data.value;
     });
 
+    const passages = computed(() => {
+      return passageQuery.data.value;
+    });
+    console.log('passages', passages);
+
+    const texts = computed(() => {
+      if (passages.value == null) return caseStudyQuery.data.value;
+      return passages.value.results.map((passage) => passage.text);
+    });
+
+    const authors = computed(() => {
+      if (texts.value == null) return caseStudyQuery.data.value;
+      return texts.value.map((text) => text.autor).flat(1);
+    });
+
     return {
       isLoading,
       study,
       events,
+      passages,
+      texts,
+      authors,
     };
   },
   methods: {
+    getTextsByAuthor(authorID) {
+      return this.removeDuplicates(this.texts, 'id').filter((text) =>
+        text.autor.map((autor) => autor.id).includes(authorID)
+      );
+    },
+    getPassagesByText(textID) {
+      return this.passages.results.filter((passage) => passage.text.id === textID);
+    },
+    getPassagesByAuthor(authorID) {
+      return this.passages.results.filter((passage) =>
+        passage.text.autor.map((autor) => autor.id).includes(authorID)
+      );
+    },
     removeDatesFromTitle(title) {
       const ret = title.split(' ');
       ret.shift();
