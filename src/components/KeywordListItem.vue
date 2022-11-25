@@ -6,37 +6,39 @@
         type="list-item-three-line@3"
         class="transparent-skeleton"
       />
-      <v-list-item
-        v-for="passage in data"
-        v-else-if="data.length"
-        :key="passage.id"
-        three-line
-        :to="{
-          name: fullscreen ? 'Passage Detail Fullscreen' : 'Passage Detail',
-          query: addParamsToQuery({ Passage: passage.id }),
-          params: { id: passage.id },
-        }"
-      >
-        <v-list-item-content>
-          <v-list-item-title>
-            {{ passage.display_label }}
-          </v-list-item-title>
-          <v-list-item-subtitle v-if="passage.text.autor.length">
-            {{ passage.text.title }},
-            {{ passage.text.autor.map((x) => getOptimalName(x)).join(', ') }}
-          </v-list-item-subtitle>
-          <v-list-item-subtitle v-if="passage.text.jahrhundert">
-            {{ passage.text.jahrhundert }} century
-          </v-list-item-subtitle>
-        </v-list-item-content>
-        <v-list-item-icon>
-          <v-icon>mdi-chevron-right</v-icon>
-        </v-list-item-icon>
-      </v-list-item>
+      <template v-else-if="data.length">
+        <v-list-item
+          v-for="passage in data"
+          :key="passage.id"
+          three-line
+          :to="{
+            name: isFullScreen ? 'Passage Detail Fullscreen' : 'Passage Detail',
+            query: addParamsToQuery({ Passage: passage.id }),
+            params: { id: passage.id },
+          }"
+        >
+          <v-list-item-content>
+            <v-list-item-title>
+              {{ passage.display_label }}
+            </v-list-item-title>
+            <v-list-item-subtitle v-if="passage.text.autor.length">
+              {{ passage.text.title }},
+              {{ passage.text.autor.map((x) => getOptimalName(x)).join(', ') }}
+            </v-list-item-subtitle>
+            <v-list-item-subtitle v-if="passage.text.jahrhundert">
+              {{ passage.text.jahrhundert }} century
+            </v-list-item-subtitle>
+          </v-list-item-content>
+          <v-list-item-icon>
+            <v-icon>mdi-chevron-right</v-icon>
+          </v-list-item-icon>
+        </v-list-item>
+      </template>
       <v-list-item v-else>No passages found!</v-list-item>
     </v-list>
   </v-card>
 </template>
+
 <script>
 import helpers from '@/helpers';
 
@@ -61,7 +63,6 @@ export default {
       this.loading = false;
       // const texts = prefetched.results.map((x) => ({ ...x.text, keywords: x.key_word }));
       const passages = prefetched.results;
-      console.log('stored passages', passages);
       this.data = this.removeDuplicates(passages, 'url');
     } else {
       fetch(url)
@@ -71,9 +72,7 @@ export default {
 
           // const texts = jsonRes.results.map((x) => ({ ...x.text, keywords: x.key_word }));
           const passages = jsonRes.results;
-          console.log('passages', passages);
           this.data = this.removeDuplicates(passages, 'url');
-          console.log('Keyword List Item data', this.data);
         })
         .catch((err) => {
           console.error(err);

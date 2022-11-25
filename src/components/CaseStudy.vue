@@ -67,7 +67,9 @@
               </v-timeline>
             </v-tab-item>
             <v-tab-item v-if="study.story_map" value="story">
-              <v-card color="transparent" v-html="study.story_map" />
+              <v-card color="transparent">
+                <div v-html="study.story_map" />
+              </v-card>
             </v-tab-item>
             <v-tab-item value="graph">
               <v-card color="transparent">
@@ -153,10 +155,10 @@
 </template>
 
 <script>
-import helpers from '../helpers';
-import Graph from './GraphWrapperBeta';
-import MapWrapper from './MapWrapper';
-import WordCloudWrapper from './WordCloudWrapper';
+import Graph from '@/components/GraphWrapperBeta.vue';
+import MapWrapper from '@/components/MapWrapper.vue';
+import WordCloudWrapper from '@/components/WordCloudWrapper.vue';
+import helpers from '@/helpers';
 
 export default {
   name: 'Studies',
@@ -201,12 +203,9 @@ export default {
         .then((res) => {
           Promise.all(res.map((x) => x.json()))
             .then((jsonRes) => {
-              console.log('Study', jsonRes);
               if (jsonRes[0].story_map)
                 jsonRes[0].story_map = jsonRes[0].story_map.replaceAll('/explore/', '/view/');
               [this.study, this.events, this.passages] = jsonRes;
-
-              console.log('route', this.$route);
             })
             .catch((err) => {
               console.error(err);

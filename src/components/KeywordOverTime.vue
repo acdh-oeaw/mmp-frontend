@@ -54,8 +54,5 @@ export default {
       };
     },
   },
-  mounted() {
-    console.log('Over time mounted', this.data);
-  },
 };
 </script>

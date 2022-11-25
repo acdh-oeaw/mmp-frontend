@@ -61,9 +61,8 @@
 
 <script>
 import bgImage from '@/assets/europa.jpg';
-
-import helpers from '../helpers';
-import CaseStudy from './CaseStudy';
+import CaseStudy from '@/components/CaseStudy.vue';
+import helpers from '@/helpers';
 
 export default {
   name: 'Home',
@@ -79,7 +78,7 @@ export default {
 };
 </script>
 
-<style lang="css">
+<style>
 .button-subtitle {
   line-height: 40px;
   font-size: 1rem;

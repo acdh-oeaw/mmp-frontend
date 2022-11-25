@@ -4,7 +4,7 @@
       <v-list-item-action>
         <router-link
           :to="{
-            name: backButton,
+            name: parentRoute.name,
             query: $route.query,
           }"
           class="text-decoration-none"
@@ -115,7 +115,7 @@
                 :key="passage.id"
                 three-line
                 :to="{
-                  name: fullscreen ? 'Passage Detail Fullscreen' : 'Passage Detail',
+                  name: isFullScreen ? 'Passage Detail Fullscreen' : 'Passage Detail',
                   query: addParamsToQuery({ Passage: passage.id }),
                   params: { id: passage.id },
                 }"
@@ -152,6 +152,7 @@
     </v-container>
   </v-navigation-drawer>
 </template>
+
 <script>
 import helpers from '@/helpers';
 
@@ -168,7 +169,6 @@ export default {
   watch: {
     '$route.params': {
       handler(params) {
-        console.log('params', params);
         this.loading = true;
 
         const urls = [
@@ -188,14 +188,12 @@ export default {
         const prefetched = this.$store.state.fetchedResults[urls.toString()];
 
         if (prefetched) {
-          console.log('author prefetched', prefetched);
           [this.data, this.usecases, this.passages] = prefetched;
           this.loading = false;
         } else {
           Promise.all(urls.map((x) => fetch(x))).then((res) => {
             Promise.all(res.map((x) => x.json()))
               .then((jsonRes) => {
-                console.log('author res', jsonRes);
                 this.$store.commit('addToResults', { req: urls.toString(), res: jsonRes });
                 [this.data, this.usecases, this.passages, this.keywords] = jsonRes;
               })
@@ -210,15 +208,6 @@ export default {
       },
       deep: true,
       immediate: true,
-    },
-  },
-  methods: {
-    backButton() {
-      let ret;
-      if (this.$route.name.includes('Compare')) ret = 'Compare Authors';
-      else ret = 'List';
-      if (this.$route.name.includes('Fullscreem')) ret += ' Fullscreen';
-      return ret;
     },
   },
 };

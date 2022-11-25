@@ -3,7 +3,7 @@
     <v-list-item>
       <v-list-item-action>
         <router-link
-          :to="{ name: fullscreen ? 'Map Fullscreen' : 'Map', query: $route.query }"
+          :to="{ name: isFullScreen ? 'Map Fullscreen' : 'Map', query: $route.query }"
           class="text-decoration-none"
         >
           <v-icon>mdi-close</v-icon>
@@ -40,7 +40,7 @@
               v-for="author in data.authors.results"
               :key="author.id"
               :to="{
-                name: fullscreen ? 'Author Detail Fullscreen' : 'Author Detail',
+                name: isFullScreen ? 'Author Detail Fullscreen' : 'Author Detail',
                 query: addParamsToQuery({ Author: author.id }),
                 params: { id: author.id },
               }"
@@ -103,7 +103,6 @@ export default {
   watch: {
     '$route.params': {
       handler(params) {
-        console.log('place params', params);
         this.loading = true;
         const urls = [
           `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/ort/${params.id}/?format=json`,
@@ -117,13 +116,11 @@ export default {
         const prefetched = this.$store.state.fetchedResults[urls.toString()];
 
         if (prefetched) {
-          console.log('prefetched places', prefetched);
           this.loading = false;
         } else {
           Promise.all(urls.map((x) => fetch(x))).then((res) => {
             Promise.all(res.map((x) => x.json()))
               .then((jsonRes) => {
-                console.log('place res', jsonRes);
                 this.$store.commit('addToResults', { req: urls.toString(), jsonRes });
                 [this.data.ort, this.data.texts, this.data.authors] = jsonRes;
               })

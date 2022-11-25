@@ -15,7 +15,7 @@
             Mentioned in
             <router-link
               :to="{
-                name: fullscreen ? 'List Fullscreen' : 'List',
+                name: isFullScreen ? 'List Fullscreen' : 'List',
                 query: addParamsToQuery({ Keyword: $route.params.id }),
               }"
             >
@@ -93,7 +93,7 @@
                   block
                   class="detail-button"
                   :to="{
-                    name: fullscreen ? 'List Fullscreen' : 'List',
+                    name: isFullScreen ? 'List Fullscreen' : 'List',
                     query: addParamsToQuery({
                       Keyword: data.keywords.map((x) => x.id).join('+'),
                     }),
@@ -116,7 +116,7 @@
                   block
                   class="detail-button"
                   :to="{
-                    name: fullscreen ? 'Keyword Detail Beta Fullscreen' : 'Keyword Detail Beta',
+                    name: isFullScreen ? 'Keyword Detail Beta Fullscreen' : 'Keyword Detail Beta',
                     params: { id: $route.params.id },
                     query: addParamsToQuery({ Keyword: $route.params.id }),
                   }"
@@ -134,11 +134,10 @@
 </template>
 
 <script>
+import KeywordListItem from '@/components/KeywordListItem.vue';
+import KeywordOverTime from '@/components/KeywordOverTime.vue';
+import Leaflet from '@/components/Leaflet.vue';
 import helpers from '@/helpers';
-
-import KeywordListItem from './KeywordListItem';
-import KeywordOverTime from './KeywordOverTime';
-import Leaflet from './Leaflet';
 
 export default {
   name: 'KeywordDetail',
@@ -165,7 +164,6 @@ export default {
   }),
   computed: {
     connections() {
-      console.log('keyword connections called', this.data);
       const retArr = [];
 
       if (!this.data.keywords || !this.data.nodes) return retArr;
@@ -183,7 +181,6 @@ export default {
       targets.forEach((target) => {
         count[target] = count[target] ? count[target] + 1 : 1;
       });
-      console.log('keyword connections', edges, targets, count);
 
       Object.entries(count).forEach((entry) => {
         retArr.push({
@@ -195,7 +192,6 @@ export default {
         });
       });
 
-      console.log('connections', retArr);
       // priorise connections with keyword in query
       // return retArr.sort((a) => (this.$route.query?.Keyword.split('+').includes(a.id) ? -1 : 1));
 
@@ -206,18 +202,16 @@ export default {
     },
     xPressLinkName() {
       if (this.$route.name.includes('compare')) {
-        if (this.fullscreen) return 'Compare Authors Fullscreen';
+        if (this.isFullScreen) return 'Compare Authors Fullscreen';
         return 'Compare Authors';
       }
-      if (this.fullscreen) return 'Network Graph Beta Fullscreen';
+      if (this.isFullScreen) return 'Network Graph Beta Fullscreen';
       return 'Network Graph Beta';
     },
   },
   watch: {
     '$route.params': {
       handler(params) {
-        console.log(params);
-
         // set all keys to true
         Object.keys(this.loading).forEach((x) => {
           this.loading[x] = true;
@@ -237,7 +231,6 @@ export default {
             .then((res) => {
               Promise.all(res.map((x) => x.json()))
                 .then((jsonRes) => {
-                  console.log('promise all keyword1', jsonRes);
                   this.$store.commit('addToResults', { req: urls.toString(), res: jsonRes });
                   this.data.keywords = jsonRes;
                 })
@@ -265,7 +258,6 @@ export default {
             .then((res) => {
               Promise.all(res.map((x) => x.json()))
                 .then((jsonRes) => {
-                  console.log('promise all overtimes', jsonRes);
                   this.$store.commit('addToResults', { req: urls.toString(), res: jsonRes });
                   this.data.overtime = jsonRes;
                 })
@@ -307,11 +299,8 @@ export default {
             .then((res) => {
               Promise.all(res.map((x) => x.json()))
                 .then((jsonRes) => {
-                  console.log('promise all keyword-', jsonRes);
                   this.$store.commit('addToResults', { req: urls.toString(), res: jsonRes });
                   [this.data.nodes, this.data.passages, , this.data.geography] = jsonRes;
-                  console.log('keyword data', this.data);
-                  // console.log('connections', this.connections);
                 })
                 .catch((err) => {
                   console.error(err);
@@ -331,6 +320,7 @@ export default {
   },
 };
 </script>
+
 <style>
 button.v-expansion-panel-header {
   padding: 6px;

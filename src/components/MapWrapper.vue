@@ -1,28 +1,12 @@
 <template>
   <v-card color="transparent" width="100%">
     <leaflet :data="entries" :loading="loading" :usecase="usecase" />
-    <!-- <div v-for="(feature, i) in featureList">
-      <div
-      class="card"
-      :key="i+feature.properties.key_word.id"
-      data-toggle="collapse"
-      :data-target="`#${i+feature.properties.key_word.id}`"
-      >
-        <div class="card-header list">
-          {{ feature.properties.key_word.stichwort }}
-          <span class="badge badge-pill badge-primary">{{ feature.properties.stelle.length }}</span>
-        </div>
-      </div>
-      <div class="card-body collapse" :id="i+feature.properties.key_word.id">
-        <data-table :data="feature.properties.stelle" />
-      </div>
-    </div> -->
     <router-view />
   </v-card>
 </template>
 
 <script>
-import Leaflet from './Leaflet';
+import Leaflet from '@/components/Leaflet.vue';
 
 export default {
   name: 'MapWrapper',
@@ -53,13 +37,9 @@ export default {
 
         const props = [this.author, this.passage, this.keyword, this.usecase, this.place];
 
-        console.log('map props', props);
-
         if (props.some((x) => x)) {
-          console.debug('map props detected!');
           props.forEach((prop, i) => {
             if (prop && prop !== '0') {
-              console.debug('map prop', prop);
               if (i === 4) {
                 // place
                 if (JSON.stringify(urls) === JSON.stringify(blankUrls)) {
@@ -112,7 +92,6 @@ export default {
             }
           }
           if (query.Place) {
-            console.log('place detected');
             if (JSON.stringify(urls) === JSON.stringify(blankUrls)) {
               // prevents fetching every coverage if no other filters are applied
               urls = urls.map((x) => `${x}&id=0`);
@@ -126,8 +105,6 @@ export default {
             urls.push(`${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/ort/?format=json&id=0`);
         }
 
-        console.log('map urls', urls);
-
         const prefetched = this.$store.state.fetchedResults[urls.toString()];
         if (prefetched) {
           this.entries = prefetched;
@@ -137,7 +114,6 @@ export default {
             .then((res) => {
               Promise.all(res.map((x) => x.json()))
                 .then((jsonRes) => {
-                  console.log('map-data', jsonRes);
                   this.$store.commit('addToResults', { req: urls.toString(), res: jsonRes });
                   this.entries = jsonRes;
                 })

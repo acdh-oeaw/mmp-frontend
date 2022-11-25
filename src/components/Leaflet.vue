@@ -3,7 +3,7 @@
     <l-map
       ref="map"
       :style="`height: ${
-        fullscreen && $route.name !== 'Keyword Detail Fullscreen' ? '100vh' : height + 'px'
+        isFullScreen && $route.name !== 'Keyword Detail Fullscreen' ? '100vh' : height + 'px'
       }; width: 100%; z-index: 4`"
       :bounds="bounds"
       :options="{ zoomControl: false }"
@@ -26,11 +26,11 @@
           fab
           small
           :to="{
-            name: fullscreen ? 'Map' : 'Map Fullscreen',
+            name: isFullScreen ? 'Map' : 'Map Fullscreen',
             query: usecase ? addParamsToQuery({ 'Use Case': usecase }) : $route.query,
           }"
         >
-          <v-icon v-if="fullscreen">mdi-fullscreen-exit</v-icon>
+          <v-icon v-if="isFullScreen">mdi-fullscreen-exit</v-icon>
           <v-icon v-else>mdi-fullscreen</v-icon>
         </v-btn>
       </l-control>
@@ -247,7 +247,7 @@
           :lat-lng="returnLatLng(place.coords.coordinates)"
           @click="
             $router.push({
-              name: fullscreen ? 'Place Detail Fullscreen' : 'Place Detail',
+              name: isFullScreen ? 'Place Detail Fullscreen' : 'Place Detail',
               query: $route.query,
               params: { id: place.id },
             })
@@ -289,7 +289,9 @@
     <v-expansion-panels>
       <v-expansion-panel>
         <v-expansion-panel-header> Layer sources </v-expansion-panel-header>
-        <v-expansion-panel-content class="ma-2" v-html="sources"> </v-expansion-panel-content>
+        <v-expansion-panel-content class="ma-2">
+          <div v-html="sources" />
+        </v-expansion-panel-content>
       </v-expansion-panel>
     </v-expansion-panels>
   </div>
@@ -470,7 +472,7 @@ export default {
           .on({
             click: () => {
               this.$router.push({
-                name: this.fullscreen ? 'Spatial Detail Fullscreen' : 'Spatial Detail',
+                name: this.isFullScreen ? 'Spatial Detail Fullscreen' : 'Spatial Detail',
                 query: this.usecase
                   ? this.addParamsToQuery({ 'Use Case': this.usecase })
                   : this.$route.query,
@@ -554,7 +556,7 @@ export default {
             click: () => {
               // features.properties.id doesn't exist yet
               this.$router.push({
-                name: this.fullscreen ? 'Place Detail Fullscreen' : 'Place Detail',
+                name: this.isFullScreen ? 'Place Detail Fullscreen' : 'Place Detail',
                 query: this.$route.query,
                 params: { id: feature.id },
               });
@@ -576,20 +578,18 @@ export default {
           .on({
             click: () => {
               this.$router.push({
-                name: this.fullscreen ? 'Spatial Detail Fullscreen' : 'Spatial Detail',
+                name: this.isFullScreen ? 'Spatial Detail Fullscreen' : 'Spatial Detail',
                 query: this.usecase
                   ? this.addParamsToQuery({ 'Use Case': this.usecase })
                   : this.$route.query,
                 params: { id: feature.id },
               });
               // this.$refs.map.mapObject.fitBounds(L.latLngBounds(feature.geometry.polygonCoords));
-              console.log(this.spatCovToAdd);
               if (this.spatCovToAdd.options) {
                 this.disableSpatCov();
               }
               this.enableSpatCov(feature.id);
               this.spatCovToAdd.bringToFront();
-              console.log(feature.id, this.spatCovToAdd, 'test');
             },
           })
           .on({
@@ -758,7 +758,6 @@ export default {
       handler(to) {
         if (!Array.isArray(to) || to.length < 2) return;
 
-        console.log('to', to, this.data);
         this.spatial = JSON.parse(JSON.stringify(to[0]));
         this.cones = JSON.parse(JSON.stringify(to[1]));
         to[0].features.forEach((feature) => {
@@ -789,7 +788,6 @@ export default {
 
           allCoords = allCoords.filter((x) => x);
 
-          console.log('allCoords', allCoords);
           const places = {
             texts: {
               spatial: [],
@@ -804,7 +802,6 @@ export default {
             .flat(2)
             .filter((x) => x?.coords?.coordinates);
 
-          console.log('allPlaces', allPlaces);
           this.relatedPlaces = this.removeDuplicates(allPlaces, ['url']);
           const relatedCoords = this.relatedPlaces.map((x) => x.coords.coordinates);
           this.bounds = this.getBounds(allCoords.concat(relatedCoords));
@@ -913,10 +910,6 @@ export default {
           });
         }
 
-        console.log(this.$route.query['Use Case'], 'hereee');
-
-        console.log(this.$store.state, this.$route.query['Use Case'], 'study');
-
         const study = this.$route.query['Use Case'];
         if (study) {
           const url = `${
@@ -940,9 +933,6 @@ export default {
             })
             .catch((err) => {
               console.error(err);
-            })
-            .finally(() => {
-              this.loading = false;
             });
         } else {
           this.sources =
@@ -1007,15 +997,14 @@ export default {
         });
       }
       if (arr.length > 1) {
-        const popup = L.popup()
+        const _popup = L.popup()
           .setLatLng([lat, lng])
           .setContent(`Clicked here: ${lat.toFixed(2)}, ${lng.toFixed(2)}`)
           .openOn(this.$refs.map.mapObject);
-        console.log(popup);
       }
       if (arr.length > 0) {
         this.$router.push({
-          name: this.fullscreen ? 'Spatial Detail Fullscreen' : 'Spatial Detail',
+          name: this.isFullScreen ? 'Spatial Detail Fullscreen' : 'Spatial Detail',
           query: this.usecase
             ? this.addParamsToQuery({ 'Use Case': this.usecase })
             : this.$route.query,
@@ -1112,7 +1101,6 @@ export default {
       const geojsonStyle = {
         color: '#ff7800',
       };
-      console.log(spatCovLayer, 'spatCov');
       this.$refs.map.mapObject.createPane('polygonsPane');
       this.spatCovToAdd = L.geoJSON(spatCovLayer, { pane: 'polygonsPane', style: geojsonStyle });
       this.spatCovToAdd.addTo(this.$refs.map.mapObject);
@@ -1145,7 +1133,6 @@ export default {
       return filteredKingdoms;
     },
     getBounds(coordArr) {
-      console.log('getBounds', coordArr);
       if (!coordArr.length) {
         return latLngBounds([
           [34.016242, 5.488281],
@@ -1159,8 +1146,6 @@ export default {
           [coordArr[0][1] + 2, coordArr[0][0] + 2],
         ]);
       }
-
-      console.log('coords', coordArr, L);
 
       const xCords = coordArr.map((x) => x[1]);
       const yCords = coordArr.map((y) => y[0]);
@@ -1269,9 +1254,6 @@ export default {
         this.$refs.origins.mapObject.bringToFront();
       }
     },
-    // foundLocations() {
-    //   return this.entries.length && !this.entries.count && this.entries.features.length;
-    // },
   },
 };
 </script>

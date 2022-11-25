@@ -20,7 +20,7 @@
       :node-canvas-object="nodeObject"
       :node-pointer-area-paint="areaPaint"
       :node-canvas-object-mode="() => 'replace'"
-      :height="fullscreen ? undefined : '500'"
+      :height="isFullScreen ? undefined : '500'"
       :zoom-to-fit="zoomToFit"
       :link-directional-arrow-length="1.3"
       :refresh="renderKey"
@@ -120,11 +120,11 @@
     </v-speed-dial>
     <div absolute bottom left class="legend">
       <v-list dense color="transparent">
-        <v-list-item v-for="type in types" :key="type" dense style="min-height: unset">
+        <v-list-item v-for="key in types" :key="key" dense style="min-height: unset">
           <v-checkbox
-            v-model="typefilters[type]"
-            :color="keyColors.graph[type]"
-            :label="type"
+            v-model="typefilters[key]"
+            :color="keyColors.graph[key]"
+            :label="key"
             dense
             hide-details
           />
@@ -133,13 +133,13 @@
     </div>
   </v-card>
 </template>
+
 <script>
 import { forceLink } from 'd3';
 
+import FullscreenButton from '@/components/FullscreenButton.vue';
+import Visualization from '@/components/Visualization2D.vue';
 import helpers from '@/helpers';
-
-import FullscreenButton from './FullscreenButton';
-import Visualization from './Visualization2D';
 
 export default {
   name: 'NetworkGraphBeta',
@@ -175,7 +175,6 @@ export default {
     weightedGraph() {
       if (!this.graph) return null;
       const ret = JSON.parse(JSON.stringify(this.graph));
-      console.log('weightedGraph', ret);
 
       // filter types
       const blacklist = [];
@@ -184,8 +183,6 @@ export default {
         blacklist.push(node.id);
         return false;
       });
-
-      console.log('blacklist', blacklist);
 
       ret.edges = ret.edges.filter(
         (edge) => !blacklist.includes(edge.target) && !blacklist.includes(edge.source)
@@ -212,7 +209,6 @@ export default {
         ];
 
         retNode.isConnected = authorIds.length === this.selectedAuthors.length;
-        console.log('authorIds', authorIds, node.isConnected);
 
         retNode.color = this.keyColors.graph[node.keyword_type];
         return retNode;
@@ -222,7 +218,6 @@ export default {
     },
     types() {
       const ret = this.graph?.nodes?.map((x) => x.keyword_type);
-      // console.log('types', ret);
       return [...new Set(ret)]; // removes duplicates
     },
   },
@@ -247,7 +242,6 @@ export default {
             .then((res) => res.json())
             .then((authorJsonRes) => {
               const authorData = authorJsonRes.results;
-              console.log('Author Data', authorData);
               Promise.all(
                 authors.map((x) =>
                   fetch(
@@ -259,7 +253,6 @@ export default {
               ).then((res) => {
                 Promise.all(res.map((x) => x.json()))
                   .then((jsonRes) => {
-                    console.log('Author Graph Results', jsonRes);
                     let intersectedNodes = [];
                     const authorNodes = [];
                     const allEdges = [];
@@ -290,19 +283,10 @@ export default {
                         break;
                     }
                     jsonRes.forEach((json, i) => {
-                      console.log('coords pre', coords);
                       if (coords.length === i) {
                         const rad = (i / jsonRes.length) * 2 * Math.PI;
                         coords.push([Math.cos(rad), Math.sin(rad)]);
                       }
-                      console.log('authors', authorData, authors);
-
-                      console.log(
-                        'author label data',
-                        authorData[i]?.id,
-                        authors[i],
-                        authorData.filter((author) => author.id === parseInt(authors[i], 10))[0]
-                      );
 
                       authorNodes.push({
                         id: `author_${authors[i]}`,
@@ -332,7 +316,6 @@ export default {
                           [...intersectedNodes, ...json.nodes],
                           'id'
                         );
-                      console.log('intersections', intersectedNodes);
                     });
                     const allNodes = [...intersectedNodes, ...authorNodes];
                     const nodeIds = allNodes.map((x) => x.id);
@@ -342,7 +325,6 @@ export default {
                       ),
                       ['source', 'target']
                     );
-                    console.log('filters', nodeIds, allNodes, filteredEdges);
 
                     this.graph = {
                       edges: filteredEdges,
@@ -492,18 +474,15 @@ export default {
       );
     },
     nodeClick(node) {
-      console.log('node clicked', node);
-
       // const q = node.detail_view_url.replace(/\D/g, '');
 
       // code for implementing multiple selected nodes
       let q = this.$route.params.id;
       const id = node.id.replace(/[^0-9]/g, '');
-      console.log('q', q, 'id', id);
 
       if (node.keyword_type === 'Author') {
         this.$router.push({
-          name: this.fullscreen
+          name: this.isFullScreen
             ? 'Compare Authors Author Detail Fullscreen'
             : 'Compare Authors Author Detail',
           params: { id: q },
@@ -520,19 +499,18 @@ export default {
 
       if (q) {
         this.$router.push({
-          name: this.fullscreen ? 'Compare Authors Detail Fullscreen' : 'Compare Authors Detail',
+          name: this.isFullScreen ? 'Compare Authors Detail Fullscreen' : 'Compare Authors Detail',
           params: { id: q },
           query: this.usecase ? { 'Use Case': this.usecase } : this.$route.query,
         });
       } else {
         this.$router.push({
-          name: this.fullscreen ? 'Compare Authors Detail Fullscreen' : 'Compare Authors Detail',
+          name: this.isFullScreen ? 'Compare Authors Detail Fullscreen' : 'Compare Authors Detail',
           query: this.$route.query,
         });
       }
     },
-    nodeDragEnd(node, translate) {
-      console.log('nodeDrag', node, translate);
+    nodeDragEnd(node) {
       node.fx = node.x;
       node.fy = node.y;
     },
@@ -542,7 +520,6 @@ export default {
         node.fy = undefined;
       });
       this.renderKey += 1;
-      console.log('nodes unpinned', this.renderKey);
     },
     linkForces() {
       return forceLink().strength((link) => (link.source.id.includes('author') ? 0.7 : 0));
@@ -551,7 +528,7 @@ export default {
 };
 </script>
 
-<style lang="css">
+<style>
 .no-nodes {
   color: rgb(0 0 0 / 87%);
 }

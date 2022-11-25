@@ -3,7 +3,7 @@
     <v-list-item>
       <v-list-item-action>
         <router-link
-          :to="{ name: fullscreen ? 'List Fullscreen' : 'List', query: $route.query }"
+          :to="{ name: isFullScreen ? 'List Fullscreen' : 'List', query: $route.query }"
           class="text-decoration-none"
         >
           <v-icon>mdi-close</v-icon>
@@ -51,7 +51,7 @@
               v-for="(val, i) in item.value"
               :key="val.id"
               :to="{
-                name: fullscreen ? `${item.key} Detail Fullscreen` : `${item.key} Detail`,
+                name: isFullScreen ? `${item.key} Detail Fullscreen` : `${item.key} Detail`,
                 query: item.key === 'Place' ? addParamsToQuery({ Place: val.id }) : $route.query,
                 params: { id: val.id },
               }"
@@ -95,7 +95,6 @@ export default {
   watch: {
     '$route.params': {
       handler(params) {
-        console.log(params);
         this.loading = true;
         const address = `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/stelle/${
           params.id
@@ -103,14 +102,12 @@ export default {
         const prefetched = this.$store.state.fetchedResults[address];
 
         if (prefetched) {
-          console.log('prefetched', prefetched);
           this.addRes(prefetched);
           this.loading = false;
         } else {
           fetch(address)
             .then((res) => res.json())
             .then((res) => {
-              console.log(res);
               this.$store.commit('addToResults', { req: address, res });
               this.addRes(res);
             })
