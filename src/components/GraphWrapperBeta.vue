@@ -269,7 +269,7 @@ export default {
           if (filters.name && !filters.phrase) address += '&art=Eigenname';
           else if (!filters.name && filters.phrase) address += '&art=Schlagwort';
 
-          if (query.Keyword) address += `&ids=${query.Keyword.replaceAll('+', ',')}`;
+          if (query.Passage) address += `&ids=${query.Keyword.replaceAll('+', ',')}`;
 
           if (query.time) {
             const key =

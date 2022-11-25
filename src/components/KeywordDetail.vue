@@ -238,11 +238,12 @@ export default {
 
       if (!this.keywords || !this.graph) return retArr;
 
-      // const keyIds = this.keywords.map((x) => x.id);
-      const edges = this.graph.edges.map((edge) => ({
-        source: this.getIdFromUrl(edge.source),
-        target: this.getIdFromUrl(edge.target),
+      // const keyIds = this.data.keywords.map((x) => x.id);
+      const edges = this.data.nodes.edges.map((edge) => ({
+        source: this.getNumbersFromString(edge.source),
+        target: this.getNumbersFromString(edge.target),
       }));
+
       // edges = this.removeDuplicates(edges, ['source', 'target']);
 
       const targets = edges.map((edge) => edge.target);
@@ -256,7 +257,9 @@ export default {
         retArr.push({
           id: entry[0],
           label: this.removeRoot(
-            this.graph.nodes.filter((node) => this.getIdFromUrl(node.id) === entry[0])[0].label
+            this.data.nodes.nodes.filter(
+              (node) => this.getNumbersFromString(node.id) === entry[0]
+            )[0].label
           ),
           count: entry[1],
         });
@@ -280,9 +283,7 @@ export default {
     },
   },
   methods: {
-    getIdFromUrl(url) {
-      return url.replace(/\D+/, '');
-    },
+    getNumbersFromString: (string) => string.replace(/\D/g, ''),
   },
 };
 </script>
