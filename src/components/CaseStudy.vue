@@ -139,6 +139,7 @@
                         prepend-icon="mdi-format-quote-close"
                       >
                         {{ passage.display_label }}
+                        <v-icon>mdi-chevron-right</v-icon>
                       </v-list-item>
                     </v-list-group>
                   </v-list-group>
@@ -148,7 +149,13 @@
             </v-tab-item>
           </v-tabs-items>
         </template>
-        <v-skeleton-loader v-else type="text, heading, text@11" />
+        <template v-else>
+          <v-skeleton-loader type="text@3" />
+          <br />
+          <v-skeleton-loader type="heading" />
+          <br />
+          <v-skeleton-loader type="text@50" />
+        </template>
       </v-col>
     </v-row>
   </v-container>
@@ -159,7 +166,7 @@ import { computed } from 'vue';
 import { useRoute } from 'vue-router/composables';
 
 import { useCaseStudyById, useCaseStudyTimeTableById, usePassages } from '@/api';
-import Graph from '@/components/GraphWrapperBeta.vue';
+import Graph from '@/components/GraphWrapper.vue';
 import MapWrapper from '@/components/MapWrapper.vue';
 import WordCloudWrapper from '@/components/WordCloudWrapper.vue';
 import helpers from '@/helpers';
@@ -205,7 +212,6 @@ export default {
     const passages = computed(() => {
       return passageQuery.data.value;
     });
-    console.log('passages', passages);
 
     const texts = computed(() => {
       if (passages.value == null) return caseStudyQuery.data.value;

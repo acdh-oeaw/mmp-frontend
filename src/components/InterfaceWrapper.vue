@@ -111,9 +111,9 @@
                     text
                     small
                     class="view-picker"
-                    :disabled="currentView === 'Network Graph Beta'"
-                    :class="{ active: currentView === 'Network Graph Beta' }"
-                    :to="{ name: 'Network Graph Beta', query: addParamsToQuery(query) }"
+                    :disabled="currentView === 'Network Graph'"
+                    :class="{ active: currentView === 'Network Graph' }"
+                    :to="{ name: 'Network Graph', query: addParamsToQuery(query) }"
                   >
                     Network Graph
                   </v-btn>
@@ -125,9 +125,9 @@
                     </template>
                     <v-list>
                       <v-list-item
-                        :disabled="currentView === 'Network Graph Beta'"
-                        :class="{ active: currentView === 'Network Graph Beta' }"
-                        :to="{ name: 'Network Graph Beta', query: addParamsToQuery(query) }"
+                        :disabled="currentView === 'Network Graph'"
+                        :class="{ active: currentView === 'Network Graph' }"
+                        :to="{ name: 'Network Graph', query: addParamsToQuery(query) }"
                       >
                         <v-list-item-title>Graph</v-list-item-title>
                       </v-list-item>
@@ -173,7 +173,7 @@
               <v-col cols="12">
                 <v-select
                   v-model="currentView"
-                  :items="['List', 'Graph', '', 'Map', 'Word Cloud']"
+                  :items="['List', 'Network Graph', 'Compare Authors', 'Map', 'Word Cloud']"
                   label="View as"
                 />
               </v-col>
@@ -241,7 +241,7 @@
           <v-row v-else>
             <router-view />
           </v-row>
-          <v-row v-show="!['Network Graph', 'Word Cloud'].includes($route.name)">
+          <v-row v-show="!['Word Cloud'].includes($route.name)">
             <v-col>
               <component
                 :is="sliderComponent"

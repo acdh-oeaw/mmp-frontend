@@ -37,7 +37,7 @@ export default {
     getComponentFromTab(tab) {
       const components = {
         cloud: 'Word Cloud',
-        graph: 'Network Graph Beta',
+        graph: 'Network Graph',
         map: 'Map',
       };
       return components[tab];

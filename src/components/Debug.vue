@@ -99,7 +99,7 @@
 </template>
 
 <script>
-import Graph from '@/components/GraphWrapperBeta.vue';
+import Graph from '@/components/GraphWrapper.vue';
 import List from '@/components/List.vue';
 import MapWrapper from '@/components/MapWrapper.vue';
 import WordCloudWrapper from '@/components/WordCloudWrapper.vue';
