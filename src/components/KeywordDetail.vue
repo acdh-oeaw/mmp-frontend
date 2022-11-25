@@ -239,7 +239,7 @@ export default {
       if (!this.keywords || !this.graph) return retArr;
 
       // const keyIds = this.data.keywords.map((x) => x.id);
-      const edges = this.data.nodes.edges.map((edge) => ({
+      const edges = this.graph.edges.map((edge) => ({
         source: this.getNumbersFromString(edge.source),
         target: this.getNumbersFromString(edge.target),
       }));
@@ -257,9 +257,8 @@ export default {
         retArr.push({
           id: entry[0],
           label: this.removeRoot(
-            this.data.nodes.nodes.filter(
-              (node) => this.getNumbersFromString(node.id) === entry[0]
-            )[0].label
+            this.graph.nodes.filter((node) => this.getNumbersFromString(node.id) === entry[0])[0]
+              .label
           ),
           count: entry[1],
         });
