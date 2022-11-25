@@ -67,11 +67,19 @@ const options: RequestOptions = { responseType: 'json' };
 //
 
 export namespace GetAutoComplete {
-  export type SearchParams = {
-    q?: string;
-    kind?: Array<ResourceKind>;
-  };
-  export type Response = { q: string; filter_on: Array<ResourceKind> } & PaginatedResponse<{
+  export type SearchParams =
+    // note that `page_size` is set for each `kind`, so `?kind=autor&kind=keyword&page_size=10` will
+    // return 20 results. results are first sorted by `kind` (in the order they are defined in the
+    // backend config), then by the model-specific sort field.
+    PageNumberPaginationSearchParams & {
+      q?: string;
+      kind?: Array<ResourceKind>;
+    };
+  export type Response = {
+    q: string;
+    filter_on: Array<ResourceKind>;
+    page_size: number;
+  } & PaginatedResponse<{
     id: number;
     kind: ResourceKind;
     app_name: string;
