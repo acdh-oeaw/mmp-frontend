@@ -165,7 +165,6 @@ export default {
     weightedGraph() {
       if (!this.graph) return null;
       const ret = { ...this.graph };
-
       const blacklist = [];
 
       // filter by connection to selected keyword
@@ -437,13 +436,13 @@ export default {
 
       if (q) {
         this.$router.push({
-          name: this.isFullScreen ? 'Keyword Detail Beta Fullscreen' : 'Keyword Detail Beta',
+          name: this.isFullScreen ? 'Keyword Detail Fullscreen' : 'Keyword Detail',
           params: { id: q },
           query: this.usecase ? { 'Use Case': this.usecase } : this.$route.query,
         });
       } else {
         this.$router.push({
-          name: this.isFullScreen ? 'Network Graph Beta Fullscreen' : 'Network Graph Beta',
+          name: this.isFullScreen ? 'Network Graph Fullscreen' : 'Network Graph',
           query: this.$route.query,
         });
       }

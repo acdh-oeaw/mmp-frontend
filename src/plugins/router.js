@@ -7,7 +7,7 @@ import CaseStudy from '@/components/CaseStudy.vue';
 import CompareAuthors from '@/components/CompareAuthors.vue';
 import Debug from '@/components/Debug.vue';
 import FullscreenView from '@/components/FullscreenView.vue';
-import GraphBeta from '@/components/GraphWrapperBeta.vue';
+import Graph from '@/components/GraphWrapper.vue';
 import Home from '@/components/Home.vue';
 import Interface from '@/components/InterfaceWrapper.vue';
 import KeywordDetail from '@/components/KeywordDetail.vue';
@@ -66,12 +66,12 @@ const routes = [
       },
       {
         path: 'graph',
-        name: 'Network Graph Beta',
-        component: GraphBeta,
+        name: 'Network Graph',
+        component: Graph,
         children: [
           {
             path: 'detail/:id',
-            name: 'Keyword Detail Beta',
+            name: 'Keyword Detail',
             component: KeywordDetail,
           },
         ],
@@ -146,12 +146,12 @@ const routes = [
       },
       {
         path: 'graph',
-        name: 'Network Graph Beta Fullscreen',
-        component: GraphBeta,
+        name: 'Network Graph Fullscreen',
+        component: Graph,
         children: [
           {
             path: 'detail/:id',
-            name: 'Keyword Detail Beta Fullscreen',
+            name: 'Keyword Detail Fullscreen',
             component: KeywordDetail,
           },
         ],

@@ -116,7 +116,7 @@
                   block
                   class="detail-button"
                   :to="{
-                    name: isFullScreen ? 'Keyword Detail Beta Fullscreen' : 'Keyword Detail Beta',
+                    name: isFullScreen ? 'Keyword Detail Fullscreen' : 'Keyword Detail',
                     params: { id: $route.params.id },
                     query: addParamsToQuery({ Keyword: $route.params.id }),
                   }"
@@ -277,8 +277,8 @@ export default {
         if (this.isFullScreen) return 'Compare Authors Fullscreen';
         return 'Compare Authors';
       }
-      if (this.isFullScreen) return 'Network Graph Beta Fullscreen';
-      return 'Network Graph Beta';
+      if (this.isFullScreen) return 'Network Graph Fullscreen';
+      return 'Network Graph';
     },
   },
   methods: {
