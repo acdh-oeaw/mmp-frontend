@@ -1,3 +1,47 @@
+<script lang="ts" setup>
+import { computed } from 'vue';
+import { useRoute } from 'vue-router/composables';
+
+import { useAuthors, usePlaceById, useTexts } from '@/api';
+import PlaceMap from '@/components/PlaceMap.vue';
+import { getAuthorLabel, getPlaceLabel } from '@/lib/get-label';
+import { useSearchFilters } from '@/lib/search/use-search-filters';
+import { useDrawerWidth } from '@/lib/use-drawer-width';
+import { useFullScreen } from '@/lib/use-full-screen';
+
+const route = useRoute();
+const id = computed(() => Number(route.params.id));
+const { searchFilters, createSearchFilterParams } = useSearchFilters();
+
+const placeQuery = usePlaceById({ id });
+const textsQuery = useTexts(
+  computed(() => ({
+    ort: [id.value],
+    has_usecase: searchFilters.value['dataset'] === 'case-studies',
+  }))
+);
+const authorsQuery = useAuthors(
+  computed(() => ({
+    ort: [id.value],
+    has_usecase: searchFilters.value['dataset'] === 'case-studies',
+  }))
+);
+
+const isLoading = computed(() => {
+  return [placeQuery, textsQuery, authorsQuery].some((query) => query.isInitialLoading.value);
+});
+
+const place = computed(() => placeQuery.data.value);
+const texts = computed(() => textsQuery.data.value?.results ?? []);
+const authors = computed(() => authorsQuery.data.value?.results ?? []);
+
+const textCount = computed(() => textsQuery.data.value?.count);
+const authorCount = computed(() => authorsQuery.data.value?.count);
+
+const drawerWidth = useDrawerWidth();
+const isFullScreen = useFullScreen();
+</script>
+
 <template>
   <v-navigation-drawer permanent fixed right color="#F1F5FA" :width="drawerWidth">
     <v-list-item>
@@ -12,19 +56,19 @@
       <v-list-item-content>
         <template v-if="!isLoading">
           <v-list-item-title class="text-h5">
-            {{ getOptimalName(place) }}
+            {{ getPlaceLabel(place) }}
           </v-list-item-title>
-          <v-list-item-subtitle v-if="place.name_antik">
+          <v-list-item-subtitle v-if="place?.name_antik">
             {{ place.name_antik }}
           </v-list-item-subtitle>
-          <v-list-item-subtitle> {{ place.lat }}, {{ place.long }} </v-list-item-subtitle>
+          <v-list-item-subtitle> {{ place?.lat }}, {{ place?.long }} </v-list-item-subtitle>
         </template>
         <v-skeleton-loader v-else type="heading, text@2" />
       </v-list-item-content>
     </v-list-item>
     <v-divider />
     <v-container>
-      <div :style="{ height: '400px' }">
+      <div v-if="place?.lat != null && place?.long != null" :style="{ height: '400px' }">
         <place-map :point="{ lat: place.lat, lng: place.long }" />
       </div>
     </v-container>
@@ -46,12 +90,12 @@
               :key="author.id"
               :to="{
                 name: isFullScreen ? 'Author Detail Fullscreen' : 'Author Detail',
-                query: addParamsToQuery({ Author: author.id }),
+                query: createSearchFilterParams({ ...searchFilters, author: [author.id] }),
                 params: { id: author.id },
               }"
             >
               <v-list-item-content>
-                <v-list-item-title>{{ getOptimalName(author) }}</v-list-item-title>
+                <v-list-item-title>{{ getAuthorLabel(author) }}</v-list-item-title>
                 <v-list-item-subtitle v-if="author.kommentar">
                   {{ author.kommentar }}
                 </v-list-item-subtitle>
@@ -78,7 +122,7 @@
               <v-list-item-content>
                 <v-list-item-title>{{ text.title }}</v-list-item-title>
                 <v-list-item-subtitle>
-                  {{ text.autor.map((x) => getOptimalName(x)).join(', ') }}
+                  {{ text.autor.map((x) => getAuthorLabel(x)).join(', ') }}
                 </v-list-item-subtitle>
                 <v-list-item-subtitle>{{ text.jahrhundert }}</v-list-item-subtitle>
               </v-list-item-content>
@@ -90,58 +134,3 @@
     </v-container>
   </v-navigation-drawer>
 </template>
-
-<script>
-import { computed } from 'vue';
-import { useRoute } from 'vue-router/composables';
-
-import { useAuthors, usePlaceById, useTexts } from '@/api';
-import PlaceMap from '@/components/PlaceMap.vue';
-import helpers from '@/helpers';
-import { useSearchFilters } from '@/lib/search/use-search-filters';
-
-export default {
-  name: 'PlaceDetail',
-  components: { PlaceMap },
-  mixins: [helpers],
-  setup() {
-    const route = useRoute();
-    const id = computed(() => Number(route.params.id));
-    const { searchFilters } = useSearchFilters();
-
-    const placeQuery = usePlaceById({ id });
-    const textsQuery = useTexts(
-      computed(() => ({
-        ort: id.value,
-        has_usecase: searchFilters.value['dataset'] === 'case-studies',
-      }))
-    );
-    const authorsQuery = useAuthors(
-      computed(() => ({
-        ort: id.value,
-        has_usecase: searchFilters.value['dataset'] === 'case-studies',
-      }))
-    );
-
-    const isLoading = computed(() => {
-      return [placeQuery, textsQuery, authorsQuery].some((query) => query.isInitialLoading.value);
-    });
-
-    const place = computed(() => placeQuery.data.value);
-    const texts = computed(() => textsQuery.data.value?.results ?? []);
-    const authors = computed(() => authorsQuery.data.value?.results ?? []);
-
-    const textCount = computed(() => textsQuery.data.value?.count);
-    const authorCount = computed(() => authorsQuery.data.value?.count);
-
-    return {
-      isLoading,
-      place,
-      texts,
-      authors,
-      textCount,
-      authorCount,
-    };
-  },
-};
-</script>

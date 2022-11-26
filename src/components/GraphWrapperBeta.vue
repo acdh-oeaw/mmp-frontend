@@ -1,134 +1,4 @@
-<template>
-  <!-- the only way to make this overlay behave the way i want it to is to use a v-card here -->
-  <v-card color="transparent" width="100%" height="100%">
-    <v-overlay absolute class="overlay" opacity=".2" :value="!nodeCount || loading">
-      <h1 v-if="!loading" class="no-nodes">No nodes found!</h1>
-      <h1 v-else class="no-nodes">
-        <v-progress-circular indeterminate color="#0F1226" />
-      </h1>
-    </v-overlay>
-    <visualization
-      id="visId"
-      :graph="weightedGraph"
-      :on-node-click="nodeClick"
-      :on-node-drag-end="nodeDragEnd"
-      :node-canvas-object="nodeObject"
-      :node-pointer-area-paint="areaPaint"
-      :node-canvas-object-mode="() => 'replace'"
-      :height="isFullScreen ? undefined : '500'"
-      :zoom-to-fit="zoomToFit"
-      :link-directional-particles="1"
-      :link-directional-particle-width="1.7"
-      :refresh="renderKey"
-      :auto-pause-redraw="false"
-      :node-rel-size="4"
-    />
-    <router-view />
-    <v-speed-dial
-      v-model="fab.download"
-      absolute
-      top
-      right
-      direction="bottom"
-      transition="slide-y-transition"
-    >
-      <template #activator>
-        <v-btn v-model="fab.download" icon small>
-          <v-icon v-if="fab.download"> mdi-close </v-icon>
-          <v-icon v-else> mdi-tray-arrow-down </v-icon>
-        </v-btn>
-      </template>
-      <v-tooltip left transition="slide-x-reverse-transition">
-        <template #activator="{ on, attrs }">
-          <v-btn fab small v-bind="attrs" @click="getCanvasData" v-on="on">
-            <v-icon>mdi-image-outline</v-icon>
-          </v-btn>
-        </template>
-        <span>Download canvas as .png</span>
-      </v-tooltip>
-      <v-tooltip left transition="slide-x-reverse-transition">
-        <template #activator="{ on, attrs }">
-          <v-btn fab small v-bind="attrs" @click="getJsonData" v-on="on">
-            <v-icon>mdi-code-json</v-icon>
-          </v-btn>
-        </template>
-        <span>Download node data as .json</span>
-      </v-tooltip>
-      <v-tooltip left transition="slide-x-reverse-transition">
-        <template #activator="{ on, attrs }">
-          <v-btn fab small v-bind="attrs" @click="getTextData" v-on="on">
-            <v-icon>mdi-text-box-outline</v-icon>
-          </v-btn>
-        </template>
-        <span>Download node data as .txt</span>
-      </v-tooltip>
-      <v-tooltip left transition="slide-x-reverse-transition">
-        <template #activator="{ on, attrs }">
-          <v-btn fab small v-bind="attrs" @click="getCsvData" v-on="on">
-            <v-icon>mdi-file-delimited-outline</v-icon>
-          </v-btn>
-        </template>
-        <span>Download node data as .csv</span>
-      </v-tooltip>
-    </v-speed-dial>
-    <fullscreen-button :usecase="usecase" />
-    <v-speed-dial
-      v-model="fab.control"
-      absolute
-      top
-      left
-      direction="bottom"
-      transition="slide-y-transition"
-    >
-      <template #activator>
-        <v-btn v-model="fab.control" icon small>
-          <v-icon v-if="fab.control"> mdi-close </v-icon>
-          <v-icon v-else> mdi-dots-vertical </v-icon>
-        </v-btn>
-      </template>
-      <v-tooltip right transition="slide-x-transition">
-        <template #activator="{ on, attrs }">
-          <v-btn fab small v-bind="attrs" @click.stop="paused = !paused" v-on="on">
-            <v-icon v-if="!paused">mdi-pause</v-icon>
-            <v-icon v-else>mdi-play</v-icon>
-          </v-btn>
-        </template>
-        <span>{{ paused ? 'Unp' : 'P' /* hehehehe*/ }}ause Simulation</span>
-      </v-tooltip>
-      <v-tooltip right transition="slide-x-transition">
-        <template #activator="{ on, attrs }">
-          <v-btn fab small v-bind="attrs" @click.stop="zoomToFit = !zoomToFit" v-on="on">
-            <v-icon>mdi-fit-to-screen-outline</v-icon>
-          </v-btn>
-        </template>
-        <span>Fit Nodes to Screen</span>
-      </v-tooltip>
-      <v-tooltip right transition="slide-x-transition">
-        <template #activator="{ on, attrs }">
-          <v-btn fab small v-bind="attrs" @click.stop="refresh" v-on="on">
-            <v-icon>mdi-pin-off</v-icon>
-          </v-btn>
-        </template>
-        <span>Unpin all nodes</span>
-      </v-tooltip>
-    </v-speed-dial>
-    <div absolute bottom left class="legend">
-      <v-list dense color="transparent">
-        <v-list-item v-for="key in types" :key="key" dense style="min-height: unset">
-          <v-checkbox
-            v-model="typefilters[key]"
-            :color="keyColors.graph[key]"
-            :label="key"
-            dense
-            hide-details
-          />
-        </v-list-item>
-      </v-list>
-    </div>
-  </v-card>
-</template>
-
-<script>
+<script lang="ts">
 import FullscreenButton from '@/components/FullscreenButton.vue';
 import Visualization from '@/components/Visualization2D.vue';
 import helpers from '@/helpers';
@@ -462,6 +332,136 @@ export default {
   },
 };
 </script>
+
+<template>
+  <!-- the only way to make this overlay behave the way i want it to is to use a v-card here -->
+  <v-card color="transparent" width="100%" height="100%">
+    <v-overlay absolute class="overlay" opacity=".2" :value="!nodeCount || loading">
+      <h1 v-if="!loading" class="no-nodes">No nodes found!</h1>
+      <h1 v-else class="no-nodes">
+        <v-progress-circular indeterminate color="#0F1226" />
+      </h1>
+    </v-overlay>
+    <visualization
+      id="visId"
+      :graph="weightedGraph"
+      :on-node-click="nodeClick"
+      :on-node-drag-end="nodeDragEnd"
+      :node-canvas-object="nodeObject"
+      :node-pointer-area-paint="areaPaint"
+      :node-canvas-object-mode="() => 'replace'"
+      :height="isFullScreen ? undefined : '500'"
+      :zoom-to-fit="zoomToFit"
+      :link-directional-particles="1"
+      :link-directional-particle-width="1.7"
+      :refresh="renderKey"
+      :auto-pause-redraw="false"
+      :node-rel-size="4"
+    />
+    <router-view />
+    <v-speed-dial
+      v-model="fab.download"
+      absolute
+      top
+      right
+      direction="bottom"
+      transition="slide-y-transition"
+    >
+      <template #activator>
+        <v-btn v-model="fab.download" icon small>
+          <v-icon v-if="fab.download"> mdi-close </v-icon>
+          <v-icon v-else> mdi-tray-arrow-down </v-icon>
+        </v-btn>
+      </template>
+      <v-tooltip left transition="slide-x-reverse-transition">
+        <template #activator="{ on, attrs }">
+          <v-btn fab small v-bind="attrs" @click="getCanvasData" v-on="on">
+            <v-icon>mdi-image-outline</v-icon>
+          </v-btn>
+        </template>
+        <span>Download canvas as .png</span>
+      </v-tooltip>
+      <v-tooltip left transition="slide-x-reverse-transition">
+        <template #activator="{ on, attrs }">
+          <v-btn fab small v-bind="attrs" @click="getJsonData" v-on="on">
+            <v-icon>mdi-code-json</v-icon>
+          </v-btn>
+        </template>
+        <span>Download node data as .json</span>
+      </v-tooltip>
+      <v-tooltip left transition="slide-x-reverse-transition">
+        <template #activator="{ on, attrs }">
+          <v-btn fab small v-bind="attrs" @click="getTextData" v-on="on">
+            <v-icon>mdi-text-box-outline</v-icon>
+          </v-btn>
+        </template>
+        <span>Download node data as .txt</span>
+      </v-tooltip>
+      <v-tooltip left transition="slide-x-reverse-transition">
+        <template #activator="{ on, attrs }">
+          <v-btn fab small v-bind="attrs" @click="getCsvData" v-on="on">
+            <v-icon>mdi-file-delimited-outline</v-icon>
+          </v-btn>
+        </template>
+        <span>Download node data as .csv</span>
+      </v-tooltip>
+    </v-speed-dial>
+    <fullscreen-button :usecase="usecase" />
+    <v-speed-dial
+      v-model="fab.control"
+      absolute
+      top
+      left
+      direction="bottom"
+      transition="slide-y-transition"
+    >
+      <template #activator>
+        <v-btn v-model="fab.control" icon small>
+          <v-icon v-if="fab.control"> mdi-close </v-icon>
+          <v-icon v-else> mdi-dots-vertical </v-icon>
+        </v-btn>
+      </template>
+      <v-tooltip right transition="slide-x-transition">
+        <template #activator="{ on, attrs }">
+          <v-btn fab small v-bind="attrs" @click.stop="paused = !paused" v-on="on">
+            <v-icon v-if="!paused">mdi-pause</v-icon>
+            <v-icon v-else>mdi-play</v-icon>
+          </v-btn>
+        </template>
+        <span>{{ paused ? 'Unp' : 'P' /* hehehehe*/ }}ause Simulation</span>
+      </v-tooltip>
+      <v-tooltip right transition="slide-x-transition">
+        <template #activator="{ on, attrs }">
+          <v-btn fab small v-bind="attrs" @click.stop="zoomToFit = !zoomToFit" v-on="on">
+            <v-icon>mdi-fit-to-screen-outline</v-icon>
+          </v-btn>
+        </template>
+        <span>Fit Nodes to Screen</span>
+      </v-tooltip>
+      <v-tooltip right transition="slide-x-transition">
+        <template #activator="{ on, attrs }">
+          <v-btn fab small v-bind="attrs" @click.stop="refresh" v-on="on">
+            <v-icon>mdi-pin-off</v-icon>
+          </v-btn>
+        </template>
+        <span>Unpin all nodes</span>
+      </v-tooltip>
+    </v-speed-dial>
+    <div absolute bottom left class="legend">
+      <v-list dense color="transparent">
+        <v-list-item v-for="key in types" :key="key" dense style="min-height: unset">
+          <v-checkbox
+            v-model="typefilters[key]"
+            :color="keyColors.graph[key]"
+            :label="key"
+            dense
+            hide-details
+          />
+        </v-list-item>
+      </v-list>
+    </div>
+  </v-card>
+</template>
 
 <style>
 .no-nodes {

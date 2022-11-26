@@ -1,3 +1,145 @@
+<script lang="ts" setup>
+import { computed, ref } from 'vue';
+import { useRoute } from 'vue-router/composables';
+
+import {
+  useKeywordByCenturyById,
+  useKeywordById,
+  useKeywordGraph,
+  usePassages,
+  useSpatialCoveragesGeojson,
+} from '@/api';
+import KeywordListItem from '@/components/KeywordListItem.vue';
+import KeywordOverTime from '@/components/KeywordOverTime.vue';
+import Leaflet from '@/components/Leaflet.vue';
+import { useSearchFilters } from '@/lib/search/use-search-filters';
+import { truncate } from '@/lib/truncate';
+import { useDrawerWidth } from '@/lib/use-drawer-width';
+import { useFullScreen } from '@/lib/use-full-screen';
+
+const route = useRoute();
+const { searchFilters, createSearchFilterParams } = useSearchFilters();
+// FIXME: does this really accept multiple ids? when clicking a node on the network graph it does, but this looks accidental?
+const id = computed(() =>
+  route.params.id?.includes('+')
+    ? route.params.id.split('+').map(Number)[0]!
+    : Number(route.params.id)
+);
+
+const keywordQuery = useKeywordById({ id });
+const keywordByCenturyQuery = useKeywordByCenturyById({ id });
+const keywordGraphQuery = useKeywordGraph({ id });
+const passagesQuery = usePassages(
+  computed(() => ({
+    [searchFilters.value['query-mode'] === 'intersection' ? 'key_word_and' : 'key_word']: id.value,
+  }))
+);
+const spatialCoveragesQuery = useSpatialCoveragesGeojson(
+  computed(() => ({
+    // FIXME: should this respect apiParams.intersect?
+    key_word: [id.value],
+  }))
+);
+
+// TODO: granular loading states?
+const isLoading = computed(() => {
+  return [
+    keywordQuery,
+    keywordByCenturyQuery,
+    keywordGraphQuery,
+    passagesQuery,
+    spatialCoveragesQuery,
+  ].some((query) => {
+    return query.isInitialLoading.value;
+  });
+});
+
+const keyword = computed(() => keywordQuery.data.value);
+const keywordByCentury = computed(() => keywordByCenturyQuery.data.value);
+const keywordGraph = computed(() => keywordGraphQuery.data.value);
+const passages = computed(() => passagesQuery.data.value?.results ?? []);
+const spatialCoverages = computed(() => spatialCoveragesQuery.data.value?.features ?? []);
+
+// FIXME: only temporary, unclear if intentional
+const keywords = computed(() => {
+  if (keyword.value == null) return [];
+  return [keyword.value];
+});
+
+const keywordsByCentury = computed(() => {
+  if (keywordByCentury.value == null) return [];
+  return [keywordByCentury.value];
+});
+
+const geography = computed(() => {
+  return [{ features: spatialCoverages.value }, { features: [] }];
+});
+
+const passageCount = computed(() => passagesQuery.data.value?.count);
+
+const tab = ref(null);
+
+const connections = computed(() => {
+  const connections: Array<any> = [];
+
+  if (!keywords.value || !keywordGraph.value) return connections;
+
+  // const keyIds = this.data.keywords.map((x) => x.id);
+  const edges = keywordGraph.value.edges.map((edge) => ({
+    source: getNumbersFromString(edge.source),
+    target: getNumbersFromString(edge.target),
+  }));
+
+  // edges = this.removeDuplicates(edges, ['source', 'target']);
+
+  const targets = edges.map((edge) => edge.target);
+
+  const count = {};
+
+  targets.forEach((target) => {
+    count[target] = count[target] ? count[target] + 1 : 1;
+  });
+
+  function removeRoot(label: string | undefined) {
+    return label?.split(/, (\[|<)/)[0];
+  }
+
+  Object.entries(count).forEach((entry) => {
+    connections.push({
+      id: entry[0],
+      label: removeRoot(
+        keywordGraph.value?.nodes.find((node) => getNumbersFromString(node.id) === entry[0])?.label
+      ),
+      count: entry[1],
+    });
+  });
+
+  // priorise connections with keyword in query
+  // return retArr.sort((a) => (this.$route.query?.Keyword.split('+').includes(a.id) ? -1 : 1));
+
+  // sort by connection count
+  return connections.sort((a, b) => b.count - a.count);
+});
+
+const xPressLinkName = computed(() => {
+  if (route.name?.includes('compare')) {
+    if (isFullScreen) return 'Compare Authors Fullscreen';
+    return 'Compare Authors';
+  }
+
+  if (isFullScreen) return 'Network Graph Beta Fullscreen';
+
+  return 'Network Graph Beta';
+});
+
+function getNumbersFromString(value: string) {
+  return value.replace(/\D/g, '');
+}
+
+const isFullScreen = useFullScreen();
+const drawerWidth = useDrawerWidth();
+</script>
+
 <template>
   <v-navigation-drawer permanent fixed right color="#f1f5fa" :width="drawerWidth">
     <v-list-item>
@@ -16,7 +158,7 @@
             <router-link
               :to="{
                 name: isFullScreen ? 'List Fullscreen' : 'List',
-                query: addParamsToQuery({ Keyword: $route.params.id }),
+                query: createSearchFilterParams({ ...searchFilters, keyword: [id] }),
               }"
             >
               <span v-if="passageCount">
@@ -27,7 +169,7 @@
             <router-link
               :to="{
                 params: { id: $route.params.id },
-                query: addParamsToQuery({ Keyword: $route.params.id }),
+                query: createSearchFilterParams({ ...searchFilters, keyword: [id] }),
               }"
             >
               show all connections<v-icon small>mdi-link</v-icon>
@@ -47,7 +189,7 @@
           </v-tabs>
           <v-tabs-items v-model="tab" background-color="transparent">
             <v-tab-item key="Over Time">
-              <keyword-over-time v-if="!isLoading" :data="overtime" />
+              <keyword-over-time v-if="!isLoading" :data="keywordsByCentury" />
               <v-skeleton-loader v-else type="image@2" />
             </v-tab-item>
             <v-tab-item key="Geography">
@@ -94,13 +236,14 @@
                   class="detail-button"
                   :to="{
                     name: isFullScreen ? 'List Fullscreen' : 'List',
-                    query: addParamsToQuery({
-                      Keyword: keywords.map((x) => x.id).join('+'),
+                    query: createSearchFilterParams({
+                      ...searchFilters,
+                      keyword: keywords.map((x) => x.id),
                     }),
                   }"
                 >
                   {{
-                    shorten(
+                    truncate(
                       `Show all Passages for ${keywords.map((x) => x.stichwort).join(', ')}`,
                       40
                     )
@@ -118,7 +261,7 @@
                   :to="{
                     name: isFullScreen ? 'Keyword Detail Beta Fullscreen' : 'Keyword Detail Beta',
                     params: { id: $route.params.id },
-                    query: addParamsToQuery({ Keyword: $route.params.id }),
+                    query: createSearchFilterParams({ ...searchFilters, keyword: [id] }),
                   }"
                 >
                   Show all Connections in Graph
@@ -132,160 +275,6 @@
     </v-container>
   </v-navigation-drawer>
 </template>
-
-<script>
-import { computed } from 'vue';
-import { useRoute } from 'vue-router/composables';
-
-import {
-  useKeywordByCenturyById,
-  useKeywordById,
-  useKeywordGraph,
-  usePassages,
-  useSpatialCoveragesGeojson,
-} from '@/api';
-import helpers from '@/helpers';
-import { useStore } from '@/lib/use-store';
-
-import KeywordListItem from './KeywordListItem.vue';
-import KeywordOverTime from './KeywordOverTime.vue';
-import Leaflet from './Leaflet.vue';
-
-export default {
-  name: 'KeywordDetail',
-  components: {
-    KeywordListItem,
-    KeywordOverTime,
-    Leaflet,
-  },
-  mixins: [helpers],
-  setup() {
-    const route = useRoute();
-    const store = useStore();
-    // FIXME: does this really accept multiple ids? when clicking a node on the network graph it does, but this looks accidental?
-    const id = computed(() =>
-      route.params.id.includes('+')
-        ? route.params.id.split('+').map(Number)[0]
-        : Number(route.params.id)
-    );
-
-    const keywordQuery = useKeywordById({ id });
-    const keywordByCenturyQuery = useKeywordByCenturyById({ id });
-    const keywordGraphQuery = useKeywordGraph({ id });
-    const passagesQuery = usePassages(
-      computed(() => ({
-        [store.state.apiParams.intersect ? 'key_word_and' : 'key_word']: id.value,
-      }))
-    );
-    const spatialCoveragesQuery = useSpatialCoveragesGeojson(
-      computed(() => ({
-        // FIXME: should this respect apiParams.intersect?
-        key_word: id.value,
-      }))
-    );
-
-    // TODO: granular loading states
-    const isLoading = computed(() => {
-      return [
-        keywordQuery,
-        keywordByCenturyQuery,
-        keywordGraphQuery,
-        passagesQuery,
-        spatialCoveragesQuery,
-      ].some((query) => {
-        return query.isInitialLoading.value;
-      });
-    });
-
-    const keyword = computed(() => keywordQuery.data.value);
-    const keywordByCentury = computed(() => keywordByCenturyQuery.data.value);
-    const keywordGraph = computed(() => keywordGraphQuery.data.value);
-    const passages = computed(() => passagesQuery.data.value?.results ?? []);
-    const spatialCoverages = computed(() => spatialCoveragesQuery.data.value?.features ?? []);
-
-    // FIXME: only temporary, unclear if intentional
-    const keywords = computed(() => {
-      if (keyword.value == null) return [];
-      return [keyword.value];
-    });
-    const keywordsByCentury = computed(() => {
-      if (keywordByCentury.value == null) return [];
-      return [keywordByCentury.value];
-    });
-
-    const geography = computed(() => {
-      return [{ features: spatialCoverages.value }, { features: [] }];
-    });
-
-    return {
-      isLoading,
-
-      keywords,
-      overtime: keywordsByCentury,
-
-      graph: keywordGraph,
-      passages,
-      passageCount: passagesQuery.data.value?.count,
-      geography,
-    };
-  },
-  data: () => ({
-    tab: null,
-  }),
-  computed: {
-    connections() {
-      const retArr = [];
-
-      if (!this.keywords || !this.graph) return retArr;
-
-      // const keyIds = this.data.keywords.map((x) => x.id);
-      const edges = this.graph.edges.map((edge) => ({
-        source: this.getNumbersFromString(edge.source),
-        target: this.getNumbersFromString(edge.target),
-      }));
-
-      // edges = this.removeDuplicates(edges, ['source', 'target']);
-
-      const targets = edges.map((edge) => edge.target);
-      const count = {};
-
-      targets.forEach((target) => {
-        count[target] = count[target] ? count[target] + 1 : 1;
-      });
-
-      Object.entries(count).forEach((entry) => {
-        retArr.push({
-          id: entry[0],
-          label: this.removeRoot(
-            this.graph.nodes.filter((node) => this.getNumbersFromString(node.id) === entry[0])[0]
-              .label
-          ),
-          count: entry[1],
-        });
-      });
-
-      // priorise connections with keyword in query
-      // return retArr.sort((a) => (this.$route.query?.Keyword.split('+').includes(a.id) ? -1 : 1));
-
-      // sort by connection count
-      return retArr.sort((a, b) => b.count - a.count);
-
-      // return retArr;
-    },
-    xPressLinkName() {
-      if (this.$route.name.includes('compare')) {
-        if (this.isFullScreen) return 'Compare Authors Fullscreen';
-        return 'Compare Authors';
-      }
-      if (this.isFullScreen) return 'Network Graph Beta Fullscreen';
-      return 'Network Graph Beta';
-    },
-  },
-  methods: {
-    getNumbersFromString: (string) => string.replace(/\D/g, ''),
-  },
-};
-</script>
 
 <style>
 button.v-expansion-panel-header {

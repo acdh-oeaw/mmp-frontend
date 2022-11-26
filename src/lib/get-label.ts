@@ -1,4 +1,5 @@
 import type { Author, Place } from '@/api';
+import { isNotNullable } from '@/lib/is-not-nullable';
 
 export function getAuthorLabel(
   value:
@@ -29,4 +30,16 @@ export function getPlaceLabel(
     value.name_it ||
     value.name_gr
   );
+}
+
+export function getDateRangeLabel(
+  start: number | null | undefined,
+  end: number | null | undefined
+) {
+  return [start, end]
+    .filter(isNotNullable)
+    .map((value) => {
+      return value < 0 ? `${value} BC` : `${value} AD`;
+    })
+    .join(' - ');
 }

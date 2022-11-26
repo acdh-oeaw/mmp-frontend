@@ -1,3 +1,26 @@
+<script lang="ts" setup>
+import { ref } from 'vue';
+
+import Graph from '@/components/GraphWrapperBeta.vue';
+import List from '@/components/List.vue';
+import MapWrapper from '@/components/MapWrapper.vue';
+import WordCloudWrapper from '@/components/WordCloudWrapper.vue';
+
+const passage = ref(0);
+const place = ref(0);
+const keyword = ref(0);
+const usecase = ref(5);
+const author = ref(0);
+const show = ref({
+  map: false,
+  cloud: false,
+  list: false,
+  graph: true,
+});
+
+const renderKey = ref(0);
+</script>
+
 <template>
   <v-container>
     <v-row>
@@ -97,34 +120,3 @@
     </v-row>
   </v-container>
 </template>
-
-<script>
-import Graph from '@/components/GraphWrapperBeta.vue';
-import List from '@/components/List.vue';
-import MapWrapper from '@/components/MapWrapper.vue';
-import WordCloudWrapper from '@/components/WordCloudWrapper.vue';
-
-export default {
-  name: 'Debug',
-  components: {
-    WordCloudWrapper,
-    List,
-    Graph,
-    MapWrapper,
-  },
-  data: () => ({
-    passage: 0,
-    place: 0,
-    keyword: 0,
-    usecase: 5,
-    author: 0,
-    show: {
-      map: false,
-      cloud: false,
-      list: false,
-      graph: true,
-    },
-    renderKey: 0,
-  }),
-};
-</script>

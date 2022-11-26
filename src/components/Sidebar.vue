@@ -35,12 +35,3 @@
     </v-list>
   </v-navigation-drawer>
 </template>
-
-<script>
-import helpers from '@/helpers';
-
-export default {
-  name: 'Sidebar',
-  mixins: [helpers],
-};
-</script>

@@ -1,19 +1,154 @@
+<script lang="ts" setup>
+import { computed, ref } from 'vue';
+
+import { type Author, type Keyword, type KeywordType, usePassages } from '@/api';
+import FullscreenButton from '@/components/FullscreenButton.vue';
+import { getAuthorLabel, getDateRangeLabel } from '@/lib/get-label';
+import { isNonEmptyArray } from '@/lib/is-nonempty-array';
+import { isNotNullable } from '@/lib/is-not-nullable';
+import { keywordColors } from '@/lib/search/search.config';
+import { useSearchFilters } from '@/lib/search/use-search-filters';
+import { useFullScreen } from '@/lib/use-full-screen';
+import { useStore } from '@/lib/use-store';
+
+const props = defineProps<{
+  author?: any;
+  passage?: any;
+  keyword?: any;
+  usecase?: any;
+  place?: any;
+}>();
+
+const { searchFilters } = useSearchFilters();
+const store = useStore();
+
+const headers = [
+  { text: 'Author', value: 'text.autor', width: '150px' },
+  { text: 'Title', value: 'text.title' },
+  { text: 'Label', value: 'display_label' },
+  { text: 'Keywords', value: 'keywords' },
+  { text: 'Time Frame', value: 'written', width: '100px' },
+  { text: 'Coverage', value: 'coverage', width: '100px' },
+];
+
+const limit = ref(10);
+const offset = ref(0);
+
+const renderKey = ref(0);
+
+function addKeywordToInput(obj: Keyword) {
+  // TODO: should this use setSearchFilters instead? i.e. trigger a query vs. just adding to autocomplete selection
+  store.commit('addAutoCompleteSelectedValues', {
+    id: obj.id,
+    label: obj.stichwort,
+    kind: 'keyword',
+  });
+}
+
+function addAuthorToInput(obj: Author) {
+  // TODO: should this use setSearchFilters instead? i.e. trigger a query vs. just adding to autocomplete selection
+  store.commit('addAutoCompleteSelectedValues', {
+    id: obj.id,
+    label: obj.name,
+    kind: 'author',
+  });
+}
+
+const passagesQuery = usePassages(
+  computed(() => {
+    // FIXME:
+    if (Object.values(props).some(isNotNullable)) {
+      return {
+        ids: props.passage?.toString().split('+').join(','),
+        text__autor: props.author,
+        key_word: props.keyword,
+        use_case: props.usecase,
+        text__ort: props.place,
+        limit: limit.value,
+        offset: offset.value,
+      };
+    }
+
+    function getDateFilters() {
+      const [start, end] = Array.isArray(searchFilters.value['date-range'])
+        ? searchFilters.value['date-range']
+        : [searchFilters.value['date-range'] - 5, searchFilters.value['date-range'] + 4];
+
+      const dateFilters =
+        searchFilters.value['date-filter'] === 'content'
+          ? {
+              start_date: start,
+              start_date_lookup: 'gt' as const,
+              end_date: end,
+              end_date_lookup: 'lt' as const,
+            }
+          : {
+              text__not_before: start,
+              text__not_before_lookup: 'gt' as const,
+              text__not_after: end,
+              text__not_after_lookup: 'lt' as const,
+            };
+
+      return dateFilters;
+    }
+
+    return {
+      ids: isNonEmptyArray(searchFilters.value['passage'])
+        ? searchFilters.value['passage'].join(',')
+        : undefined,
+      [searchFilters.value['query-mode'] === 'intersection' ? 'text__autor_and' : 'text__autor']:
+        searchFilters.value['author'],
+      [searchFilters.value['query-mode'] === 'intersection' ? 'key_word_and' : 'key_word']:
+        searchFilters.value['keyword'],
+      use_case: searchFilters.value['case-study'],
+      text__ort: searchFilters.value['place'],
+      has_usecase: searchFilters.value['dataset'] === 'case-studies',
+      ...getDateFilters(),
+      limit: limit.value,
+      offset: offset.value,
+    };
+  })
+);
+
+const isFetching = computed(() => passagesQuery.isFetching.value);
+
+const items = computed(() => {
+  return passagesQuery.data.value?.results ?? [];
+});
+
+const count = computed(() => passagesQuery.data.value?.count ?? 0);
+
+function onUpdateLimit(value: number) {
+  limit.value = value;
+}
+
+function onUpdatePage(value: number) {
+  offset.value = (value - 1) * limit.value;
+}
+
+function getColor(type: KeywordType) {
+  return keywordColors[type];
+}
+
+const isFullScreen = useFullScreen();
+</script>
+
 <template>
   <v-card color="transparent" width="100%" flat>
     <v-data-table
       :items="items"
       :headers="headers"
-      :loading="loading"
-      :server-items-length="pagination.count"
+      :loading="isFetching"
+      :server-items-length="count"
       disable-sort
       disable-filtering
       no-data-text="No passages found"
       :footer-props="{
-        'items-per-page-options': [10, 20, 50, 100, 1000, -1],
+        'items-per-page-options': [10, 20, 50, 100, 1000],
       }"
       class="data-table"
-      @update:page="updateOffset"
-      @update:items-per-page="updateLimit"
+      @update:page="onUpdatePage"
+      @update:items-per-page="onUpdateLimit"
     >
       <template #[`item.text.autor`]="{ item }">
         <template v-if="item.text">
@@ -28,7 +163,7 @@
             class="text-decoration-none"
           >
             <span v-if="i != 0">, </span>
-            {{ getOptimalName(author) }}
+            {{ getAuthorLabel(author) }}
             <v-icon>mdi-chevron-right</v-icon>
           </router-link>
         </template>
@@ -50,18 +185,18 @@
       </template>
       <template #[`item.keywords`]="{ item }">
         <div v-for="keyword in item.key_word" :key="keyword.stichwort" class="keyword-chip">
-          <v-chip small :color="keyColors.chips[keyword.art]" @click="addKeywordToInput(keyword)">
+          <v-chip small :color="getColor(keyword.art)" @click="addKeywordToInput(keyword)">
             {{ keyword.stichwort }}
           </v-chip>
         </div>
       </template>
       <template #[`item.written`]="{ item }">
         <!-- displays unkown if neither start nor end date are defined -->
-        {{ item.text ? displayTimeRange(item.text.start_date, item.text.end_date) : 'unknown' }}
+        {{ item.text ? getDateRangeLabel(item.text.start_date, item.text.end_date) : 'Unknown' }}
       </template>
       <template #[`item.coverage`]="{ item }">
         <!-- displays nothing if neither start nor end date are defined -->
-        {{ displayTimeRange(item.start_date, item.end_date) }}
+        {{ getDateRangeLabel(item.start_date, item.end_date) }}
       </template>
       <template #[`footer.prepend`]>
         <fullscreen-button left />
@@ -70,144 +205,6 @@
     <router-view />
   </v-card>
 </template>
-
-<script>
-import FullscreenButton from '@/components/FullscreenButton.vue';
-import helpers from '@/helpers';
-
-export default {
-  name: 'List',
-  components: { FullscreenButton },
-  mixins: [helpers],
-  props: ['keyword', 'passage', 'author', 'usecase', 'place'],
-  data: () => ({
-    headers: [
-      { text: 'Author', value: 'text.autor', width: '150px' },
-      { text: 'Title', value: 'text.title' },
-      { text: 'Label', value: 'display_label' },
-      { text: 'Keywords', value: 'keywords' },
-      { text: 'Time Frame', value: 'written', width: '100px' },
-      { text: 'Coverage', value: 'coverage', width: '100px' },
-    ],
-    items: [],
-    loading: false,
-    pagination: {
-      count: 0,
-      limit: 10,
-      offset: 0,
-    },
-    renderKey: 0,
-  }),
-  watch: {
-    '$route.query': {
-      handler(query) {
-        this.fetchList(query);
-      },
-      deep: true,
-      immediate: true,
-    },
-  },
-  methods: {
-    addKeywordToInput(obj) {
-      this.$store.commit('addAutoCompleteSelectedValues', {
-        id: obj.id,
-        label: obj.stichwort,
-        kind: 'keyword',
-      });
-    },
-    addAuthorToInput(obj) {
-      this.$store.commit('addAutoCompleteSelectedValues', {
-        id: obj.id,
-        label: obj.name,
-        kind: 'author',
-      });
-    },
-    fetchList(query) {
-      const { intersect } = this.$store.state.apiParams;
-      const terms = {
-        Author: intersect ? 'text__autor_and' : 'text__autor',
-        // Passage: 'id', // not used anymore
-        Keyword: intersect ? 'key_word_and' : 'key_word',
-        'Use Case': 'use_case',
-        Place: 'text__ort',
-      };
-
-      let address = `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/stelle/?format=json&limit=${
-        this.pagination.limit
-      }&offset=${this.pagination.offset}&has_usecase=${this.hasUsecase}`;
-      const props = [this.author, this.passage, this.keyword, this.usecase, this.place];
-
-      if (props.some((x) => x)) {
-        let j;
-        props.forEach((prop, i) => {
-          if (prop && prop !== '0') {
-            if (i === 1) {
-              // passage
-              address += `&ids=${prop.toString().split('+').join(',')}`;
-            } else {
-              if (i > 1) j = i - 1; // because terms is missing an element
-              else j = i;
-              address += `&${terms[Object.keys(terms)[j]]}=${prop}`;
-            }
-          }
-        });
-      } else {
-        Object.keys(query).forEach((cat) => {
-          if (query[cat] && cat !== 'time') {
-            const arr = query[cat].toString(10).split('+');
-            arr.forEach((val) => {
-              address += `&${terms[cat]}=${val}`;
-            });
-          }
-        });
-
-        if (query.Passage) address += `&ids=${query.Passage.toString().replaceAll('+', ',')}`;
-
-        if (query.time) {
-          const key = this.$store.state.slider === 'passage' ? '' : 'text__';
-          if (query.time.toString().includes('+')) {
-            const times = query.time.split('+');
-            address += `&${key}start_date=${times[0]}&${key}start_date_lookup=gt`;
-            address += `&${key}end_date=${times[1]}&${key}end_date_lookup=lt`;
-          } else {
-            address += `&${key}start_date=${query.time - 5}&${key}start_date_lookup=gt`;
-            address += `&${key}end_date=${query.time + 4}&${key}end_date_lookup=lt`;
-          }
-        }
-      }
-
-      const prefetched = this.$store.state.fetchedResults[address];
-      if (prefetched) {
-        this.items = prefetched.results;
-        this.pagination.count = prefetched.count;
-      } else {
-        this.loading = true;
-        fetch(address)
-          .then((res) => res.json())
-          .then((res) => {
-            this.$store.commit('addToResults', { req: address, res });
-            this.items = res.results;
-            this.pagination.count = res.count;
-          })
-          .catch((err) => {
-            console.error(err);
-          })
-          .finally(() => {
-            this.loading = false;
-          });
-      }
-    },
-    updateLimit(limit) {
-      this.pagination.limit = limit === -1 ? this.pagination.count : limit;
-      this.fetchList(this.$route.query);
-    },
-    updateOffset(page) {
-      this.pagination.offset = (page - 1) * this.pagination.limit;
-      this.fetchList(this.$route.query);
-    },
-  },
-};
-</script>
 
 <style>
 a:hover {

@@ -74,8 +74,8 @@ const parentRoute = useParentRoute();
           </v-list-item-subtitle>
           <v-list-item-subtitle v-if="author?.gnd_id">
             GND-ID:
-            <a :href="'https://d-nb.info/gnd/' + author?.gnd_id.replace(/\D/g, '')" target="_blank"
-              >{{ author?.gnd_id.replace(/\D/g, '') }} <v-icon small>mdi-open-in-new</v-icon></a
+            <a :href="'https://d-nb.info/gnd/' + author.gnd_id" target="_blank"
+              >{{ author.gnd_id }} <v-icon small>mdi-open-in-new</v-icon></a
             >
           </v-list-item-subtitle>
         </div>
