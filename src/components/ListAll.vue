@@ -20,7 +20,7 @@ function createTab<TQueryFn extends AnyFunction>(params: CreateTabParams<TQueryF
   const { createQuery, header, label } = params;
 
   const searchTerm = ref('');
-  const q = computed(() => authors.searchTerm.value.trim());
+  const q = computed(() => searchTerm.value.trim());
 
   const limit = ref(10);
   const offset = ref(0);
@@ -96,7 +96,6 @@ const keywords = createTab<typeof useKeywords>({
     { text: 'ID', value: 'id' },
     { text: 'Name', value: 'stichwort' },
     { text: 'Type', value: 'art' },
-    { text: 'Complete?', value: 'complete' },
   ],
   createQuery(q, limit, offset) {
     return useKeywords(
@@ -158,15 +157,15 @@ const tabs = { authors, passages, keywords, caseStudies, places };
     <v-row justify="center">
       <v-col cols="12" xl="8" class="grey-bg">
         <v-tabs v-model="activeTabIndex" background-color="transparent" grow>
-          <v-tab v-for="(tab, key) of tabs" :key="key"> {{ tab.label }}s </v-tab>
+          <v-tab v-for="(tab, key) of tabs" :key="key">{{ tab.label }}</v-tab>
         </v-tabs>
         <v-tabs-items v-model="activeTabIndex">
           <v-tab-item v-for="(tab, key) in tabs" :key="key">
             <v-data-table
-              :items="tab.items"
+              :items="tab.items.value"
               :headers="tab.header"
-              :loading="tab.isFetching"
-              :server-items-length="tab.count || 50"
+              :loading="tab.isFetching.value"
+              :server-items-length="tab.count.value || 50"
               disable-sort
               disable-filtering
               :footer-props="{ 'items-per-page-options': [10, 20, 50, 100, 1000, -1] }"
@@ -226,11 +225,6 @@ const tabs = { authors, passages, keywords, caseStudies, places };
                 >
                   <b> {{ item.title }}&nbsp;<v-icon>mdi-chevron-right</v-icon> </b>
                 </router-link>
-              </template>
-              <template #item.complete="{ item }">
-                <v-icon v-if="$store.state.completeKeywords.includes(item.id)">
-                  mdi-check-outline</v-icon
-                >
               </template>
               <template #top>
                 <v-container>
