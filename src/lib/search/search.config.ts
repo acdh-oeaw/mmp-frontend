@@ -1,6 +1,6 @@
 import type { KeywordType, ResourceKind } from '@/api';
 
-type Plurals = Partial<Record<Intl.LDMLPluralRule, string>>;
+type Plurals = Pick<Record<Intl.LDMLPluralRule, string>, 'one' | 'other'>;
 
 export const kindLabels: Record<ResourceKind, Plurals> = {
   autor: { one: 'Author', other: 'Authors' },

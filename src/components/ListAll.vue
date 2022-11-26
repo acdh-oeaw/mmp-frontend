@@ -1,143 +1,156 @@
 <script lang="ts" setup>
-import { computed, ref } from 'vue';
+import { type Ref, computed, ref } from 'vue';
 
 import { useAuthors, useCaseStudies, useKeywords, usePassages, usePlaces } from '@/api';
+import { kindLabels } from '@/lib/search/search.config';
 import { useSearchFilters } from '@/lib/search/use-search-filters';
 
 const { searchFilters, createSearchFilterParams } = useSearchFilters();
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AnyFunction = (...args: any) => any;
+
+type CreateTabParams<TQueryFn extends AnyFunction> = {
+  label: string;
+  header: Array<{ text: string; value: string }>;
+  createQuery: (q: Ref<string>, limit: Ref<number>, offset: Ref<number>) => ReturnType<TQueryFn>;
+};
+
+function createTab<TQueryFn extends AnyFunction>(params: CreateTabParams<TQueryFn>) {
+  const { createQuery, header, label } = params;
+
+  const searchTerm = ref('');
+  const q = computed(() => authors.searchTerm.value.trim());
+
+  const limit = ref(10);
+  const offset = ref(0);
+
+  const query = createQuery(q, limit, offset);
+
+  const isFetching = computed(() => query.isFetching.value);
+
+  const items = computed(() => query.data.value?.results ?? []);
+  const count = computed(() => query.data.value?.count);
+
+  function onUpdateLimit(value: number) {
+    limit.value = value;
+  }
+
+  function onUpdatePage(value: number) {
+    offset.value = (value - 1) * limit.value;
+  }
+
+  return {
+    label,
+    header,
+    searchTerm,
+    isFetching,
+    items,
+    count,
+    onUpdateLimit,
+    onUpdatePage,
+  };
+}
+
+const authors = createTab<typeof useAuthors>({
+  label: kindLabels.autor.other,
+  header: [
+    { text: 'ID', value: 'id' },
+    { text: 'Name', value: 'name' },
+    { text: 'Comment', value: 'kommentar' },
+  ],
+  createQuery(q, limit, offset) {
+    return useAuthors(
+      computed(() => ({
+        name: q.value,
+        name_lookup: 'icontains',
+        limit: limit.value,
+        offset: offset.value,
+      }))
+    );
+  },
+});
+
+const passages = createTab<typeof usePassages>({
+  label: kindLabels.stelle.other,
+  header: [
+    { text: 'ID', value: 'id' },
+    { text: 'Quote', value: 'zitat' },
+    { text: 'Comment', value: 'kommentar' },
+  ],
+  createQuery(q, limit, offset) {
+    return usePassages(
+      computed(() => ({
+        zitat: q.value,
+        zitat_lookup: 'icontains',
+        limit: limit.value,
+        offset: offset.value,
+      }))
+    );
+  },
+});
+
+const keywords = createTab<typeof useKeywords>({
+  label: kindLabels.keyword.other,
+  header: [
+    { text: 'ID', value: 'id' },
+    { text: 'Name', value: 'stichwort' },
+    { text: 'Type', value: 'art' },
+    { text: 'Complete?', value: 'complete' },
+  ],
+  createQuery(q, limit, offset) {
+    return useKeywords(
+      computed(() => ({
+        stichwort: q.value,
+        stichwort_lookup: 'icontains',
+        limit: limit.value,
+        offset: offset.value,
+      }))
+    );
+  },
+});
+
+const caseStudies = createTab<typeof useCaseStudies>({
+  label: kindLabels.usecase.other,
+  header: [
+    { text: 'ID', value: 'id' },
+    { text: 'Title', value: 'title' },
+    { text: 'Description', value: 'description' },
+  ],
+  createQuery(q, limit, offset) {
+    return useCaseStudies(
+      computed(() => ({
+        title: q.value,
+        title_lookup: 'icontains',
+        limit: limit.value,
+        offset: offset.value,
+      }))
+    );
+  },
+});
+
+const places = createTab<typeof usePlaces>({
+  label: kindLabels.ort.other,
+  header: [
+    { text: 'ID', value: 'id' },
+    { text: 'Name', value: 'name' },
+    { text: 'Comment', value: 'kommentar' },
+  ],
+  createQuery(q, limit, offset) {
+    return usePlaces(
+      computed(() => ({
+        name: q.value,
+        name_lookup: 'icontains',
+        limit: limit.value,
+        offset: offset.value,
+      }))
+    );
+  },
+});
+
 const activeTabIndex = ref(0);
 
-const limit = ref(10);
-const offset = ref(0);
-const searchTerm = ref('');
-const q = computed(() => searchTerm.value.trim());
-
-function onUpdateLimit(value: number, tabIndex) {
-  limit.value = value;
-}
-
-function onUpdatePage(value: number, tabIndex) {
-  offset.value = (value - 1) * limit.value;
-}
-
-// TODO: all the data fetching should happen a level deeper, in earch tab,
-// because they actually know what resource they are handling
-
-// const authorsQuery = useAuthors({ name: q, name_lookup: 'icontains', limit, offset });
-// const passagesQuery = usePassages({ zitat: q, zitat_lookup: 'icontains', limit, offset });
-// const keywordsQuery = useKeywords({ stichwort: q, stichwort_lookup: 'icontains', limit, offset });
-// const caseStudiesQuery = useCaseStudies({ title: q, title_lookup: 'icontains', limit, offset });
-// const placesQuery = usePlaces({ name: q, name_lookup: 'icontains', limit, offset });
-
-const tabs = {
-  authors: {
-    label: 'Authors',
-    header: [
-      { text: 'ID', value: 'id' },
-      { text: 'Name', value: 'name' },
-      { text: 'Comment', value: 'kommentar' },
-    ],
-    searchTerm: ref(''),
-    q: computed(() => this.searchTerm.value.trim()),
-    limit: ref(10),
-    offset: ref(0),
-    query: useAuthors({
-      name: this.q,
-      name_lookup: 'icontains',
-      limit: this.limit,
-      offset: this.offset,
-    }),
-    isFetching: computed(() => this.query.isFetching.value),
-    items: computed(() => this.query.data.value?.results ?? []),
-    count: computed(() => this.query.data.value?.count),
-  },
-  passages: {
-    label: 'Passages',
-    header: [
-      { text: 'ID', value: 'id' },
-      { text: 'Quote', value: 'zitat' },
-      { text: 'Comment', value: 'kommentar' },
-    ],
-    searchTerm: ref(''),
-    q: computed(() => this.searchTerm.value.trim()),
-    limit: ref(10),
-    offset: ref(0),
-    query: usePassages({
-      zitat: this.q,
-      zitat_lookup: 'icontains',
-      limit: this.limit,
-      offset: this.offset,
-    }),
-    isFetching: computed(() => this.query.isFetching.value),
-    items: computed(() => this.query.data.value?.results ?? []),
-    count: computed(() => this.query.data.value?.count),
-  },
-  keywords: {
-    label: 'Keywords',
-    header: [
-      { text: 'ID', value: 'id' },
-      { text: 'Name', value: 'stichwort' },
-      { text: 'Type', value: 'art' },
-      { text: 'Complete?', value: 'complete' },
-    ],
-    searchTerm: ref(''),
-    q: computed(() => this.searchTerm.value.trim()),
-    limit: ref(10),
-    offset: ref(0),
-    query: useKeywords({
-      stichwort: this.q,
-      stichwort_lookup: 'icontains',
-      limit: this.limit,
-      offset: this.offset,
-    }),
-    isFetching: computed(() => this.query.isFetching.value),
-    items: computed(() => this.query.data.value?.results ?? []),
-    count: computed(() => this.query.data.value?.count),
-  },
-  caseStudies: {
-    label: 'Case studies',
-    header: [
-      { text: 'ID', value: 'id' },
-      { text: 'Title', value: 'title' },
-      { text: 'Description', value: 'description' },
-    ],
-    searchTerm: ref(''),
-    q: computed(() => this.searchTerm.value.trim()),
-    limit: ref(10),
-    offset: ref(0),
-    query: useCaseStudies({
-      title: this.q,
-      title_lookup: 'icontains',
-      limit: this.limit,
-      offset: this.offset,
-    }),
-    isFetching: computed(() => this.query.isFetching.value),
-    items: computed(() => this.query.data.value?.results ?? []),
-    count: computed(() => this.query.data.value?.count),
-  },
-  places: {
-    label: 'Places',
-    header: [
-      { text: 'ID', value: 'id' },
-      { text: 'Name', value: 'name' },
-      { text: 'Comment', value: 'kommentar' },
-    ],
-    searchTerm: ref(''),
-    q: computed(() => this.searchTerm.value.trim()),
-    limit: ref(10),
-    offset: ref(0),
-    query: usePlaces({
-      name: this.q,
-      name_lookup: 'icontains',
-      limit: this.limit,
-      offset: this.offset,
-    }),
-    isFetching: computed(() => this.query.isFetching.value),
-    items: computed(() => this.query.data.value?.results ?? []),
-    count: computed(() => this.query.data.value?.count),
-  },
-};
+const tabs = { authors, passages, keywords, caseStudies, places };
 </script>
 
 <template>
@@ -158,8 +171,8 @@ const tabs = {
               disable-filtering
               :footer-props="{ 'items-per-page-options': [10, 20, 50, 100, 1000, -1] }"
               class="data-table"
-              @update:page="updateOffset($event, i)"
-              @update:items-per-page="updateLimit($event, i)"
+              @update:page="tab.onUpdatePage"
+              @update:items-per-page="tab.onUpdateLimit"
             >
               <template #item.id="{ item }">
                 {{ item.id }}
@@ -223,7 +236,7 @@ const tabs = {
                 <v-container>
                   <!-- TODO: <form role="search"> -->
                   <v-text-field
-                    v-model="tabs[i].searchTerm"
+                    v-model="tab.searchTerm"
                     append-icon="mdi-magnify"
                     label="Search"
                     single-line

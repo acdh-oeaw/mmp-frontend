@@ -2,7 +2,6 @@
 import { groupBy } from '@stefanprobst/group-by';
 import { computed, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router/composables';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { VRangeSlider, VSlider } from 'vuetify/lib';
 
 import { useAutoComplete } from '@/api';
@@ -27,7 +26,9 @@ import {
 import { truncate } from '@/lib/truncate';
 import { useStore } from '@/lib/use-store';
 
-type SliderComponent = 'v-range-slider' | 'v-slider';
+const sliderComponents = { 'v-range-slider': VRangeSlider, 'v-slider': VSlider };
+
+type SliderComponent = keyof typeof sliderComponents;
 
 const router = useRouter();
 const route = useRoute();
@@ -439,7 +440,7 @@ const onUpdateDateRange = debounce(function onUpdateDateRange(
           <v-row v-show="isSliderVisible">
             <v-col>
               <component
-                :is="sliderComponent"
+                :is="sliderComponents[sliderComponent]"
                 class="slider"
                 :max="maxYear"
                 :min="minYear"
