@@ -1,20 +1,22 @@
 import type { KeywordType, ResourceKind } from '@/api';
 
-export const kindLabels: Record<ResourceKind, string> = {
-  autor: 'Author',
-  usecase: 'Case study',
-  keyword: 'Keyword',
-  ort: 'Place',
-  stelle: 'Passage',
-  text: 'Text',
+type Plurals = Partial<Record<Intl.LDMLPluralRule, string>>;
+
+export const kindLabels: Record<ResourceKind, Plurals> = {
+  autor: { one: 'Author', other: 'Authors' },
+  usecase: { one: 'Case study', other: 'Case studies' },
+  keyword: { one: 'Keyword', other: 'Keywords' },
+  ort: { one: 'Place', other: 'Places' },
+  stelle: { one: 'Passage', other: 'Passages' },
+  text: { one: 'Text', other: 'Texts' },
 };
 
-export const keywordTypeLabels: Record<KeywordType, string> = {
-  Ethnonym: 'Ethnonym',
-  Keyword: 'Keyword',
-  Name: 'Name',
-  Region: 'Region',
-  unclear: 'unclear',
+export const keywordTypeLabels: Record<KeywordType, Plurals> = {
+  Ethnonym: { one: 'Ethnonym', other: 'Ethnonyms' },
+  Keyword: { one: 'Keyword', other: 'Keywords' },
+  Name: { one: 'Name', other: 'Names' },
+  Region: { one: 'Region', other: 'Regions' },
+  unclear: { one: 'unclear', other: 'unclear' },
 };
 
 export const colors: Record<ResourceKind, string> = {

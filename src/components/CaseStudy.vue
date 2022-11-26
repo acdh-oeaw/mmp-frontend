@@ -15,7 +15,7 @@ import {
 import Graph from '@/components/GraphWrapperBeta.vue';
 import MapWrapper from '@/components/MapWrapper.vue';
 import WordCloudWrapper from '@/components/WordCloudWrapper.vue';
-import { getAuthorLabel } from '@/lib/get-label';
+import { getAuthorLabel, getDateRangeLabel } from '@/lib/get-label';
 import { useSearchFilters } from '@/lib/search/use-search-filters';
 
 type EventType = GetCaseStudyTimetableById.Response[number]['ent_type'];
@@ -107,17 +107,6 @@ function getIconFromType(type: EventType) {
 
   return icons[type];
 }
-
-function renderDates(start: number, end: number) {
-  const startDate = start < 0 ? `${start} BC` : `${start} AD`;
-  const endDate = end < 0 ? `${end} BC` : `${end} AD`;
-
-  if (startDate === endDate) {
-    return startDate;
-  }
-
-  return [startDate, endDate].join(' - ');
-}
 </script>
 
 <template>
@@ -144,9 +133,9 @@ function renderDates(start: number, end: number) {
             >
               Story Map
             </v-tab>
-            <v-tab exact :to="{ query: { ...$route.query, tab: 'graph' } }"> Graph </v-tab>
-            <v-tab exact :to="{ query: { ...$route.query, tab: 'map' } }"> Map </v-tab>
-            <v-tab exact :to="{ query: { ...$route.query, tab: 'cloud' } }"> Word Cloud </v-tab>
+            <v-tab exact :to="{ query: { ...$route.query, tab: 'graph' } }">Graph</v-tab>
+            <v-tab exact :to="{ query: { ...$route.query, tab: 'map' } }">Map</v-tab>
+            <v-tab exact :to="{ query: { ...$route.query, tab: 'cloud' } }">Word Cloud</v-tab>
             <v-tab exact :to="{ query: { ...$route.query, tab: 'texts' } }">
               Texts & Authors
             </v-tab>
@@ -164,10 +153,10 @@ function renderDates(start: number, end: number) {
                   :class="{ 'text-right': i % 2 == 1 && !$vuetify.breakpoint.mobile }"
                 >
                   <span slot="opposite" class="font-weight-medium">
-                    {{ renderDates(event.start_date, event.end_date) }}
+                    {{ getDateRangeLabel(event.start_date, event.end_date) }}
                   </span>
                   <span v-if="$vuetify.breakpoint.mobile" class="font-weight-medium">
-                    {{ renderDates(event.start_date, event.end_date) }}: <br />
+                    {{ getDateRangeLabel(event.start_date, event.end_date) }}: <br />
                   </span>
                   <router-link
                     v-if="event.ent_type === 'autor'"

@@ -140,10 +140,10 @@ const nothingFoundText = computed(() => {
 const label = 'Search for passages';
 
 function getKindLabel(value: Item) {
-  const kindLabel = kindLabels[value.kind];
+  const kindLabel = kindLabels[value.kind].one;
   if (value.kind === 'keyword') {
     // @ts-expect-error FIXME: currently endpoint does not return keyword type
-    return `${kindLabel} (${keywordTypeLabels[value.type]})`;
+    return `${kindLabel} (${keywordTypeLabels[value.type].one})`;
   }
   return kindLabel;
 }

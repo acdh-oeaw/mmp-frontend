@@ -184,8 +184,8 @@ const drawerWidth = useDrawerWidth();
       <v-row>
         <v-col>
           <v-tabs v-model="tab" grow background-color="transparent">
-            <v-tab key="Over Time"> Over Time </v-tab>
-            <v-tab key="Geography"> Geography </v-tab>
+            <v-tab key="Over Time">Over Time</v-tab>
+            <v-tab key="Geography">Geography</v-tab>
           </v-tabs>
           <v-tabs-items v-model="tab" background-color="transparent">
             <v-tab-item key="Over Time">

@@ -2,6 +2,7 @@
 import { computed } from 'vue';
 
 import type { ResourceKind } from '@/api';
+import { colors, kindLabels } from '@/lib/search/search.config';
 import {
   type DataSet,
   type QueryMode,
@@ -12,6 +13,8 @@ import { useStore } from '@/lib/use-store';
 
 const store = useStore();
 const { searchFilters, setSearchFilters } = useSearchFilters();
+
+const resourceKinds: Array<ResourceKind> = ['autor', 'keyword', 'ort', 'stelle', 'usecase'];
 
 const queryModes: Record<QueryMode, { label: string; description: string }> = {
   intersection: {
@@ -63,11 +66,14 @@ const queryMode = computed({
     <v-card-title>Search Options</v-card-title>
     <v-card-subtitle>Change your preferred filters</v-card-subtitle>
     <v-card-text>
-      <v-checkbox v-model="kind" label="Authors" value="autor" />
-      <v-checkbox v-model="kind" label="Keywords" value="keyword" />
-      <v-checkbox v-model="kind" label="Places" value="ort" />
-      <v-checkbox v-model="kind" label="Passages" value="stelle" />
-      <v-checkbox v-model="kind" label="Case studies" value="usecase" />
+      <v-checkbox
+        v-for="resourceKind of resourceKinds"
+        :key="resourceKind"
+        v-model="kind"
+        :label="kindLabels[resourceKind].one"
+        :value="resourceKind"
+        :color="colors[resourceKind]"
+      />
       <v-divider />
       <v-radio-group v-model="dataset" label="Include Data:">
         <v-radio
