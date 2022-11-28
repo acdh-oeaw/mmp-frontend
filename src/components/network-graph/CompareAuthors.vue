@@ -9,8 +9,13 @@ import { createKey, getAuthorById, getKeywordGraph } from '@/api';
 import FullscreenButton from '@/components/FullscreenButton.vue';
 import Visualization from '@/components/network-graph/network-graph.vue';
 import { getAuthorLabel } from '@/lib/get-label';
-import { nodeColors } from '@/lib/network-graph/network-graph.config';
-import type { GraphData } from '@/lib/network-graph/network-graph.types';
+import { nodeColors, nodeTypeLabels } from '@/lib/network-graph/network-graph.config';
+import type {
+  GraphData,
+  GraphEdge,
+  GraphNode,
+  GraphNodeType,
+} from '@/lib/network-graph/network-graph.types';
 import { useSearchFilters } from '@/lib/search/use-search-filters';
 import { unique } from '@/lib/unique';
 import { useFullScreen } from '@/lib/use-full-screen';
@@ -32,12 +37,13 @@ const fab = ref({
   control: false,
 });
 const paused = ref(true);
-const typefilters = ref({
-  Author: true,
+const typefilters = ref<Record<GraphNodeType, boolean>>({
+  autor: true,
   Region: true,
   Ethnonym: true,
   Keyword: true,
   Name: true,
+  unclear: false,
 });
 const renderKey = ref(0);
 const zoomToFit = ref(true);
@@ -82,7 +88,11 @@ const keywordGraphQueries = useQueries({
 });
 
 const isLoading = computed(() => {
-  return [...authorQueries, ...keywordGraphQueries].some((query) => query.isInitialLoading.value);
+  // note: useQueries returns reactive readonly array, not a ref!
+  return (
+    authorQueries.some((query) => query.isInitialLoading) ||
+    keywordGraphQueries.some((query) => query.isInitialLoading)
+  );
 });
 
 const graph = computed(() => {
@@ -125,41 +135,44 @@ const graph = computed(() => {
   //   coords.push([Math.cos(rad), Math.sin(rad)]);
   // }
 
-  const nodesById = new Map();
-  const edgesById = new Map();
+  const nodesById = new Map<GraphNode['id'], GraphNode>();
+  const edgesById = new Map<GraphEdge['id'], GraphEdge>();
 
   selectedAuthors.value.forEach((id, index) => {
     const authorQuery = authorQueries[index];
-    const author = authorQuery?.data.value;
+    const author = authorQuery?.data;
 
     const keywordGraphQuery = keywordGraphQueries[index];
-    const keywordGraph = keywordGraphQuery?.data.value;
+    const keywordGraph = keywordGraphQuery?.data;
 
     if (author == null || keywordGraph == null) return;
 
-    const authorId = ['author', author.id].join('_');
-
-    graph.nodes.push({
+    const authorId = ['author', author.id].join('__');
+    nodesById.set(authorId, {
       id: authorId,
       label: getAuthorLabel(author),
-      kind: 'autor',
+      type: 'autor',
       fx: coords[index]![0],
       fy: coords[index]![1],
     });
 
     keywordGraph.nodes.forEach((node) => {
       const id = node.id;
-      nodesById.set(id, node);
+      nodesById.set(id, {
+        id,
+        label: node.label,
+        type: node.keyword_type,
+      });
 
       const source = authorId;
       const target = id;
-      const edgeId = [source, target].join('_');
+      const edgeId = [source, target].join('__');
       edgesById.set(edgeId, { id: edgeId, source, target });
     });
 
     keywordGraph.edges.forEach((edge) => {
       // FIXME: does that mean we don't care about edges which are not connected to an author node?
-      const id = [authorId, edge.id].join('_');
+      const id = [authorId, edge.id].join('__');
       edgesById.set(id, { ...edge, id });
     });
   });
@@ -175,13 +188,14 @@ const nodeCount = computed(() => {
 });
 
 const weightedGraph = computed(() => {
+  // FIXME:
   const ret = JSON.parse(JSON.stringify(graph.value));
 
   // filter types
   const blacklist: Array<any> = [];
 
   ret.nodes = ret.nodes.filter((node) => {
-    if (typefilters.value[node.keyword_type]) return true;
+    if (typefilters.value[node.type]) return true;
     blacklist.push(node.id);
     return false;
   });
@@ -192,9 +206,9 @@ const weightedGraph = computed(() => {
 
   // assign weight
   ret.edges.forEach((edge) => {
-    const targetNode = ret.nodes.filter((node) => node.id === edge.source)[0];
+    const targetNode = ret.nodes.find((node) => node.id === edge.source);
 
-    edge.color = targetNode?.keyword_type === 'Author' ? '#F85' : '#CCC';
+    edge.color = targetNode.type === 'autor' ? '#F85' : '#CCC';
 
     if (targetNode?.conns) {
       targetNode.conns += 1;
@@ -213,7 +227,8 @@ const weightedGraph = computed(() => {
 
     retNode.isConnected = authorIds.length === selectedAuthors.value.length;
 
-    retNode.color = nodeColors[node.keyword_type];
+    retNode.color = nodeColors[node.type];
+
     return retNode;
   });
 
@@ -221,9 +236,12 @@ const weightedGraph = computed(() => {
 });
 
 const types = computed(() => {
-  return unique(graph.value.nodes.map((node) => node.keyword_type));
+  const types = new Set<GraphNodeType>();
+  graph.value.nodes.forEach((node) => types.add(node.type));
+  return Array.from(types);
 });
 
+// FIXME:
 watch(weightedGraph, () => {
   setTimeout(() => {
     zoomToFit.value = !zoomToFit.value;
@@ -319,8 +337,10 @@ const nodeObject: CanvasCustomRenderFn<NodeObject> = function nodeObject(node, c
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
 
-  let typeColor = nodeColors[node.keyword_type] || 'grey';
-  if (!node.isConnected && node.keyword_type !== 'Author') typeColor = lightenColor(typeColor, 0.3);
+  let typeColor = nodeColors[node.type] || 'grey';
+  if (!node.isConnected && node.type !== 'autor') {
+    typeColor = lightenColor(typeColor, 0.3);
+  }
 
   if (route.params.id?.toString(10).split('+').includes(node.id.replace(/\D/g, ''))) {
     ctx.shadowColor = typeColor;
@@ -438,10 +458,11 @@ const isFullScreen = useFullScreen();
       :value="!nodeCount || isLoading || !selectedAuthors.length"
     >
       <h1 v-if="isLoading" class="no-nodes">
-        <v-progress-circular indeterminate color="#0F1226" />
+        <v-progress-circular indeterminate color="#0f1226" />
       </h1>
       <h1 v-if="!isLoading" class="no-nodes">Select two or more authors!</h1>
     </v-overlay>
+
     <visualization
       id="visId"
       :graph="weightedGraph"
@@ -459,7 +480,9 @@ const isFullScreen = useFullScreen();
       :force-center="() => null"
       :force-link="linkForces"
     />
+
     <router-view />
+
     <v-speed-dial
       v-model="fab.download"
       absolute
@@ -507,7 +530,9 @@ const isFullScreen = useFullScreen();
         <span>Download node data as .csv</span>
       </v-tooltip>
     </v-speed-dial>
+
     <fullscreen-button :usecase="usecase" />
+
     <v-speed-dial
       v-model="fab.control"
       absolute
@@ -529,7 +554,7 @@ const isFullScreen = useFullScreen();
             <v-icon v-else>mdi-play</v-icon>
           </v-btn>
         </template>
-        <span>{{ paused ? 'Unp' : 'P' /* hehehehe*/ }}ause Simulation</span>
+        <span>{{ paused ? 'Unp' : 'P' /** hehehehe */ }}ause Simulation</span>
       </v-tooltip>
       <v-tooltip right transition="slide-x-transition">
         <template #activator="{ on, attrs }">
@@ -554,7 +579,7 @@ const isFullScreen = useFullScreen();
           <v-checkbox
             v-model="typefilters[key]"
             :color="nodeColors[key]"
-            :label="key"
+            :label="nodeTypeLabels[key].other"
             dense
             hide-details
           />

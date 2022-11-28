@@ -2,36 +2,28 @@ import type { SimulationLinkDatum, SimulationNodeDatum } from 'd3';
 
 import type { KeywordType, ResourceKind } from '@/api';
 
+export type GraphNodeType = KeywordType | Extract<ResourceKind, 'autor'>;
+
 declare module 'force-graph' {
   type GraphNode = { kind: 'autor' } | { kind: 'keyword'; type: KeywordType };
 
-  interface NodeObject extends GraphNode {
+  interface NodeObject {
     // id: string;
     label: string;
+    type: GraphNodeType;
   }
   interface LinkObject {
     id: string;
   }
 }
 
-interface GraphNodeBase extends SimulationNodeDatum {
+export interface GraphNode extends SimulationNodeDatum {
   id: string;
   label: string;
-  kind: ResourceKind;
+  type: GraphNodeType;
 }
 
-interface GraphNodeAuthor extends GraphNodeBase {
-  kind: 'autor';
-}
-
-interface GraphNodeKeyword extends GraphNodeBase {
-  kind: 'keyword';
-  type?: KeywordType;
-}
-
-type GraphNode = GraphNodeAuthor | GraphNodeKeyword;
-
-interface GraphEdge extends SimulationLinkDatum<GraphNode> {
+export interface GraphEdge extends SimulationLinkDatum<GraphNode> {
   id: string;
   // source: GraphNode['id'];
   // target: GraphNode['id'];

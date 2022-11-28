@@ -1,7 +1,5 @@
 import type { KeywordType, ResourceKind } from '@/api';
 
-type Plurals = Pick<Record<Intl.LDMLPluralRule, string>, 'one' | 'other'>;
-
 export const kindLabels: Record<ResourceKind, Plurals> = {
   autor: { one: 'Author', other: 'Authors' },
   usecase: { one: 'Case study', other: 'Case studies' },

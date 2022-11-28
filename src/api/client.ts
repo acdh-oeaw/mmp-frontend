@@ -1500,7 +1500,8 @@ export namespace GetKeywordGraph {
   export type SearchParams = GetPassages.SearchParams;
   export type Response = {
     nodes: Array<{
-      id: Keyword['id'];
+      /** Identifiers look like `archiv__keyword__${Keyword['id']}`. */
+      id: string;
       type: 'archiv__keyword';
       label: string;
       /** Pathname only. */

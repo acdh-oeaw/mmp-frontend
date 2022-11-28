@@ -9,9 +9,9 @@ import {
   usePassages,
   useSpatialCoveragesGeojson,
 } from '@/api';
+import GeoMap from '@/components/geo-map/geo-map.vue';
 import KeywordListItem from '@/components/KeywordListItem.vue';
 import KeywordOverTime from '@/components/KeywordOverTime.vue';
-import Leaflet from '@/components/Leaflet.vue';
 import { useSearchFilters } from '@/lib/search/use-search-filters';
 import { truncate } from '@/lib/truncate';
 import { useDrawerWidth } from '@/lib/use-drawer-width';
@@ -193,7 +193,7 @@ const drawerWidth = useDrawerWidth();
               <v-skeleton-loader v-else type="image@2" />
             </v-tab-item>
             <v-tab-item key="Geography">
-              <leaflet v-if="!isLoading" :data="geography" />
+              <geo-map v-if="!isLoading" :data="geography" />
               <v-skeleton-loader v-else type="image@2" />
             </v-tab-item>
           </v-tabs-items>
