@@ -39,7 +39,7 @@ export const defaultSearchFilters = Object.freeze({
   passage: [],
   place: [],
   'date-range': [minYear, maxYear],
-  'date-filter': 'composition',
+  'date-filter': 'content',
   dataset: 'case-studies',
   'query-mode': 'intersection',
 } satisfies SearchFilters);
@@ -64,7 +64,15 @@ export function useSearchFilters() {
 
   function setSearchFilters(searchFilters: SearchFilters, name?: string) {
     const query = serializeSearchFilters(searchFilters);
-    router.push({ name, query });
+    router
+      .push({ name, query })
+      // TODO: remove in vue-router v4
+      // @see https://github.com/vuejs/vue-router/issues/2881
+      .catch((error) => {
+        if (import.meta.env.NODE_ENV !== 'production') {
+          console.warn(error);
+        }
+      });
   }
 
   function createSearchFilterParams(searchFilters: SearchFilters) {

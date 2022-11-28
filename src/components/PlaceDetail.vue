@@ -3,7 +3,7 @@ import { computed } from 'vue';
 import { useRoute } from 'vue-router/composables';
 
 import { useAuthors, usePlaceById, useTexts } from '@/api';
-import PlaceMap from '@/components/PlaceMap.vue';
+import PlaceMap from '@/components/geo-map/place-map.vue';
 import { getAuthorLabel, getPlaceLabel } from '@/lib/get-label';
 import { useSearchFilters } from '@/lib/search/use-search-filters';
 import { useDrawerWidth } from '@/lib/use-drawer-width';

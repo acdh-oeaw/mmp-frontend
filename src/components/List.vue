@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { computed, ref } from 'vue';
 
-import { type Author, type Keyword, type KeywordType, usePassages } from '@/api';
+import { type Author, type GetPassages, type Keyword, type KeywordType, usePassages } from '@/api';
 import FullscreenButton from '@/components/FullscreenButton.vue';
 import { getAuthorLabel, getDateRangeLabel } from '@/lib/get-label';
 import { isNonEmptyArray } from '@/lib/is-nonempty-array';
@@ -38,27 +38,31 @@ const renderKey = ref(0);
 
 function addKeywordToInput(obj: Keyword) {
   // TODO: should this use setSearchFilters instead? i.e. trigger a query vs. just adding to autocomplete selection
-  store.commit('addAutoCompleteSelectedValues', {
-    id: obj.id,
-    label: obj.stichwort,
-    kind: 'keyword',
-  });
+  store.commit('addAutoCompleteSelectedValues', [
+    {
+      id: obj.id,
+      label: obj.stichwort,
+      kind: 'keyword',
+    },
+  ]);
 }
 
 function addAuthorToInput(obj: Author) {
   // TODO: should this use setSearchFilters instead? i.e. trigger a query vs. just adding to autocomplete selection
-  store.commit('addAutoCompleteSelectedValues', {
-    id: obj.id,
-    label: obj.name,
-    kind: 'author',
-  });
+  store.commit('addAutoCompleteSelectedValues', [
+    {
+      id: obj.id,
+      label: obj.name,
+      kind: 'author',
+    },
+  ]);
 }
 
 const passagesQuery = usePassages(
   computed(() => {
     // FIXME:
     if (Object.values(props).some(isNotNullable)) {
-      return {
+      const searchParams: GetPassages.SearchParams = {
         ids: props.passage?.toString().split('+').join(','),
         text__autor: props.author,
         key_word: props.keyword,
@@ -67,6 +71,8 @@ const passagesQuery = usePassages(
         limit: limit.value,
         offset: offset.value,
       };
+
+      return searchParams;
     }
 
     function getDateFilters() {
@@ -74,25 +80,25 @@ const passagesQuery = usePassages(
         ? searchFilters.value['date-range']
         : [searchFilters.value['date-range'] - 5, searchFilters.value['date-range'] + 4];
 
-      const dateFilters =
+      const dateFilters: GetPassages.SearchParams =
         searchFilters.value['date-filter'] === 'content'
           ? {
               start_date: start,
-              start_date_lookup: 'gt' as const,
+              start_date_lookup: 'gt',
               end_date: end,
-              end_date_lookup: 'lt' as const,
+              end_date_lookup: 'lt',
             }
           : {
-              text__not_before: start,
-              text__not_before_lookup: 'gt' as const,
-              text__not_after: end,
-              text__not_after_lookup: 'lt' as const,
+              text__start_date: start,
+              text__start_date_lookup: 'gt',
+              text__end_date: end,
+              text__end_date_lookup: 'lt',
             };
 
       return dateFilters;
     }
 
-    return {
+    const searchParams: GetPassages.SearchParams = {
       ids: isNonEmptyArray(searchFilters.value['passage'])
         ? searchFilters.value['passage'].join(',')
         : undefined,
@@ -107,6 +113,8 @@ const passagesQuery = usePassages(
       limit: limit.value,
       offset: offset.value,
     };
+
+    return searchParams;
   })
 );
 

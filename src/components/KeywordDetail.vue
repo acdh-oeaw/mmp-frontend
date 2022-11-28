@@ -123,13 +123,13 @@ const connections = computed(() => {
 
 const xPressLinkName = computed(() => {
   if (route.name?.includes('compare')) {
-    if (isFullScreen) return 'Compare Authors Fullscreen';
+    if (isFullScreen.value) return 'Compare Authors Fullscreen';
     return 'Compare Authors';
   }
 
-  if (isFullScreen) return 'Network Graph Beta Fullscreen';
+  if (isFullScreen.value) return 'Network Graph Fullscreen';
 
-  return 'Network Graph Beta';
+  return 'Network Graph';
 });
 
 function getNumbersFromString(value: string) {
@@ -259,7 +259,7 @@ const drawerWidth = useDrawerWidth();
                   block
                   class="detail-button"
                   :to="{
-                    name: isFullScreen ? 'Keyword Detail Beta Fullscreen' : 'Keyword Detail Beta',
+                    name: isFullScreen ? 'Keyword Detail Fullscreen' : 'Keyword Detail',
                     params: { id: $route.params.id },
                     query: createSearchFilterParams({ ...searchFilters, keyword: [id] }),
                   }"

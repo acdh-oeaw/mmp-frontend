@@ -2,8 +2,14 @@
 import { computed } from 'vue';
 import { useRoute } from 'vue-router/composables';
 
-import { useCaseStudyById, useConesGeojson, useSpatialCoveragesGeojson } from '@/api';
-import Leaflet from '@/components/Leaflet.vue';
+import {
+  type GetConesGeojson,
+  type GetSpatialCoveragesGeojson,
+  useCaseStudyById,
+  useConesGeojson,
+  useSpatialCoveragesGeojson,
+} from '@/api';
+import Leaflet from '@/components/geo-map/geo-map.vue';
 import { isNotNullable } from '@/lib/is-not-nullable';
 import { useSearchFilters } from '@/lib/search/use-search-filters';
 
@@ -21,13 +27,15 @@ const { searchFilters } = useSearchFilters();
 const searchParams = computed(() => {
   // FIXME:
   if (Object.values(props).some(isNotNullable)) {
-    return {
+    const searchParams: GetSpatialCoveragesGeojson.SearchParams | GetConesGeojson.SearchParams = {
       stelle__text__autor: props.author,
       stelle: props.passage,
       key_word: props.keyword,
       stelle__use_case: props.usecase,
       stelle__ort: props.place,
     };
+
+    return searchParams;
   }
 
   function getDateFilters() {
@@ -35,25 +43,25 @@ const searchParams = computed(() => {
       ? searchFilters.value['date-range']
       : [searchFilters.value['date-range'] - 5, searchFilters.value['date-range'] + 4];
 
-    const dateFilters =
+    const dateFilters: GetSpatialCoveragesGeojson.SearchParams | GetConesGeojson.SearchParams =
       searchFilters.value['date-filter'] === 'content'
         ? {
             stelle__start_date: start,
-            stelle__start_date_lookup: 'gt' as const,
+            stelle__start_date_lookup: 'gt',
             stelle__end_date: end,
-            stelle__end_date_lookup: 'lt' as const,
+            stelle__end_date_lookup: 'lt',
           }
         : {
             stelle__text__not_before: start,
-            stelle__text__not_before_lookup: 'gt' as const,
+            stelle__text__not_before_lookup: 'gt',
             stelle__text__not_after: end,
-            stelle__text__not_after_lookup: 'lt' as const,
+            stelle__text__not_after_lookup: 'lt',
           };
 
     return dateFilters;
   }
 
-  return {
+  const searchParams: GetSpatialCoveragesGeojson.SearchParams | GetConesGeojson.SearchParams = {
     stelle__text__autor: searchFilters.value['author'],
     stelle: searchFilters.value['passage'],
     key_word: searchFilters.value['keyword'],
@@ -62,6 +70,8 @@ const searchParams = computed(() => {
     ...getDateFilters(),
     // TODO: respect other config options like intersect
   };
+
+  return searchParams;
 });
 
 const spatialCoveragesQuery = useSpatialCoveragesGeojson(searchParams);

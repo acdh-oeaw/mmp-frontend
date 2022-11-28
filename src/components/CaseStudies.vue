@@ -3,7 +3,7 @@ import { groupBy } from '@stefanprobst/group-by';
 import { computed, ref } from 'vue';
 
 import { useAutoComplete, useCaseStudies } from '@/api';
-import type { Item } from '@/lib/search/types';
+import type { Item } from '@/lib/search/search.types';
 import { uniqueItems } from '@/lib/search/unique-items';
 
 const searchTerm = ref('');

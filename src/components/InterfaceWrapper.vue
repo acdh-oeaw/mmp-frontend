@@ -16,7 +16,7 @@ import {
   maxYear,
   minYear,
 } from '@/lib/search/search.config';
-import type { Item } from '@/lib/search/types';
+import type { Item } from '@/lib/search/search.types';
 import { uniqueItems } from '@/lib/search/unique-items';
 import {
   type DateFilter,
@@ -65,8 +65,7 @@ const currentView = computed({
 });
 
 const isSliderVisible = computed(() => {
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  return !['Network Graph', 'Word Cloud'].includes(route.name!);
+  return route.name !== 'Word Cloud';
 });
 
 const isDetailView = computed(() => {
@@ -250,7 +249,7 @@ const onUpdateDateRange = debounce(function onUpdateDateRange(
                   <template #item="{ item }">
                     <v-list-item-content>
                       <v-list-item-title>{{ item.label }}</v-list-item-title>
-                      <v-list-item-subtitle>{{ getKindLabel(item.kind) }}</v-list-item-subtitle>
+                      <v-list-item-subtitle>{{ getKindLabel(item) }}</v-list-item-subtitle>
                     </v-list-item-content>
                   </template>
                   <template #selection="{ attrs, selected, select, item }">
@@ -282,7 +281,7 @@ const onUpdateDateRange = debounce(function onUpdateDateRange(
               <v-col :cols="$vuetify.breakpoint.mobile ? 12 : 1">
                 <v-btn min-height="50px" height="100%" x-large block depressed type="submit">
                   <v-icon>mdi-magnify</v-icon>
-                  <span :class="$vuetify.breakpoint.mobile ? 'd-sr-only' : undefined">Search</span>
+                  <span :class="$vuetify.breakpoint.mobile ? undefined : 'd-sr-only'">Search</span>
                 </v-btn>
               </v-col>
             </v-row>
@@ -314,9 +313,9 @@ const onUpdateDateRange = debounce(function onUpdateDateRange(
                     text
                     small
                     class="view-picker"
-                    :disabled="currentView === 'Network Graph Beta'"
-                    :class="{ active: currentView === 'Network Graph Beta' }"
-                    :to="{ name: 'Network Graph Beta', query: $route.query }"
+                    :disabled="currentView === 'Network Graph'"
+                    :class="{ active: currentView === 'Network Graph' }"
+                    :to="{ name: 'Network Graph', query: $route.query }"
                   >
                     Network Graph
                   </v-btn>
@@ -328,9 +327,9 @@ const onUpdateDateRange = debounce(function onUpdateDateRange(
                     </template>
                     <v-list>
                       <v-list-item
-                        :disabled="currentView === 'Network Graph Beta'"
-                        :class="{ active: currentView === 'Network Graph Beta' }"
-                        :to="{ name: 'Network Graph Beta', query: $route.query }"
+                        :disabled="currentView === 'Network Graph'"
+                        :class="{ active: currentView === 'Network Graph' }"
+                        :to="{ name: 'Network Graph', query: $route.query }"
                       >
                         <v-list-item-title>Graph</v-list-item-title>
                       </v-list-item>
@@ -376,7 +375,7 @@ const onUpdateDateRange = debounce(function onUpdateDateRange(
               <v-col cols="12">
                 <v-select
                   v-model="currentView"
-                  :items="['List', 'Graph', '', 'Map', 'Word Cloud']"
+                  :items="['List', 'Network Graph', 'Compare Authors', 'Map', 'Word Cloud']"
                   label="View as"
                 />
               </v-col>

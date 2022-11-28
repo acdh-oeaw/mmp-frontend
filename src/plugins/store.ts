@@ -3,7 +3,7 @@ import Vuex from 'vuex';
 
 import type { ResourceKind } from '@/api';
 import { isSameItem } from '@/lib/search/is-same-item';
-import type { Item } from '@/lib/search/types';
+import type { Item } from '@/lib/search/search.types';
 import { uniqueItems } from '@/lib/search/unique-items';
 
 Vue.use(Vuex);

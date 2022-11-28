@@ -1,15 +1,20 @@
 <script lang="ts" setup>
-import Gradient from 'javascript-color-gradient';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 
-import { usePassageKeywords, usePassageNlpData } from '@/api';
+import {
+  type GetPassageKeywords,
+  type GetPassageNlpData,
+  usePassageKeywords,
+  usePassageNlpData,
+} from '@/api';
+import FullscreenButton from '@/components/FullscreenButton.vue';
+import PieChart from '@/components/PieChart.vue';
+import type { Token, TokenData } from '@/components/word-cloud/word-cloud.types';
+import WordCloud from '@/components/word-cloud/word-cloud.vue';
 import { isNonEmptyArray } from '@/lib/is-nonempty-array';
 import { isNotNullable } from '@/lib/is-not-nullable';
 import { useSearchFilters } from '@/lib/search/use-search-filters';
-
-import FullscreenButton from './FullscreenButton.vue';
-import PieChart from './PieChart.vue';
-import WordCloudBeta from './WordCloudBeta.vue';
+import { useFullScreen } from '@/lib/use-full-screen';
 
 const props = defineProps<{
   author?: any;
@@ -25,13 +30,15 @@ const { searchFilters } = useSearchFilters();
 const searchParams = computed(() => {
   // FIXME:
   if (Object.values(props).some(isNotNullable)) {
-    return {
+    const searchParams: GetPassageKeywords.SearchParams | GetPassageNlpData.SearchParams = {
       ids: props.passage?.toString().split('+').join(','),
       text__autor: props.author,
       key_word: props.keyword,
       use_case: props.usecase,
       text__ort: props.place,
     };
+
+    return searchParams;
   }
 
   function getDateFilters() {
@@ -39,17 +46,17 @@ const searchParams = computed(() => {
       ? searchFilters.value['date-range']
       : [searchFilters.value['date-range'] - 5, searchFilters.value['date-range'] + 4];
 
-    const dateFilters = {
+    const dateFilters: GetPassageKeywords.SearchParams | GetPassageNlpData.SearchParams = {
       start_date: start,
-      start_date_lookup: 'gt' as const,
+      start_date_lookup: 'gt',
       end_date: end,
-      end_date_lookup: 'lt' as const,
+      end_date_lookup: 'lt',
     };
 
     return dateFilters;
   }
 
-  return {
+  const searchParams: GetPassageKeywords.SearchParams | GetPassageNlpData.SearchParams = {
     ids: isNonEmptyArray(searchFilters.value['passage'])
       ? searchFilters.value['passage'].join(',')
       : undefined,
@@ -59,6 +66,8 @@ const searchParams = computed(() => {
     text__ort: searchFilters.value['place'],
     ...getDateFilters(),
   };
+
+  return searchParams;
 });
 
 const passageNlpDataQuery = usePassageNlpData(searchParams);
@@ -70,92 +79,64 @@ const isLoading = computed(() => {
   });
 });
 
-const data = computed(() => {
-  // TODO: check this
-
+const data = computed<TokenData>(() => {
   const nlpData = passageNlpDataQuery.data.value;
   const keywords = passageKeywordsQuery.data.value;
 
-  if (nlpData == null || keywords == null) {
-    return { words: [[], []], filteredWords: [[], []] };
-  }
-
-  const allWords = [
-    Object.entries(nlpData.token_dict),
-    keywords.token_dict.map((x) => Object.entries(x)[0]),
-  ];
-
-  function sortWords(a, b) {
-    // sorts after occurences, then alphabetically
+  /** Sort by occurence, then alphabetically. */
+  function sortWords(a: Token, b: Token) {
     if (a[1] < b[1]) return 1;
     if (a[1] > b[1]) return -1;
-    if (a[0] > b[0]) return 1;
-    if (a[0] < b[0]) return -1;
-    return 0;
+    return a[0].localeCompare(b[0]);
   }
 
-  const words = allWords.map((x) => x.sort(sortWords));
-
-  for (let i = 0; i < allWords.length; i += 1) {
-    // improves performance by a lot, removing unused and non words
-    for (let j = 1; allWords[i].length > 75; j += 1) {
-      allWords[i] = allWords[i].filter((entry) => entry[0].match(/\w+/g) && entry[1] > j);
-    }
-    // removes unecessary tags
-    allWords[i] = allWords[i].map((word) => [word[0].split(' (')[0], word[1]]);
+  if (nlpData == null || keywords == null) {
+    return { words: [], keywords: [] };
   }
 
-  return { words, filteredWords: allWords };
+  // FIXME: `/kw-stelle` endpoint should return Record<string, number> (same as `/nlp-data`), not Array<{ [token: string]: number }>
+  const data: TokenData = {
+    words: Object.entries(nlpData.token_dict).sort(sortWords),
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    keywords: keywords.token_dict.map((x) => Object.entries(x)[0]!).sort(sortWords),
+  };
+
+  return data;
 });
 
-const _data = {
-  avgProgress: 0,
-  drawer: false,
-  overlay: {
-    active: false,
-    x: 0,
-    y: 0,
-    word: '',
-  },
-  speeddial: false,
-  progress: [0, 0],
-  check: ['words', 'keywords'],
-  titles: ['All Words', 'Keywords'],
-  type: 'cloud',
-};
+const filteredData = computed<TokenData>(() => {
+  function sanitize(word: Token): Token {
+    const [token, count] = word;
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return [token.split(' (')[0]!, count];
+  }
 
-const maxOccurence = computed(() => {
-  return Math.max(...[...this.words[0], ...this.words[1]].map((word) => word[1])); // this returns the max occurence of all words and keywords
+  // TODO: why not just slice the first n entries, since they are already sorted?
+  // improves performance by a lot, removing unused and non words
+  // for (let j = 1; words.length > 75; j += 1) {
+  //   words = words.filter(([token, count]) => token.match(/\w+/g) && count > j);
+  // }
+
+  const filteredData: TokenData = {
+    words: data.value.words.map(sanitize).slice(0, 75),
+    keywords: data.value.keywords.map(sanitize).slice(0, 75),
+  };
+
+  return filteredData;
 });
 
-const showWords = computed(() => {
-  return [this.check.includes('words'), this.check.includes('keywords')];
+const drawer = ref(false);
+const speeddial = ref(false);
+const type = ref<'pie' | 'cloud'>('cloud');
+
+// TODO: merge
+const check = ref<Array<keyof TokenData>>(['words', 'keywords']);
+const titles: Record<keyof TokenData, string> = { words: 'All Words', keywords: 'Keywords' };
+const isVisible = computed(() => {
+  return { words: check.value.includes('words'), keywords: check.value.includes('keywords') };
 });
 
-function colorWords(word) {
-  const colors = ['#a91a1a', '#3a8d86', '#0c76ce', '#c09000', '#3b823e'];
-  const colorGradient = new Gradient();
-  colorGradient.setGradient(...colors);
-
-  colorGradient.setMidpoint(20);
-  // console.log(colorGradient.getArray());
-
-  return colorGradient.getColor(Math.floor((20 * word[1]) / this.maxOccurence));
-}
-
-function crossRotate(word) {
-  if ([this.words[0][0][0], this.words[1][0][0]].includes(word[0])) {
-    return 0; // ensures the first word is always horizontal
-  }
-  switch (Math.floor(Math.random() * 4)) {
-    case 2:
-      return 0.25;
-    case 3:
-      return -0.25;
-    default:
-      return 0;
-  }
-}
+const isFullScreen = useFullScreen();
 </script>
 
 <template>
@@ -167,28 +148,20 @@ function crossRotate(word) {
       <h1 v-else class="no-nodes">No words found!</h1>
     </v-overlay>
     <v-row v-if="type === 'pie'">
-      <template v-for="(filtered, i) in data.filteredWords">
-        <v-col
-          v-if="showWords[i]"
-          :key="JSON.stringify(filtered) + i"
-          :cols="showWords.filter((x) => x).length >= 2 ? 6 : 12"
-        >
+      <template v-for="(tokens, key) of filteredData">
+        <v-col v-if="isVisible[key]" :key="key" :cols="check.length >= 2 ? 6 : 12">
           <pie-chart
-            :data="filtered"
-            :title="titles[i]"
+            :data="tokens"
+            :title="titles[key]"
             :height="isFullScreen ? '100%' : '500px'"
           />
         </v-col>
       </template>
     </v-row>
     <v-row v-else>
-      <template v-for="(filtered, i) in data.filteredWords">
-        <v-col
-          v-if="showWords[i]"
-          :key="JSON.stringify(filtered) + i"
-          :cols="showWords.filter((x) => x).length >= 2 ? 6 : 12"
-        >
-          <word-cloud-beta :data="filtered" :title="titles[i]" />
+      <template v-for="(data, key) of filteredData">
+        <v-col v-if="isVisible[key]" :key="key" :cols="check.length >= 2 ? 6 : 12">
+          <word-cloud :data="data" :title="titles[key]" />
         </v-col>
       </template>
     </v-row>
@@ -213,22 +186,19 @@ function crossRotate(word) {
         </v-card-text>
         <v-container>
           <v-expansion-panels flat accordion>
-            <v-expansion-panel
-              v-for="(title, i) in ['Keyword occurences', 'All occurences']"
-              :key="title"
-            >
+            <v-expansion-panel v-for="(tokens, key) of data" :key="key">
               <v-expansion-panel-header>
-                {{ title }}
+                {{ titles[key] }}
                 <template #actions>
-                  <v-chip small>{{ data.words[1 - i] ? data.words[1 - i].length : 0 }}</v-chip>
+                  <v-chip small>{{ tokens.length }}</v-chip>
                   <v-icon> $expand </v-icon>
                 </template>
               </v-expansion-panel-header>
               <v-expansion-panel-content>
                 <v-list dense>
-                  <v-list-item v-for="entry in data.words[1 - i]" :key="entry[0]">
+                  <v-list-item v-for="[token, count] of tokens" :key="token">
                     <v-list-item-content>
-                      <v-list-item-title>{{ entry[0] }}:&nbsp;{{ entry[1] }}</v-list-item-title>
+                      <v-list-item-title>{{ token }}:&nbsp;{{ count }}</v-list-item-title>
                     </v-list-item-content>
                   </v-list-item>
                 </v-list>

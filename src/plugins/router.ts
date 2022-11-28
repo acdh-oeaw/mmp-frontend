@@ -4,20 +4,20 @@ import VueRouter from 'vue-router';
 import AuthorDetail from '@/components/AuthorDetail.vue';
 import CaseStudies from '@/components/CaseStudies.vue';
 import CaseStudy from '@/components/CaseStudy.vue';
-import CompareAuthors from '@/components/CompareAuthors.vue';
 import Debug from '@/components/Debug.vue';
 import FullscreenView from '@/components/FullscreenView.vue';
-import GraphBeta from '@/components/GraphWrapperBeta.vue';
+import GeoMap from '@/components/geo-map/geo-map-wrapper.vue';
 import Home from '@/components/Home.vue';
 import Interface from '@/components/InterfaceWrapper.vue';
 import KeywordDetail from '@/components/KeywordDetail.vue';
 import List from '@/components/List.vue';
 import ListAll from '@/components/ListAll.vue';
-import Map from '@/components/MapWrapper.vue';
+import CompareAuthors from '@/components/network-graph/CompareAuthors.vue';
+import Graph from '@/components/network-graph/GraphWrapper.vue';
 import PassageDetail from '@/components/PassageDetail.vue';
 import PlaceDetail from '@/components/PlaceDetail.vue';
 import SpatialDetail from '@/components/SpatialDetail.vue';
-import WordCloudWrapper from '@/components/WordCloudWrapper.vue';
+import WordCloudWrapper from '@/components/word-cloud/word-cloud-wrapper.vue';
 
 Vue.use(VueRouter);
 
@@ -50,7 +50,7 @@ const routes = [
       {
         path: 'map',
         name: 'Map',
-        component: Map,
+        component: GeoMap,
         children: [
           {
             path: 'spatial/:id',
@@ -66,12 +66,12 @@ const routes = [
       },
       {
         path: 'graph',
-        name: 'Network Graph Beta',
-        component: GraphBeta,
+        name: 'Network Graph',
+        component: Graph,
         children: [
           {
             path: 'detail/:id',
-            name: 'Keyword Detail Beta',
+            name: 'Keyword Detail',
             component: KeywordDetail,
           },
         ],
@@ -130,7 +130,7 @@ const routes = [
       {
         path: 'map',
         name: 'Map Fullscreen',
-        component: Map,
+        component: GeoMap,
         children: [
           {
             path: 'spatial/:id',
@@ -146,12 +146,12 @@ const routes = [
       },
       {
         path: 'graph',
-        name: 'Network Graph Beta Fullscreen',
-        component: GraphBeta,
+        name: 'Network Graph Fullscreen',
+        component: Graph,
         children: [
           {
             path: 'detail/:id',
-            name: 'Keyword Detail Beta Fullscreen',
+            name: 'Keyword Detail Fullscreen',
             component: KeywordDetail,
           },
         ],
@@ -206,7 +206,7 @@ export const router = new VueRouter({
   scrollBehavior(to, from, savedPosition) {
     if (savedPosition) return savedPosition;
 
-    // if (to.hash) return { el: to.hash };
+    if (to.hash) return { selector: to.hash };
 
     return { x: 0, y: 0 };
   },

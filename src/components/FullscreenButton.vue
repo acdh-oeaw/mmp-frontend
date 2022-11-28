@@ -18,7 +18,7 @@ const isFullScreen = useFullScreen();
 
 function press() {
   router.push({
-    name: isFullScreen
+    name: isFullScreen.value
       ? route.name?.replace(' Fullscreen', '')
       : `${props.usecase ? getComponentFromTab(route.query.tab) : route.name} Fullscreen`,
     // FIXME:
@@ -32,7 +32,7 @@ function press() {
 function getComponentFromTab(tab: 'cloud' | 'graph' | 'map') {
   const components = {
     cloud: 'Word Cloud',
-    graph: 'Network Graph Beta',
+    graph: 'Network Graph',
     map: 'Map',
   };
   return components[tab];

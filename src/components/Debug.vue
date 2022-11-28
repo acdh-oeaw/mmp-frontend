@@ -1,10 +1,10 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 
-import Graph from '@/components/GraphWrapperBeta.vue';
 import List from '@/components/List.vue';
 import MapWrapper from '@/components/MapWrapper.vue';
-import WordCloudWrapper from '@/components/WordCloudWrapper.vue';
+import Graph from '@/components/network-graph/GraphWrapper.vue';
+import WordCloudWrapper from '@/components/network-graph/WordCloudWrapper.vue';
 
 const passage = ref(0);
 const place = ref(0);

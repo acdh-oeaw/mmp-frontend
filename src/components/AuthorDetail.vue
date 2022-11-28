@@ -89,11 +89,13 @@ const parentRoute = useParentRoute();
           :color="keywordColors[keyword.art]"
           small
           @click="
-            $store.commit('addAutoCompleteSelectedValues', {
-              id: keyword.id,
-              label: keyword.stichwort,
-              kind: 'keyword',
-            })
+            $store.commit('addAutoCompleteSelectedValues', [
+              {
+                id: keyword.id,
+                label: keyword.stichwort,
+                kind: 'keyword',
+              },
+            ])
           "
         >
           {{ keyword.stichwort }}

@@ -5,7 +5,7 @@ import { computed, onMounted, ref } from 'vue';
 const props = defineProps<{
   data: Array<any>;
   title?: string;
-  height?: number;
+  height?: string | number;
 }>();
 
 // FIXME: unclear if/why this is necessary

@@ -1,6 +1,8 @@
 <script lang="ts" setup>
 import bgImage from '@/assets/images/europe.jpg';
 import CaseStudy from '@/components/CaseStudy.vue';
+
+const caseStudyId = Math.floor(Math.random() * 8) + 2;
 </script>
 
 <template>
@@ -59,7 +61,7 @@ import CaseStudy from '@/components/CaseStudy.vue';
         </v-container>
       </div>
     </v-parallax>
-    <case-study :id="Math.floor(Math.random() * 8) + 2" />
+    <case-study :id="caseStudyId" />
   </div>
 </template>
 

@@ -12,9 +12,9 @@ import {
   useCaseStudyTimeTableById,
   usePassages,
 } from '@/api';
-import Graph from '@/components/GraphWrapperBeta.vue';
-import MapWrapper from '@/components/MapWrapper.vue';
-import WordCloudWrapper from '@/components/WordCloudWrapper.vue';
+import MapWrapper from '@/components/geo-map/geo-map-wrapper.vue';
+import Graph from '@/components/network-graph/GraphWrapper.vue';
+import WordCloudWrapper from '@/components/word-cloud/word-cloud-wrapper.vue';
 import { getAuthorLabel, getDateRangeLabel } from '@/lib/get-label';
 import { useSearchFilters } from '@/lib/search/use-search-filters';
 
@@ -260,6 +260,7 @@ function getIconFromType(type: EventType) {
                         prepend-icon="mdi-format-quote-close"
                       >
                         {{ passage.display_label }}
+                        <v-icon>mdi-chevron-right</v-icon>
                       </v-list-item>
                     </v-list-group>
                   </v-list-group>
@@ -269,7 +270,13 @@ function getIconFromType(type: EventType) {
             </v-tab-item>
           </v-tabs-items>
         </template>
-        <v-skeleton-loader v-else type="text, heading, text@11" />
+        <template v-else>
+          <v-skeleton-loader type="text@3" />
+          <br />
+          <v-skeleton-loader type="heading" />
+          <br />
+          <v-skeleton-loader type="text@50" />
+        </template>
       </v-col>
     </v-row>
   </v-container>
