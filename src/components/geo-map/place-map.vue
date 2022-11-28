@@ -2,25 +2,14 @@
 import 'leaflet/dist/leaflet.css';
 
 import type { Map as LeafletMap, Marker as LeafletMarker } from 'leaflet';
-import { type LatLngBoundsLiteral, map as createMap, marker, tileLayer } from 'leaflet';
+import { map as createMap, marker, tileLayer } from 'leaflet';
 import { onMounted, onUnmounted, watch } from 'vue';
+
+import { config, initialViewState } from '@/lib/geo-map/geo-map.config';
 
 const props = defineProps<{
   point: { lat: number; lng: number };
 }>();
-
-const baseLayer = {
-  url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-  attribution:
-    'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
-};
-
-const initialViewState = {
-  bounds: [
-    [34.016242, 5.488281],
-    [71.663663, 34.667969],
-  ] as LatLngBoundsLiteral,
-};
 
 const context = {
   map: null as LeafletMap | null,
@@ -28,10 +17,10 @@ const context = {
 };
 
 onMounted(() => {
-  const map = createMap('geo-map', { preferCanvas: true }).fitBounds(initialViewState.bounds);
+  const map = createMap('geo-map', config.options).fitBounds(initialViewState.bounds);
   context.map = map;
 
-  tileLayer(baseLayer.url, { attribution: baseLayer.attribution }).addTo(map);
+  tileLayer(config.baseLayer.url, { attribution: config.baseLayer.attribution }).addTo(map);
 
   const point = marker([props.point.lat, props.point.lng]).addTo(map);
   context.point = point;

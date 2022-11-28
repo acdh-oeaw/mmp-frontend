@@ -9,6 +9,7 @@ import Visualization from '@/components/network-graph/network-graph.vue';
 import { isNonEmptyArray } from '@/lib/is-nonempty-array';
 import { isNotNullable } from '@/lib/is-not-nullable';
 import { nodeColors } from '@/lib/network-graph/network-graph.config';
+import type { GraphData } from '@/lib/network-graph/network-graph.types';
 import { useSearchFilters } from '@/lib/search/use-search-filters';
 import { unique } from '@/lib/unique';
 import { useFullScreen } from '@/lib/use-full-screen';
@@ -98,7 +99,13 @@ const keywordGraphQuey = useKeywordGraph(
 
 const isLoading = computed(() => keywordGraphQuey.isInitialLoading.value);
 
-const graph = computed(() => keywordGraphQuey.data.value ?? { nodes: [], edges: [] });
+const graph = computed<GraphData>(() => {
+  const graph: GraphData = { edges: [], nodes: [] };
+
+  if (keywordGraphQuey.data.value == null) return graph;
+
+  return keywordGraphQuey.data.value.map();
+});
 
 const nodeCount = computed(() => {
   return graph.value.nodes.length;

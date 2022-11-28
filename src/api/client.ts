@@ -82,6 +82,8 @@ export namespace GetAutoComplete {
   } & PaginatedResponse<{
     id: number;
     kind: ResourceKind;
+    // configurable via backend
+    additional_fields: Record<string, { label: string; data: string }>;
     app_name: string;
     label: string;
     url: string;

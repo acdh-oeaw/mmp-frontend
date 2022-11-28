@@ -95,7 +95,7 @@ const isLoading = computed(() => {
   );
 });
 
-const graph = computed(() => {
+const graph = computed<GraphData>(() => {
   const graph: GraphData = { edges: [], nodes: [] };
 
   if (isLoading.value) return graph;
@@ -188,11 +188,12 @@ const nodeCount = computed(() => {
 });
 
 const weightedGraph = computed(() => {
-  // FIXME:
-  const ret = JSON.parse(JSON.stringify(graph.value));
+  // FIXME: are we doing this only because d3 will substitute edge.source and edge.target ids with node object references?
+  const ret: GraphData = JSON.parse(JSON.stringify(graph.value));
 
+  // TODO: should we remove nodes not matching current type filters from the graph, or just make them invisible but keep the layout?
   // filter types
-  const blacklist: Array<any> = [];
+  const blacklist: Array<GraphNode['id']> = [];
 
   ret.nodes = ret.nodes.filter((node) => {
     if (typefilters.value[node.type]) return true;
@@ -208,7 +209,7 @@ const weightedGraph = computed(() => {
   ret.edges.forEach((edge) => {
     const targetNode = ret.nodes.find((node) => node.id === edge.source);
 
-    edge.color = targetNode.type === 'autor' ? '#F85' : '#CCC';
+    edge.color = targetNode?.type === 'autor' ? '#F85' : '#CCC';
 
     if (targetNode?.conns) {
       targetNode.conns += 1;
@@ -342,6 +343,7 @@ const nodeObject: CanvasCustomRenderFn<NodeObject> = function nodeObject(node, c
     typeColor = lightenColor(typeColor, 0.3);
   }
 
+  // FIXME:
   if (route.params.id?.toString(10).split('+').includes(node.id.replace(/\D/g, ''))) {
     ctx.shadowColor = typeColor;
     ctx.shadowBlur = 15;
@@ -374,11 +376,12 @@ const areaPaint: CanvasPointerAreaPaintFn<NodeObject> = function areaPaint(node,
 function nodeClick(node: NodeObject) {
   // const q = node.detail_view_url.replace(/\D/g, '');
 
+  // FIXME:
   // code for implementing multiple selected nodes
   let q = route.params.id;
   const id = node.id.replace(/[^0-9]/g, '');
 
-  if (node.keyword_type === 'Author') {
+  if (node.type === 'autor') {
     router.push({
       name: isFullScreen.value
         ? 'Compare Authors Author Detail Fullscreen'

@@ -1,12 +1,10 @@
 <script lang="ts" setup>
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 import { useRoute } from 'vue-router/composables';
 
 import Sidebar from '@/components/Sidebar.vue';
 
 const route = useRoute();
-
-const drawer = ref(false);
 
 const isHomePage = computed(() => {
   return route.name === 'Home';
@@ -77,7 +75,7 @@ const backgroundColor = computed(() => {
         <v-col v-if="isDetailPage" cols="4" />
       </v-row>
     </v-app-bar>
-    <sidebar v-model="drawer" />
+    <sidebar />
   </div>
 </template>
 
