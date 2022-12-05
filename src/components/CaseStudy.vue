@@ -187,7 +187,7 @@ export default {
     const caseStudyQuery = useCaseStudyById({ id });
     const caseStudyTimeTableQuery = useCaseStudyTimeTableById({ id });
 
-    const passageQuery = usePassages({ use_case: props.usecase ?? route.params.id, limit: 200 }); // limit is not ideal here, TODO
+    const passageQuery = usePassages({ use_case: id, limit: 200 }); // limit is not ideal here, TODO:
 
     const isLoading = computed(() => {
       return [caseStudyQuery, caseStudyTimeTableQuery, passageQuery].some(
