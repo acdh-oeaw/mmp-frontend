@@ -163,11 +163,11 @@ export default {
     const route = useRoute();
     const store = useStore();
     // FIXME: does this really accept multiple ids? when clicking a node on the network graph it does, but this looks accidental?
-    const id = computed(() =>
-      route.params.id.includes('+')
-        ? route.params.id.split('+').map(Number)[0]
-        : Number(route.params.id)
-    );
+    const id = computed(() => {
+      return String(route.params.id).includes('+')
+        ? String(route.params.id).split('+').map(Number)[0]
+        : Number(route.params.id);
+    });
 
     const keywordQuery = useKeywordById({ id });
     const keywordByCenturyQuery = useKeywordByCenturyById({ id });

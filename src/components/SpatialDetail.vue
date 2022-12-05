@@ -91,11 +91,11 @@ export default {
     const route = useRoute();
     // FIXME: currently the map view encodes multiple ids as path param when a point is clicked
     // which has multiple overlapping spatial coverages, which is a really bad idea
-    const id = computed(() =>
-      route.params.id.startsWith('[')
-        ? route.params.id.slice(1, -1).split(',').map(Number)[0]
-        : Number(route.params.id)
-    );
+    const id = computed(() => {
+      return String(route.params.id).startsWith('[')
+        ? String(route.params.id).slice(1, -1).split(',').map(Number)[0]
+        : Number(route.params.id);
+    });
 
     const spatialCoverageQuery = useSpatialCoverageGeojsonById({ id });
 

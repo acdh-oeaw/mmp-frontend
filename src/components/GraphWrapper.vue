@@ -169,7 +169,7 @@ export default {
 
       // filter by connection to selected keyword
       if (this.$route.params.id) {
-        const neighborNodes = this.$route.params.id
+        const neighborNodes = String(this.$route.params.id)
           .split('+')
           .map((nodeId) => `archiv__keyword__${nodeId}`);
 
