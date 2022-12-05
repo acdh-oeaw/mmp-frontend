@@ -118,10 +118,10 @@ export default {
   },
   computed: {
     isFullScreen() {
-      return this.$route.name.includes('Fullscreen');
+      return this.$route.name?.includes('Fullscreen');
     },
     parentRoute() {
-      return this.$route.matches.at(-2);
+      return this.$route.matched.at(-2);
     },
     drawerWidth() {
       const widths = {
