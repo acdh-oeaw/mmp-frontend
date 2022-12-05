@@ -170,6 +170,7 @@ import Graph from '@/components/GraphWrapper.vue';
 import MapWrapper from '@/components/MapWrapper.vue';
 import WordCloudWrapper from '@/components/WordCloudWrapper.vue';
 import helpers from '@/helpers';
+import { isNotNullable } from '@/lib/is-not-nullable';
 
 export default {
   name: 'CaseStudy',
@@ -206,21 +207,19 @@ export default {
     });
 
     const events = computed(() => {
-      return caseStudyTimeTableQuery.data.value;
+      return caseStudyTimeTableQuery.data.value ?? [];
     });
 
     const passages = computed(() => {
-      return passageQuery.data.value;
+      return passageQuery.data.value?.results ?? [];
     });
 
     const texts = computed(() => {
-      if (passages.value == null) return caseStudyQuery.data.value;
-      return passages.value.results.map((passage) => passage.text);
+      return passages.value.map((passage) => passage.text).filter(isNotNullable);
     });
 
     const authors = computed(() => {
-      if (texts.value == null) return caseStudyQuery.data.value;
-      return texts.value.map((text) => text.autor).flat(1);
+      return texts.value.flatMap((text) => text.autor);
     });
 
     return {
@@ -239,11 +238,11 @@ export default {
       );
     },
     getPassagesByText(textID) {
-      return this.passages.results.filter((passage) => passage.text.id === textID);
+      return this.passages.filter((passage) => passage.text?.id === textID);
     },
     getPassagesByAuthor(authorID) {
-      return this.passages.results.filter((passage) =>
-        passage.text.autor.map((autor) => autor.id).includes(authorID)
+      return this.passages.filter((passage) =>
+        passage.text?.autor.map((autor) => autor.id).includes(authorID)
       );
     },
     removeDatesFromTitle(title) {
