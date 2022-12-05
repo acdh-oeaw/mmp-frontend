@@ -55,7 +55,7 @@
         </v-container>
       </div>
     </v-parallax>
-    <case-study :id="Math.floor(Math.random() * 8) + 2" />
+    <case-study :id="caseStudyId" />
   </div>
 </template>
 
@@ -73,6 +73,7 @@ export default {
   data() {
     return {
       bgImage,
+      caseStudyId: Math.floor(Math.random() * 8) + 2,
     };
   },
 };
