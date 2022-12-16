@@ -85,67 +85,7 @@
               <word-cloud-wrapper :usecase="id || $route.params.id" />
             </v-tab-item>
             <v-tab-item value="texts">
-              <v-list color="transparent">
-                <div v-for="author in removeDuplicates(authors, 'id')" :key="author.id">
-                  <v-list-group prepend-icon="mdi-account-edit">
-                    <template #activator>
-                      <v-list-item>
-                        <v-list-item-content>
-                          <v-list-item-title>
-                            {{ getOptimalName(author) }}
-                          </v-list-item-title>
-                          <v-list-item-subtitle>
-                            {{ getTextsByAuthor(author.id).length }}
-                            text{{ getTextsByAuthor(author.id).length === 1 ? '' : 's' }} and
-                          </v-list-item-subtitle>
-                          <v-list-item-subtitle>
-                            {{ getPassagesByAuthor(author.id).length }} passage{{
-                              getPassagesByAuthor(author.id).length === 1 ? '' : 's'
-                            }}
-                            found in this case study
-                          </v-list-item-subtitle>
-                        </v-list-item-content>
-                      </v-list-item>
-                    </template>
-                    <v-list-group
-                      v-for="text in getTextsByAuthor(author.id)"
-                      :key="text.id"
-                      :ripple="false"
-                      prepend-icon="mdi-book-open-variant"
-                      sub-group
-                      no-action
-                    >
-                      <template #activator>
-                        <v-list-item>
-                          <v-list-item-content>
-                            <v-list-item-title>
-                              {{ text.title }}
-                            </v-list-item-title>
-                            <v-list-item-subtitle>
-                              {{ getPassagesByText(text.id).length }} passage{{
-                                getPassagesByText(text.id).length === 1 ? '' : 's'
-                              }}
-                            </v-list-item-subtitle>
-                          </v-list-item-content>
-                        </v-list-item>
-                      </template>
-                      <v-list-item
-                        v-for="passage in getPassagesByText(text.id)"
-                        :key="passage.id"
-                        :to="{
-                          name: 'List',
-                          query: addParamsToQuery({ Passage: passage.id }),
-                        }"
-                        prepend-icon="mdi-format-quote-close"
-                      >
-                        {{ passage.display_label }}
-                        <v-icon>mdi-chevron-right</v-icon>
-                      </v-list-item>
-                    </v-list-group>
-                  </v-list-group>
-                  <v-divider inset />
-                </div>
-              </v-list>
+              <keyword-author-tab :data="passages" />
             </v-tab-item>
           </v-tabs-items>
         </template>
@@ -167,15 +107,16 @@ import { useRoute } from 'vue-router/composables';
 
 import { useCaseStudyById, useCaseStudyTimeTableById, usePassages } from '@/api';
 import Graph from '@/components/GraphWrapper.vue';
+import KeywordAuthorTab from '@/components/KeywordAuthorTab.vue';
 import MapWrapper from '@/components/MapWrapper.vue';
 import WordCloudWrapper from '@/components/WordCloudWrapper.vue';
 import helpers from '@/helpers';
-import { isNotNullable } from '@/lib/is-not-nullable';
 
 export default {
   name: 'CaseStudy',
   components: {
     Graph,
+    KeywordAuthorTab,
     MapWrapper,
     WordCloudWrapper,
   },
@@ -214,37 +155,14 @@ export default {
       return passageQuery.data.value?.results ?? [];
     });
 
-    const texts = computed(() => {
-      return passages.value.map((passage) => passage.text).filter(isNotNullable);
-    });
-
-    const authors = computed(() => {
-      return texts.value.flatMap((text) => text.autor);
-    });
-
     return {
       isLoading,
       study,
       events,
       passages,
-      texts,
-      authors,
     };
   },
   methods: {
-    getTextsByAuthor(authorID) {
-      return this.removeDuplicates(this.texts, 'id').filter((text) =>
-        text.autor.map((autor) => autor.id).includes(authorID)
-      );
-    },
-    getPassagesByText(textID) {
-      return this.passages.filter((passage) => passage.text?.id === textID);
-    },
-    getPassagesByAuthor(authorID) {
-      return this.passages.filter((passage) =>
-        passage.text?.autor.map((autor) => autor.id).includes(authorID)
-      );
-    },
     removeDatesFromTitle(title) {
       const ret = title.split(' ');
       ret.shift();

@@ -42,16 +42,21 @@
       <v-row>
         <v-col>
           <v-tabs v-model="tab" grow background-color="transparent">
-            <v-tab key="Over Time"> Over Time </v-tab>
-            <v-tab key="Geography"> Geography </v-tab>
+            <v-tab key="Authors">Authors</v-tab>
+            <v-tab key="Geography">Geography</v-tab>
+            <v-tab key="Over Time">Over Time</v-tab>
           </v-tabs>
           <v-tabs-items v-model="tab" background-color="transparent">
-            <v-tab-item key="Over Time">
-              <keyword-over-time v-if="!isLoading" :data="overtime" />
-              <v-skeleton-loader v-else type="image@2" />
+            <v-tab-item key="Authors">
+              <keyword-author-tab v-if="!isLoading" :data="passages" />
+              <v-skeleton-loader v-else type="text@10" />
             </v-tab-item>
             <v-tab-item key="Geography">
               <leaflet v-if="!isLoading" :data="geography" />
+              <v-skeleton-loader v-else type="image@2" />
+            </v-tab-item>
+            <v-tab-item key="Over Time">
+              <keyword-over-time v-if="!isLoading" :data="overtime" />
               <v-skeleton-loader v-else type="image@2" />
             </v-tab-item>
           </v-tabs-items>
@@ -147,6 +152,7 @@ import {
 import helpers from '@/helpers';
 import { useStore } from '@/lib/use-store';
 
+import KeywordAuthorTab from './KeywordAuthorTab.vue';
 import KeywordListItem from './KeywordListItem.vue';
 import KeywordOverTime from './KeywordOverTime.vue';
 import Leaflet from './Leaflet.vue';
@@ -154,6 +160,7 @@ import Leaflet from './Leaflet.vue';
 export default {
   name: 'KeywordDetail',
   components: {
+    KeywordAuthorTab,
     KeywordListItem,
     KeywordOverTime,
     Leaflet,
@@ -163,11 +170,14 @@ export default {
     const route = useRoute();
     const store = useStore();
     // FIXME: does this really accept multiple ids? when clicking a node on the network graph it does, but this looks accidental?
+    // ANSWER: It should and it did, TODO: Reimplement
     const id = computed(() => {
       return String(route.params.id).includes('+')
         ? String(route.params.id).split('+').map(Number)[0]
         : Number(route.params.id);
     });
+
+    // console.log('id', id);
 
     const keywordQuery = useKeywordById({ id });
     const keywordByCenturyQuery = useKeywordByCenturyById({ id });
@@ -175,6 +185,7 @@ export default {
     const passagesQuery = usePassages(
       computed(() => ({
         [store.state.apiParams.intersect ? 'key_word_and' : 'key_word']: id.value,
+        limit: 500, // FIXME: you already know
       }))
     );
     const spatialCoveragesQuery = useSpatialCoveragesGeojson(
