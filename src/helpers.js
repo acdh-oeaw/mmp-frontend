@@ -81,6 +81,19 @@ export default {
       obj?.name_fr ||
       obj?.name_it ||
       obj?.name_gr,
+    getTextsByAuthor(authorID, texts) {
+      return this.removeDuplicates(texts, 'id').filter((text) =>
+        text.autor.map((autor) => autor.id).includes(authorID)
+      );
+    },
+    getPassagesByText(textID, passages) {
+      return passages.filter((passage) => passage.text?.id === textID);
+    },
+    getPassagesByAuthor(authorID, passages) {
+      return passages.filter((passage) =>
+        passage.text?.autor.map((autor) => autor.id).includes(authorID)
+      );
+    },
     lightenColor(color, fade) {
       if (!color) return color;
       const numArray = color
