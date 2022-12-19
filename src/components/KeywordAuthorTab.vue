@@ -52,7 +52,19 @@
             }"
             prepend-icon="mdi-format-quote-close"
           >
-            {{ passage.display_label }}
+            <p>
+              {{ passage.display_label }}
+              <v-chip-group column>
+                <v-chip
+                  v-for="keyword in passage.key_word"
+                  :key="keyword"
+                  :color="keyColors.chips[keyword.art]"
+                  small
+                >
+                  {{ keyword.stichwort }}
+                </v-chip>
+              </v-chip-group>
+            </p>
             <v-icon>mdi-chevron-right</v-icon>
           </v-list-item>
         </v-list-group>
@@ -72,7 +84,7 @@ export default {
   mixins: [helpers],
   props: ['data'],
   setup(props) {
-    //console.log('props', props);
+    console.log('props', props);
     const texts = computed(() => {
       return props.data.map((passage) => passage.text).filter(isNotNullable);
     });
@@ -88,3 +100,9 @@ export default {
   },
 };
 </script>
+
+<style lang="scss">
+.v-chip-group .v-chip {
+  margin: 2px 4px 2px 0;
+}
+</style>
