@@ -35,6 +35,9 @@ export default new Vuex.Store({
       intersect: true,
       slider: 'passage',
     },
+    graphOptions: {
+      showNeighborsOnly: true,
+    },
   },
   mutations: {
     addItems: (state, { items, label }) => {
@@ -109,6 +112,9 @@ export default new Vuex.Store({
     },
     setApiParam: (state, { key, val }) => {
       state.apiParams[key] = val;
+    },
+    setGraphParam: (state, { key, val }) => {
+      state.graphOptions[key] = val;
     },
   },
 });

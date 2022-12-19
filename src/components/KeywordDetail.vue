@@ -39,6 +39,12 @@
     </v-list-item>
     <v-divider />
     <v-container>
+      <v-col>
+        <v-checkbox
+          v-model="neighbors"
+          label="Only show keywords that are directly connected to selection"
+        />
+      </v-col>
       <v-row>
         <v-col>
           <v-tabs v-model="tab" grow background-color="transparent">
@@ -195,6 +201,15 @@ export default {
       }))
     );
 
+    const neighbors = computed(() => ({
+      get() {
+        return this.$store.state.graphOptions.showNeighborsOnly;
+      },
+      set(val) {
+        this.$store.commit('setGraphParam', { key: 'showNeighborsOnly', val });
+      },
+    }));
+
     // TODO: granular loading states
     const isLoading = computed(() => {
       return [
@@ -238,6 +253,8 @@ export default {
       passages,
       passageCount: passagesQuery.data.value?.count,
       geography,
+
+      neighbors,
     };
   },
   data: () => ({

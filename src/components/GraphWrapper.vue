@@ -173,19 +173,21 @@ export default {
           .split('+')
           .map((nodeId) => `archiv__keyword__${nodeId}`);
 
-        if (neighborNodes.length && this.$route.query.showNeighborsOnly) {
+        if (neighborNodes.length /* && this.$route.query.showNeighborsOnly */) {
+          console.log('graph', ret);
           ret.nodes = ret.nodes.filter((node) => {
             if (
               ret.edges.filter(
                 (edge) =>
-                  (edge.source === node.id || edge.target === node.id) &&
-                  (neighborNodes.includes(edge.source) || neighborNodes.includes(edge.target))
+                  (edge.source.id === node.id || edge.target.id === node.id) &&
+                  (neighborNodes.includes(edge.source.id) || neighborNodes.includes(edge.target.id))
               ).length
             )
               return true;
             blacklist.push(node.id);
             return false;
           });
+          console.log('graph', ret);
         }
       }
 
