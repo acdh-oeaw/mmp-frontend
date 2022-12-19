@@ -52,19 +52,19 @@
             }"
             prepend-icon="mdi-format-quote-close"
           >
-            <p>
+            <div class="passage-list-item">
               {{ passage.display_label }}
               <v-chip-group column>
                 <v-chip
                   v-for="keyword in passage.key_word"
-                  :key="keyword"
+                  :key="keyword.id"
                   :color="keyColors.chips[keyword.art]"
                   small
                 >
                   {{ keyword.stichwort }}
                 </v-chip>
               </v-chip-group>
-            </p>
+            </div>
             <v-icon>mdi-chevron-right</v-icon>
           </v-list-item>
         </v-list-group>
@@ -101,7 +101,11 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style>
+.passage-list-item {
+  padding: 5px 0;
+}
+
 .v-chip-group .v-chip {
   margin: 2px 4px 2px 0;
 }
