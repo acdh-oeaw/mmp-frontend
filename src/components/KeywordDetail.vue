@@ -39,6 +39,12 @@
     </v-list-item>
     <v-divider />
     <v-container>
+      <v-col>
+        <v-checkbox
+          v-model="neighbors"
+          label="Only show keywords that are directly connected to selection"
+        />
+      </v-col>
       <v-row>
         <v-col>
           <v-tabs v-model="tab" grow background-color="transparent">
@@ -48,7 +54,7 @@
           </v-tabs>
           <v-tabs-items v-model="tab" background-color="transparent">
             <v-tab-item key="Authors">
-              <keyword-author-tab v-if="!isLoading" :data="passages" />
+              <keyword-author-tab v-if="!isLoading" :passages="passages" />
               <v-skeleton-loader v-else type="text@10" />
             </v-tab-item>
             <v-tab-item key="Geography">
@@ -282,6 +288,14 @@ export default {
       return retArr.sort((a, b) => b.count - a.count);
 
       // return retArr;
+    },
+    neighbors: {
+      get() {
+        return this.$store.state.graphOptions.showNeighborsOnly;
+      },
+      set(val) {
+        this.$store.commit('setGraphParam', { key: 'showNeighborsOnly', val });
+      },
     },
     xPressLinkName() {
       if (this.$route.name.includes('compare')) {

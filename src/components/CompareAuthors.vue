@@ -175,9 +175,9 @@ export default {
     weightedGraph() {
       if (!this.graph) return null;
       const ret = JSON.parse(JSON.stringify(this.graph));
+      const blacklist = [];
 
       // filter types
-      const blacklist = [];
       ret.nodes = ret.nodes.filter((node) => {
         if (this.typefilters[node.keyword_type]) return true;
         blacklist.push(node.id);

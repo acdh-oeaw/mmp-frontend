@@ -13,8 +13,8 @@
                 text{{ getTextsByAuthor(author.id, texts).length === 1 ? '' : 's' }} and
               </v-list-item-subtitle>
               <v-list-item-subtitle>
-                {{ getPassagesByAuthor(author.id, data).length }} passage{{
-                  getPassagesByAuthor(author.id, data).length === 1 ? '' : 's'
+                {{ getPassagesByAuthor(author.id, passages).length }} passage{{
+                  getPassagesByAuthor(author.id, passages).length === 1 ? '' : 's'
                 }}
                 found.
               </v-list-item-subtitle>
@@ -36,15 +36,15 @@
                   {{ text.title }}
                 </v-list-item-title>
                 <v-list-item-subtitle>
-                  {{ getPassagesByText(text.id, data).length }} passage{{
-                    getPassagesByText(text.id, data).length === 1 ? '' : 's'
+                  {{ getPassagesByText(text.id, passages).length }} passage{{
+                    getPassagesByText(text.id, passages).length === 1 ? '' : 's'
                   }}
                 </v-list-item-subtitle>
               </v-list-item-content>
             </v-list-item>
           </template>
           <v-list-item
-            v-for="passage in getPassagesByText(text.id, data)"
+            v-for="passage in getPassagesByText(text.id, passages)"
             :key="passage.id"
             :to="{
               name: 'List',
@@ -82,11 +82,10 @@ import { isNotNullable } from '@/lib/is-not-nullable';
 export default {
   name: 'KeywordAuthorTab',
   mixins: [helpers],
-  props: ['data'],
+  props: ['passages'],
   setup(props) {
-    console.log('props', props);
     const texts = computed(() => {
-      return props.data.map((passage) => passage.text).filter(isNotNullable);
+      return props.passages.map((passage) => passage.text).filter(isNotNullable);
     });
 
     const authors = computed(() => {
