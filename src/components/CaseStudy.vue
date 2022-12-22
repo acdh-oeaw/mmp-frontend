@@ -85,7 +85,7 @@
               <word-cloud-wrapper :usecase="id || $route.params.id" />
             </v-tab-item>
             <v-tab-item value="texts">
-              <keyword-author-tab :data="passages" />
+              <keyword-author-tab :passages="passages" />
             </v-tab-item>
           </v-tabs-items>
         </template>

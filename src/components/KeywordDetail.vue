@@ -54,7 +54,7 @@
           </v-tabs>
           <v-tabs-items v-model="tab" background-color="transparent">
             <v-tab-item key="Authors">
-              <keyword-author-tab v-if="!isLoading" :data="passages" />
+              <keyword-author-tab v-if="!isLoading" :passages="passages" />
               <v-skeleton-loader v-else type="text@10" />
             </v-tab-item>
             <v-tab-item key="Geography">
@@ -201,15 +201,6 @@ export default {
       }))
     );
 
-    const neighbors = computed(() => ({
-      get() {
-        return this.$store.state.graphOptions.showNeighborsOnly;
-      },
-      set(val) {
-        this.$store.commit('setGraphParam', { key: 'showNeighborsOnly', val });
-      },
-    }));
-
     // TODO: granular loading states
     const isLoading = computed(() => {
       return [
@@ -253,8 +244,6 @@ export default {
       passages,
       passageCount: passagesQuery.data.value?.count,
       geography,
-
-      neighbors,
     };
   },
   data: () => ({
@@ -299,6 +288,14 @@ export default {
       return retArr.sort((a, b) => b.count - a.count);
 
       // return retArr;
+    },
+    neighbors: {
+      get() {
+        return this.$store.state.graphOptions.showNeighborsOnly;
+      },
+      set(val) {
+        this.$store.commit('setGraphParam', { key: 'showNeighborsOnly', val });
+      },
     },
     xPressLinkName() {
       if (this.$route.name.includes('compare')) {

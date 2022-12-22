@@ -163,6 +163,7 @@ export default {
       return this.graph?.nodes?.length;
     },
     weightedGraph() {
+      // This is a tricky one. Usually, as this function gets calld, all edges have already been converted so that their targets and sources are object. If you refresh or follow a direct link, this doesnt happen. So I wrote this code expecting both cases.
       if (!this.graph) return null;
       const ret = { ...this.graph };
       const blacklist = [];
@@ -173,21 +174,25 @@ export default {
           .split('+')
           .map((nodeId) => `archiv__keyword__${nodeId}`);
 
-        if (neighborNodes.length /* && this.$route.query.showNeighborsOnly */) {
-          console.log('graph', ret);
+        if (neighborNodes.length && this.$store.state.graphOptions.showNeighborsOnly) {
           ret.nodes = ret.nodes.filter((node) => {
             if (
               ret.edges.filter(
                 (edge) =>
-                  (edge.source.id === node.id || edge.target.id === node.id) &&
-                  (neighborNodes.includes(edge.source.id) || neighborNodes.includes(edge.target.id))
+                  (edge.source.id === node.id ||
+                    edge.target.id === node.id ||
+                    edge.source === node.id ||
+                    edge.target === node.id) &&
+                  (neighborNodes.includes(edge.source.id) ||
+                    neighborNodes.includes(edge.target.id) ||
+                    neighborNodes.includes(edge.source) ||
+                    neighborNodes.includes(edge.target))
               ).length
             )
               return true;
             blacklist.push(node.id);
             return false;
           });
-          console.log('graph', ret);
         }
       }
 
@@ -197,14 +202,21 @@ export default {
         blacklist.push(node.id);
         return false;
       });
-
+      // Remove edges with no source or target node
       ret.edges = ret.edges.filter(
-        (edge) => !blacklist.includes(edge.target.id) && !blacklist.includes(edge.source.id)
+        (edge) =>
+          !(
+            blacklist.includes(edge.target.id) ||
+            blacklist.includes(edge.source.id) ||
+            blacklist.includes(edge.target) ||
+            blacklist.includes(edge.source)
+          )
       );
-
       // assign weight
       ret.edges.forEach((edge) => {
-        const targetNode = ret.nodes.filter((node) => node.id === edge.source.id)[0];
+        const targetNode = ret.nodes.filter((node) =>
+          [edge.source.id, edge.source].includes(node.id)
+        )[0];
         edge.color =
           this.lightenColor(this.keyColors.graph[targetNode?.keyword_type], 0.3) || '#D5D5D5';
 
