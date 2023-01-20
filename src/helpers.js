@@ -6,7 +6,7 @@ export default {
         Ethnonym: '#00897B', // teal darken-1
         Name: '#FFB300', // amber darken-1
         Region: '#43A047', // green darken-1
-        Author: '#FF0000', // red
+        author: '#FF5858', // red
         Unsicher: '#808080', // grey
       },
       chips: {
@@ -100,14 +100,14 @@ export default {
         .replace('#', '')
         .match(/.{2}/g)
         .map((hex) => parseInt(hex, 16));
-      return `rgba(${numArray.join(',')}, ${fade})`;
+      return `rgba(${numArray.join()}, ${fade})`;
     },
     // this worked first try please clap
     removeDuplicates: (arr, keys) => {
       let newKeys;
       switch (typeof keys) {
         case 'number':
-          newKeys = [keys.toString()];
+          newKeys = [String(keys)];
           break;
         case 'string':
           newKeys = [keys];

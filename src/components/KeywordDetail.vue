@@ -256,28 +256,24 @@ export default {
       if (!this.keywords || !this.graph) return retArr;
 
       // const keyIds = this.data.keywords.map((x) => x.id);
-      const edges = this.graph.edges.map((edge) => ({
-        source: this.getNumbersFromString(edge.source),
-        target: this.getNumbersFromString(edge.target),
-      }));
+      const edges = this.graph.edges;
 
       // edges = this.removeDuplicates(edges, ['source', 'target']);
 
-      const targets = edges.map((edge) => edge.target);
+      const targets = edges.map((edge) => ({ target: edge.target, count: edge.count }));
       const count = {};
 
       targets.forEach((target) => {
-        count[target] = count[target] ? count[target] + 1 : 1;
+        count[target.target] = count[target.target]
+          ? count[target.target] + target.count
+          : target.count;
       });
-
-      Object.entries(count).forEach((entry) => {
+      Object.entries(count).forEach(([target, count]) => {
         retArr.push({
-          id: entry[0],
-          label: this.removeRoot(
-            this.graph.nodes.filter((node) => this.getNumbersFromString(node.id) === entry[0])[0]
-              .label
-          ),
-          count: entry[1],
+          key: target,
+          id: this.getNumbersFromString(target),
+          label: this.graph.nodes.filter((node) => node.key === target)[0].label,
+          count,
         });
       });
 
@@ -298,10 +294,6 @@ export default {
       },
     },
     xPressLinkName() {
-      if (this.$route.name.includes('compare')) {
-        if (this.isFullScreen) return 'Compare Authors Fullscreen';
-        return 'Compare Authors';
-      }
       if (this.isFullScreen) return 'Network Graph Fullscreen';
       return 'Network Graph';
     },

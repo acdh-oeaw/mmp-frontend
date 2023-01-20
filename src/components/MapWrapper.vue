@@ -64,11 +64,11 @@ export default {
       }
 
       return {
-        stelle__text__autor: route.query['Author']?.toString().split('+').join(','),
-        stelle: route.query['Passage']?.toString().split('+').join(','),
-        key_word: route.query['Keyword']?.toString().split('+').join(','),
-        stelle__use_case: route.query['Use Case']?.toString().split('+').join(','),
-        stelle__ort: route.query['Place']?.toString().split('+').join(','),
+        stelle__text__autor: route.query['Author']?.toString().split('+').join(),
+        stelle: route.query['Passage']?.toString().split('+').join(),
+        key_word: route.query['Keyword']?.toString().split('+').join(),
+        stelle__use_case: route.query['Use Case']?.toString().split('+').join(),
+        stelle__ort: route.query['Place']?.toString().split('+').join(),
         ...getDateFilters(),
         // TODO: respect other config options like intersect
       };

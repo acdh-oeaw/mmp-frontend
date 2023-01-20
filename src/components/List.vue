@@ -143,7 +143,7 @@ export default {
           if (prop && prop !== '0') {
             if (i === 1) {
               // passage
-              address += `&ids=${prop.toString().split('+').join(',')}`;
+              address += `&ids=${String(prop).split('+').join()}`;
             } else {
               if (i > 1) j = i - 1; // because terms is missing an element
               else j = i;
@@ -154,18 +154,18 @@ export default {
       } else {
         Object.keys(query).forEach((cat) => {
           if (query[cat] && cat !== 'time') {
-            const arr = query[cat].toString(10).split('+');
+            const arr = String(query[cat]).split('+');
             arr.forEach((val) => {
               address += `&${terms[cat]}=${val}`;
             });
           }
         });
 
-        if (query.Passage) address += `&ids=${query.Passage.toString().replaceAll('+', ',')}`;
+        if (query.Passage) address += `&ids=${String(query.Passage).replaceAll('+', ',')}`;
 
         if (query.time) {
           const key = this.$store.state.slider === 'passage' ? '' : 'text__';
-          if (query.time.toString().includes('+')) {
+          if (String(query.time).includes('+')) {
             const times = query.time.split('+');
             address += `&${key}start_date=${times[0]}&${key}start_date_lookup=gt`;
             address += `&${key}end_date=${times[1]}&${key}end_date_lookup=lt`;

@@ -61,6 +61,11 @@
           </v-expansion-panel-header>
           <v-expansion-panel-content>
             <v-list v-if="!loading">
+              <v-list-item v-if="!usecases.count">
+                <v-list-item-content>
+                  <v-list-item-title class="grey--text"> none </v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
               <v-list-item
                 v-for="usecase in usecases.results"
                 :key="usecase.id"
@@ -110,6 +115,11 @@
           </v-expansion-panel-header>
           <v-expansion-panel-content>
             <v-list v-if="!loading">
+              <v-list-item v-if="!passages.count">
+                <v-list-item-content>
+                  <v-list-item-title class="grey--text"> none </v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
               <v-list-item
                 v-for="passage in passages.results"
                 :key="passage.id"
@@ -185,7 +195,7 @@ export default {
             params.id
           }&format=json&has_usecase=${this.hasUsecase}`,
         ];
-        const prefetched = this.$store.state.fetchedResults[urls.toString()];
+        const prefetched = this.$store.state.fetchedResults[String(urls)];
 
         if (prefetched) {
           [this.data, this.usecases, this.passages] = prefetched;
@@ -194,7 +204,7 @@ export default {
           Promise.all(urls.map((x) => fetch(x))).then((res) => {
             Promise.all(res.map((x) => x.json()))
               .then((jsonRes) => {
-                this.$store.commit('addToResults', { req: urls.toString(), res: jsonRes });
+                this.$store.commit('addToResults', { req: String(urls), res: jsonRes });
                 [this.data, this.usecases, this.passages, this.keywords] = jsonRes;
               })
               .catch((err) => {
