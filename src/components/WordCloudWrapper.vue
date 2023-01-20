@@ -1,6 +1,10 @@
 <template>
   <v-card width="100%" color="transparent" :height="isFullScreen ? 'calc(100vh - 4px)' : 500">
-    <v-overlay absolute opacity=".2" :value="isLoading">
+    <v-overlay
+      absolute
+      opacity=".2"
+      :value="isLoading || !Object.values(data.filteredWords).some((x) => x.length)"
+    >
       <h1 v-if="isLoading" class="no-nodes">
         <v-progress-circular indeterminate color="#0F1226" />
       </h1>
@@ -147,7 +151,7 @@ export default {
       // FIXME:
       if (Object.values(props).some(isNotNullable)) {
         return {
-          ids: props.passage?.toString().split('+').join(','),
+          ids: String(props.passage).split('+').join(),
           text__autor: props.author,
           key_word: props.keyword,
           use_case: props.usecase,
@@ -158,7 +162,7 @@ export default {
       function getDateFilters() {
         if (route.query['time'] == null) return {};
 
-        const [start, end] = route.query['time'].toString().includes('+')
+        const [start, end] = String(route.query['time']).includes('+')
           ? route.query['time'].split('+')
           : [route.query['time'] - 5, route.query['time'] + 4];
 
@@ -173,7 +177,7 @@ export default {
       }
 
       return {
-        ids: route.query['Passage']?.toString().split('+').join(','),
+        ids: route.query['Passage']?.toString().split('+').join(),
         text__autor: route.query['Author']?.toString().split('+'),
         key_word: route.query['Keyword']?.toString().split('+'),
         use_case: route.query['Use Case']?.toString().split('+'),
@@ -181,6 +185,13 @@ export default {
         ...getDateFilters(),
       };
     });
+
+    if (!Object.values(searchFilters.value).some((x) => x !== undefined)) {
+      return {
+        isLoading: false,
+        data: { words: [[], []], filteredWords: [[], []] },
+      };
+    }
 
     const passageNlpDataQuery = usePassageNlpData(searchFilters);
     const passageKeywordsQuery = usePassageKeywords(searchFilters);
@@ -251,6 +262,7 @@ export default {
   }),
   computed: {
     maxOccurence() {
+      if (!this.words[0].length && !this.words[1].length) return 0;
       return Math.max(...[...this.words[0], ...this.words[1]].map((word) => word[1])); // this returns the max occurence of all words and keywords
     },
     showWords() {

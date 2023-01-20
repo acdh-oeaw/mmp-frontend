@@ -22,6 +22,9 @@
       :refresh="renderKey"
       :auto-pause-redraw="false"
       :node-rel-size="4"
+      node-id="key"
+      :force-center="() => null"
+      :force-link="linkForces"
     />
     <router-view />
     <v-speed-dial
@@ -118,7 +121,7 @@
           <v-checkbox
             v-model="typefilters[key]"
             :color="keyColors.graph[key]"
-            :label="key"
+            :label="key.charAt(0).toUpperCase() + key.slice(1)"
             dense
             hide-details
           />
@@ -129,6 +132,8 @@
 </template>
 
 <script>
+import { forceLink } from 'd3';
+
 import FullscreenButton from '@/components/FullscreenButton.vue';
 import Visualization from '@/components/Visualization2D.vue';
 import helpers from '@/helpers';
@@ -154,6 +159,7 @@ export default {
       Ethnonym: true,
       Keyword: true,
       Name: true,
+      author: true,
     },
     renderKey: 0,
     zoomToFit: true,
@@ -170,27 +176,31 @@ export default {
 
       // filter by connection to selected keyword
       if (this.$route.params.id) {
-        const neighborNodes = String(this.$route.params.id)
-          .split('+')
-          .map((nodeId) => `archiv__keyword__${nodeId}`);
+        let neighborNodes;
+
+        if (this.$route.name.includes('Keyword Detail'))
+          neighborNodes = String(this.$route.params.id)
+            .split('+')
+            .map((nodeId) => `keyword_${nodeId}`);
+        else neighborNodes = [`autor_${this.$route.params.id}`];
 
         if (neighborNodes.length && this.$store.state.graphOptions.showNeighborsOnly) {
           ret.nodes = ret.nodes.filter((node) => {
             if (
               ret.edges.filter(
                 (edge) =>
-                  (edge.source.id === node.id ||
-                    edge.target.id === node.id ||
-                    edge.source === node.id ||
-                    edge.target === node.id) &&
-                  (neighborNodes.includes(edge.source.id) ||
-                    neighborNodes.includes(edge.target.id) ||
+                  (edge.source.key === node.key ||
+                    edge.target.key === node.key ||
+                    edge.source === node.key ||
+                    edge.target === node.key) &&
+                  (neighborNodes.includes(edge.source.key) ||
+                    neighborNodes.includes(edge.target.key) ||
                     neighborNodes.includes(edge.source) ||
                     neighborNodes.includes(edge.target))
               ).length
             )
               return true;
-            blacklist.push(node.id);
+            blacklist.push(node.key);
             return false;
           });
         }
@@ -198,16 +208,16 @@ export default {
 
       // filter types
       ret.nodes = ret.nodes.filter((node) => {
-        if (this.typefilters[node.keyword_type]) return true;
-        blacklist.push(node.id);
+        if (this.typefilters[node.type] || this.typefilters[node.kind]) return true;
+        blacklist.push(node.key);
         return false;
       });
       // Remove edges with no source or target node
       ret.edges = ret.edges.filter(
         (edge) =>
           !(
-            blacklist.includes(edge.target.id) ||
-            blacklist.includes(edge.source.id) ||
+            blacklist.includes(edge.target.key) ||
+            blacklist.includes(edge.source.key) ||
             blacklist.includes(edge.target) ||
             blacklist.includes(edge.source)
           )
@@ -215,24 +225,37 @@ export default {
       // assign weight
       ret.edges.forEach((edge) => {
         const targetNode = ret.nodes.filter((node) =>
-          [edge.source.id, edge.source].includes(node.id)
+          [edge.source.key, edge.source].includes(node.key)
         )[0];
         edge.color =
-          this.lightenColor(this.keyColors.graph[targetNode?.keyword_type], 0.3) || '#D5D5D5';
+          this.lightenColor(this.keyColors.graph[targetNode?.type], 0.3 ** edge.count) || '#D5D5D5';
 
-        if (targetNode?.targets) targetNode.targets += 1;
-        else if (targetNode) targetNode.targets = 2;
+        if (targetNode?.targets) targetNode.targets += edge.count || 1;
+        else if (targetNode) targetNode.targets = edge.count || 1;
       });
 
+      // color nodes
       ret.nodes = ret.nodes.map((node) => {
         const retNode = node;
-        retNode.color = this.keyColors.graph[node.keyword_type];
+        retNode.color = this.keyColors.graph[node.type] || this.keyColors.graph[node.kind];
         return retNode;
       });
+
+      // fixate authors
+      ret.nodes
+        .filter((node) => node.kind === 'author')
+        .forEach((node, i, authors) => {
+          if (authors.length >= 2) {
+            const rad = (i / authors.length) * 2 * Math.PI;
+            node.fx = Math.cos(rad) * 400;
+            node.fy = Math.sin(rad) * 200;
+          }
+        });
+
       return ret;
     },
     types() {
-      const ret = this.graph?.nodes?.map((x) => x.keyword_type);
+      const ret = this.graph?.nodes?.map((x) => x.type || x.kind);
       // console.log('types', ret);
       return [...new Set(ret)]; // removes duplicates
     },
@@ -242,10 +265,10 @@ export default {
       handler(query) {
         let address = `${
           import.meta.env.VITE_APP_MMP_API_BASE_URL
-        }/archiv/keyword-network/?has_usecase=${this.hasUsecase}`;
+        }/archiv/keyword-author-network/?`; // TODO: Re-add has_usecase
         const { intersect } = this.$store.state.apiParams;
         const terms = {
-          Author: intersect ? 'text__autor_and' : 'text__autor',
+          Author: intersect ? 'text__autor' : 'text__autor', // TODO: Re-add text__autor_and
           // Passage: 'rvn_stelle_key_word_keyword', // uses ids now
           Keyword: intersect ? 'key_word_and' : 'key_word',
           'Use Case': 'use_case',
@@ -260,7 +283,7 @@ export default {
             if (prop && prop !== '0') {
               if (i === 1) {
                 // passage
-                address += `&ids=${prop.toString().split('+').join(',')}`;
+                address += `&ids=${String(prop).replaceAll('+', ',')}`;
               } else {
                 if (i > 2) j = i - 1; // because terms is missing an element
                 else j = i;
@@ -273,6 +296,7 @@ export default {
             if (query[cat] && cat !== 'time') {
               const arr = query[cat].split('+');
               arr.forEach((val) => {
+                if (cat === 'Author') address += `&author=${val}`;
                 address += `&${terms[cat]}=${val}`;
               });
             }
@@ -286,7 +310,7 @@ export default {
 
           if (query.time) {
             const key = this.$store.state.slider === 'passage' ? '' : 'text__';
-            if (query.time.toString().includes('+')) {
+            if (String(query.time).includes('+')) {
               const times = query.time.split('+');
               address += `&${key}start_date=${times[0]}&${key}start_date_lookup=gt`;
               address += `&${key}end_date=${times[1]}&${key}end_date_lookup=lt`;
@@ -341,15 +365,15 @@ export default {
       let csvContent = 'ID,Keyword,Type,Sources,Targets\r\n';
       const toCsv = this.weightedGraph.nodes.map((node) => {
         const csvObj = {
-          ID: node.id.replace(/\D/g, ''),
+          ID: node.id,
           Keyword: node.label.replace(',', ''),
-          Type: node.keyword_type,
+          Type: node.type,
           Sources: [],
           Targets: [],
         };
         this.weightedGraph.edges.forEach((edge) => {
-          if (edge.source.id === node.id) csvObj.Targets.push(this.removeRoot(edge.target.label));
-          else if (edge.target.id === node.id)
+          if (edge.source.key === node.key) csvObj.Targets.push(this.removeRoot(edge.target.label));
+          else if (edge.target.key === node.key)
             csvObj.Sources.push(this.removeRoot(edge.source.label));
         });
         csvObj.Targets = csvObj.Targets.join('/');
@@ -358,7 +382,7 @@ export default {
       });
 
       toCsv.forEach((node) => {
-        csvContent += `${Object.values(node).join(',')}\r\n`;
+        csvContent += `${Object.values(node).join()}\r\n`;
       });
 
       const link = document.createElement('a');
@@ -371,8 +395,8 @@ export default {
       const list = this.weightedGraph.nodes;
       const ret = {};
       list.forEach((node) => {
-        if (ret[node.keyword_type]) ret[node.keyword_type].push(node.label);
-        else ret[node.keyword_type] = [node.label];
+        if (ret[node.type]) ret[node.type].push(node.label);
+        else ret[node.type] = [node.label];
       });
 
       let retString = '';
@@ -390,7 +414,7 @@ export default {
     },
     nodeObject(node, ctx, globalScale) {
       ctx.beginPath();
-      const label = this.removeRoot(node.label);
+      const label = node.label;
 
       const fontSize = ((Math.log2(node.targets) || 1) + 18) / globalScale;
       ctx.font = `${fontSize}px Roboto, Sans-Serif`;
@@ -398,16 +422,21 @@ export default {
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
 
-      const typeColor = this.keyColors.graph[node.keyword_type] || 'grey';
-
-      if (this.$route.params.id?.toString(10).split('+').includes(node.id.replace(/\D/g, ''))) {
-        ctx.shadowColor = typeColor;
+      if (
+        (node.kind === 'author' &&
+          this.$route.name.includes('Graph Author Detail') &&
+          this.$route.params.id === node.id) ||
+        (node.kind !== 'author' &&
+          this.$route.name.includes('Keyword Detail') &&
+          String(this.$route.params.id).split('+').includes(String(node.id)))
+      ) {
+        ctx.shadowColor = node.color;
         ctx.shadowBlur = 15;
         ctx.fillStyle = '#F1F5FA';
-        ctx.strokeStyle = typeColor;
+        ctx.strokeStyle = node.color;
         ctx.lineWidth = 2 / globalScale;
       } else {
-        ctx.fillStyle = typeColor;
+        ctx.fillStyle = node.color;
         ctx.strokeStyle = '#F1F5FA';
         ctx.lineWidth = 1.7 / globalScale;
       }
@@ -432,31 +461,35 @@ export default {
       );
     },
     nodeClick(node) {
-      // const q = node.detail_view_url.replace(/\D/g, '');
+      const id = this.$route.params.id;
+      const routeName = this.$route.name;
+      let ret = {};
 
-      // code for implementing multiple selected nodes
-      let q = this.$route.params.id;
-      const id = node.id.replace(/[^0-9]/g, '');
-      // add or remove specific node from query
-      if (q && !this.usecase) {
-        q = q.split('+');
-        if (q.includes(id)) q = q.filter((x) => x !== id);
-        else q.push(id);
-        q = q.join('+');
-      } else q = id;
-
-      if (q) {
-        this.$router.push({
-          name: this.isFullScreen ? 'Keyword Detail Fullscreen' : 'Keyword Detail',
-          params: { id: q },
-          query: this.usecase ? { 'Use Case': this.usecase } : this.$route.query,
-        });
+      if (node.kind === 'author') {
+        if (node.id === id && routeName.includes('Graph Author Detail')) {
+          ret.name = 'Network Graph';
+          ret.params = {};
+        } else {
+          ret.name = 'Graph Author Detail';
+          ret.params = { id: node.id };
+        }
       } else {
-        this.$router.push({
-          name: this.isFullScreen ? 'Network Graph Fullscreen' : 'Network Graph',
-          query: this.$route.query,
-        });
+        ret.name = 'Keyword Detail';
+        if (routeName.includes('Graph Author Detail') || !id) ret.params = { id: node.id };
+        else if (String(id).includes(node.id)) {
+          ret.params = {
+            id: id
+              .split('+')
+              .filter((x) => x !== String(node.id))
+              .join('+'),
+          };
+          if (!ret.params.id) ret.name = 'Network Graph';
+        } else ret.params = { id: [...String(id).split('+'), node.id].join('+') };
       }
+
+      if (this.fullscreen) ret.name += ' Fullscreen';
+      (ret.query = this.usecase ? { 'Use Case': this.usecase } : this.$route.query),
+        this.$router.push(ret);
     },
     nodeDragEnd(node) {
       node.fx = node.x;
@@ -468,6 +501,11 @@ export default {
         node.fy = undefined;
       });
       this.renderKey += 1;
+    },
+    linkForces() {
+      if (this.$route.query.Author)
+        return forceLink().strength((link) => (link.source.kind === 'author' ? 0.7 : 0));
+      return forceLink();
     },
   },
 };

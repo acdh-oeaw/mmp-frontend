@@ -106,41 +106,17 @@
                 </v-btn>
               </v-col>
               <v-col>
-                <v-btn-toggle background-color="transparent" borderless>
-                  <v-btn
-                    text
-                    small
-                    class="view-picker"
-                    :disabled="currentView === 'Network Graph'"
-                    :class="{ active: currentView === 'Network Graph' }"
-                    :to="{ name: 'Network Graph', query: addParamsToQuery(query) }"
-                  >
-                    Network Graph
-                  </v-btn>
-                  <v-menu offset-y left>
-                    <template #activator="{ on, attrs }">
-                      <v-btn icon text small class="view-picker" v-bind="attrs" v-on="on">
-                        <v-icon>mdi-chevron-down</v-icon>
-                      </v-btn>
-                    </template>
-                    <v-list>
-                      <v-list-item
-                        :disabled="currentView === 'Network Graph'"
-                        :class="{ active: currentView === 'Network Graph' }"
-                        :to="{ name: 'Network Graph', query: addParamsToQuery(query) }"
-                      >
-                        <v-list-item-title>Graph</v-list-item-title>
-                      </v-list-item>
-                      <v-list-item
-                        :disabled="currentView === 'Compare Authors'"
-                        :class="{ active: currentView === 'Compare Authors' }"
-                        :to="{ name: 'Compare Authors', query: addParamsToQuery(query) }"
-                      >
-                        <v-list-item-title>Compare Authors</v-list-item-title>
-                      </v-list-item>
-                    </v-list>
-                  </v-menu>
-                </v-btn-toggle>
+                <v-btn
+                  text
+                  block
+                  small
+                  class="view-picker"
+                  :disabled="currentView === 'Network Graph'"
+                  :class="{ active: currentView === 'Network Graph' }"
+                  :to="{ name: 'Network Graph', query: addParamsToQuery(query) }"
+                >
+                  Network Graph
+                </v-btn>
               </v-col>
               <v-col>
                 <v-btn
@@ -173,7 +149,7 @@
               <v-col cols="12">
                 <v-select
                   v-model="currentView"
-                  :items="['List', 'Network Graph', 'Compare Authors', 'Map', 'Word Cloud']"
+                  :items="['List', 'Network Graph', 'Map', 'Word Cloud']"
                   label="View as"
                 />
               </v-col>
@@ -360,7 +336,12 @@ export default {
   computed: {
     filteredSearchedSorted() {
       const { items } = this.$store.state.autocomplete;
-      if (!this.textInput) return items;
+
+      if (!this.textInput)
+        return this.removeDuplicates(
+          [...this.$store.state.autocomplete.items, ...this.$store.state.autocomplete.input],
+          ['group', 'id']
+        );
       // console.log('items', items);
       const keywordSheet = {
         Keyword: 'phrase',
@@ -385,7 +366,10 @@ export default {
       fuse = fuse.search(this.textInput);
       fuse = fuse.map((res) => res.item);
 
-      return fuse;
+      return this.removeDuplicates(
+        [...this.$store.state.autocomplete.input, ...fuse],
+        ['group', 'id']
+      );
     },
     currentView: {
       get() {
@@ -432,10 +416,10 @@ export default {
             if (cat === 'time' && filteredParams[cat]) {
               this.range = filteredParams[cat].split('+').map((x) => parseInt(x, 10) / 10);
             } else if (filteredParams[cat]) {
-              let ids = filteredParams[cat].toString().split('+');
+              let ids = String(filteredParams[cat]).split('+');
               const idCount = ids.length;
               this.skeletonChips += idCount;
-              ids = ids.join(',');
+              ids = ids.join();
               fetch(
                 `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/${apiParams[cat].url}/?ids=${ids}`
               )

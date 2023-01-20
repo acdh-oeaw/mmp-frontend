@@ -73,7 +73,7 @@ export default {
   data() {
     return {
       bgImage,
-      caseStudyId: Math.floor(Math.random() * 8) + 2,
+      caseStudyId: 4,
     };
   },
 };

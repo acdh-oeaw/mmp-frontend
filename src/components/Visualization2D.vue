@@ -25,6 +25,7 @@ export default {
     linkDirectionalParticleSpeed: Number,
     linkDirectionalParticleWidth: Number,
     linkWidth: String,
+    nodeId: String,
     nodeCanvasObject: Function,
     nodeCanvasObjectMode: Function,
     nodePointerAreaPaint: Function,
@@ -122,6 +123,7 @@ export default {
         .linkDirectionalParticleWidth(this.linkDirectionalParticleWidth || 4)
         .linkDirectionalArrowLength(this.linkDirectionalArrowLength || 0)
         .linkDirectionalArrowRelPos(this.linkDirectionalArrowRelPos || 0.5)
+        .nodeId(this.nodeId || 'id')
         .graphData(
           this.transformedData(
             this.graph || {

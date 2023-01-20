@@ -4,7 +4,6 @@ import VueRouter from 'vue-router';
 import AuthorDetail from '@/components/AuthorDetail.vue';
 import CaseStudies from '@/components/CaseStudies.vue';
 import CaseStudy from '@/components/CaseStudy.vue';
-import CompareAuthors from '@/components/CompareAuthors.vue';
 import Debug from '@/components/Debug.vue';
 import FullscreenView from '@/components/FullscreenView.vue';
 import Graph from '@/components/GraphWrapper.vue';
@@ -74,21 +73,9 @@ const routes = [
             name: 'Keyword Detail',
             component: KeywordDetail,
           },
-        ],
-      },
-      {
-        path: 'compare',
-        name: 'Compare Authors',
-        component: CompareAuthors,
-        children: [
-          {
-            path: 'detail/:id',
-            name: 'Compare Authors Detail',
-            component: KeywordDetail,
-          },
           {
             path: 'author/:id',
-            name: 'Compare Authors Author Detail',
+            name: 'Graph Author Detail',
             component: AuthorDetail,
           },
         ],
@@ -154,21 +141,9 @@ const routes = [
             name: 'Keyword Detail Fullscreen',
             component: KeywordDetail,
           },
-        ],
-      },
-      {
-        path: 'compare',
-        name: 'Compare Authors Fullscreen',
-        component: CompareAuthors,
-        children: [
-          {
-            path: 'detail/:id',
-            name: 'Compare Authors Detail Fullscreen',
-            component: KeywordDetail,
-          },
           {
             path: 'author/:id',
-            name: 'Compare Authors Author Detail Fullscreen',
+            name: 'Graph Author Detail Fullscreen',
             component: AuthorDetail,
           },
         ],
