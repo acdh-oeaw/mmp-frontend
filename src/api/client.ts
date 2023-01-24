@@ -37,9 +37,11 @@ import type {
 } from '@/api/models';
 import type {
   AutoComplete,
+  AutoCompleteItem,
   DateLookupSearchParams,
   Feature,
   FeatureWithBoundingBox,
+  GraphData,
   LimitOffsetPaginationSearchParams,
   NumberLookupSearchParams,
   PageNumberPaginationSearchParams,
@@ -49,10 +51,11 @@ import type {
   SortableSearchParams,
   StringLookupSearchParams,
 } from '@/api/types';
+import { createResourceKey } from '@/lib/resource-key';
 
 //
 
-const baseUrl = import.meta.env.VITE_APP_MMP_API_BASE_URL;
+const baseUrl = import.meta.env['VITE_APP_MMP_API_BASE_URL'];
 
 const baseUrls = {
   api: new URL('api/', baseUrl),
@@ -75,20 +78,14 @@ export namespace GetAutoComplete {
       q?: string;
       kind?: Array<ResourceKind>;
     };
-  export type Response = {
+  export type Response = PaginatedResponse<AutoCompleteItem> & {
     q: string;
     filter_on: Array<ResourceKind>;
     page_size: number;
-  } & PaginatedResponse<{
-    id: number;
-    kind: ResourceKind;
-    app_name: string;
-    label: string;
-    url: string;
-  }>;
+  };
 }
 
-export function getAutoComplete(
+export async function getAutoComplete(
   searchParams: GetAutoComplete.SearchParams
 ): Promise<GetAutoComplete.Response> {
   const url = createUrl({
@@ -96,7 +93,30 @@ export function getAutoComplete(
     pathname: '',
     searchParams,
   });
-  return request(url, options);
+  const response: GetAutoComplete.Response = await request(url, options);
+  /**
+   * Add additional `type` field for keywords, configured backend-side via `additional_fields`.
+   */
+  const results = response.results.map((result) => {
+    if (result.kind === 'keyword') {
+      const additionalFields = (
+        result as AutoCompleteItem & {
+          additional_fields: { art: { label: string; data: KeywordType } };
+        }
+      ).additional_fields;
+
+      result.type = additionalFields.art.data;
+    }
+
+    /**
+     * Add a `key` which is globally unique - identifiers provided by the api are
+     * only unique per model. We need this for the search-autocomplete which allows
+     * searching over multiple models.
+     */
+    return { ...result, key: createResourceKey({ kind: result.kind, id: result.id }) };
+  });
+
+  return { ...response, results };
 }
 
 export namespace GetAuthorsAutoComplete {
@@ -352,7 +372,7 @@ export namespace GetAuthors {
       end_date?: string;
       end_date_lookup?: DateLookupSearchParams;
 
-      end_date_year?: string;
+      end_date_year?: number;
       end_date_year_lookup?: DateLookupSearchParams;
 
       /** Places (AND query). */
@@ -452,22 +472,22 @@ export namespace GetKeywords {
       /** Keywords are associated with these places (AND query). */
       rvn_stelle_key_word_keyword__text__autor__ort?: Array<Place['id']>;
 
-      rvn_stelle_key_word_keyword__text__autor__start_date_year?: string;
+      rvn_stelle_key_word_keyword__text__autor__start_date_year?: number;
       rvn_stelle_key_word_keyword__text__autor__start_date_year_lookup?: DateLookupSearchParams;
 
-      rvn_stelle_key_word_keyword__text__autor__end_date_year?: string;
+      rvn_stelle_key_word_keyword__text__autor__end_date_year?: number;
       rvn_stelle_key_word_keyword__text__autor__end_date_year_lookup?: DateLookupSearchParams;
 
-      rvn_stelle_key_word_keyword__text__not_before?: string;
+      rvn_stelle_key_word_keyword__text__not_before?: number;
       rvn_stelle_key_word_keyword__text__not_before_lookup?: DateLookupSearchParams;
 
-      rvn_stelle_key_word_keyword__text__not_after?: string;
+      rvn_stelle_key_word_keyword__text__not_after?: number;
       rvn_stelle_key_word_keyword__text__not_after_lookup?: DateLookupSearchParams;
 
-      rvn_stelle_key_word_keyword__start_date?: string;
+      rvn_stelle_key_word_keyword__start_date?: number;
       rvn_stelle_key_word_keyword__start_date_lookup?: DateLookupSearchParams;
 
-      rvn_stelle_key_word_keyword__end_date?: string;
+      rvn_stelle_key_word_keyword__end_date?: number;
       rvn_stelle_key_word_keyword__end_date_lookup?: DateLookupSearchParams;
 
       /** Keywords are associated with these usecases (AND query). */
@@ -616,8 +636,12 @@ export namespace GetPassages {
        */
       text__art?: Array<SkosConcept['id']>;
 
-      /** Related places (AND query). */
-      ort?: Array<Place['id']>;
+      /**
+       * Related places (AND query).
+       *
+       * Removed from data model.
+       */
+      // ort?: Array<Place['id']>;
 
       summary?: string;
       summary_lookup?: StringLookupSearchParams;
@@ -649,16 +673,16 @@ export namespace GetPassages {
       end_date?: number;
       end_date_lookup?: DateLookupSearchParams;
 
-      text__start_date?: string;
+      text__start_date?: number;
       text__start_date_lookup?: DateLookupSearchParams;
 
-      text__end_date?: string;
+      text__end_date?: number;
       text__end_date_lookup?: DateLookupSearchParams;
 
-      text__autor__start_date_year?: string;
+      text__autor__start_date_year?: number;
       text__autor__start_date_year_lookup?: DateLookupSearchParams;
 
-      text__autor__end_date_year?: string;
+      text__autor__end_date_year?: number;
       text__autor__end_date_year_lookup?: DateLookupSearchParams;
     };
   export type Response = PaginatedResponse<
@@ -768,10 +792,10 @@ export namespace GetTexts {
       /** Authors (AND query). */
       autor?: Array<Author['id']>;
 
-      autor__start_date_year?: string;
+      autor__start_date_year?: number;
       autor__start_date_year_lookup?: DateLookupSearchParams;
 
-      autor__end_date_year?: string;
+      autor__end_date_year?: number;
       autor__end_date_year_lookup?: DateLookupSearchParams;
 
       title?: string;
@@ -813,7 +837,7 @@ export namespace GetTexts {
       rvn_stelle_text_text__use_case?: Array<CaseStudy['id']>;
     };
   export type Response = PaginatedResponse<
-    Omit<Text, 'autor' | 'art' | 'ort'> & {
+    Omit<Text, 'art' | 'autor' | 'ort'> & {
       /** Authors. */
       autor: Array<AuthorNormalized>;
       /**
@@ -838,7 +862,7 @@ export namespace GetTextById {
   export type PathParams = {
     id: Text['id'];
   };
-  export type Response = Omit<Text, 'autor' | 'art' | 'ort'> & {
+  export type Response = Omit<Text, 'art' | 'autor' | 'ort'> & {
     /** Authors. */
     autor: Array<AuthorNormalized>;
     /**
@@ -1036,7 +1060,7 @@ export namespace GetTextTopicRelations {
     weight_lookup?: NumberLookupSearchParams;
   };
   export type Response = PaginatedResponse<
-    Omit<TextTopicRelation, 'topic' | 'text'> & {
+    Omit<TextTopicRelation, 'text' | 'topic'> & {
       text?: PassageNormalized | null;
       topic?: TopicNormalized | null;
     }
@@ -1054,7 +1078,7 @@ export namespace GetTextTopicRelationById {
   export type PathParams = {
     id: TextTopicRelation['id'];
   };
-  export type Response = Omit<TextTopicRelation, 'topic' | 'text'> & {
+  export type Response = Omit<TextTopicRelation, 'text' | 'topic'> & {
     text?: PassageNormalized | null;
     topic?: TopicNormalized | null;
   };
@@ -1091,17 +1115,17 @@ export function getTopicById(params: GetTopicById.PathParams): Promise<GetTopicB
 
 //
 
-export type PlaceGeojson = { id: Place['id'] } & Feature<
+export type PlaceGeojson = Feature<
   Point,
-  Pick<PlaceNormalized, 'name' | 'name_antik' | 'name_de' | 'name_fr' | 'name_gr' | 'kategorie'> & {
+  Pick<PlaceNormalized, 'kategorie' | 'name_antik' | 'name_de' | 'name_fr' | 'name_gr' | 'name'> & {
     art: { id: SkosConcept['id']; label: SkosConcept['pref_label'] } | null;
   }
->;
+> & { id: Place['id'] };
 
 export namespace GetPlacesGeojson {
-  export type SearchParams = PageNumberPaginationSearchParams &
-    SortableSearchParams &
-    Omit<GetPlaces.SearchParams, 'limit' | 'offset'>;
+  export type SearchParams = Omit<GetPlaces.SearchParams, 'limit' | 'offset'> &
+    PageNumberPaginationSearchParams &
+    SortableSearchParams;
   export type Response = PaginatedGeoJsonResponse<PlaceGeojson>;
 }
 
@@ -1128,20 +1152,20 @@ export function getPlaceGeojsonById(
   return request(url, options);
 }
 
-export type FuzzyPlaceGeojson = { id: Place['id'] } & Feature<
+export type FuzzyPlaceGeojson = Feature<
   GeometryCollection,
   Pick<
     PlaceNormalized,
-    'name' | 'name_antik' | 'name_de' | 'name_fr' | 'name_gr' | 'art' | 'kategorie'
+    'art' | 'kategorie' | 'name_antik' | 'name_de' | 'name_fr' | 'name_gr' | 'name'
   > & {
     art: { id: SkosConcept['id']; label: SkosConcept['pref_label'] } | null;
   }
->;
+> & { id: Place['id'] };
 
 export namespace GetFuzzyPlacesGeojson {
-  export type SearchParams = PageNumberPaginationSearchParams &
-    SortableSearchParams &
-    Omit<GetPlaces.SearchParams, 'limit' | 'offset'>;
+  export type SearchParams = Omit<GetPlaces.SearchParams, 'limit' | 'offset'> &
+    PageNumberPaginationSearchParams &
+    SortableSearchParams;
   export type Response = PaginatedGeoJsonResponse<FuzzyPlaceGeojson>;
 }
 
@@ -1172,17 +1196,31 @@ export type SpatialCoverageSearchParams = {
   id?: SpatialCoverage['id'];
 
   /** Keywords (AND query). */
+  key_word_and?: Array<Keyword['id']>;
+  /** Keywords (OR query). */
   key_word?: Array<Keyword['id']>;
   /** Passages (AND query). */
   stelle?: Array<Passage['id']>;
   /** Usecases (AND query). */
   stelle__use_case?: Array<CaseStudy['id']>;
-  /** Places mentioned in passage (AND query). */
-  stelle__ort?: Array<Place['id']>;
+  /**
+   * Places mentioned in passage (AND query).
+   *
+   * Removed from data model.
+   */
+  // stelle__ort?: Array<Place['id']>;
   /** Places mentioned in related texts (AND query). */
   stelle__text__ort?: Array<Place['id']>;
   /** Related authors (AND query). */
+  stelle__text__autor_and?: Array<Author['id']>;
+  /** Related authors (OR query). */
   stelle__text__autor?: Array<Author['id']>;
+  /** Keywords of associated passages (AND query). */
+  stelle__key_word_and?: Array<Author['id']>;
+  /** Keywords of associated passages (OR query). */
+  stelle__key_word?: Array<Author['id']>;
+  /** Type of keywords of associated passages. */
+  stelle__key_word__art?: KeywordType;
   /**
    * Genres of related texts (AND query).
    *
@@ -1208,12 +1246,13 @@ export type SpatialCoverageSearchParams = {
 
   stelle__text__autor__end_date_year?: number;
   stelle__text__autor__end_date_year_lookup?: DateLookupSearchParams;
+
+  stelle__has_usecase?: boolean;
 };
 
-export type ConeGeojson = { id: SpatialCoverage['id'] } & Feature<
-  Polygon,
-  SpatialCoverageGeojsonProperties
->;
+export type ConeGeojson = Feature<Polygon, SpatialCoverageGeojsonProperties> & {
+  id: SpatialCoverage['id'];
+};
 
 export namespace GetConesGeojson {
   export type SearchParams = PageNumberPaginationSearchParams &
@@ -1245,10 +1284,10 @@ export function getConeGeojsonById(
   return request(url, options);
 }
 
-export type SpatialCoverageGeojson = { id: SpatialCoverage['id'] } & FeatureWithBoundingBox<
+export type SpatialCoverageGeojson = FeatureWithBoundingBox<
   Polygon,
   SpatialCoverageGeojsonProperties
->;
+> & { id: SpatialCoverage['id'] };
 
 export namespace GetSpatialCoveragesGeojson {
   export type SearchParams = PageNumberPaginationSearchParams &
@@ -1280,10 +1319,10 @@ export function getSpatialCoverageGeojsonById(
   return request(url, options);
 }
 
-export type LinesPointsGeojson = { id: SpatialCoverage['id'] } & FeatureWithBoundingBox<
+export type LinesPointsGeojson = FeatureWithBoundingBox<
   GeometryCollection,
   SpatialCoverageGeojsonProperties
->;
+> & { id: SpatialCoverage['id'] };
 
 export namespace GetLinesPointsGeojson {
   export type SearchParams = PageNumberPaginationSearchParams &
@@ -1454,16 +1493,31 @@ export namespace GetCaseStudyTimetableById {
   export type PathParams = {
     id: CaseStudy['id'];
   };
-  export type Response = Array<{
-    id: CaseStudy['id'];
-    start_date: number;
-    end_date: number;
-    ent_type: 'autor' | 'event' | 'text';
-    ent_title: string;
-    ent_description: string;
-    /** Pathname only */
-    ent_detail_view: UrlString;
-  }>;
+  export type Response = Array<
+    {
+      id: number;
+      start_date: number;
+      end_date: number;
+      ent_type: 'autor' | 'event' | 'text';
+      ent_title: string;
+      ent_description: string;
+      /** Pathname only */
+      ent_detail_view: UrlString;
+    } & (
+      | {
+          id: Author['id'];
+          ent_type: 'autor';
+        }
+      | {
+          id: Event['id'];
+          ent_type: 'event';
+        }
+      | {
+          id: Text['id'];
+          ent_type: 'text';
+        }
+    )
+  >;
 }
 
 export function getCaseStudyTimetableById(
@@ -1497,43 +1551,14 @@ export function getKeywordByCenturyById(
 }
 
 export namespace GetKeywordGraph {
-  export type SearchParams = GetPassages.SearchParams;
-  export type Response = {
-    nodes: Array<{
-      id: Keyword['id'];
-      type: 'archiv__keyword';
-      label: string;
-      /** Pathname only. */
-      detail_view_url: UrlString;
-      /** Pathname only. */
-      as_graph: UrlString;
-      keyword_type: KeywordType;
-    }>;
-    edges: Array<{
-      id: number;
-      source: string;
-      target: string;
-      type: 'e';
-    }>;
-    types: {
-      nodes: [
-        {
-          id: 'archiv__keyword';
-          label: 'Keyword';
-          color: '#006699';
-        }
-      ];
-      edges: [
-        {
-          id: 'e';
-          color: '#990066';
-        }
-      ];
-    };
-  };
+  export type SearchParams = Omit<
+    GetPassages.SearchParams,
+    keyof LimitOffsetPaginationSearchParams | keyof SortableSearchParams
+  >;
+  export type Response = GraphData;
 }
 
-export function getKeywordGraph(
+export async function getKeywordGraph(
   searchParams: GetKeywordGraph.SearchParams
 ): Promise<GetKeywordGraph.Response> {
   const url = createUrl({
@@ -1544,8 +1569,32 @@ export function getKeywordGraph(
   return request(url, options);
 }
 
+export namespace GetKeywordsByAuthorsGraph {
+  export type SearchParams = Omit<
+    GetPassages.SearchParams,
+    keyof LimitOffsetPaginationSearchParams | keyof SortableSearchParams
+  > & {
+    author?: Array<Author['id']>;
+  };
+  export type Response = GraphData;
+}
+
+export function getKeywordsByAuthorsGraph(
+  searchParams: GetKeywordsByAuthorsGraph.SearchParams
+): Promise<GetKeywordsByAuthorsGraph.Response> {
+  const url = createUrl({
+    baseUrl: baseUrls.archiv,
+    pathname: 'keyword-author-network/',
+    searchParams,
+  });
+  return request(url, options);
+}
+
 export namespace GetPassageKeywords {
-  export type SearchParams = GetPassages.SearchParams;
+  export type SearchParams = Omit<
+    GetPassages.SearchParams,
+    keyof LimitOffsetPaginationSearchParams | keyof SortableSearchParams
+  >;
   export type Response = {
     token_dict: Array<{ [token: string]: number }>;
   };
@@ -1559,7 +1608,10 @@ export function getPassageKeywords(
 }
 
 export namespace GetPassageNlpData {
-  export type SearchParams = GetPassages.SearchParams;
+  export type SearchParams = Omit<
+    GetPassages.SearchParams,
+    keyof LimitOffsetPaginationSearchParams | keyof SortableSearchParams
+  >;
   export type Response = {
     token: Array<string>;
     token_dict: Record<string, number>;

@@ -2,6 +2,8 @@
 
 import type { Feature as FeatureWithOptionalId, GeoJsonProperties, Geometry } from 'geojson';
 
+import type { Author, CaseStudy, Keyword, KeywordType, Passage, Place, Text } from '@/api/models';
+
 export namespace AutoComplete {
   export type SearchParams = {
     q?: string;
@@ -12,6 +14,25 @@ export namespace AutoComplete {
     pagination: { more: boolean };
   };
 }
+
+export type AutoCompleteItem = {
+  id: number;
+  key: ResourceKey;
+  // configurable via backend.
+  // additional_fields: Record<string, { label: string; data: string }> | null;
+  app_name: string;
+  label: string;
+  url: string;
+} & (
+  | {
+      kind: 'keyword';
+      // field is mapped client-side from `additional_fields` config.
+      type: KeywordType;
+    }
+  | {
+      kind: Exclude<ResourceKind, 'keyword'>;
+    }
+);
 
 export type PaginatedResponse<T> = {
   count: number;
@@ -55,7 +76,7 @@ export type PageNumberPaginationSearchParams = {
 /**
  * Foreign key relations are inlined depending on the `depth` config in Django serializers.
  */
-export type Normalized<T, Keys extends keyof T, Id extends string | number = number> = {
+export type Normalized<T, Keys extends keyof T, Id extends number | string = number> = {
   [Key in keyof T]: Key extends Keys
     ? Array<never> extends T[Key]
       ? null extends T[Key]
@@ -86,4 +107,35 @@ export type FeatureWithBoundingBox<
   bbox: [number, number, number, number];
 };
 
-export type ResourceKind = 'autor' | 'ort' | 'text' | 'stelle' | 'keyword' | 'usecase';
+export type Resource = Author | CaseStudy | Keyword | Passage | Place | Text;
+
+export type ResourceKind = 'autor' | 'keyword' | 'ort' | 'stelle' | 'text' | 'usecase';
+
+export type ResourceKey = `${ResourceKind}__${Resource['id']}`;
+
+export type GraphNode = {
+  id: Resource['id'];
+  kind: ResourceKind;
+  key: ResourceKey;
+  label: string;
+} & (
+  | {
+      kind: 'keyword';
+      type: KeywordType;
+    }
+  | {
+      kind: Exclude<ResourceKind, 'keyword'>;
+    }
+);
+
+export type GraphEdge = {
+  key: string;
+  source: GraphNode['key'];
+  target: GraphNode['key'];
+  // label: string
+};
+
+export type GraphData = {
+  nodes: Array<GraphNode>;
+  edges: Array<GraphEdge>;
+};

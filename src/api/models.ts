@@ -10,6 +10,9 @@ export type CaseStudy = {
   /** Description. */
   description?: string | null;
 
+  /** Published or draft status. */
+  published?: boolean;
+
   /** Principal investigator. */
   principal_investigator: string;
   /** Norm-ID of the principal investigator. */
@@ -186,7 +189,7 @@ export type Keyword = Omit<
 
 export type KeywordNormalized = Normalized<Keyword, 'related_keyword'>;
 
-export type KeywordType = 'Keyword' | 'Name' | 'Ethnonym' | 'Region' | 'unclear';
+export type KeywordType = 'Ethnonym' | 'Keyword' | 'Name' | 'Region' | 'unclear';
 
 export type Passage = Omit<
   {
@@ -210,8 +213,12 @@ export type Passage = Omit<
 
     /** Keywords asssociated with the passage. */
     key_word: Array<Keyword>;
-    /** Places of composition. */
-    ort: Array<Place>;
+    /**
+     * Places mentioned in text.
+     *
+     * Removed from data model.
+     */
+    // ort: Array<Place>;
     /** Associated usecases. */
     use_case: Array<CaseStudy>;
 
@@ -230,10 +237,11 @@ export type Passage = Omit<
     /** Legacy ID from GENS database. */
     legacy_pk?: number | null;
   },
-  'legacy_id' | 'legacy_pk' | 'orig_data_csv' | 'lemmata'
+  'legacy_id' | 'legacy_pk' | 'lemmata' | 'orig_data_csv'
 >;
 
-export type PassageNormalized = Normalized<Passage, 'key_word' | 'ort' | 'use_case'>;
+// export type PassageNormalized = Normalized<Passage, 'key_word' | 'ort' | 'use_case'>;
+export type PassageNormalized = Normalized<Passage, 'key_word' | 'use_case'>;
 
 type Lemmata = {
   orig_text: string;
@@ -294,7 +302,7 @@ export type Text = Omit<
   'legacy_id' | 'legacy_pk' | 'orig_data_csv'
 >;
 
-export type TextNormalized = Normalized<Text, 'autor' | 'art' | 'ort'>;
+export type TextNormalized = Normalized<Text, 'art' | 'autor' | 'ort'>;
 
 export type Event = {
   id: number;
@@ -337,7 +345,7 @@ export type SpatialCoverage = {
   kommentar?: string | null;
 };
 
-export type SpatialCoverageNormalized = Normalized<SpatialCoverage, 'stelle' | 'key_word'>;
+export type SpatialCoverageNormalized = Normalized<SpatialCoverage, 'key_word' | 'stelle'>;
 
 export type PlaceGeojsonProperty = {
   id: Place['id'];
@@ -356,7 +364,7 @@ export type SpatialCoverageGeojsonProperties = {
   key_word?: KeywordNormalized | null;
   /** Uncertainty of location on a scale from 1 (very secure) to 10 (very insecure). */
   fuzzyness: SpatialCoverage['fuzzyness'];
-  stelle: Array<Pick<PassageNormalized, 'id' | 'start_date' | 'end_date' | 'display_label'>>;
+  stelle: Array<Pick<PassageNormalized, 'display_label' | 'end_date' | 'id' | 'start_date'>>;
   texts: Array<{
     id: Text['id'];
     title: Text['title'];
@@ -367,7 +375,10 @@ export type SpatialCoverageGeojsonProperties = {
       place?: PlaceGeojsonProperty | null;
     }>;
   }>;
-  places: Array<PlaceGeojsonProperty>;
+  /**
+   * Removed from data model.
+   */
+  // places: Array<PlaceGeojsonProperty>;
 };
 
 /**
@@ -423,12 +434,12 @@ export type SkosConcept = Omit<
     date_modified: IsoDateTimeString;
     created_by?: User | null;
   },
-  'top_concept' | 'needs_review'
+  'needs_review' | 'top_concept'
 >;
 
 export type SkosConceptNormalized = Normalized<
   SkosConcept,
-  'scheme' | 'collection' | 'broader_concept' | 'narrower_concepts' | 'created_by'
+  'broader_concept' | 'collection' | 'created_by' | 'narrower_concepts' | 'scheme'
 >;
 
 /**
@@ -480,7 +491,7 @@ export type SkosConceptScheme = {
   curator: User;
 };
 
-export type SkosConceptSchemeNormalized = Normalized<SkosConceptScheme, 'curator' | 'created_by'>;
+export type SkosConceptSchemeNormalized = Normalized<SkosConceptScheme, 'created_by' | 'curator'>;
 
 /**
  * @see https://github.com/acdh-oeaw/acdh-django-vocabs
@@ -511,7 +522,7 @@ export type SkosCollection = {
   created_by?: User | null;
 };
 
-export type SkosCollectionNormalized = Normalized<SkosCollection, 'scheme' | 'created_by'>;
+export type SkosCollectionNormalized = Normalized<SkosCollection, 'created_by' | 'scheme'>;
 
 type User = {
   id: number;

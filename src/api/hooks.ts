@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+
 import { assert } from '@stefanprobst/assert';
 import type { UseQueryOptions } from '@tanstack/vue-query';
 import { useQuery } from '@tanstack/vue-query';
@@ -5,7 +7,7 @@ import type { Ref } from 'vue';
 
 import * as api from '@/api/client';
 
-type MaybeRef<T> = T | Ref<T>;
+type MaybeRef<T> = Ref<T> | T;
 
 // FIXME: currently, `vue-query` correctly deeply unwraps the `queryKey` passed to the `queryFn`,
 // but the types don't properly flow through.
