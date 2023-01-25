@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import Vuetify from 'vuetify/lib/framework';
+import Vuetify from 'vuetify/lib';
 
 import customRange from '@/assets/custom_range_icon.svg';
 import customRangeDisabled from '@/assets/custom_range_icon_disabled.svg';
@@ -8,7 +8,7 @@ import customSliderDisabled from '@/assets/custom_slider_icon_disabled.svg';
 
 Vue.use(Vuetify);
 
-const vuetify = new Vuetify({
+export const vuetify = new Vuetify({
   theme: {
     themes: {
       light: {
@@ -26,5 +26,3 @@ const vuetify = new Vuetify({
     },
   },
 });
-
-export default vuetify;

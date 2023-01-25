@@ -5,7 +5,7 @@ import helpers from '@/helpers';
 
 Vue.use(Vuex);
 
-export default new Vuex.Store({
+export const store = new Vuex.Store({
   state: {
     autocomplete: {
       input: [],

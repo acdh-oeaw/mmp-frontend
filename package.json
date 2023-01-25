@@ -1,6 +1,5 @@
 {
   "name": "@acdh-ch/mmp-frontend",
-  "version": "0.1.0",
   "private": true,
   "license": "MIT",
   "scripts": {
@@ -22,7 +21,7 @@
     "validate": "run-s format lint typecheck"
   },
   "engines": {
-    "node": "16.x",
+    "node": "18.x",
     "npm": "8.x"
   },
   "dependencies": {
