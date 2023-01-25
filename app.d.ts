@@ -8,6 +8,8 @@ type IsoDateTimeString = string;
 type HtmlString = string;
 type UrlString = string;
 
+type Plurals = Pick<Record<Intl.LDMLPluralRule, string>, 'one' | 'other'>;
+
 type DistributiveOmit<T, K extends PropertyType> = T extends unknown ? Omit<T, K> : never;
 type DistributivePick<T, K extends PropertyType> = T extends unknown ? Pick<T, K> : never;
 

@@ -4,9 +4,9 @@
   "license": "MIT",
   "scripts": {
     "build": "vite build",
-    "dev": "vite --port 8080",
-    "format": "prettier . --cache --check --ignore-path .gitignore",
-    "format:fix": "npm run format -- --write",
+    "dev": "vite",
+    "format:check": "prettier . --cache --check --ignore-path .gitignore",
+    "format:fix": "npm run format:check -- --write",
     "lint": "run-p lint:*:check",
     "lint:fix": "run-p lint:*:fix",
     "lint:code:check": "eslint . --cache --ext cjs,js,mjs,ts,vue --ignore-path .gitignore",
@@ -14,7 +14,7 @@
     "lint:styles:check": "stylelint \"**/*.@(css|html|vue)\" --cache --ignore-path .gitignore",
     "lint:styles:fix": "npm run lint:styles:check -- --fix",
     "prepare": "npm run setup",
-    "preview": "vite preview --port 8080",
+    "preview": "vite preview",
     "setup": "simple-git-hooks || exit 0",
     "serve": "npm run dev",
     "typecheck": "vue-tsc --noEmit",
@@ -137,6 +137,7 @@
       "@typescript-eslint/no-unused-vars": [
         "error",
         {
+          "argsIgnorePattern": "^_",
           "varsIgnorePattern": "^_"
         }
       ],
@@ -185,7 +186,6 @@
       "eslint --cache --fix",
       "prettier --cache --write"
     ],
-    "*.@(json|md|yml)": "prettier --cache --write",
     "*.@(css|html)": [
       "stylelint --cache --fix",
       "prettier --cache --write"
@@ -194,7 +194,8 @@
       "eslint --cache --fix",
       "stylelint --cache --fix",
       "prettier --cache --write"
-    ]
+    ],
+    "*.!(cjs|css|html|js|mjs|ts|vue)": "prettier --cache --ignore-unknown --write"
   },
   "postcss": {
     "plugins": {
@@ -224,6 +225,6 @@
     }
   },
   "volta": {
-    "node": "16.18.0"
+    "node": "18.13.0"
   }
 }
