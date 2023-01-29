@@ -29,17 +29,29 @@ const keywordsQuery = useKeywords({
 });
 
 const isLoading = computed(() => {
-  return [authorByIdQuery, caseStudiesQuery, passagesQuery, keywordsQuery].some(
-    (query) => query.isInitialLoading.value
-  );
+  return [authorByIdQuery, caseStudiesQuery, passagesQuery, keywordsQuery].some((query) => {
+    return query.isInitialLoading.value;
+  });
 });
 
-const author = computed(() => authorByIdQuery.data.value);
-const caseStudies = computed(() => caseStudiesQuery.data.value?.results ?? []);
-const caseStudiesCount = computed(() => caseStudiesQuery.data.value?.count);
-const passages = computed(() => passagesQuery.data.value?.results ?? []);
-const passagesCount = computed(() => passagesQuery.data.value?.count);
-const keywords = computed(() => keywordsQuery.data.value?.results ?? []);
+const author = computed(() => {
+  return authorByIdQuery.data.value;
+});
+const caseStudies = computed(() => {
+  return caseStudiesQuery.data.value?.results ?? [];
+});
+const caseStudiesCount = computed(() => {
+  return caseStudiesQuery.data.value?.count;
+});
+const passages = computed(() => {
+  return passagesQuery.data.value?.results ?? [];
+});
+const passagesCount = computed(() => {
+  return passagesQuery.data.value?.count;
+});
+const keywords = computed(() => {
+  return keywordsQuery.data.value?.results ?? [];
+});
 
 const drawerWidth = useDrawerWidth();
 const parentRoute = useParentRoute();
@@ -51,7 +63,7 @@ const isFullScreen = useFullScreen();
     <v-list-item>
       <v-list-item-action>
         <router-link
-          :to="{ name: parentRoute?.name, query: $route.query }"
+          :to="{ name: parentRoute?.name, query: route.query }"
           class="text-decoration-none"
         >
           <v-icon>mdi-close</v-icon>
@@ -83,7 +95,7 @@ const isFullScreen = useFullScreen();
           :color="keywordColors[keyword.art]"
           small
           @click="
-            $store.commit('addToItemsAndInput', {
+            store.commit('addToItemsAndInput', {
               id: keyword.id,
               selected_text: keyword.stichwort,
               group: 'Keyword',

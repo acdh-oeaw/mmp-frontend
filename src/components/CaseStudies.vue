@@ -1,11 +1,13 @@
 <script lang="ts" setup>
 import { groupBy } from '@stefanprobst/group-by';
 import { computed, ref } from 'vue';
+import { useRoute } from 'vue-router/composables';
 
 import { useAutoComplete, useCaseStudies } from '@/api';
 import type { Item } from '@/lib/search/search.types';
 import { uniqueItems } from '@/lib/search/unique-items';
 
+const route = useRoute();
 const searchTerm = ref('');
 const selectedValues = ref<Array<Item>>([]);
 
@@ -14,9 +16,13 @@ function onUpdateSearchTerm(value: string | null) {
 }
 
 const autoCompleteQuery = useAutoComplete(
-  computed(() => ({ q: searchTerm.value.trim(), kind: ['autor', 'keyword'] }))
+  computed(() => {
+    return { q: searchTerm.value.trim(), kind: ['autor', 'keyword'] };
+  })
 );
-const isFetching = computed(() => autoCompleteQuery.isFetching.value);
+const isFetching = computed(() => {
+  return autoCompleteQuery.isFetching.value;
+});
 const items = computed(() => {
   // selected values must always be included in items, otherwise the chips for selected values
   // will not be displayed when they are no longer in the items list matching the current search term.
@@ -28,16 +34,24 @@ const items = computed(() => {
 });
 
 // TODO: debounce, or require explicit form submit
-const searchFilters = computed(() => groupBy(selectedValues.value, (value) => value.kind));
+const searchFilters = computed(() => {
+  return groupBy(selectedValues.value, (value) => value.kind);
+});
 
 const caseStudiesQuery = useCaseStudies(
-  computed(() => ({
-    has_stelle__text__autor: searchFilters.value['autor']?.map((value) => value.id),
-    has_stelle__key_word: searchFilters.value['keyword']?.map((value) => value.id),
-  }))
+  computed(() => {
+    return {
+      has_stelle__text__autor: searchFilters.value['autor']?.map((value) => value.id),
+      has_stelle__key_word: searchFilters.value['keyword']?.map((value) => value.id),
+    };
+  })
 );
-const _isLoading = computed(() => caseStudiesQuery.isInitialLoading.value);
-const studies = computed(() => caseStudiesQuery.data.value?.results ?? []);
+const _isLoading = computed(() => {
+  return caseStudiesQuery.isInitialLoading.value;
+});
+const studies = computed(() => {
+  return caseStudiesQuery.data.value?.results ?? [];
+});
 </script>
 
 <template>
@@ -91,7 +105,7 @@ const studies = computed(() => caseStudiesQuery.data.value?.results ?? []);
               text
               :to="{
                 name: 'Case Study',
-                params: { id: study.id, query: $route.query },
+                params: { id: study.id, query: route.query },
               }"
             >
               Read More
