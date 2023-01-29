@@ -10,10 +10,9 @@ import { computed } from 'vue';
 import { useRoute } from 'vue-router/composables';
 
 import { useCaseStudyById, useConesGeojson, useSpatialCoveragesGeojson } from '@/api';
+import Leaflet from '@/components/Leaflet.vue';
 import { isNotNullable } from '@/lib/is-not-nullable';
 import { useStore } from '@/lib/use-store';
-
-import Leaflet from './Leaflet.vue';
 
 export default {
   name: 'MapWrapper',
@@ -41,12 +40,12 @@ export default {
       function getDateFilters() {
         if (route.query['time'] == null) return {};
 
-        const [start, end] = route.query['time'].toString().includes('+')
-          ? route.query['time'].split('+')
-          : [route.query['time'] - 5, route.query['time'] + 4];
+        const [start, end] = String(route.query['time']).includes('+')
+          ? String(route.query['time']).split('+')
+          : [Number(route.query['time']) - 5, Number(route.query['time']) + 4];
 
         const dateFilters =
-          store.state.slider === 'passage'
+          store.state.apiParams.slider === 'passage'
             ? {
                 stelle__start_date: start,
                 stelle__start_date_lookup: 'gt',
@@ -63,12 +62,13 @@ export default {
         return dateFilters;
       }
 
+      /** @type {import('@/api').SpatialCoverageSearchParams} */
       return {
-        stelle__text__autor: route.query['Author']?.toString().split('+').join(),
-        stelle: route.query['Passage']?.toString().split('+').join(),
-        key_word: route.query['Keyword']?.toString().split('+').join(),
-        stelle__use_case: route.query['Use Case']?.toString().split('+').join(),
-        stelle__ort: route.query['Place']?.toString().split('+').join(),
+        stelle__text__autor: route.query['Author']?.toString().split('+').map(Number),
+        stelle: route.query['Passage']?.toString().split('+').map(Number),
+        key_word: route.query['Keyword']?.toString().split('+').map(Number),
+        stelle__use_case: route.query['Use Case']?.toString().split('+').map(Number),
+        stelle__ort: route.query['Place']?.toString().split('+').map(Number),
         ...getDateFilters(),
         // TODO: respect other config options like intersect
       };
