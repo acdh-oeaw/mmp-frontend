@@ -162,7 +162,7 @@ const isFullScreen = useFullScreen();
             :to="{
               name: isFullScreen ? 'Author Detail Fullscreen' : 'Author Detail',
               params: { id: author.id },
-              query: $route.query,
+              query: route.query,
             }"
             class="text-decoration-none"
           >
@@ -178,7 +178,7 @@ const isFullScreen = useFullScreen();
             :to="{
               name: isFullScreen ? 'Passage Detail Fullscreen' : 'Passage Detail',
               params: { id: item.id },
-              query: $route.query,
+              query: route.query,
             }"
             class="text-decoration-none"
           >
