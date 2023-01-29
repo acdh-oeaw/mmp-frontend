@@ -67,7 +67,7 @@ import { computed, ref } from 'vue';
 
 import { useAutoComplete, useCaseStudies } from '@/api';
 import helpers from '@/helpers';
-import type { Item } from '@/lib/search/types';
+import type { Item } from '@/lib/search/search.types';
 import { uniqueItems } from '@/lib/search/unique-items';
 
 export default {

@@ -1,31 +1,76 @@
+<script lang="ts" setup>
+import { assert } from '@stefanprobst/assert';
+import { computed } from 'vue';
+import { useRoute } from 'vue-router/composables';
+
+import { useAuthorById, useCaseStudies, useKeywords, usePassages } from '@/api';
+import { getAuthorLabel, getPlaceLabel } from '@/lib/get-label';
+import { keywordColors } from '@/lib/search/search.config';
+import { useDrawerWidth } from '@/lib/use-drawer-width';
+import { useFullScreen } from '@/lib/use-full-screen';
+import { useParentRoute } from '@/lib/use-parent-route';
+import { useStore } from '@/lib/use-store';
+
+const route = useRoute();
+const id = computed(() => {
+  const id = route.params.id;
+  assert(id != null);
+  return Number(id);
+});
+const store = useStore();
+const hasUseCase = store.state.apiParams.hasUsecase === 'true';
+
+const authorByIdQuery = useAuthorById({ id }); // data
+const caseStudiesQuery = useCaseStudies({ has_stelle__text__autor: [id] });
+const passagesQuery = usePassages({ text__autor: [id], has_usecase: hasUseCase });
+const keywordsQuery = useKeywords({
+  rvn_stelle_key_word_keyword__text__autor: [id],
+  has_usecase: hasUseCase,
+});
+
+const isLoading = computed(() => {
+  return [authorByIdQuery, caseStudiesQuery, passagesQuery, keywordsQuery].some(
+    (query) => query.isInitialLoading.value
+  );
+});
+
+const author = computed(() => authorByIdQuery.data.value);
+const caseStudies = computed(() => caseStudiesQuery.data.value?.results ?? []);
+const caseStudiesCount = computed(() => caseStudiesQuery.data.value?.count);
+const passages = computed(() => passagesQuery.data.value?.results ?? []);
+const passagesCount = computed(() => passagesQuery.data.value?.count);
+const keywords = computed(() => keywordsQuery.data.value?.results ?? []);
+
+const drawerWidth = useDrawerWidth();
+const parentRoute = useParentRoute();
+const isFullScreen = useFullScreen();
+</script>
+
 <template>
-  <v-navigation-drawer permanent fixed right color="#F1F5FA" :width="drawerWidth">
+  <v-navigation-drawer permanent fixed right color="background" :width="drawerWidth">
     <v-list-item>
       <v-list-item-action>
         <router-link
-          :to="{
-            name: parentRoute.name,
-            query: $route.query,
-          }"
+          :to="{ name: parentRoute?.name, query: $route.query }"
           class="text-decoration-none"
         >
           <v-icon>mdi-close</v-icon>
         </router-link>
       </v-list-item-action>
       <v-list-item-content>
-        <div v-if="!loading">
+        <div v-if="!isLoading && author">
           <v-list-item-title class="text-h5">
-            {{ getOptimalName(data) }}
+            {{ getAuthorLabel(author) }}
           </v-list-item-title>
           <v-list-item-subtitle>
-            {{ data.jahrhundert || 'unknown century' }},
-            {{ getOptimalName(data.ort) || 'unknown place' }}
+            {{ author.jahrhundert || 'Unknown century' }},
+            {{ getPlaceLabel(author.ort) || 'Unknown place' }}
           </v-list-item-subtitle>
-          <v-list-item-subtitle v-if="data.gnd_id">
+          <v-list-item-subtitle v-if="author.gnd_id">
             GND-ID:
-            <a :href="'https://d-nb.info/gnd/' + data.gnd_id.replace(/\D/g, '')" target="_blank"
-              >{{ data.gnd_id.replace(/\D/g, '') }} <v-icon small>mdi-open-in-new</v-icon></a
-            >
+            <a :href="'https://d-nb.info/gnd/' + author.gnd_id" rel="noreferrer" target="_blank">
+              {{ author.gnd_id }} <v-icon small>mdi-open-in-new</v-icon>
+            </a>
           </v-list-item-subtitle>
         </div>
         <v-skeleton-loader v-else type="heading, text@2" />
@@ -33,9 +78,9 @@
     </v-list-item>
     <v-divider />
     <v-container>
-      <div v-for="keyword in keywords.results" :key="keyword.id" class="keyword-chip">
+      <div v-for="keyword of keywords" :key="keyword.id" class="keyword-chip">
         <v-chip
-          :color="keyColors.chips[keyword.art]"
+          :color="keywordColors[keyword.art]"
           small
           @click="
             $store.commit('addToItemsAndInput', {
@@ -49,42 +94,42 @@
         </v-chip>
       </div>
       <v-expansion-panels :value="[0, 1]" flat accordion multiple>
-        <v-expansion-panel :disabled="!loading && !usecases.count">
+        <v-expansion-panel :disabled="!isLoading && !caseStudiesCount">
           <v-expansion-panel-header>
             Use Cases
             <template #actions>
-              <v-chip small :disabled="!usecases.count" color="amber lighten-3">{{
-                usecases.count
-              }}</v-chip>
+              <v-chip small :disabled="!caseStudiesCount" color="amber lighten-3">
+                {{ caseStudiesCount }}
+              </v-chip>
               <v-icon>mdi-chevron-down</v-icon>
             </template>
           </v-expansion-panel-header>
           <v-expansion-panel-content>
-            <v-list v-if="!loading">
-              <v-list-item v-if="!usecases.count">
+            <v-list v-if="!isLoading">
+              <v-list-item v-if="!caseStudiesCount">
                 <v-list-item-content>
                   <v-list-item-title class="grey--text"> none </v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
               <v-list-item
-                v-for="usecase in usecases.results"
-                :key="usecase.id"
+                v-for="caseStudy of caseStudies"
+                :key="caseStudy.id"
                 three-line
                 :to="{
                   name: 'Case Study',
-                  params: { id: usecase.id },
-                  query: $route.query,
+                  params: { id: caseStudy.id },
+                  query: route.query,
                 }"
               >
                 <v-list-item-content>
                   <v-list-item-title>
-                    {{ usecase.title }}
+                    {{ caseStudy.title }}
                   </v-list-item-title>
-                  <v-list-item-subtitle v-if="usecase.principal_investigator">
-                    {{ usecase.principal_investigator }}
+                  <v-list-item-subtitle v-if="caseStudy.principal_investigator">
+                    {{ caseStudy.principal_investigator }}
                   </v-list-item-subtitle>
-                  <v-list-item-subtitle v-if="usecase.description">
-                    {{ usecase.description }}
+                  <v-list-item-subtitle v-if="caseStudy.description">
+                    {{ caseStudy.description }}
                   </v-list-item-subtitle>
                 </v-list-item-content>
                 <v-list-item-icon>
@@ -103,30 +148,30 @@
             </v-list>
           </v-expansion-panel-content>
         </v-expansion-panel>
-        <v-expansion-panel :disabled="!loading && !passages.count">
+        <v-expansion-panel :disabled="!isLoading && !passagesCount">
           <v-expansion-panel-header>
             Passages
             <template #actions>
-              <v-chip small :disabled="!passages.count" color="teal lighten-4">{{
-                passages.count
-              }}</v-chip>
+              <v-chip small :disabled="!passagesCount" color="teal lighten-4">
+                {{ passagesCount }}
+              </v-chip>
               <v-icon>mdi-chevron-down</v-icon>
             </template>
           </v-expansion-panel-header>
           <v-expansion-panel-content>
-            <v-list v-if="!loading">
-              <v-list-item v-if="!passages.count">
+            <v-list v-if="!isLoading">
+              <v-list-item v-if="!passagesCount">
                 <v-list-item-content>
                   <v-list-item-title class="grey--text"> none </v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
               <v-list-item
-                v-for="passage in passages.results"
+                v-for="passage of passages"
                 :key="passage.id"
                 three-line
                 :to="{
                   name: isFullScreen ? 'Passage Detail Fullscreen' : 'Passage Detail',
-                  query: addParamsToQuery({ Passage: passage.id }),
+                  query: { ...route.query, Passage: passage.id },
                   params: { id: passage.id },
                 }"
               >
@@ -134,11 +179,11 @@
                   <v-list-item-title>
                     {{ passage.display_label }}
                   </v-list-item-title>
-                  <v-list-item-subtitle v-if="passage.text.autor.length">
+                  <v-list-item-subtitle v-if="passage.text?.autor.length">
                     {{ passage.text.title }},
-                    {{ passage.text.autor.map((x) => getOptimalName(x)).join(', ') }}
+                    {{ passage.text.autor.map(getAuthorLabel).join(', ') }}
                   </v-list-item-subtitle>
-                  <v-list-item-subtitle v-if="passage.text.jahrhundert">
+                  <v-list-item-subtitle v-if="passage.text?.jahrhundert">
                     {{ passage.text.jahrhundert }} century
                   </v-list-item-subtitle>
                 </v-list-item-content>
@@ -162,63 +207,3 @@
     </v-container>
   </v-navigation-drawer>
 </template>
-
-<script>
-import helpers from '@/helpers';
-
-export default {
-  name: 'AuthorDetail',
-  mixins: [helpers],
-  data: () => ({
-    loading: true,
-    data: {},
-    usecases: [],
-    passages: [],
-    keywords: {},
-  }),
-  watch: {
-    '$route.params': {
-      handler(params) {
-        this.loading = true;
-
-        const urls = [
-          `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/autor/${params.id}/?format=json`,
-          `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/usecase/?has_stelle__text__autor=${
-            params.id
-          }&format=json`,
-          `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/stelle/?text__autor=${
-            params.id
-          }&format=json&has_usecase=${this.hasUsecase}`,
-          `${
-            import.meta.env.VITE_APP_MMP_API_BASE_URL
-          }/api/keyword/?rvn_stelle_key_word_keyword__text__autor=${
-            params.id
-          }&format=json&has_usecase=${this.hasUsecase}`,
-        ];
-        const prefetched = this.$store.state.fetchedResults[String(urls)];
-
-        if (prefetched) {
-          [this.data, this.usecases, this.passages] = prefetched;
-          this.loading = false;
-        } else {
-          Promise.all(urls.map((x) => fetch(x))).then((res) => {
-            Promise.all(res.map((x) => x.json()))
-              .then((jsonRes) => {
-                this.$store.commit('addToResults', { req: String(urls), res: jsonRes });
-                [this.data, this.usecases, this.passages, this.keywords] = jsonRes;
-              })
-              .catch((err) => {
-                console.error(err);
-              })
-              .finally(() => {
-                this.loading = false;
-              });
-          });
-        }
-      },
-      deep: true,
-      immediate: true,
-    },
-  },
-};
-</script>

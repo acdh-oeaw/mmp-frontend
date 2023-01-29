@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-
 import { assert } from '@stefanprobst/assert';
 import type { UseQueryOptions } from '@tanstack/vue-query';
 import { useQuery } from '@tanstack/vue-query';
@@ -9,8 +7,6 @@ import * as api from '@/api/client';
 
 type MaybeRef<T> = Ref<T> | T;
 
-// FIXME: currently, `vue-query` correctly deeply unwraps the `queryKey` passed to the `queryFn`,
-// but the types don't properly flow through.
 type MaybeRefDeep<T> = MaybeRef<
   T extends Array<unknown> | Record<string, unknown>
     ? {
@@ -94,7 +90,7 @@ function assertParams<T extends object, K extends keyof T>(params: T, keys: Arra
   keys.forEach((key) => {
     assert(params[key], `Param ${String(key)} is required.`);
   });
-  return params as RequiredKeys<T, typeof keys[number]>;
+  return params as SetRequired<T, typeof keys[number]>;
 }
 
 export function useAuthors(
