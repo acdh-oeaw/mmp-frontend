@@ -336,6 +336,7 @@ export default {
   mixins: [helpers],
   props: {
     data: {
+      /** @type {any} */
       default: [[], [], []],
     },
     loading: {
