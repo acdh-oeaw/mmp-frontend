@@ -118,3 +118,5 @@ export const store = new Vuex.Store({
     },
   },
 });
+
+export type Store = typeof store;

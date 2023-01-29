@@ -4,7 +4,7 @@ import '@mdi/font/css/materialdesignicons.css';
 import Vue from 'vue';
 
 import App from '@/App.vue';
-import { query, queryOptions } from '@/lib/query';
+import { query, queryOptions } from '@/plugins/query';
 import { router } from '@/plugins/router';
 import { store } from '@/plugins/store';
 import { vuetify } from '@/plugins/vuetify';
