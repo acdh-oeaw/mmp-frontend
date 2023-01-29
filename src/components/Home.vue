@@ -1,14 +1,26 @@
+<script lang="ts" setup>
+import { useRoute } from 'vue-router/composables';
+
+import bgImage from '@/assets/europa.jpg';
+import CaseStudy from '@/components/CaseStudy.vue';
+import { useStore } from '@/lib/use-store';
+
+const route = useRoute();
+const store = useStore();
+
+const caseStudyId = 4;
+</script>
+
 <template>
-  <!-- eslint-disable-next-line vue/max-attributes-per-line -->
   <div>
     <v-parallax :src="bgImage" class="home-parallax text-center home-head">
       <div class="parallax-wrapper">
         <v-container>
           <v-row align="center" justify="center">
             <v-col cols="12">
-              <span class="home-title text-h3 text-lg-h1 text-decoration-none"
-                >Mapping Medieval Peoples</span
-              >
+              <span class="home-title text-h3 text-lg-h1 text-decoration-none">
+                Mapping Medieval Peoples
+              </span>
             </v-col>
           </v-row>
           <v-row justify="center">
@@ -16,12 +28,12 @@
               <p class="text-subtitle-1 font-weight-bold">
                 In the turbulent world of the early Middle Ages, ethnicity became a key resource in
                 the reorganization of the political landscape. Mapping Medieval Peoples (MMP)
-                proposes an innovative technical solution to analyze and visualize the ‘mental maps’
+                proposes an innovative technical solution to analyze and visualize the "mental maps"
                 and the semantic fields that emerge from the analysis of late antique and early
                 medieval source material.
               </p>
               <p class="text-subtitle-1">
-                We attempt to reconstruct ‘mental maps’ of a world of peoples, and will offer
+                We attempt to reconstruct "mental maps" of a world of peoples, and will offer
                 insights into the interplay between ethnonyms, religious terms, as well as
                 attributes, traits and stereotypes, thus surveying the language employed to create
                 ethnic entities and to distinguish them from each other.
@@ -34,10 +46,10 @@
                 large
                 block
                 color="secondary"
-                :to="{ name: $store.state.interface.currentView, query: $route.query }"
+                :to="{ name: store.state.interface.currentView, query: route.query }"
                 >Search our Data</v-btn
               >
-              <span class="button-subtitle"> For Interactive Analyses </span>
+              <span class="button-subtitle">For Interactive Analyses</span>
             </v-col>
             <v-col cols="12" lg="3" sm="5">
               <p>
@@ -45,10 +57,11 @@
                   large
                   block
                   color="primary"
-                  :to="{ name: 'Case Study', params: { id: 6 }, query: $route.query }"
-                  >Read &bdquo;Spain and the Bible&ldquo;</v-btn
+                  :to="{ name: 'Case Study', params: { id: 4 }, query: route.query }"
                 >
-                <span class="button-subtitle"> A Case Study </span>
+                  Read &bdquo;Carolingian Avaria&ldquo;
+                </v-btn>
+                <span class="button-subtitle">A Case Study</span>
               </p>
             </v-col>
           </v-row>
@@ -58,26 +71,6 @@
     <case-study :id="caseStudyId" />
   </div>
 </template>
-
-<script>
-import bgImage from '@/assets/europa.jpg';
-import CaseStudy from '@/components/CaseStudy.vue';
-import helpers from '@/helpers';
-
-export default {
-  name: 'Home',
-  components: {
-    CaseStudy,
-  },
-  mixins: [helpers],
-  data() {
-    return {
-      bgImage,
-      caseStudyId: 4,
-    };
-  },
-};
-</script>
 
 <style>
 .button-subtitle {
