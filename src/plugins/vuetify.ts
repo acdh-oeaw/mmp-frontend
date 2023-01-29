@@ -13,6 +13,7 @@ export const vuetify = new Vuetify({
     themes: {
       light: {
         primary: '#0f1226',
+        background: '#f1f5fa',
       },
     },
   },
