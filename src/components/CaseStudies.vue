@@ -1,3 +1,45 @@
+<script lang="ts" setup>
+import { groupBy } from '@stefanprobst/group-by';
+import { computed, ref } from 'vue';
+
+import { useAutoComplete, useCaseStudies } from '@/api';
+import type { Item } from '@/lib/search/search.types';
+import { uniqueItems } from '@/lib/search/unique-items';
+
+const searchTerm = ref('');
+const selectedValues = ref<Array<Item>>([]);
+
+function onUpdateSearchTerm(value: string | null) {
+  searchTerm.value = value ?? '';
+}
+
+const autoCompleteQuery = useAutoComplete(
+  computed(() => ({ q: searchTerm.value.trim(), kind: ['autor', 'keyword'] }))
+);
+const isFetching = computed(() => autoCompleteQuery.isFetching.value);
+const items = computed(() => {
+  // selected values must always be included in items, otherwise the chips for selected values
+  // will not be displayed when they are no longer in the items list matching the current search term.
+  if (autoCompleteQuery.data.value == null) {
+    return selectedValues.value;
+  }
+
+  return uniqueItems(autoCompleteQuery.data.value.results, selectedValues.value);
+});
+
+// TODO: debounce, or require explicit form submit
+const searchFilters = computed(() => groupBy(selectedValues.value, (value) => value.kind));
+
+const caseStudiesQuery = useCaseStudies(
+  computed(() => ({
+    has_stelle__text__autor: searchFilters.value['autor']?.map((value) => value.id),
+    has_stelle__key_word: searchFilters.value['keyword']?.map((value) => value.id),
+  }))
+);
+const _isLoading = computed(() => caseStudiesQuery.isInitialLoading.value);
+const studies = computed(() => caseStudiesQuery.data.value?.results ?? []);
+</script>
+
 <template>
   <v-container>
     <v-row>
@@ -61,65 +103,6 @@
   </v-container>
 </template>
 
-<script lang="ts">
-import { groupBy } from '@stefanprobst/group-by';
-import { computed, ref } from 'vue';
-
-import { useAutoComplete, useCaseStudies } from '@/api';
-import helpers from '@/helpers';
-import type { Item } from '@/lib/search/search.types';
-import { uniqueItems } from '@/lib/search/unique-items';
-
-export default {
-  name: 'CaseStudies',
-  mixins: [helpers],
-  setup() {
-    const searchTerm = ref('');
-    const selectedValues = ref<Array<Item>>([]);
-
-    function onUpdateSearchTerm(value: string | null) {
-      searchTerm.value = value ?? '';
-    }
-
-    const autoCompleteQuery = useAutoComplete(
-      computed(() => ({ q: searchTerm.value.trim(), kind: ['autor', 'keyword'] }))
-    );
-    const isFetching = computed(() => autoCompleteQuery.isFetching.value);
-    const items = computed(() => {
-      // selected values must always be included in items, otherwise the chips for selected values
-      // will not be displayed when they are no longer in the items list matching the current search term.
-      if (autoCompleteQuery.data.value == null) {
-        return selectedValues.value;
-      }
-
-      return uniqueItems(autoCompleteQuery.data.value.results, selectedValues.value);
-    });
-
-    // TODO: debounce, or require explicit form submit
-    const searchFilters = computed(() => groupBy(selectedValues.value, (value) => value.kind));
-
-    const caseStudiesQuery = useCaseStudies(
-      computed(() => ({
-        has_stelle__text__autor: searchFilters.value['autor']?.map((value) => value.id),
-        has_stelle__key_word: searchFilters.value['keyword']?.map((value) => value.id),
-      }))
-    );
-    const isLoading = computed(() => caseStudiesQuery.isInitialLoading.value);
-    const studies = computed(() => caseStudiesQuery.data.value?.results ?? []);
-
-    return {
-      searchTerm,
-      onUpdateSearchTerm,
-      selectedValues,
-      isFetching,
-      items,
-
-      isLoading,
-      studies,
-    };
-  },
-};
-</script>
 <style scoped>
 .study-card {
   margin-bottom: 20px;
