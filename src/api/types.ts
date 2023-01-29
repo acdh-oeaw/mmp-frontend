@@ -133,6 +133,7 @@ export type GraphEdge = {
   source: GraphNode['key'];
   target: GraphNode['key'];
   // label: string
+  count: number;
 };
 
 export type GraphData = {
