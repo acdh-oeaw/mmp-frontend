@@ -1,12 +1,64 @@
+<script lang="ts" setup>
+import { computed } from 'vue';
+import { useRoute } from 'vue-router/composables';
+
+import type { Author, Passage, Text } from '@/api';
+import { getAuthorLabel } from '@/lib/get-label';
+import { isNotNullable } from '@/lib/is-not-nullable';
+import { keywordColors } from '@/lib/search/search.config';
+
+const props = defineProps<{
+  passages: Array<Passage>;
+}>();
+
+const route = useRoute();
+
+const texts = computed(() => {
+  return props.passages.map((passage) => passage.text).filter(isNotNullable);
+});
+
+const authors = computed(() => {
+  const authorsById = new Map();
+
+  texts.value.forEach((text) => {
+    text.autor.forEach((author) => {
+      authorsById.set(author.id, author);
+    });
+  });
+
+  return Array.from(authorsById.values());
+});
+
+function getTextsByAuthor(id: Author['id'], texts: Array<Text>) {
+  const textsById = new Map();
+
+  texts.forEach((text) => {
+    if (text.autor.some((author) => author.id === id)) {
+      textsById.set(text.id, text);
+    }
+  });
+
+  return Array.from(textsById.values());
+}
+
+function getPassagesByText(id: Text['id'], passages: Array<Passage>) {
+  return passages.filter((passage) => passage.text?.id === id);
+}
+
+function getPassagesByAuthor(id: Author['id'], passages: Array<Passage>) {
+  return passages.filter((passage) => passage.text?.autor.map((autor) => autor.id).includes(id));
+}
+</script>
+
 <template>
   <v-list color="transparent">
-    <div v-for="author in removeDuplicates(authors, 'id')" :key="author.id">
+    <div v-for="author of authors" :key="author.id">
       <v-list-group prepend-icon="mdi-account-edit">
         <template #activator>
           <v-list-item>
             <v-list-item-content>
               <v-list-item-title>
-                {{ getOptimalName(author) }}
+                {{ getAuthorLabel(author) }}
               </v-list-item-title>
               <v-list-item-subtitle>
                 {{ getTextsByAuthor(author.id, texts).length }}
@@ -22,7 +74,7 @@
           </v-list-item>
         </template>
         <v-list-group
-          v-for="text in getTextsByAuthor(author.id, texts)"
+          v-for="text of getTextsByAuthor(author.id, texts)"
           :key="text.id"
           :ripple="false"
           prepend-icon="mdi-book-open-variant"
@@ -44,11 +96,11 @@
             </v-list-item>
           </template>
           <v-list-item
-            v-for="passage in getPassagesByText(text.id, passages)"
+            v-for="passage of getPassagesByText(text.id, passages)"
             :key="passage.id"
             :to="{
               name: 'List',
-              query: addParamsToQuery({ Passage: passage.id }),
+              query: { ...route.query, Passage: passage.id },
             }"
             prepend-icon="mdi-format-quote-close"
           >
@@ -56,9 +108,9 @@
               {{ passage.display_label }}
               <v-chip-group column>
                 <v-chip
-                  v-for="keyword in passage.key_word"
+                  v-for="keyword of passage.key_word"
                   :key="keyword.id"
-                  :color="keyColors.chips[keyword.art]"
+                  :color="keywordColors[keyword.art]"
                   small
                 >
                   {{ keyword.stichwort }}
@@ -73,32 +125,6 @@
     </div>
   </v-list>
 </template>
-<script>
-import { computed } from 'vue';
-
-import helpers from '@/helpers';
-import { isNotNullable } from '@/lib/is-not-nullable';
-
-export default {
-  name: 'KeywordAuthorTab',
-  mixins: [helpers],
-  props: ['passages'],
-  setup(props) {
-    const texts = computed(() => {
-      return props.passages.map((passage) => passage.text).filter(isNotNullable);
-    });
-
-    const authors = computed(() => {
-      return texts.value.flatMap((text) => text.autor);
-    });
-
-    return {
-      texts,
-      authors,
-    };
-  },
-};
-</script>
 
 <style>
 .passage-list-item {
