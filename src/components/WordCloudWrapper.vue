@@ -1,3 +1,124 @@
+<script lang="ts" setup>
+import { computed, ref } from 'vue';
+import { useRoute } from 'vue-router/composables';
+
+import { usePassageKeywords, usePassageNlpData } from '@/api';
+import FullscreenButton from '@/components/FullscreenButton.vue';
+import PieChart from '@/components/PieChart.vue';
+import WordCloudBeta from '@/components/WordCloudBeta.vue';
+import { isNotNullable } from '@/lib/is-not-nullable';
+import { useFullScreen } from '@/lib/use-full-screen';
+
+const props = defineProps<{
+  author: any;
+  passage: any;
+  keyword: any;
+  usecase: any;
+  place: any;
+  height: any;
+}>();
+
+const route = useRoute();
+
+const searchFilters = computed(() => {
+  if (Object.values(props).some(isNotNullable)) {
+    return {
+      ids: String(props.passage).split('+').join(),
+      text__autor: props.author,
+      key_word: props.keyword,
+      use_case: props.usecase,
+      text__ort: props.place,
+    };
+  }
+
+  function getDateFilters() {
+    if (route.query['time'] == null) return {};
+
+    const [start, end] = String(route.query['time']).includes('+')
+      ? String(route.query['time']).split('+')
+      : [Number(route.query['time']) - 5, Number(route.query['time']) + 4];
+
+    const dateFilters = {
+      start_date: start,
+      start_date_lookup: 'gt',
+      end_date: end,
+      end_date_lookup: 'lt',
+    };
+
+    return dateFilters;
+  }
+
+  return {
+    ids: route.query['Passage']?.toString().split('+').join(),
+    text__autor: route.query['Author']?.toString().split('+').map(Number),
+    key_word: route.query['Keyword']?.toString().split('+').map(Number),
+    use_case: route.query['Use Case']?.toString().split('+').map(Number),
+    text__ort: route.query['Place']?.toString().split('+').map(Number),
+    ...getDateFilters(),
+  };
+});
+
+const passageNlpDataQuery = usePassageNlpData(searchFilters);
+const passageKeywordsQuery = usePassageKeywords(searchFilters);
+
+const isLoading = computed(() => {
+  return [passageNlpDataQuery, passageKeywordsQuery].some((query) => {
+    return query.isInitialLoading.value;
+  });
+});
+
+const data = computed(() => {
+  const nlpData = passageNlpDataQuery.data.value;
+  const keywords = passageKeywordsQuery.data.value;
+
+  if (nlpData == null || keywords == null) {
+    return { words: [[], []], filteredWords: [[], []] };
+  }
+
+  const allWords = [
+    Object.entries(nlpData.token_dict),
+    keywords.token_dict.map((x) => Object.entries(x)[0]),
+  ];
+
+  function sortWords(a: any, b: any) {
+    // sorts after occurences, then alphabetically
+    if (a[1] < b[1]) return 1;
+    if (a[1] > b[1]) return -1;
+    if (a[0] > b[0]) return 1;
+    if (a[0] < b[0]) return -1;
+    return 0;
+  }
+
+  const words = allWords.map((x) => x.sort(sortWords));
+
+  for (let i = 0; i < allWords.length; i += 1) {
+    // improves performance by a lot, removing unused and non words
+    // @ts-expect-error Add types.
+    for (let j = 1; allWords[i].length > 75; j += 1) {
+      // @ts-expect-error Add types.
+      allWords[i] = allWords[i].filter((entry) => entry[0].match(/\w+/g) && entry[1] > j);
+    }
+    // removes unecessary tags
+    // @ts-expect-error Add types.
+    allWords[i] = allWords[i].map((word) => [word[0].split(' (')[0], word[1]]);
+  }
+
+  return { words, filteredWords: allWords };
+});
+
+const drawer = ref(false);
+const speeddial = ref(false);
+const check = ref(['words', 'keywords']);
+const titles = ['All Words', 'Keywords'];
+const type = ref('cloud');
+
+const showWords = computed(() => {
+  return [check.value.includes('words'), check.value.includes('keywords')];
+});
+
+const isFullScreen = useFullScreen();
+</script>
+
 <template>
   <v-card width="100%" color="transparent" :height="isFullScreen ? 'calc(100vh - 4px)' : 500">
     <v-overlay
@@ -64,15 +185,15 @@
               <v-expansion-panel-header>
                 {{ title }}
                 <template #actions>
-                  <v-chip small>{{ data.words[1 - i] ? data.words[1 - i].length : 0 }}</v-chip>
+                  <v-chip small>{{ data.words[1 - i] ? data.words[1 - i]!.length : 0 }}</v-chip>
                   <v-icon> $expand </v-icon>
                 </template>
               </v-expansion-panel-header>
               <v-expansion-panel-content>
                 <v-list dense>
-                  <v-list-item v-for="entry in data.words[1 - i]" :key="entry[0]">
+                  <v-list-item v-for="entry in data.words[1 - i]" :key="entry![0]">
                     <v-list-item-content>
-                      <v-list-item-title>{{ entry[0] }}:&nbsp;{{ entry[1] }}</v-list-item-title>
+                      <v-list-item-title>{{ entry![0] }}:&nbsp;{{ entry![1] }}</v-list-item-title>
                     </v-list-item-content>
                   </v-list-item>
                 </v-list>
@@ -122,180 +243,6 @@
     </v-speed-dial>
   </v-card>
 </template>
-
-<script>
-import Gradient from 'javascript-color-gradient';
-import { computed } from 'vue';
-import { useRoute } from 'vue-router/composables';
-
-import { usePassageKeywords, usePassageNlpData } from '@/api';
-import helpers from '@/helpers';
-import { isNotNullable } from '@/lib/is-not-nullable';
-
-import FullscreenButton from './FullscreenButton.vue';
-import PieChart from './PieChart.vue';
-import WordCloudBeta from './WordCloudBeta.vue';
-
-export default {
-  name: 'WordCloudWrapper',
-  components: {
-    FullscreenButton,
-    PieChart,
-    WordCloudBeta,
-  },
-  mixins: [helpers],
-  props: ['author', 'passage', 'keyword', 'usecase', 'place', 'height'],
-  setup(props) {
-    const route = useRoute();
-    const searchFilters = computed(() => {
-      // FIXME:
-      if (Object.values(props).some(isNotNullable)) {
-        return {
-          ids: String(props.passage).split('+').join(),
-          text__autor: props.author,
-          key_word: props.keyword,
-          use_case: props.usecase,
-          text__ort: props.place,
-        };
-      }
-
-      function getDateFilters() {
-        if (route.query['time'] == null) return {};
-
-        const [start, end] = String(route.query['time']).includes('+')
-          ? route.query['time'].split('+')
-          : [route.query['time'] - 5, route.query['time'] + 4];
-
-        const dateFilters = {
-          start_date: start,
-          start_date_lookup: 'gt',
-          end_date: end,
-          end_date_lookup: 'lt',
-        };
-
-        return dateFilters;
-      }
-
-      return {
-        ids: route.query['Passage']?.toString().split('+').join(),
-        text__autor: route.query['Author']?.toString().split('+'),
-        key_word: route.query['Keyword']?.toString().split('+'),
-        use_case: route.query['Use Case']?.toString().split('+'),
-        text__ort: route.query['Place']?.toString().split('+'),
-        ...getDateFilters(),
-      };
-    });
-
-    if (!Object.values(searchFilters.value).some((x) => x !== undefined)) {
-      return {
-        isLoading: false,
-        data: { words: [[], []], filteredWords: [[], []] },
-      };
-    }
-
-    const passageNlpDataQuery = usePassageNlpData(searchFilters);
-    const passageKeywordsQuery = usePassageKeywords(searchFilters);
-
-    const isLoading = computed(() => {
-      return [passageNlpDataQuery, passageKeywordsQuery].some((query) => {
-        return query.isInitialLoading.value;
-      });
-    });
-
-    const data = computed(() => {
-      // TODO: check this
-
-      const nlpData = passageNlpDataQuery.data.value;
-      const keywords = passageKeywordsQuery.data.value;
-
-      if (nlpData == null || keywords == null) {
-        return { words: [[], []], filteredWords: [[], []] };
-      }
-
-      const allWords = [
-        Object.entries(nlpData.token_dict),
-        keywords.token_dict.map((x) => Object.entries(x)[0]),
-      ];
-
-      function sortWords(a, b) {
-        // sorts after occurences, then alphabetically
-        if (a[1] < b[1]) return 1;
-        if (a[1] > b[1]) return -1;
-        if (a[0] > b[0]) return 1;
-        if (a[0] < b[0]) return -1;
-        return 0;
-      }
-
-      const words = allWords.map((x) => x.sort(sortWords));
-
-      for (let i = 0; i < allWords.length; i += 1) {
-        // improves performance by a lot, removing unused and non words
-        for (let j = 1; allWords[i].length > 75; j += 1) {
-          allWords[i] = allWords[i].filter((entry) => entry[0].match(/\w+/g) && entry[1] > j);
-        }
-        // removes unecessary tags
-        allWords[i] = allWords[i].map((word) => [word[0].split(' (')[0], word[1]]);
-      }
-
-      return { words, filteredWords: allWords };
-    });
-
-    return {
-      isLoading,
-      data,
-    };
-  },
-  data: () => ({
-    avgProgress: 0,
-    drawer: false,
-    overlay: {
-      active: false,
-      x: 0,
-      y: 0,
-      word: '',
-    },
-    speeddial: false,
-    progress: [0, 0],
-    check: ['words', 'keywords'],
-    titles: ['All Words', 'Keywords'],
-    type: 'cloud',
-  }),
-  computed: {
-    maxOccurence() {
-      if (!this.words[0].length && !this.words[1].length) return 0;
-      return Math.max(...[...this.words[0], ...this.words[1]].map((word) => word[1])); // this returns the max occurence of all words and keywords
-    },
-    showWords() {
-      return [this.check.includes('words'), this.check.includes('keywords')];
-    },
-  },
-  methods: {
-    colorWords(word) {
-      const colors = ['#a91a1a', '#3a8d86', '#0c76ce', '#c09000', '#3b823e'];
-      const colorGradient = new Gradient();
-      colorGradient.setGradient(...colors);
-
-      colorGradient.setMidpoint(20);
-      // console.log(colorGradient.getArray());
-
-      return colorGradient.getColor(Math.floor((20 * word[1]) / this.maxOccurence));
-    },
-    crossRotate(word) {
-      if ([this.words[0][0][0], this.words[1][0][0]].includes(word[0])) {
-        return 0; // ensures the first word is always horizontal
-      }
-      switch (Math.floor(Math.random() * 4)) {
-        case 2:
-          return 0.25;
-        case 3:
-          return -0.25;
-        default:
-          return 0;
-      }
-    },
-  },
-};
-</script>
 
 <style scoped>
 .word-cloud {

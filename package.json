@@ -37,7 +37,6 @@
     "fuse.js": "^6.4.6",
     "highcharts": "^9.3.2",
     "highcharts-vue": "^1.4.0",
-    "javascript-color-gradient": "^2.4.4",
     "leaflet": "1.7.1",
     "leaflet.markercluster": "1.5.3",
     "leaflet.markercluster.placementstrategies": "0.2.1",
