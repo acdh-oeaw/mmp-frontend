@@ -1,13 +1,25 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
 
-import Sidebar from '@/components/Sidebar.vue';
+import MobileNavigationPanel from '@/components/mobile-navigation-panel.vue';
 import { useDetailsPage } from '@/lib/use-details-page';
 import { useHomePage } from '@/lib/use-home-page';
+import { useStore } from '@/lib/use-store';
 
+const store = useStore();
 const isHomePage = useHomePage();
 const isDetailsPage = useDetailsPage();
 const backgroundColor = computed(() => (isHomePage ? '#0f1226' : '#f1f5fa'));
+
+function onToggleDrawer() {
+  store.commit('toggleDrawer');
+}
+
+const links = {
+  about: { name: 'About', label: 'About the Project' },
+  'case-studies': { name: 'Case Studies', label: 'Case Studies' },
+  explore: { name: 'Explore', label: 'Explore the Data' },
+};
 </script>
 
 <template>
@@ -25,7 +37,7 @@ const backgroundColor = computed(() => (isHomePage ? '#0f1226' : '#f1f5fa'));
           <v-app-bar-nav-icon
             class="d-inline d-md-none menu-button"
             :class="{ 'white--text': isHomePage }"
-            @click.stop="$store.commit('toggleDrawer')"
+            @click.stop="onToggleDrawer"
           />
           <v-toolbar-title class="d-inline fancy-font font-weight-bold text-decoration-none">
             <router-link :to="{ name: 'Home' }" class="nav-link" :class="{ light: !isHomePage }">
@@ -33,29 +45,29 @@ const backgroundColor = computed(() => (isHomePage ? '#0f1226' : '#f1f5fa'));
             </router-link>
           </v-toolbar-title>
         </v-col>
+
         <v-col :cols="isDetailsPage ? 4 : 8" class="text-right d-none d-md-inline">
           <div :class="{ light: !isHomePage }">
-            <router-link color="white" :to="{ name: '' }" class="nav-link">
-              About the Project
-            </router-link>
-            <span class="non-selectable" :class="{ 'white--text': isHomePage }">
-              &nbsp;&nbsp;&bull;&nbsp;&nbsp;
-            </span>
-            <router-link :to="{ name: 'Case Studies' }" class="nav-link">
-              Case&nbsp;Studies
-            </router-link>
-            <span class="non-selectable" :class="{ 'white--text': isHomePage }">
-              &nbsp;&nbsp;&bull;&nbsp;&nbsp;
-            </span>
-            <router-link :to="{ name: 'Interface' }" class="nav-link">
-              Explore&nbsp;the&nbsp;Data
-            </router-link>
+            <div v-for="({ name, label }, key, index) of links" :key="key">
+              <span
+                v-if="index !== 0"
+                class="non-selectable mx-2"
+                aria-hidden="true"
+                :class="{ 'white--text': isHomePage }"
+              >
+                &bull;
+              </span>
+              <router-link color="white" :to="{ name }" class="nav-link">
+                {{ label }}
+              </router-link>
+            </div>
           </div>
         </v-col>
         <v-col v-if="isDetailsPage" cols="4" />
       </v-row>
     </v-app-bar>
-    <sidebar />
+
+    <MobileNavigationPanel :links="links" />
   </div>
 </template>
 
