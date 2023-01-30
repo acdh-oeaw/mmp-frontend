@@ -11,11 +11,11 @@ import { useFullScreen } from '@/lib/use-full-screen';
 import { useStore } from '@/lib/use-store';
 
 const props = defineProps<{
-  keyword: any;
-  passage: any;
-  author: any;
-  usecase: any;
-  place: any;
+  keyword?: any;
+  passage?: any;
+  author?: any;
+  usecase?: any;
+  place?: any;
 }>();
 
 const store = useStore();

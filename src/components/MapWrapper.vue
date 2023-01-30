@@ -8,11 +8,11 @@ import { isNotNullable } from '@/lib/is-not-nullable';
 import { useStore } from '@/lib/use-store';
 
 const props = defineProps<{
-  author: any;
-  passage: any;
-  keyword: any;
-  usecase: any;
-  place: any;
+  author?: any;
+  passage?: any;
+  keyword?: any;
+  usecase?: any;
+  place?: any;
 }>();
 
 const route = useRoute();

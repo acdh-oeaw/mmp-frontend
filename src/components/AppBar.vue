@@ -9,7 +9,9 @@ import { useStore } from '@/lib/use-store';
 const store = useStore();
 const isHomePage = useHomePage();
 const isDetailsPage = useDetailsPage();
-const backgroundColor = computed(() => (isHomePage ? '#0f1226' : '#f1f5fa'));
+const backgroundColor = computed(() => {
+  return isHomePage.value ? '#0f1226' : '#f1f5fa';
+});
 
 function onToggleDrawer() {
   store.commit('toggleDrawer');
@@ -18,7 +20,7 @@ function onToggleDrawer() {
 const links = {
   about: { name: 'About', label: 'About the Project' },
   'case-studies': { name: 'Case Studies', label: 'Case Studies' },
-  explore: { name: 'Explore', label: 'Explore the Data' },
+  explore: { name: 'Interface', label: 'Explore the Data' },
 };
 </script>
 
@@ -71,7 +73,7 @@ const links = {
   </div>
 </template>
 
-<style scoped>
+<style>
 a.nav-link {
   color: white !important;
 }

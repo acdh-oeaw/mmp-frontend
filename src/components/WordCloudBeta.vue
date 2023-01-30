@@ -5,7 +5,7 @@ import cloud from 'vue-d3-cloud';
 
 const props = defineProps<{
   data: any;
-  title: any;
+  title?: any;
 }>();
 
 const words = computed(() => {

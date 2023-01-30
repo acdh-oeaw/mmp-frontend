@@ -10,12 +10,12 @@ import { isNotNullable } from '@/lib/is-not-nullable';
 import { useFullScreen } from '@/lib/use-full-screen';
 
 const props = defineProps<{
-  author: any;
-  passage: any;
-  keyword: any;
-  usecase: any;
-  place: any;
-  height: any;
+  author?: any;
+  passage?: any;
+  keyword?: any;
+  usecase?: any;
+  place?: any;
+  height?: any;
 }>();
 
 const route = useRoute();

@@ -4,8 +4,8 @@ import { computed, onMounted, ref } from 'vue';
 
 const props = defineProps<{
   data: any;
-  title: any;
-  height: any;
+  title?: any;
+  height?: any;
 }>();
 
 const renderKey = ref(0);
