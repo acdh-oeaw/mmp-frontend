@@ -185,15 +185,15 @@ const isFullScreen = useFullScreen();
               <v-expansion-panel-header>
                 {{ title }}
                 <template #actions>
-                  <v-chip small>{{ data.words[1 - i] ? data.words[1 - i]!.length : 0 }}</v-chip>
+                  <v-chip small>{{ data.words[1 - i] ? data.words[1 - i].length : 0 }}</v-chip>
                   <v-icon> $expand </v-icon>
                 </template>
               </v-expansion-panel-header>
               <v-expansion-panel-content>
                 <v-list dense>
-                  <v-list-item v-for="entry in data.words[1 - i]" :key="entry![0]">
+                  <v-list-item v-for="entry in data.words[1 - i]" :key="entry[0]">
                     <v-list-item-content>
-                      <v-list-item-title>{{ entry![0] }}:&nbsp;{{ entry![1] }}</v-list-item-title>
+                      <v-list-item-title>{{ entry[0] }}:&nbsp;{{ entry[1] }}</v-list-item-title>
                     </v-list-item-content>
                   </v-list-item>
                 </v-list>

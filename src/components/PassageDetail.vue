@@ -2,7 +2,7 @@
 import { computed } from 'vue';
 import { useRoute } from 'vue-router/composables';
 
-import { type Author, type Place, usePassageById } from '@/api';
+import { usePassageById } from '@/api';
 import { getAuthorLabel, getPlaceLabel } from '@/lib/get-label';
 import { keywordColors } from '@/lib/search/search.config';
 import { useDrawerWidth } from '@/lib/use-drawer-width';
@@ -113,7 +113,9 @@ const drawerWidth = useDrawerWidth();
         <v-skeleton-loader v-else type="heading, text" />
       </v-list-item-content>
     </v-list-item>
+
     <v-divider />
+
     <v-simple-table v-if="!isLoading" class="data-table">
       <tbody>
         <tr v-for="item of items" :key="item.key">
@@ -148,9 +150,7 @@ const drawerWidth = useDrawerWidth();
               }"
             >
               <span v-if="i != 0">, </span>
-              {{
-                item.key === 'Place' ? getPlaceLabel(val as Place) : getAuthorLabel(val as Author)
-              }}
+              {{ item.key === 'Place' ? getPlaceLabel(val) : getAuthorLabel(val) }}
               <v-icon>mdi-chevron-right</v-icon>
             </router-link>
           </td>
@@ -160,6 +160,7 @@ const drawerWidth = useDrawerWidth();
         </tr>
       </tbody>
     </v-simple-table>
+
     <v-container v-else>
       <v-skeleton-loader type="table-row-divider@11" />
     </v-container>
