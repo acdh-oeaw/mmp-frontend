@@ -48,7 +48,7 @@ const links = {
 
         <v-col :cols="isDetailsPage ? 4 : 8" class="text-right d-none d-md-inline">
           <div :class="{ light: !isHomePage }">
-            <div v-for="({ name, label }, key, index) of links" :key="key">
+            <span v-for="({ name, label }, key, index) of links" :key="key">
               <span
                 v-if="index !== 0"
                 class="non-selectable mx-2"
@@ -60,7 +60,7 @@ const links = {
               <router-link color="white" :to="{ name }" class="nav-link">
                 {{ label }}
               </router-link>
-            </div>
+            </span>
           </div>
         </v-col>
         <v-col v-if="isDetailsPage" cols="4" />
