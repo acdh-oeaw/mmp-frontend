@@ -23,7 +23,7 @@ const route = useRoute();
 const searchFilters = computed(() => {
   if (Object.values(props).some(isNotNullable)) {
     return {
-      ids: String(props.passage).split('+').join(),
+      ids: props.passage?.toString().split('+').join(),
       text__autor: props.author,
       key_word: props.keyword,
       use_case: props.usecase,
