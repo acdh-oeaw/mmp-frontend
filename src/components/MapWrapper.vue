@@ -2,7 +2,12 @@
 import { computed } from 'vue';
 import { useRoute } from 'vue-router/composables';
 
-import { useCaseStudyById, useConesGeojson, useSpatialCoveragesGeojson } from '@/api';
+import {
+  type SpatialCoverageSearchParams,
+  useCaseStudyById,
+  useConesGeojson,
+  useSpatialCoveragesGeojson,
+} from '@/api';
 import Leaflet from '@/components/Leaflet.vue';
 import { isNotNullable } from '@/lib/is-not-nullable';
 import { useStore } from '@/lib/use-store';
@@ -20,14 +25,15 @@ const store = useStore();
 
 const searchFilters = computed(() => {
   if (Object.values(props).some(isNotNullable)) {
-    /** @type {import('@/api').SpatialCoverageSearchParams} */
-    return {
+    const searchFilters: SpatialCoverageSearchParams = {
       stelle__text__autor: props.author,
       stelle: props.passage,
       key_word: props.keyword,
       stelle__use_case: props.usecase,
-      stelle__ort: props.place,
+      stelle__text__ort: props.place,
     };
+
+    return searchFilters;
   }
 
   function getDateFilters() {
@@ -55,16 +61,17 @@ const searchFilters = computed(() => {
     return dateFilters;
   }
 
-  /** @type {import('@/api').SpatialCoverageSearchParams} */
-  return {
+  const searchFilters: SpatialCoverageSearchParams = {
     stelle__text__autor: route.query['Author']?.toString().split('+').map(Number),
     stelle: route.query['Passage']?.toString().split('+').map(Number),
     key_word: route.query['Keyword']?.toString().split('+').map(Number),
     stelle__use_case: route.query['Use Case']?.toString().split('+').map(Number),
-    stelle__ort: route.query['Place']?.toString().split('+').map(Number),
+    stelle__text__ort: route.query['Place']?.toString().split('+').map(Number),
     ...getDateFilters(),
     // TODO: respect other config options like intersect
   };
+
+  return searchFilters;
 });
 
 const spatialCoveragesQuery = useSpatialCoveragesGeojson(searchFilters);

@@ -177,6 +177,20 @@ export function useKeywordGraph(
   });
 }
 
+export function useKeywordByAuthorGraph(
+  searchParams: MaybeRefDeep<Partial<api.GetKeywordByAuthorGraph.SearchParams>>,
+  options?: Options
+) {
+  return useQuery({
+    queryKey: createKey('keyword', 'list', searchParams, 'author-graph'),
+    queryFn: ({ queryKey: [, , searchParams] }) => {
+      // @ts-expect-error Upstream type error.
+      return api.getKeywordByAuthorGraph(searchParams);
+    },
+    ...getQueryOptions(options),
+  });
+}
+
 export function usePassages(
   searchParams: MaybeRefDeep<Partial<api.GetPassages.SearchParams>>,
   options?: Options

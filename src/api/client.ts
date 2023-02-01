@@ -1569,7 +1569,7 @@ export async function getKeywordGraph(
   return request(url, options);
 }
 
-export namespace GetKeywordsByAuthorsGraph {
+export namespace GetKeywordByAuthorGraph {
   export type SearchParams = Omit<
     GetPassages.SearchParams,
     keyof LimitOffsetPaginationSearchParams | keyof SortableSearchParams
@@ -1579,9 +1579,9 @@ export namespace GetKeywordsByAuthorsGraph {
   export type Response = GraphData;
 }
 
-export function getKeywordsByAuthorsGraph(
-  searchParams: GetKeywordsByAuthorsGraph.SearchParams
-): Promise<GetKeywordsByAuthorsGraph.Response> {
+export function getKeywordByAuthorGraph(
+  searchParams: GetKeywordByAuthorGraph.SearchParams
+): Promise<GetKeywordByAuthorGraph.Response> {
   const url = createUrl({
     baseUrl: baseUrls.archiv,
     pathname: 'keyword-author-network/',
