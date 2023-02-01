@@ -95,11 +95,13 @@ const isFullScreen = useFullScreen();
           :color="keywordColors[keyword.art]"
           small
           @click="
-            store.commit('addToItemsAndInput', {
-              id: keyword.id,
-              selected_text: keyword.stichwort,
-              group: 'Keyword',
-            })
+            store.commit('addAutoCompleteSelectedValues', [
+              {
+                id: keyword.id,
+                label: keyword.stichwort,
+                kind: 'keyword',
+              },
+            ])
           "
         >
           {{ keyword.stichwort }}

@@ -11,10 +11,14 @@
       "@/*": ["./src/*"],
       "~/*": ["./*"]
     },
-    "types": ["d3", "leaflet", "vuetify"]
+    "types": ["d3", "leaflet", "node", "vuetify"]
   },
-  "include": ["./app.d.ts", "./src/**/*.js", "./src/**/*.ts", "./src/**/*.vue"],
-  "references": [{ "path": "./tsconfig.node.json" }],
+  "include": ["./app.d.ts", "./**/*.js", "./**/*.ts", "./**/*.vue"],
+  "ts-node": {
+    "esm": true,
+    "experimentalSpecifierResolution": "node",
+    "transpileOnly": true
+  },
   "vueCompilerOptions": {
     "target": 2.7
   }

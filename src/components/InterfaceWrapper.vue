@@ -1,3 +1,175 @@
+<script lang="ts" setup>
+import { computed, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router/composables';
+import { VRangeSlider, VSlider } from 'vuetify/lib';
+
+import { useAutoComplete } from '@/api';
+import rangeSliderIcon from '@/assets/custom_range_icon.svg';
+import sliderIcon from '@/assets/custom_slider_icon.svg';
+import SearchOptions from '@/components/SearchOptions.vue';
+import {
+  colors,
+  keywordTypeLabels,
+  kindLabels,
+  maxYear,
+  minYear,
+} from '@/lib/search/search.config';
+import type { Item } from '@/lib/search/search.types';
+import { uniqueItems } from '@/lib/search/unique-items';
+import { truncate } from '@/lib/truncate';
+import { useStore } from '@/lib/use-store';
+import { recommendedSearchFilters } from '~/config/search.config';
+
+const defaultChips = recommendedSearchFilters;
+
+//
+
+const route = useRoute();
+const router = useRouter();
+const store = useStore();
+
+//
+
+const sliderComponents = { 'v-range-slider': VRangeSlider, 'v-slider': VSlider };
+
+type SliderComponent = keyof typeof sliderComponents;
+
+const range = ref<number | [number, number]>([minYear, maxYear]);
+const sliderComponent = ref<SliderComponent>('v-range-slider');
+
+const isSliderVisible = computed(() => {
+  return route.name !== 'Word Cloud';
+});
+
+function toggleSliderComponent(mode: SliderComponent) {
+  if (mode !== sliderComponent.value) {
+    if (Array.isArray(range.value)) {
+      range.value = Math.round((range.value[0]! + range.value[1]!) / 2);
+    } else {
+      range.value = [range.value - 100, range.value + 100];
+    }
+
+    sliderComponent.value = mode;
+  }
+}
+
+const slideOption = computed({
+  get() {
+    return store.state.apiParams.slider;
+  },
+  set(val) {
+    store.commit('setApiParam', { key: 'slider', val });
+  },
+});
+
+//
+
+const currentView = computed({
+  get() {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return route.name!;
+  },
+  set(name: string) {
+    router.push({ name, query: route.query });
+  },
+});
+
+//
+
+const searchTerm = ref('');
+// TODO: selected values currently still live in global store because it is possible to change them from anywhere in the app
+const selectedValues = computed(() => store.state.autocomplete.input);
+
+function onUpdateSearchTerm(value: string | null) {
+  searchTerm.value = value ?? '';
+}
+
+function onUpdateSelectedValues(values: Array<Item>) {
+  store.commit('addAutoCompleteSelectedValues', values);
+}
+
+function onRemoveValue(value: Item) {
+  store.commit('removeAutoCompleteSelectedValue', value);
+}
+
+function onClearSelectedValues() {
+  searchTerm.value = '';
+  store.commit('clearAutoCompleteSelectedValues');
+}
+
+const autoCompleteQuery = useAutoComplete(
+  computed(() => ({
+    // return 10 results per `kind`. note that results will be sorted by `kind`.
+    page_size: 10,
+    q: searchTerm.value.trim(),
+  }))
+);
+const isFetching = computed(() => autoCompleteQuery.isFetching.value);
+const items = computed(() => {
+  // selected values must always be included in items, otherwise the chips for selected values
+  // will not be displayed when they are no longer in the items list matching the current search term.
+  if (autoCompleteQuery.data.value == null) {
+    return selectedValues.value;
+  }
+
+  return uniqueItems(autoCompleteQuery.data.value.results, selectedValues.value);
+});
+
+const nothingFoundText = computed(() => {
+  return autoCompleteQuery.isFetching.value ? 'Loading...' : 'Nothing found';
+});
+
+const label = 'Search for passages';
+
+//
+
+function pushQuery() {
+  router.push({
+    name: currentView.value,
+    query: getQueryFromInput(selectedValues.value),
+  });
+}
+
+function getQueryFromInput(input: Item[]) {
+  function getIds(kind: Item['kind']) {
+    return (
+      input
+        .filter((i) => i.kind === kind)
+        .map((i) => i.id)
+        .join('+') || undefined
+    );
+  }
+
+  const query = {
+    Author: getIds('autor'),
+    Passage: getIds('stelle'),
+    Keyword: getIds('keyword'),
+    'Use Case': getIds('usecase'),
+    Place: getIds('ort'),
+  };
+
+  // @ts-expect-error Will be fixed in useSearchFilters
+  query.time = Array.isArray(range.value) ? range.value.join('+') : range.value;
+
+  // @ts-expect-error Will be fixed in useSearchFilters
+  if (query.time === '400+1200') query.time = undefined;
+
+  return query;
+}
+
+function getKindLabel(value: Item) {
+  const kindLabel = kindLabels[value.kind].one;
+  if (value.kind === 'keyword') {
+    return `${kindLabel} (${keywordTypeLabels[value.type].one})`;
+  }
+  return kindLabel;
+}
+
+function getColor(value: Item) {
+  return colors[value.kind];
+}
+</script>
+
 <template>
   <div>
     <v-container>
@@ -17,64 +189,51 @@
             </v-col>
             <v-col :cols="$vuetify.breakpoint.mobile ? 12 : 10">
               <v-autocomplete
-                ref="autocomplete"
-                v-model="$store.state.autocomplete.input"
-                color="primary"
-                multiple
-                item-text="selected_text"
-                return-object
-                no-filter
-                autofocus
+                :aria-label="label"
                 auto-select-first
-                no-data-text="No data found"
-                placeholder="Search for Authors, Passages, Keywords, Case Studies or Places"
-                :items="filteredSearchedSorted"
-                :search-input.sync="textInput"
-                :loading="loading"
-                @change="textInput = ''"
-                @keyup.enter="pushQuery"
+                color="primary"
+                item-text="label"
+                :items="items"
+                :loading="isFetching"
+                multiple
+                :no-data-text="nothingFoundText"
+                no-filter
+                :placeholder="label"
+                return-object
+                :search-input="searchTerm"
+                type="search"
+                :value="selectedValues"
+                @change="searchTerm = ''"
+                @input="onUpdateSelectedValues"
+                @update:search-input="onUpdateSearchTerm"
               >
-                <template #item="data">
-                  <v-list-item-content
-                    v-if="data.item.group === 'Keyword' && data.item.selected_text.includes(',')"
-                  >
-                    <v-list-item-title>
-                      {{ removeRoot(data.item.selected_text) }}
-                      <span v-if="$store.state.completeKeywords.includes(parseInt(data.item.id))"
-                        >(complete)</span
-                      >
-                    </v-list-item-title>
-                    <v-list-item-subtitle
-                      >Keyword ({{ data.item.selected_text.split(',')[1].replace(/\W/g, '') }})
-                    </v-list-item-subtitle>
-                  </v-list-item-content>
-                  <v-list-item-content v-else>
-                    <v-list-item-title>{{ data.item.selected_text }}</v-list-item-title>
-                    <v-list-item-subtitle>{{ data.item.group }}</v-list-item-subtitle>
+                <template #item="{ item }">
+                  <v-list-item-content>
+                    <v-list-item-title>{{ item.label }}</v-list-item-title>
+                    <v-list-item-subtitle>{{ getKindLabel(item) }}</v-list-item-subtitle>
                   </v-list-item-content>
                 </template>
-                <template #selection="data">
+                <template #selection="{ attrs, selected, select, item }">
                   <v-chip
-                    v-bind="data.attrs"
-                    :input-value="data.selected"
+                    v-bind="attrs"
+                    :input-value="selected"
                     close
-                    :color="getChipColorFromGroup(data.item.group)"
-                    @click="data.select"
-                    @click:close="$store.commit('removeItemFromInput', data.item)"
+                    :color="getColor(item)"
+                    @click="select"
+                    @click:close="onRemoveValue(item)"
                   >
-                    {{ shorten(data.item.selected_text, 30) }}
+                    {{ truncate(item.label, 30) }}
                   </v-chip>
                 </template>
                 <template #append>
                   <v-icon
-                    v-if="$store.state.autocomplete.input.length"
+                    v-if="selectedValues.length"
+                    aria-label="Clear search filters"
                     color="primary"
-                    @click="$store.commit('clearInput')"
-                    >mdi-close</v-icon
+                    @click="onClearSelectedValues"
                   >
-                </template>
-                <template #prepend-inner>
-                  <v-skeleton-loader v-for="n in skeletonChips" :key="n" type="chip" />
+                    mdi-close
+                  </v-icon>
                 </template>
               </v-autocomplete>
             </v-col>
@@ -87,7 +246,7 @@
           <v-row class="grey-bg">
             <template v-if="!$vuetify.breakpoint.mobile">
               <v-col>
-                <v-btn text small class="disable-events"> View as </v-btn>
+                <v-btn text small class="disable-events">View as</v-btn>
               </v-col>
               <v-col>
                 <v-btn
@@ -99,7 +258,10 @@
                   :class="{ active: currentView === 'List' }"
                   :to="{
                     name: 'List',
-                    query: addParamsToQuery(getQueryFromInput($store.state.autocomplete.input)),
+                    query: {
+                      ...route.query,
+                      ...getQueryFromInput(store.state.autocomplete.input),
+                    },
                   }"
                 >
                   List
@@ -113,7 +275,7 @@
                   class="view-picker"
                   :disabled="currentView === 'Network Graph'"
                   :class="{ active: currentView === 'Network Graph' }"
-                  :to="{ name: 'Network Graph', query: addParamsToQuery(query) }"
+                  :to="{ name: 'Network Graph', query: route.query }"
                 >
                   Network Graph
                 </v-btn>
@@ -126,7 +288,7 @@
                   class="view-picker"
                   :disabled="currentView === 'Map'"
                   :class="{ active: currentView === 'Map' }"
-                  :to="{ name: 'Map', query: addParamsToQuery(query) }"
+                  :to="{ name: 'Map', query: route.query }"
                 >
                   Map
                 </v-btn>
@@ -139,7 +301,7 @@
                   class="view-picker"
                   :disabled="currentView === 'Word Cloud'"
                   :class="{ active: currentView === 'Word Cloud' }"
-                  :to="{ name: 'Word Cloud', query: addParamsToQuery(query) }"
+                  :to="{ name: 'Word Cloud', query: route.query }"
                 >
                   Word Cloud
                 </v-btn>
@@ -165,7 +327,7 @@
                 block
                 small
                 class="justify-end"
-                :to="{ name: 'List All', query: addParamsToQuery(query) }"
+                :to="{ name: 'List All', query: route.query }"
               >
                 &nbsp;
                 <v-icon>mdi-format-list-bulleted</v-icon>
@@ -174,7 +336,7 @@
             </v-col>
           </v-row>
           <v-row
-            v-if="!Object.keys(query).length && !Object.keys($route.params).length"
+            v-if="!Object.keys(route.query).length && !Object.keys(route.params).length"
             align="center"
             justify="center"
           >
@@ -188,21 +350,21 @@
                   For instance, try
                   <v-chip
                     color="red lighten-3"
-                    @click="$store.commit('addToItemsAndInput', defaultChips.baudovinia)"
+                    @click="store.commit('addAutoCompleteSelectedValues', [defaultChips[0]])"
                   >
                     Baudonivia von Poitiers</v-chip
                   >
                   &#32;
                   <v-chip
                     color="blue lighten-4"
-                    @click="$store.commit('addToItemsAndInput', defaultChips.barbari)"
+                    @click="store.commit('addAutoCompleteSelectedValues', [defaultChips[1]])"
                   >
                     barbari</v-chip
                   >
                   or
                   <v-chip
                     color="amber lighten-3"
-                    @click="$store.commit('addToItemsAndInput', defaultChips.spain)"
+                    @click="store.commit('addAutoCompleteSelectedValues', [defaultChips[2]])"
                   >
                     Steppe Peoples 1: "Schwarzes Meer"</v-chip
                   >
@@ -217,22 +379,21 @@
           <v-row v-else>
             <router-view />
           </v-row>
-          <v-row v-show="!['Word Cloud'].includes($route.name)">
+          <v-row v-show="isSliderVisible">
             <v-col>
               <component
-                :is="sliderComponent"
+                :is="sliderComponents[sliderComponent]"
                 v-model="range"
-                :disabled="disabledSlider"
                 class="slider"
+                :max="maxYear"
+                :min="minYear"
                 thumb-label="always"
                 light
                 thumb-size="50"
                 track-color="#d5d5d5"
-                :track-fill-color="range.length ? '#0f1226' : '#d5d5d5'"
-                max="120"
-                min="40"
+                :track-fill-color="Array.isArray(range) ? '#0f1226' : '#d5d5d5'"
               >
-                <template #thumb-label="{ value }"> {{ value * 10 }} AD </template>
+                <template #thumb-label="{ value }"> {{ value }} AD </template>
                 <template #append>
                   <v-menu :close-on-content-click="false">
                     <template #activator="{ on, attrs }">
@@ -245,11 +406,7 @@
                         <v-btn icon>
                           <img
                             class="icon"
-                            :src="
-                              disabledSlider
-                                ? $vuetify.icons.values.rangeDisabled
-                                : $vuetify.icons.values.range
-                            "
+                            :src="rangeSliderIcon"
                             alt="Range Icon"
                             @click="toggleSliderComponent('v-range-slider')"
                           />
@@ -257,11 +414,7 @@
                         <v-btn icon>
                           <img
                             class="icon"
-                            :src="
-                              disabledSlider
-                                ? $vuetify.icons.values.sliderDisabled
-                                : $vuetify.icons.values.slider
-                            "
+                            :src="sliderIcon"
                             alt="Slider Icon"
                             @click="toggleSliderComponent('v-slider')"
                           />
@@ -287,272 +440,6 @@
     </v-container>
   </div>
 </template>
-
-<script>
-import Fuse from 'fuse.js';
-import { VRangeSlider, VSlider } from 'vuetify/lib';
-
-import SearchOptions from '@/components/SearchOptions.vue';
-import helpers from '@/helpers';
-
-export default {
-  name: 'Interface',
-  components: {
-    VSlider,
-    VRangeSlider,
-    SearchOptions,
-  },
-  mixins: [helpers],
-  data: () => ({
-    autoQuery: true,
-    defaultChips: {
-      baudovinia: {
-        id: 8,
-        text: 'Baudonivia von Poitiers',
-        selected_text: 'Baudonivia von Poitiers',
-        group: 'Author',
-      },
-      barbari: {
-        id: 33,
-        text: 'barbari',
-        selected_text: 'barbari',
-        group: 'Keyword',
-      },
-      spain: {
-        id: 3,
-        text: 'Steppe Peoples 1: "Schwarzes Meer" - Jordanes, Prokop, Zacharias Rhetor',
-        selected_text: 'Steppe Peoples 1: "Schwarzes Meer" - Jordanes, Prokop, Zacharias Rhetor',
-        group: 'Use Case',
-      },
-    },
-    disabledSlider: false,
-    loading: false,
-    range: [40, 120],
-    skeletonChips: 0,
-    sliderComponent: 'v-range-slider',
-    textInput: '',
-    tooltip: true,
-  }),
-  computed: {
-    filteredSearchedSorted() {
-      const { items } = this.$store.state.autocomplete;
-
-      if (!this.textInput)
-        return this.removeDuplicates(
-          [...this.$store.state.autocomplete.items, ...this.$store.state.autocomplete.input],
-          ['group', 'id']
-        );
-      // console.log('items', items);
-      const keywordSheet = {
-        Keyword: 'phrase',
-        Name: 'name',
-        Region: 'region',
-        Ethnonym: 'ethnonym',
-      };
-
-      const filterArr = items.filter((item) => {
-        const storeEq = this.$store.state.searchFilters[item.group.replace(' ', '').toLowerCase()];
-        if (typeof storeEq === 'object') {
-          if (item.group === 'Keyword' && item.selected_text.includes(',')) {
-            if (item.selected_text.includes('Unsicher')) return true;
-            return storeEq[keywordSheet[item.selected_text.split(',')[1].replace(/\W/g, '')]];
-          }
-          return Object.values(storeEq).some((x) => x);
-        }
-        return storeEq;
-      });
-
-      let fuse = new Fuse(filterArr, { keys: ['selected_text'] });
-      fuse = fuse.search(this.textInput);
-      fuse = fuse.map((res) => res.item);
-
-      return this.removeDuplicates(
-        [...this.$store.state.autocomplete.input, ...fuse],
-        ['group', 'id']
-      );
-    },
-    currentView: {
-      get() {
-        return this.$route.name;
-      },
-      set(val) {
-        this.$router.push({ name: val, query: this.addParamsToQuery(this.query) });
-      },
-    },
-    slideOption: {
-      get() {
-        return this.$store.state.apiParams.slider;
-      },
-      set(val) {
-        this.$store.commit('setApiParam', { key: 'slider', val });
-      },
-    },
-    query() {
-      return this.$route.query;
-    },
-  },
-  watch: {
-    '$route.query': {
-      handler(val) {
-        const filteredParams = Object.fromEntries(
-          Object.entries(val).filter(([key]) =>
-            ['Author', 'Passage', 'Keyword', 'Use Case', 'Place', 'time'].includes(key)
-          )
-        );
-        if (this.autoQuery) {
-          // you can disable this process
-          this.$store.commit('clearItems');
-          this.$store.commit('clearInput');
-          // Add query from url to Autocomplete
-          const apiParams = {
-            Author: { url: 'autor', text: 'name' },
-            Passage: { url: 'stelle', text: 'zitat' },
-            Keyword: { url: 'keyword', text: 'stichwort' },
-            'Use Case': { url: 'usecase', text: 'title' },
-            Place: { url: 'ort', text: 'name' },
-          };
-
-          Object.keys(filteredParams).forEach((cat) => {
-            if (cat === 'time' && filteredParams[cat]) {
-              this.range = filteredParams[cat].split('+').map((x) => parseInt(x, 10) / 10);
-            } else if (filteredParams[cat]) {
-              let ids = String(filteredParams[cat]).split('+');
-              const idCount = ids.length;
-              this.skeletonChips += idCount;
-              ids = ids.join();
-              fetch(
-                `${import.meta.env.VITE_APP_MMP_API_BASE_URL}/api/${apiParams[cat].url}/?ids=${ids}`
-              )
-                .then((res) => res.json())
-                .then((res) => {
-                  res.results.forEach((x) => {
-                    this.$store.commit('addToItemsAndInput', {
-                      id: x.id,
-                      text: x[apiParams[cat].text],
-                      selected_text: x[apiParams[cat].text],
-                      group: cat,
-                    });
-                  });
-                })
-                .catch((err) => {
-                  console.error(err);
-                })
-                .finally(() => {
-                  this.skeletonChips -= idCount;
-                });
-            }
-          });
-        }
-      },
-      deep: true,
-      immediate: true,
-    },
-    textInput(val) {
-      if (!val || val.length < 1) return;
-      const urls = {};
-      const filters = this.$store.state.searchFilters;
-      if (filters.author)
-        urls.Author = `${
-          import.meta.env.VITE_APP_MMP_API_BASE_URL
-        }/archiv-ac/autor-autocomplete/?q=${val}`;
-      if (filters.passage)
-        urls.Passage = `${
-          import.meta.env.VITE_APP_MMP_API_BASE_URL
-        }/archiv-ac/stelle-autocomplete/?q=${val}`;
-      if (Object.values(filters.keyword).some((x) => x))
-        urls.Keyword = `${
-          import.meta.env.VITE_APP_MMP_API_BASE_URL
-        }/archiv-ac/keyword-autocomplete/?q=${val}`;
-      if (filters.usecase)
-        urls['Use Case'] = `${
-          import.meta.env.VITE_APP_MMP_API_BASE_URL
-        }/archiv-ac/usecase-autocomplete/?q=${val}`;
-      if (filters.place)
-        urls.Place = `${
-          import.meta.env.VITE_APP_MMP_API_BASE_URL
-        }/archiv-ac/ort-autocomplete/?q=${val}`;
-
-      const labels = ['Author', 'Passage', 'Keyword', 'Use Case', 'Place'];
-      const prefetched = this.$store.state.fetchedResults[JSON.stringify(urls)];
-
-      if (prefetched) {
-        prefetched.forEach((x, i) => {
-          this.$store.commit('addItems', { items: x.results, label: labels[i] });
-        });
-      } else {
-        this.loading = true;
-        Promise.all(Object.values(urls).map((x) => fetch(x)))
-          .then((res) => {
-            Promise.all(res.map((x) => x.json()))
-              .then((jsonRes) => {
-                this.$store.commit('addToResults', { req: JSON.stringify(urls), res: jsonRes });
-                jsonRes.forEach((x, i) => {
-                  this.$store.commit('addItems', { items: x.results, label: Object.keys(urls)[i] });
-                });
-              })
-              .catch((err) => {
-                console.error(err);
-              })
-              .finally(() => {
-                this.loading = false;
-              });
-          })
-          .catch((err) => {
-            this.loading = false;
-            console.error(err);
-          });
-      }
-    },
-  },
-  methods: {
-    pushQuery() {
-      this.$refs.autocomplete.blur(); // this is the only working solution I found to unfocus autocomplete
-      this.tooltip = false;
-      this.autoQuery = false;
-      this.$router.push({
-        name: this.currentView,
-        query: this.getQueryFromInput(this.$store.state.autocomplete.input),
-      });
-      setTimeout(() => {
-        this.autoQuery = true;
-      }, 400); // dont judge me
-    },
-    getQueryFromInput(input) {
-      const query = {
-        Author: undefined,
-        Passage: undefined,
-        Keyword: undefined,
-        'Use Case': undefined,
-        Place: undefined,
-      };
-      Object.keys(query).forEach((cat) => {
-        query[cat] =
-          input
-            .filter((x) => x.group === cat)
-            .map((x) => x.id)
-            .join('+') || undefined;
-      });
-      query.time = Array.isArray(this.range)
-        ? this.range.map((x) => x * 10).join('+')
-        : this.range * 10;
-      if (query.time === '400+1200') query.time = undefined;
-      this.autoQuery = false;
-      setTimeout(() => {
-        this.autoQuery = true;
-      }, 400); // dont judge me
-      return query;
-    },
-    // This function changes the slider from range to point, and creates a new range value fittingly
-    toggleSliderComponent(mode) {
-      if (mode !== this.sliderComponent) {
-        if (Array.isArray(this.range)) this.range = (this.range[0] + this.range[1]) / 2;
-        else this.range = [this.range - 10, this.range + 10];
-        this.sliderComponent = mode;
-      }
-    },
-  },
-};
-</script>
 
 <style>
 div.row a.view-picker.theme--light.v-btn.v-btn--disabled {

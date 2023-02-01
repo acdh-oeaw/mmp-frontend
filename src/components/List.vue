@@ -33,11 +33,13 @@ const headers = [
 ];
 
 function addKeywordToInput(obj: Keyword) {
-  store.commit('addToItemsAndInput', {
-    id: obj.id,
-    selected_text: obj.stichwort,
-    group: 'Keyword',
-  });
+  store.commit('addAutoCompleteSelectedValues', [
+    {
+      id: obj.id,
+      label: obj.stichwort,
+      kind: 'keyword',
+    },
+  ]);
 }
 
 const route = useRoute();

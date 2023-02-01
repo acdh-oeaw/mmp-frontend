@@ -1,17 +1,17 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 
-import helpers from '@/helpers';
+import { isSameItem } from '@/lib/search/is-same-item';
+import type { Item } from '@/lib/search/search.types';
+import { uniqueItems } from '@/lib/search/unique-items';
 
 Vue.use(Vuex);
 
 export const store = new Vuex.Store({
   state: {
     autocomplete: {
-      input: [],
-      items: [],
+      input: [] as Array<Item>,
     },
-    completeKeywords: [47, 77, 78, 82, 83, 129, 130, 152, 153, 157, 159, 171, 172],
     fetchedResults: {},
     interface: {
       searchOptions: false,
@@ -40,33 +40,14 @@ export const store = new Vuex.Store({
     },
   },
   mutations: {
-    addItems: (state, { items, label }) => {
-      state.autocomplete.items = state.autocomplete.items.concat(
-        items.map((x) => ({ ...x, group: label }))
-      );
-      state.autocomplete.items = helpers.methods.removeDuplicates(state.autocomplete.items, [
-        'id',
-        'group',
-      ]);
+    addAutoCompleteSelectedValues(state, values) {
+      state.autocomplete.input = uniqueItems(state.autocomplete.input, values);
     },
-    addToItemsAndInput: (state, item) => {
-      state.autocomplete.input.push(item);
-      state.autocomplete.items.push(item);
-      // remove duplicates
-      state.autocomplete.input = helpers.methods.removeDuplicates(state.autocomplete.input, [
-        'id',
-        'group',
-      ]);
-      state.autocomplete.items = helpers.methods.removeDuplicates(state.autocomplete.items, [
-        'id',
-        'group',
-      ]);
+    removeAutoCompleteSelectedValue(state, item) {
+      state.autocomplete.input = state.autocomplete.input.filter((i) => !isSameItem(item, i));
     },
-    clearInput: (state) => {
+    clearAutoCompleteSelectedValues(state) {
       state.autocomplete.input = [];
-    },
-    clearItems: (state) => {
-      state.autocomplete.items = [];
     },
     toggleDrawer: (state) => {
       state.interface.sidebarDrawer = !state.interface.sidebarDrawer;
