@@ -19,3 +19,5 @@ type DistributivePick<T, K extends PropertyType> = T extends unknown ? Pick<T, K
 
 type SetOptional<T extends object, K extends keyof T = keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 type SetRequired<T extends object, K extends keyof T = keyof T> = Omit<T, K> & Required<Pick<T, K>>;
+
+type Nullable<T> = T | null | undefined;

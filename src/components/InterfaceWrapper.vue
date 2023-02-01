@@ -1,69 +1,20 @@
 <script lang="ts" setup>
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router/composables';
-import { VRangeSlider, VSlider } from 'vuetify/lib';
 
-import { useAutoComplete } from '@/api';
-import rangeSliderIcon from '@/assets/custom_range_icon.svg';
-import sliderIcon from '@/assets/custom_slider_icon.svg';
+import DateRangeForm from '@/components/date-range-form.vue';
+import PassageSearchForm from '@/components/passage-search-form.vue';
 import SearchOptions from '@/components/SearchOptions.vue';
-import {
-  colors,
-  keywordTypeLabels,
-  kindLabels,
-  maxYear,
-  minYear,
-} from '@/lib/search/search.config';
-import type { Item } from '@/lib/search/search.types';
-import { uniqueItems } from '@/lib/search/unique-items';
-import { truncate } from '@/lib/truncate';
 import { useStore } from '@/lib/use-store';
 import { recommendedSearchFilters } from '~/config/search.config';
-
-const defaultChips = recommendedSearchFilters;
-
-//
 
 const route = useRoute();
 const router = useRouter();
 const store = useStore();
 
-//
+const isSliderVisible = computed(() => route.name !== 'Word Cloud');
 
-const sliderComponents = { 'v-range-slider': VRangeSlider, 'v-slider': VSlider };
-
-type SliderComponent = keyof typeof sliderComponents;
-
-const range = ref<number | [number, number]>([minYear, maxYear]);
-const sliderComponent = ref<SliderComponent>('v-range-slider');
-
-const isSliderVisible = computed(() => {
-  return route.name !== 'Word Cloud';
-});
-
-function toggleSliderComponent(mode: SliderComponent) {
-  if (mode !== sliderComponent.value) {
-    if (Array.isArray(range.value)) {
-      range.value = Math.round((range.value[0]! + range.value[1]!) / 2);
-    } else {
-      range.value = [range.value - 100, range.value + 100];
-    }
-
-    sliderComponent.value = mode;
-  }
-}
-
-const slideOption = computed({
-  get() {
-    return store.state.apiParams.slider;
-  },
-  set(val) {
-    store.commit('setApiParam', { key: 'slider', val });
-  },
-});
-
-//
-
+// FIXME:
 const currentView = computed({
   get() {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -73,101 +24,6 @@ const currentView = computed({
     router.push({ name, query: route.query });
   },
 });
-
-//
-
-const searchTerm = ref('');
-// TODO: selected values currently still live in global store because it is possible to change them from anywhere in the app
-const selectedValues = computed(() => store.state.autocomplete.input);
-
-function onUpdateSearchTerm(value: string | null) {
-  searchTerm.value = value ?? '';
-}
-
-function onUpdateSelectedValues(values: Array<Item>) {
-  store.commit('addAutoCompleteSelectedValues', values);
-}
-
-function onRemoveValue(value: Item) {
-  store.commit('removeAutoCompleteSelectedValue', value);
-}
-
-function onClearSelectedValues() {
-  searchTerm.value = '';
-  store.commit('clearAutoCompleteSelectedValues');
-}
-
-const autoCompleteQuery = useAutoComplete(
-  computed(() => ({
-    // return 10 results per `kind`. note that results will be sorted by `kind`.
-    page_size: 10,
-    q: searchTerm.value.trim(),
-  }))
-);
-const isFetching = computed(() => autoCompleteQuery.isFetching.value);
-const items = computed(() => {
-  // selected values must always be included in items, otherwise the chips for selected values
-  // will not be displayed when they are no longer in the items list matching the current search term.
-  if (autoCompleteQuery.data.value == null) {
-    return selectedValues.value;
-  }
-
-  return uniqueItems(autoCompleteQuery.data.value.results, selectedValues.value);
-});
-
-const nothingFoundText = computed(() => {
-  return autoCompleteQuery.isFetching.value ? 'Loading...' : 'Nothing found';
-});
-
-const label = 'Search for passages';
-
-//
-
-function pushQuery() {
-  router.push({
-    name: currentView.value,
-    query: getQueryFromInput(selectedValues.value),
-  });
-}
-
-function getQueryFromInput(input: Item[]) {
-  function getIds(kind: Item['kind']) {
-    return (
-      input
-        .filter((i) => i.kind === kind)
-        .map((i) => i.id)
-        .join('+') || undefined
-    );
-  }
-
-  const query = {
-    Author: getIds('autor'),
-    Passage: getIds('stelle'),
-    Keyword: getIds('keyword'),
-    'Use Case': getIds('usecase'),
-    Place: getIds('ort'),
-  };
-
-  // @ts-expect-error Will be fixed in useSearchFilters
-  query.time = Array.isArray(range.value) ? range.value.join('+') : range.value;
-
-  // @ts-expect-error Will be fixed in useSearchFilters
-  if (query.time === '400+1200') query.time = undefined;
-
-  return query;
-}
-
-function getKindLabel(value: Item) {
-  const kindLabel = kindLabels[value.kind].one;
-  if (value.kind === 'keyword') {
-    return `${kindLabel} (${keywordTypeLabels[value.type].one})`;
-  }
-  return kindLabel;
-}
-
-function getColor(value: Item) {
-  return colors[value.kind];
-}
 </script>
 
 <template>
@@ -184,63 +40,12 @@ function getColor(value: Item) {
                     <v-icon>mdi-chevron-down</v-icon>
                   </v-btn>
                 </template>
-                <search-options />
+                <SearchOptions />
               </v-menu>
             </v-col>
-            <v-col :cols="$vuetify.breakpoint.mobile ? 12 : 10">
-              <v-autocomplete
-                :aria-label="label"
-                auto-select-first
-                color="primary"
-                item-text="label"
-                :items="items"
-                :loading="isFetching"
-                multiple
-                :no-data-text="nothingFoundText"
-                no-filter
-                :placeholder="label"
-                return-object
-                :search-input="searchTerm"
-                type="search"
-                :value="selectedValues"
-                @change="searchTerm = ''"
-                @input="onUpdateSelectedValues"
-                @update:search-input="onUpdateSearchTerm"
-              >
-                <template #item="{ item }">
-                  <v-list-item-content>
-                    <v-list-item-title>{{ item.label }}</v-list-item-title>
-                    <v-list-item-subtitle>{{ getKindLabel(item) }}</v-list-item-subtitle>
-                  </v-list-item-content>
-                </template>
-                <template #selection="{ attrs, selected, select, item }">
-                  <v-chip
-                    v-bind="attrs"
-                    :input-value="selected"
-                    close
-                    :color="getColor(item)"
-                    @click="select"
-                    @click:close="onRemoveValue(item)"
-                  >
-                    {{ truncate(item.label, 30) }}
-                  </v-chip>
-                </template>
-                <template #append>
-                  <v-icon
-                    v-if="selectedValues.length"
-                    aria-label="Clear search filters"
-                    color="primary"
-                    @click="onClearSelectedValues"
-                  >
-                    mdi-close
-                  </v-icon>
-                </template>
-              </v-autocomplete>
-            </v-col>
-            <v-col :cols="$vuetify.breakpoint.mobile ? 12 : 1">
-              <v-btn min-height="50px" height="100%" x-large block depressed @click="pushQuery">
-                <v-icon>mdi-magnify</v-icon>{{ !$vuetify.breakpoint.mobile ? '' : 'Search' }}
-              </v-btn>
+
+            <v-col :cols="$vuetify.breakpoint.mobile ? 12 : 11">
+              <PassageSearchForm />
             </v-col>
           </v-row>
           <v-row class="grey-bg">
@@ -258,10 +63,7 @@ function getColor(value: Item) {
                   :class="{ active: currentView === 'List' }"
                   :to="{
                     name: 'List',
-                    query: {
-                      ...route.query,
-                      ...getQueryFromInput(store.state.autocomplete.input),
-                    },
+                    query: route.query,
                   }"
                 >
                   List
@@ -350,21 +152,27 @@ function getColor(value: Item) {
                   For instance, try
                   <v-chip
                     color="red lighten-3"
-                    @click="store.commit('addAutoCompleteSelectedValues', [defaultChips[0]])"
+                    @click="
+                      store.commit('addAutoCompleteSelectedValues', [recommendedSearchFilters[0]])
+                    "
                   >
                     Baudonivia von Poitiers</v-chip
                   >
                   &#32;
                   <v-chip
                     color="blue lighten-4"
-                    @click="store.commit('addAutoCompleteSelectedValues', [defaultChips[1]])"
+                    @click="
+                      store.commit('addAutoCompleteSelectedValues', [recommendedSearchFilters[1]])
+                    "
                   >
                     barbari</v-chip
                   >
                   or
                   <v-chip
                     color="amber lighten-3"
-                    @click="store.commit('addAutoCompleteSelectedValues', [defaultChips[2]])"
+                    @click="
+                      store.commit('addAutoCompleteSelectedValues', [recommendedSearchFilters[2]])
+                    "
                   >
                     Steppe Peoples 1: "Schwarzes Meer"</v-chip
                   >
@@ -381,58 +189,7 @@ function getColor(value: Item) {
           </v-row>
           <v-row v-show="isSliderVisible">
             <v-col>
-              <component
-                :is="sliderComponents[sliderComponent]"
-                v-model="range"
-                class="slider"
-                :max="maxYear"
-                :min="minYear"
-                thumb-label="always"
-                light
-                thumb-size="50"
-                track-color="#d5d5d5"
-                :track-fill-color="Array.isArray(range) ? '#0f1226' : '#d5d5d5'"
-              >
-                <template #thumb-label="{ value }"> {{ value }} AD </template>
-                <template #append>
-                  <v-menu :close-on-content-click="false">
-                    <template #activator="{ on, attrs }">
-                      <v-btn icon v-bind="attrs" v-on="on">
-                        <v-icon>mdi-cog</v-icon>
-                      </v-btn>
-                    </template>
-                    <v-card>
-                      <v-card-text class="text-center">
-                        <v-btn icon>
-                          <img
-                            class="icon"
-                            :src="rangeSliderIcon"
-                            alt="Range Icon"
-                            @click="toggleSliderComponent('v-range-slider')"
-                          />
-                        </v-btn>
-                        <v-btn icon>
-                          <img
-                            class="icon"
-                            :src="sliderIcon"
-                            alt="Slider Icon"
-                            @click="toggleSliderComponent('v-slider')"
-                          />
-                        </v-btn>
-                        <v-divider />
-                        <v-radio-group v-model="slideOption" label="Timeslider should filter for:">
-                          <v-radio
-                            label="Temporal Coverage"
-                            color="teal lighten-2"
-                            value="passage"
-                          />
-                          <v-radio label="Time of composition" color="red darken-4" value="text" />
-                        </v-radio-group>
-                      </v-card-text>
-                    </v-card>
-                  </v-menu>
-                </template>
-              </component>
+              <DateRangeForm />
             </v-col>
           </v-row>
         </v-col>
