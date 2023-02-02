@@ -3,6 +3,7 @@ import { keyByToMap } from '@stefanprobst/key-by';
 import { computed, ref, watch } from 'vue';
 
 import { type GetAutoComplete, type ResourceKey, useAutoComplete } from '@/api';
+import SearchAutocompleteSelectedItem from '@/components/search-autocomplete-selected-item.vue';
 import { createResourceKey, splitResourceKey } from '@/lib/resource-key';
 import { createSearchFilterKey } from '@/lib/search/create-search-filter-key';
 import { getResourceColor } from '@/lib/search/get-resource-color';
@@ -10,26 +11,50 @@ import { keywordTypeLabels, kindLabels } from '@/lib/search/search.config';
 import type { Item } from '@/lib/search/search.types';
 import type { SearchFilters } from '@/lib/search/use-search-filters';
 import { useSearchFilters } from '@/lib/search/use-search-filters';
+import { usePassageSearchFormSelection } from '@/lib/search/use-search-form-selection';
 import { truncate } from '@/lib/truncate';
 
-const { searchFilters, setSearchFilters, defaultSearchFilters } = useSearchFilters();
+const emit = defineEmits<{
+  (event: 'submit', searchFilters: SearchFilters): void;
+}>();
 
-const selectedKeys = ref<Array<ResourceKey>>([]);
+const { searchFilters, setSearchFilters } = useSearchFilters();
+const { selectedKeys, setSelectedKeys, removeSelectedKey, clearSelectedKeys } =
+  usePassageSearchFormSelection();
 
 function onUpdateSelectedKeys(keys: Array<ResourceKey>) {
-  selectedKeys.value = keys;
+  setSelectedKeys(keys);
 }
 
+function onRemoveSelectedKey(key: ResourceKey) {
+  removeSelectedKey(key);
+}
+
+function onClearSelectedKeys() {
+  clearSelectedKeys();
+}
+
+//
+
 function onSubmit() {
-  const searchFilters: SearchFilters = { ...defaultSearchFilters };
+  const nextSearchFilters: SearchFilters = {
+    ...searchFilters.value,
+    author: [],
+    'case-study': [],
+    keyword: [],
+    passage: [],
+    place: [],
+  };
 
   selectedKeys.value.forEach((key) => {
     const { kind, id } = splitResourceKey(key);
     const filter = createSearchFilterKey(kind);
-    searchFilters[filter].push(id);
+    nextSearchFilters[filter].push(id);
   });
 
-  setSearchFilters(searchFilters);
+  setSearchFilters(nextSearchFilters);
+
+  emit('submit', nextSearchFilters);
 }
 
 //
@@ -44,6 +69,7 @@ function onUpdateSearchTerm(value: string | null) {
 
 const searchParams = computed<GetAutoComplete.SearchParams>(() => {
   return {
+    kind: ['autor', 'keyword', 'ort', 'stelle', 'usecase'],
     // return 10 results per `kind`. note that results will be sorted by `kind`.
     page_size: 10,
     q: searchTerm.value.trim(),
@@ -143,13 +169,17 @@ function getKindLabel(value: Item) {
 </script>
 
 <template>
-  <form novalidate role="search" @submit.prevent="onSubmit">
+  <form
+    novalidate
+    role="search"
+    class="passage-search-form"
+    :class="{ stacked: $vuetify.breakpoint.mobile }"
+    @submit.prevent="onSubmit"
+  >
     <VAutocomplete
       :aria-label="label"
       auto-select-first
-      chips
-      clearable
-      closable-chips
+      :cache-items="false"
       color="primary"
       hide-details
       item-text="label"
@@ -168,35 +198,30 @@ function getKindLabel(value: Item) {
       @input="onUpdateSelectedKeys"
       @update:search-input="onUpdateSearchTerm"
     >
-      <template #chip="{ item, props }">
-        <VChip
-          v-if="cache.has(item.value)"
-          v-bind="props"
-          :close-label="`Remove ${item.title}`"
-          :color="getResourceColor(item.raw)"
-        />
-        <SearchAutoCompleteSelectedItem
-          v-else
-          v-bind="splitResourceKey(item.value)"
-          @load-item="onLoadItem"
-        >
-          <!-- TODO: use skeleton loader -->
-          <!-- <VChip :closable="false">Loading...</VChip> -->
-          <VSkeletonLoader type="chip" />
-        </SearchAutoCompleteSelectedItem>
+      <!-- In Vuetify 3 we can use a single #chip slot, instead of #prepend-inner and #selection. -->
+      <template #prepend-inner>
+        <template v-for="key of selectedKeys">
+          <SearchAutocompleteSelectedItem
+            v-if="!cache.has(key)"
+            :key="key"
+            v-bind="splitResourceKey(key)"
+            @load-item="onLoadItem"
+          >
+            <VSkeletonLoader type="chip" />
+          </SearchAutocompleteSelectedItem>
+        </template>
       </template>
-      <!-- <template #selection="{ attrs, selected, select, item }">
+      <template #selection="{ item }">
         <VChip
-          v-bind="attrs"
-          :input-value="selected"
+          v-if="cache.has(item.key)"
           close
+          :close-label="`Remove ${item.label}`"
           :color="getResourceColor(item)"
-          @click="select"
-          @click:close="onRemoveValue(item)"
+          @click:close="onRemoveSelectedKey(item.key)"
         >
           {{ truncate(item.label, 30) }}
         </VChip>
-      </template> -->
+      </template>
 
       <template #item="{ item }">
         <VListItemContent>
@@ -205,21 +230,54 @@ function getKindLabel(value: Item) {
         </VListItemContent>
       </template>
 
-      <!-- <template #append>
+      <template #append>
         <VIcon
-          v-if="selectedValues.length"
+          v-if="selectedKeys.length"
           aria-label="Clear search filters"
           color="primary"
-          @click="onClearSelectedValues"
+          @click="onClearSelectedKeys"
         >
           mdi-close
         </VIcon>
-      </template> -->
+      </template>
     </VAutocomplete>
 
-    <VBtn min-height="50px" height="100%" type="submit" block depressed x-large>
-      <VIcon>mdi-magnify</VIcon>
-      <span :class="{ 'd-sr-only': $vuetify.breakpoint.mobile }">Search</span>
+    <VBtn
+      block
+      :class="{ square: !$vuetify.breakpoint.mobile }"
+      depressed
+      height="100%"
+      min-height="50px"
+      type="submit"
+      x-large
+    >
+      <VIcon :left="$vuetify.breakpoint.mobile">mdi-magnify</VIcon>
+      <span :class="{ 'd-sr-only': !$vuetify.breakpoint.mobile }">Search</span>
     </VBtn>
   </form>
 </template>
+
+<style scoped>
+.passage-search-form {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 16px;
+  align-items: center;
+}
+
+.passage-search-form.stacked {
+  grid-template-columns: 1fr;
+}
+</style>
+
+<style>
+/* An absolute value ensures the overlay is not wider than the input. */
+.v-autocomplete__content {
+  max-width: 768px;
+}
+
+.v-input__prepend-inner {
+  margin-block: 4px;
+  gap: 4px;
+}
+</style>

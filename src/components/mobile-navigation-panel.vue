@@ -1,23 +1,25 @@
 <script lang="ts" setup>
-import { useStore } from '@/lib/use-store';
-
 const props = defineProps<{
+  isOpen: boolean;
   links: Record<string, { name: string; label: string }>;
 }>();
 
-const store = useStore();
+const emit = defineEmits<{
+  (event: 'toggle-panel'): void;
+}>();
 
 function onToggleDrawer() {
-  store.commit('toggleDrawer');
+  emit('toggle-panel');
 }
 </script>
 
 <template>
   <v-navigation-drawer
-    v-model="store.state.interface.sidebarDrawer"
+    :value="props.isOpen"
     color="background"
     fixed
     temporary
+    @input="onToggleDrawer"
   >
     <v-list-item>
       <v-list-item-content>

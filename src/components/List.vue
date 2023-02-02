@@ -2,26 +2,13 @@
 import { computed, ref } from 'vue';
 import { useRoute } from 'vue-router/composables';
 
-import { type GetPassages, type Keyword, type KeywordType, usePassages } from '@/api';
+import { type KeywordType, usePassages } from '@/api';
 import FullscreenButton from '@/components/FullscreenButton.vue';
 import { getAuthorLabel, getDateRangeLabel } from '@/lib/get-label';
-import { isNotNullable } from '@/lib/is-not-nullable';
 import { keywordColors } from '@/lib/search/search.config';
+import { usePassagesSearchParams } from '@/lib/search/use-passages-search-params';
+import { useSearchFilters } from '@/lib/search/use-search-filters';
 import { useFullScreen } from '@/lib/use-full-screen';
-import { useStore } from '@/lib/use-store';
-
-const props = defineProps<{
-  keyword?: any;
-  passage?: any;
-  author?: any;
-  usecase?: any;
-  place?: any;
-}>();
-
-const store = useStore();
-
-const limit = ref(10);
-const offset = ref(0);
 
 const headers = [
   { text: 'Author', value: 'text.autor', width: '150px' },
@@ -32,82 +19,12 @@ const headers = [
   { text: 'Coverage', value: 'coverage', width: '100px' },
 ];
 
-function addKeywordToInput(obj: Keyword) {
-  store.commit('addAutoCompleteSelectedValues', [
-    {
-      id: obj.id,
-      label: obj.stichwort,
-      kind: 'keyword',
-    },
-  ]);
-}
-
 const route = useRoute();
-const passagesQuery = usePassages(
-  computed(() => {
-    const hasUseCase = store.state.apiParams.hasUsecase === 'true';
-    const intersect = store.state.apiParams.intersect;
-
-    if (Object.values(props).some(isNotNullable)) {
-      const searchParams: GetPassages.SearchParams = {
-        ids: props.passage?.toString().split('+').join(','),
-        text__autor: props.author,
-        key_word: props.keyword,
-        use_case: props.usecase,
-        text__ort: props.place,
-        limit: limit.value,
-        offset: offset.value,
-      };
-
-      return searchParams;
-    }
-
-    function getDateFilters() {
-      if (route.query['time'] == null) return {};
-
-      const [start, end] = String(route.query['time']).includes('+')
-        ? String(route.query['time']).split('+').map(Number)
-        : [Number(route.query['time']) - 5, Number(route.query['time']) + 4];
-
-      const dateFilters: GetPassages.SearchParams =
-        store.state.apiParams.slider === 'passage'
-          ? {
-              start_date: start,
-              start_date_lookup: 'gt',
-              end_date: end,
-              end_date_lookup: 'lt',
-            }
-          : {
-              text__start_date: start,
-              text__start_date_lookup: 'gt',
-              text__end_date: end,
-              text__end_date_lookup: 'lt',
-            };
-
-      return dateFilters;
-    }
-
-    const searchParams: GetPassages.SearchParams = {
-      ids: route.query['Passage']?.toString().split('+').join(),
-      [intersect ? 'text__autor_and' : 'text__autor']: route.query['Author']
-        ?.toString()
-        .split('+')
-        .map(Number),
-      [intersect ? 'key_word_and' : 'key_word']: route.query['Keyword']
-        ?.toString()
-        .split('+')
-        .map(Number),
-      use_case: route.query['Use Case']?.toString().split('+').map(Number),
-      text__ort: route.query['Place']?.toString().split('+').map(Number),
-      has_usecase: hasUseCase,
-      ...getDateFilters(),
-      limit: limit.value,
-      offset: offset.value,
-    };
-
-    return searchParams;
-  })
-);
+const limit = ref(10);
+const offset = ref(0);
+const { createSearchFilterParams, searchFilters } = useSearchFilters();
+const searchParams = usePassagesSearchParams();
+const passagesQuery = usePassages(searchParams);
 
 const _isLoading = computed(() => {
   return passagesQuery.isInitialLoading.value;
@@ -184,14 +101,23 @@ const isFullScreen = useFullScreen();
             }"
             class="text-decoration-none"
           >
-            <b>{{ item.text.title }}</b
-            ><v-icon>mdi-chevron-right</v-icon>
+            <b>{{ item.text.title }}</b>
+            <v-icon>mdi-chevron-right</v-icon>
           </router-link>
         </template>
       </template>
       <template #[`item.keywords`]="{ item }">
         <div v-for="keyword of item.key_word" :key="keyword.stichwort" class="keyword-chip">
-          <v-chip small :color="getColor(keyword.art)" @click="addKeywordToInput(keyword)">
+          <v-chip
+            small
+            :color="getColor(keyword.art)"
+            :to="{
+              query: createSearchFilterParams({
+                ...searchFilters,
+                keyword: [...searchFilters.keyword, keyword.id],
+              }),
+            }"
+          >
             {{ keyword.stichwort }}
           </v-chip>
         </div>

@@ -16,7 +16,7 @@ export const recommendedSearchFilters: Array<Item> = [
   },
   {
     id: 3,
-    label: 'Steppe Peoples 1: "Schwarzes Meer" - Jordanes, Prokop, Zacharias Rhetor',
+    label: 'Steppe Peoples 1: "Schwarzes Meer"',
     kind: 'usecase',
     key: 'usecase__3',
   },

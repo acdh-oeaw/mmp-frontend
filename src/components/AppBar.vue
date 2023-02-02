@@ -1,20 +1,20 @@
 <script lang="ts" setup>
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 
 import MobileNavigationPanel from '@/components/mobile-navigation-panel.vue';
 import { useDetailsPage } from '@/lib/use-details-page';
 import { useHomePage } from '@/lib/use-home-page';
-import { useStore } from '@/lib/use-store';
 
-const store = useStore();
 const isHomePage = useHomePage();
 const isDetailsPage = useDetailsPage();
 const backgroundColor = computed(() => {
   return isHomePage.value ? '#0f1226' : '#f1f5fa';
 });
 
-function onToggleDrawer() {
-  store.commit('toggleDrawer');
+const isPanelOpen = ref(false);
+
+function onTogglePanel() {
+  isPanelOpen.value = !isPanelOpen.value;
 }
 
 const links = {
@@ -39,7 +39,7 @@ const links = {
           <v-app-bar-nav-icon
             class="d-inline d-md-none menu-button"
             :class="{ 'white--text': isHomePage }"
-            @click.stop="onToggleDrawer"
+            @click.stop="onTogglePanel"
           />
           <v-toolbar-title class="d-inline fancy-font font-weight-bold text-decoration-none">
             <router-link :to="{ name: 'Home' }" class="nav-link" :class="{ light: !isHomePage }">
@@ -69,7 +69,7 @@ const links = {
       </v-row>
     </v-app-bar>
 
-    <MobileNavigationPanel :links="links" />
+    <MobileNavigationPanel :links="links" :is-open="isPanelOpen" @toggle-panel="onTogglePanel" />
   </div>
 </template>
 

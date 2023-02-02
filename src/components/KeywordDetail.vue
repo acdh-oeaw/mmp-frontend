@@ -127,8 +127,8 @@ const neighbors = computed({
   get() {
     return store.state.graphOptions.showNeighborsOnly;
   },
-  set(val) {
-    store.commit('setGraphParam', { key: 'showNeighborsOnly', val });
+  set(value) {
+    store.commit('setGraphParam', { key: 'showNeighborsOnly', value });
   },
 });
 

@@ -5,14 +5,14 @@ import { useRoute } from 'vue-router/composables';
 import { usePassageById } from '@/api';
 import { getAuthorLabel, getPlaceLabel } from '@/lib/get-label';
 import { keywordColors } from '@/lib/search/search.config';
+import { useSearchFilters } from '@/lib/search/use-search-filters';
 import { useDrawerWidth } from '@/lib/use-drawer-width';
 import { useFullScreen } from '@/lib/use-full-screen';
-import { useStore } from '@/lib/use-store';
 
 const route = useRoute();
 const id = computed(() => Number(route.params.id));
 
-const store = useStore();
+const { createSearchFilterParams, searchFilters } = useSearchFilters();
 
 const passageQuery = usePassageById({ id });
 
@@ -127,15 +127,9 @@ const drawerWidth = useDrawerWidth();
               <v-chip
                 :color="keywordColors[keyword.art]"
                 small
-                @click="
-                  store.commit('addAutoCompleteSelectedValues', [
-                    {
-                      id: keyword.id,
-                      label: keyword.stichwort,
-                      kind: 'keyword',
-                    },
-                  ])
-                "
+                :href="{
+                  query: createSearchFilterParams({ ...searchFilters, keyword: [keyword.id] }),
+                }"
               >
                 {{ keyword.stichwort }}
               </v-chip>
@@ -147,7 +141,10 @@ const drawerWidth = useDrawerWidth();
               :key="val.id"
               :to="{
                 name: isFullScreen ? `${item.key} Detail Fullscreen` : `${item.key} Detail`,
-                query: item.key === 'Place' ? { ...route.query, Place: val.id } : route.query,
+                query:
+                  item.key === 'Place'
+                    ? createSearchFilterParams({ ...searchFilters, place: [val.id] })
+                    : route.query,
                 params: { id: val.id },
               }"
             >

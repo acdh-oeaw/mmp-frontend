@@ -1,20 +1,29 @@
 <script lang="ts" setup>
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router/composables';
 
 import DateRangeForm from '@/components/date-range-form.vue';
 import PassageSearchForm from '@/components/passage-search-form.vue';
-import SearchOptions from '@/components/SearchOptions.vue';
-import { useStore } from '@/lib/use-store';
-import { recommendedSearchFilters } from '~/config/search.config';
+import SearchOptions from '@/components/search-options.vue';
+import { useSearchFilters } from '@/lib/search/use-search-filters';
+import { useDetailsPage } from '@/lib/use-details-page';
+// TODO:
+// import { recommendedSearchFilters } from '~/config/search.config';
+
+const { createSearchFilterParams, searchFilters } = useSearchFilters();
 
 const route = useRoute();
 const router = useRouter();
-const store = useStore();
 
+const isDetailsPage = useDetailsPage();
 const isSliderVisible = computed(() => route.name !== 'Word Cloud');
+/**
+ * When no search filters have been set, display an initial welcome screen.
+ */
+const isWelcomeScreenVisible = ref(
+  Object.keys(route.query).length === 0 && Object.keys(route.params).length === 0
+);
 
-// FIXME:
 const currentView = computed({
   get() {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -29,8 +38,8 @@ const currentView = computed({
 <template>
   <div>
     <v-container>
-      <v-row :justify="currentView.includes('Detail') ? 'start' : 'center'">
-        <v-col cols="12" :lg="currentView.includes('Detail') ? 8 : 12" xl="8">
+      <v-row :justify="isDetailsPage ? 'start' : 'center'">
+        <v-col cols="12" :lg="isDetailsPage ? 8 : 12" xl="8">
           <v-row class="grey-bg">
             <v-col :cols="$vuetify.breakpoint.mobile ? 12 : 1">
               <v-menu :close-on-content-click="false">
@@ -45,7 +54,7 @@ const currentView = computed({
             </v-col>
 
             <v-col :cols="$vuetify.breakpoint.mobile ? 12 : 11">
-              <PassageSearchForm />
+              <PassageSearchForm @submit="isWelcomeScreenVisible = false" />
             </v-col>
           </v-row>
           <v-row class="grey-bg">
@@ -61,10 +70,7 @@ const currentView = computed({
                   class="view-picker"
                   :disabled="currentView === 'List'"
                   :class="{ active: currentView === 'List' }"
-                  :to="{
-                    name: 'List',
-                    query: route.query,
-                  }"
+                  :to="{ name: 'List', query: route.query }"
                 >
                   List
                 </v-btn>
@@ -137,11 +143,8 @@ const currentView = computed({
               </v-btn>
             </v-col>
           </v-row>
-          <v-row
-            v-if="!Object.keys(route.query).length && !Object.keys(route.params).length"
-            align="center"
-            justify="center"
-          >
+
+          <v-row v-if="isWelcomeScreenVisible" align="center" justify="center">
             <v-col cols="12" md="8">
               <div class="text-center no-query">
                 <p>
@@ -152,27 +155,23 @@ const currentView = computed({
                   For instance, try
                   <v-chip
                     color="red lighten-3"
-                    @click="
-                      store.commit('addAutoCompleteSelectedValues', [recommendedSearchFilters[0]])
-                    "
+                    :href="{ query: createSearchFilterParams({ ...searchFilters, author: [8] }) }"
                   >
                     Baudonivia von Poitiers</v-chip
                   >
                   &#32;
                   <v-chip
                     color="blue lighten-4"
-                    @click="
-                      store.commit('addAutoCompleteSelectedValues', [recommendedSearchFilters[1]])
-                    "
+                    :href="{ query: createSearchFilterParams({ ...searchFilters, keyword: [33] }) }"
                   >
                     barbari</v-chip
                   >
                   or
                   <v-chip
                     color="amber lighten-3"
-                    @click="
-                      store.commit('addAutoCompleteSelectedValues', [recommendedSearchFilters[2]])
-                    "
+                    :href="{
+                      query: createSearchFilterParams({ ...searchFilters, 'case-study': [3] }),
+                    }"
                   >
                     Steppe Peoples 1: "Schwarzes Meer"</v-chip
                   >
@@ -187,6 +186,7 @@ const currentView = computed({
           <v-row v-else>
             <router-view />
           </v-row>
+
           <v-row v-show="isSliderVisible">
             <v-col>
               <DateRangeForm />
@@ -208,7 +208,6 @@ img.icon {
   width: 100%;
 }
 
-/* makes elements read-only */
 .disable-events {
   pointer-events: none;
 }

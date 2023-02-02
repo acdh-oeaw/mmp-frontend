@@ -153,6 +153,8 @@ if (props.kind === 'usecase') {
 </script>
 
 <template>
-  <!-- eslint-disable-next-line vue/no-multiple-template-root -->
-  <slot />
+  <!-- Vue 2 does not allow slots as template root. -->
+  <span>
+    <slot />
+  </span>
 </template>

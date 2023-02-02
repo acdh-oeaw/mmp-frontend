@@ -425,7 +425,7 @@ export namespace GetAuthorById {
 }
 
 export function getAuthorById(params: GetAuthorById.PathParams): Promise<GetAuthorById.Response> {
-  const url = createUrl({ baseUrl: baseUrls.api, pathname: `autor/${params.id}` });
+  const url = createUrl({ baseUrl: baseUrls.api, pathname: `autor/${params.id}/` });
   return request(url, options);
 }
 
@@ -511,7 +511,7 @@ export namespace GetKeywordById {
 export function getKeywordById(
   params: GetKeywordById.PathParams
 ): Promise<GetKeywordById.Response> {
-  const url = createUrl({ baseUrl: baseUrls.api, pathname: `keyword/${params.id}` });
+  const url = createUrl({ baseUrl: baseUrls.api, pathname: `keyword/${params.id}/` });
   return request(url, options);
 }
 
@@ -600,7 +600,7 @@ export namespace GetPlaceById {
 }
 
 export function getPlaceById(params: GetPlaceById.PathParams): Promise<GetPlaceById.Response> {
-  const url = createUrl({ baseUrl: baseUrls.api, pathname: `ort/${params.id}` });
+  const url = createUrl({ baseUrl: baseUrls.api, pathname: `ort/${params.id}/` });
   return request(url, options);
 }
 
@@ -773,7 +773,7 @@ export namespace GetPassageById {
 export function getPassageById(
   params: GetPassageById.PathParams
 ): Promise<GetPassageById.Response> {
-  const url = createUrl({ baseUrl: baseUrls.api, pathname: `stelle/${params.id}` });
+  const url = createUrl({ baseUrl: baseUrls.api, pathname: `stelle/${params.id}/` });
   return request(url, options);
 }
 
@@ -878,7 +878,7 @@ export namespace GetTextById {
 }
 
 export function getTextById(params: GetTextById.PathParams): Promise<GetTextById.Response> {
-  const url = createUrl({ baseUrl: baseUrls.api, pathname: `text/${params.id}` });
+  const url = createUrl({ baseUrl: baseUrls.api, pathname: `text/${params.id}/` });
   return request(url, options);
 }
 
@@ -951,7 +951,7 @@ export namespace GetCaseStudyById {
 export function getCaseStudyById(
   params: GetCaseStudyById.PathParams
 ): Promise<GetCaseStudyById.Response> {
-  const url = createUrl({ baseUrl: baseUrls.api, pathname: `usecase/${params.id}` });
+  const url = createUrl({ baseUrl: baseUrls.api, pathname: `usecase/${params.id}/` });
   return request(url, options);
 }
 

@@ -93,7 +93,7 @@ export default defineConfig({
   css: {
     preprocessorOptions: {
       sass: {
-        additionalData: ['@import "@/scss/variables.scss"', ''].join('\n'),
+        additionalData: ['@import "@/styles/vuetify.scss"', ''].join('\n'),
       },
     },
   },
