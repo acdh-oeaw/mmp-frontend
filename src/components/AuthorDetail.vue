@@ -6,10 +6,10 @@ import { useRoute } from 'vue-router/composables';
 import { useAuthorById, useCaseStudies, useKeywords, usePassages } from '@/api';
 import { getAuthorLabel, getPlaceLabel } from '@/lib/get-label';
 import { keywordColors } from '@/lib/search/search.config';
+import { useSearchFilters } from '@/lib/search/use-search-filters';
 import { useDrawerWidth } from '@/lib/use-drawer-width';
 import { useFullScreen } from '@/lib/use-full-screen';
 import { useParentRoute } from '@/lib/use-parent-route';
-import { useStore } from '@/lib/use-store';
 
 const route = useRoute();
 const id = computed(() => {
@@ -17,15 +17,18 @@ const id = computed(() => {
   assert(id != null);
   return Number(id);
 });
-const store = useStore();
-const hasUseCase = store.state.apiParams.hasUsecase === 'true';
 
-const authorByIdQuery = useAuthorById({ id }); // data
+const { createSearchFilterParams, searchFilters } = useSearchFilters();
+
+const authorByIdQuery = useAuthorById({ id });
 const caseStudiesQuery = useCaseStudies({ has_stelle__text__autor: [id] });
-const passagesQuery = usePassages({ text__autor: [id], has_usecase: hasUseCase });
+const passagesQuery = usePassages({
+  text__autor: [id],
+  has_usecase: searchFilters.value.dataset === 'case-studies',
+});
 const keywordsQuery = useKeywords({
   rvn_stelle_key_word_keyword__text__autor: [id],
-  has_usecase: hasUseCase,
+  has_usecase: searchFilters.value.dataset === 'case-studies',
 });
 
 const isLoading = computed(() => {
@@ -94,15 +97,12 @@ const isFullScreen = useFullScreen();
         <v-chip
           :color="keywordColors[keyword.art]"
           small
-          @click="
-            store.commit('addAutoCompleteSelectedValues', [
-              {
-                id: keyword.id,
-                label: keyword.stichwort,
-                kind: 'keyword',
-              },
-            ])
-          "
+          :href="{
+            query: createSearchFilterParams({
+              ...searchFilters,
+              keyword: [...searchFilters.keyword, keyword.id],
+            }),
+          }"
         >
           {{ keyword.stichwort }}
         </v-chip>

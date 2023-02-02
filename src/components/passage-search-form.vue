@@ -185,6 +185,18 @@ function getKindLabel(value: Item) {
           <VSkeletonLoader type="chip" />
         </SearchAutoCompleteSelectedItem>
       </template>
+      <!-- <template #selection="{ attrs, selected, select, item }">
+        <VChip
+          v-bind="attrs"
+          :input-value="selected"
+          close
+          :color="getResourceColor(item)"
+          @click="select"
+          @click:close="onRemoveValue(item)"
+        >
+          {{ truncate(item.label, 30) }}
+        </VChip>
+      </template> -->
 
       <template #item="{ item }">
         <VListItemContent>
@@ -192,11 +204,22 @@ function getKindLabel(value: Item) {
           <VListItemSubtitle>{{ getKindLabel(item) }}</VListItemSubtitle>
         </VListItemContent>
       </template>
+
+      <!-- <template #append>
+        <VIcon
+          v-if="selectedValues.length"
+          aria-label="Clear search filters"
+          color="primary"
+          @click="onClearSelectedValues"
+        >
+          mdi-close
+        </VIcon>
+      </template> -->
     </VAutocomplete>
 
-    <VBtn type="submit">
-      <VIcon left>mdi-magnify</VIcon>
-      <span class="d-sr-only">Search</span>
+    <VBtn min-height="50px" height="100%" type="submit" block depressed x-large>
+      <VIcon>mdi-magnify</VIcon>
+      <span :class="{ 'd-sr-only': $vuetify.breakpoint.mobile }">Search</span>
     </VBtn>
   </form>
 </template>
