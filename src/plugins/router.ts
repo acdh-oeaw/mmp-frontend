@@ -1,22 +1,20 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 
-import AuthorDetail from '@/components/AuthorDetail.vue';
-import CaseStudies from '@/components/CaseStudies.vue';
-import CaseStudy from '@/components/CaseStudy.vue';
-import Debug from '@/components/Debug.vue';
-import FullscreenView from '@/components/FullscreenView.vue';
-import Graph from '@/components/GraphWrapper.vue';
-import Home from '@/components/Home.vue';
-import Interface from '@/components/InterfaceWrapper.vue';
-import KeywordDetail from '@/components/KeywordDetail.vue';
-import List from '@/components/List.vue';
-import ListAll from '@/components/ListAll.vue';
-import Map from '@/components/MapWrapper.vue';
-import PassageDetail from '@/components/PassageDetail.vue';
-import PlaceDetail from '@/components/PlaceDetail.vue';
-import SpatialDetail from '@/components/SpatialDetail.vue';
-import WordCloudWrapper from '@/components/WordCloudWrapper.vue';
+import AuthorDetail from '@/components/author-detail.vue';
+import CaseStudies from '@/components/case-studies.vue';
+import CaseStudy from '@/components/case-study.vue';
+import EntitiesList from '@/components/entities-list.vue';
+import Explore from '@/components/explore.vue';
+import GeoMap from '@/components/geo-map-wrapper.vue';
+import Home from '@/components/home.vue';
+import KeywordDetail from '@/components/keyword-detail.vue';
+import NetworkGraph from '@/components/network-graph-wrapper.vue';
+import PassageDetail from '@/components/passage-detail.vue';
+import PlaceDetail from '@/components/place-detail.vue';
+import SearchResults from '@/components/search-results.vue';
+import SpatialCoverageDetail from '@/components/spatial-coverage-detail.vue';
+import WordCloud from '@/components/word-cloud-wrapper.vue';
 
 Vue.use(VueRouter);
 
@@ -27,34 +25,29 @@ const routes = [
     component: Home,
   },
   {
-    path: '/debug',
-    name: 'Debug',
-    component: Debug,
-  },
-  {
-    path: '/studies/',
+    path: '/case-studies/',
     name: 'Case Studies',
     component: CaseStudies,
   },
   {
-    path: '/studies/:id',
+    path: '/case-studies/:id',
     name: 'Case Study',
     component: CaseStudy,
   },
   {
     path: '/explore/',
     name: 'Interface',
-    component: Interface,
+    component: Explore,
     children: [
       {
-        path: 'map',
+        path: 'geo-map',
         name: 'Map',
-        component: Map,
+        component: GeoMap,
         children: [
           {
-            path: 'spatial/:id',
+            path: 'spatial-coverage/:id',
             name: 'Spatial Detail',
-            component: SpatialDetail,
+            component: SpatialCoverageDetail,
           },
           {
             path: 'place/:id',
@@ -64,9 +57,9 @@ const routes = [
         ],
       },
       {
-        path: 'graph',
+        path: 'network-graph',
         name: 'Network Graph',
-        component: Graph,
+        component: NetworkGraph,
         children: [
           {
             path: 'detail/:id',
@@ -81,9 +74,9 @@ const routes = [
         ],
       },
       {
-        path: 'list',
+        path: 'search-results',
         name: 'List',
-        component: List,
+        component: SearchResults,
         children: [
           {
             path: 'passage/:id',
@@ -98,84 +91,28 @@ const routes = [
         ],
       },
       {
-        path: 'cloud',
+        path: 'word-cloud',
         name: 'Word Cloud',
-        component: WordCloudWrapper,
+        component: WordCloud,
       },
     ],
   },
   {
-    path: '/list-all/',
+    path: '/entities/',
     name: 'List All',
-    component: ListAll,
-  },
-  {
-    path: '/view/',
-    name: 'View',
-    component: FullscreenView,
-    children: [
-      {
-        path: 'map',
-        name: 'Map Fullscreen',
-        component: Map,
-        children: [
-          {
-            path: 'spatial/:id',
-            name: 'Spatial Detail Fullscreen',
-            component: SpatialDetail,
-          },
-          {
-            path: 'place/:id',
-            name: 'Place Detail Fullscreen',
-            component: PlaceDetail,
-          },
-        ],
-      },
-      {
-        path: 'graph',
-        name: 'Network Graph Fullscreen',
-        component: Graph,
-        children: [
-          {
-            path: 'detail/:id',
-            name: 'Keyword Detail Fullscreen',
-            component: KeywordDetail,
-          },
-          {
-            path: 'author/:id',
-            name: 'Graph Author Detail Fullscreen',
-            component: AuthorDetail,
-          },
-        ],
-      },
-      {
-        path: 'list',
-        name: 'List Fullscreen',
-        component: List,
-        children: [
-          {
-            path: 'passage/:id',
-            name: 'Passage Detail Fullscreen',
-            component: PassageDetail,
-          },
-          {
-            path: 'author/:id',
-            name: 'Author Detail Fullscreen',
-            component: AuthorDetail,
-          },
-        ],
-      },
-      {
-        path: 'cloud',
-        name: 'Word Cloud Fullscreen',
-        component: WordCloudWrapper,
-      },
-    ],
+    component: EntitiesList,
   },
 ];
 
 export const router = new VueRouter({
   base: import.meta.env.BASE_URL,
-  mode: 'hash',
+  mode: 'history',
   routes,
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) return savedPosition;
+
+    if (to.hash) return { selector: to.hash };
+
+    return { x: 0, y: 0 };
+  },
 });

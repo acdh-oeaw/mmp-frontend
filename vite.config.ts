@@ -11,8 +11,7 @@ import { metadata } from './config/metadata.config';
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const env = loadEnv(process.env['NODE_ENV']!, process.cwd());
 
-const publicPath = '/mmp-frontend/';
-const canonicalUrl = new URL(publicPath, env['VITE_APP_BASE_URL']).toString();
+const canonicalUrl = env['VITE_APP_BASE_URL'];
 
 /**
  * Plugin to add `<title>` and `<meta>` to `index.html`.
@@ -72,7 +71,6 @@ function meta(): Plugin {
 }
 
 export default defineConfig({
-  base: publicPath,
   build: {
     rollupOptions: {
       output: {
@@ -119,6 +117,6 @@ export default defineConfig({
     },
   },
   server: {
-    port: 8080,
+    port: 3000,
   },
 });

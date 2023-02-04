@@ -1,30 +1,25 @@
 <script lang="ts" setup>
-import { useRoute } from 'vue-router/composables';
-
 import bgImage from '@/assets/europa.jpg';
-import CaseStudy from '@/components/CaseStudy.vue';
-import { useStore } from '@/lib/use-store';
-
-const route = useRoute();
-const store = useStore();
+import CaseStudy from '@/components/case-study.vue';
 
 const caseStudyId = 4;
 </script>
 
 <template>
   <div>
-    <v-parallax :src="bgImage" class="home-parallax text-center home-head">
+    <VParallax :src="bgImage" class="home-parallax text-center home-head">
       <div class="parallax-wrapper">
-        <v-container>
-          <v-row align="center" justify="center">
-            <v-col cols="12">
+        <VContainer>
+          <VRow align="center" justify="center">
+            <VCol cols="12">
               <span class="home-title text-h3 text-lg-h1 text-decoration-none">
                 Mapping Medieval Peoples
               </span>
-            </v-col>
-          </v-row>
-          <v-row justify="center">
-            <v-col cols="12" lg="8">
+            </VCol>
+          </VRow>
+
+          <VRow justify="center">
+            <VCol cols="12" lg="8">
               <p class="text-subtitle-1 font-weight-bold">
                 In the turbulent world of the early Middle Ages, ethnicity became a key resource in
                 the reorganization of the political landscape. Mapping Medieval Peoples (MMP)
@@ -38,37 +33,31 @@ const caseStudyId = 4;
                 attributes, traits and stereotypes, thus surveying the language employed to create
                 ethnic entities and to distinguish them from each other.
               </p>
-            </v-col>
-          </v-row>
-          <v-row justify="center">
-            <v-col cols="12" lg="3" sm="5">
-              <v-btn
-                large
-                block
-                color="secondary"
-                :to="{ name: store.state.interface.currentView, query: route.query }"
-                >Search our Data</v-btn
-              >
+            </VCol>
+          </VRow>
+
+          <VRow justify="center">
+            <VCol cols="12" lg="3" sm="5">
+              <VBtn large block color="secondary" :to="{ name: 'Interface' }">
+                Search our Data
+              </VBtn>
               <span class="button-subtitle">For Interactive Analyses</span>
-            </v-col>
-            <v-col cols="12" lg="3" sm="5">
+            </VCol>
+
+            <VCol cols="12" lg="3" sm="5">
               <p>
-                <v-btn
-                  large
-                  block
-                  color="primary"
-                  :to="{ name: 'Case Study', params: { id: 4 }, query: route.query }"
-                >
+                <VBtn block color="primary" large :to="{ name: 'Case Study', params: { id: 4 } }">
                   Read &bdquo;Carolingian Avaria&ldquo;
-                </v-btn>
+                </VBtn>
                 <span class="button-subtitle">A Case Study</span>
               </p>
-            </v-col>
-          </v-row>
-        </v-container>
+            </VCol>
+          </VRow>
+        </VContainer>
       </div>
-    </v-parallax>
-    <case-study :id="caseStudyId" />
+    </VParallax>
+
+    <CaseStudy :id="caseStudyId" />
   </div>
 </template>
 
@@ -77,10 +66,6 @@ const caseStudyId = 4;
   line-height: 40px;
   font-size: 1rem;
   vertical-align: top;
-}
-
-.home-content {
-  margin-top: 50px;
 }
 
 .home-head {

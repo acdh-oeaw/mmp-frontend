@@ -8,7 +8,7 @@ import { useHomePage } from '@/lib/use-home-page';
 const isHomePage = useHomePage();
 const isDetailsPage = useDetailsPage();
 const backgroundColor = computed(() => {
-  return isHomePage.value ? '#0f1226' : '#f1f5fa';
+  return isHomePage.value ? 'primary' : 'background';
 });
 
 const isPanelOpen = ref(false);
@@ -26,48 +26,43 @@ const links = {
 
 <template>
   <div>
-    <v-app-bar
-      fixed
-      flat
-      shrink-on-scroll
-      :color="backgroundColor"
-      class="app-bar"
-      min-height="84px"
-    >
-      <v-row justify="center">
-        <v-col cols="12" md="2" class="title-wrapper">
-          <v-app-bar-nav-icon
+    <VAppBar class="app-bar" :color="backgroundColor" fixed flat min-height="84px" shrink-on-scroll>
+      <VRow justify="center">
+        <VCol cols="12" md="2" class="title-wrapper">
+          <VAppBarNavIcon
             class="d-inline d-md-none menu-button"
             :class="{ 'white--text': isHomePage }"
             @click.stop="onTogglePanel"
           />
-          <v-toolbar-title class="d-inline fancy-font font-weight-bold text-decoration-none">
-            <router-link :to="{ name: 'Home' }" class="nav-link" :class="{ light: !isHomePage }">
+          <VToolbarTitle class="d-inline font-display font-weight-bold text-decoration-none">
+            <RouterLink :to="{ name: 'Home' }" class="nav-link" :class="{ light: !isHomePage }">
               MMP
-            </router-link>
-          </v-toolbar-title>
-        </v-col>
+            </RouterLink>
+          </VToolbarTitle>
+        </VCol>
 
-        <v-col :cols="isDetailsPage ? 4 : 8" class="text-right d-none d-md-inline">
+        <VCol :cols="isDetailsPage ? 4 : 8" class="text-right d-none d-md-inline">
           <div :class="{ light: !isHomePage }">
             <span v-for="({ name, label }, key, index) of links" :key="key">
               <span
                 v-if="index !== 0"
-                class="non-selectable mx-2"
+                class="select-none mx-2"
                 aria-hidden="true"
                 :class="{ 'white--text': isHomePage }"
               >
                 &bull;
               </span>
-              <router-link color="white" :to="{ name }" class="nav-link">
+              <RouterLink color="white" :to="{ name }" class="nav-link">
                 {{ label }}
-              </router-link>
+              </RouterLink>
             </span>
           </div>
-        </v-col>
-        <v-col v-if="isDetailsPage" cols="4" />
-      </v-row>
-    </v-app-bar>
+        </VCol>
+
+        <!-- FIXME: -->
+        <VCol v-if="isDetailsPage" cols="4" />
+      </VRow>
+    </VAppBar>
 
     <MobileNavigationPanel :links="links" :is-open="isPanelOpen" @toggle-panel="onTogglePanel" />
   </div>
@@ -87,12 +82,12 @@ div.light a,
   padding-top: 30px;
 }
 
-.fancy-font {
+.font-display {
   font-family: 'Times New Roman', Times, serif;
   font-size: 2em !important;
 }
 
-.non-selectable {
+.select-none {
   user-select: none;
 }
 

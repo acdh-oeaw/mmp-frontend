@@ -62,42 +62,46 @@ const isFullScreen = useFullScreen();
 </script>
 
 <template>
-  <v-navigation-drawer permanent fixed right color="background" :width="drawerWidth">
-    <v-list-item>
-      <v-list-item-action>
-        <router-link
+  <VNavigationDrawer color="background" fixed permanent right :width="drawerWidth">
+    <VListItem>
+      <VListItemAction>
+        <RouterLink
           :to="{ name: parentRoute?.name, query: route.query }"
           class="text-decoration-none"
         >
           <v-icon>mdi-close</v-icon>
-        </router-link>
-      </v-list-item-action>
-      <v-list-item-content>
+        </RouterLink>
+      </VListItemAction>
+
+      <VListItemContent>
         <div v-if="!isLoading && author">
-          <v-list-item-title class="text-h5">
+          <VListItemTitle class="text-h5">
             {{ getAuthorLabel(author) }}
-          </v-list-item-title>
-          <v-list-item-subtitle>
+          </VListItemTitle>
+          <VListItemSubtitle>
             {{ author.jahrhundert || 'Unknown century' }},
             {{ getPlaceLabel(author.ort) || 'Unknown place' }}
-          </v-list-item-subtitle>
-          <v-list-item-subtitle v-if="author.gnd_id">
+          </VListItemSubtitle>
+          <VListItemSubtitle v-if="author.gnd_id">
             GND-ID:
             <a :href="'https://d-nb.info/gnd/' + author.gnd_id" rel="noreferrer" target="_blank">
               {{ author.gnd_id }} <v-icon small>mdi-open-in-new</v-icon>
             </a>
-          </v-list-item-subtitle>
+          </VListItemSubtitle>
         </div>
-        <v-skeleton-loader v-else type="heading, text@2" />
-      </v-list-item-content>
-    </v-list-item>
-    <v-divider />
-    <v-container>
+
+        <VSkeletonLoader v-else type="heading, text@2" />
+      </VListItemContent>
+    </VListItem>
+
+    <VDivider />
+
+    <VContainer>
       <div v-for="keyword of keywords" :key="keyword.id" class="keyword-chip">
-        <v-chip
+        <VChip
           :color="keywordColors[keyword.art]"
           small
-          :href="{
+          :to="{
             query: createSearchFilterParams({
               ...searchFilters,
               keyword: [...searchFilters.keyword, keyword.id],
@@ -105,27 +109,28 @@ const isFullScreen = useFullScreen();
           }"
         >
           {{ keyword.stichwort }}
-        </v-chip>
+        </VChip>
       </div>
-      <v-expansion-panels :value="[0, 1]" flat accordion multiple>
-        <v-expansion-panel :disabled="!isLoading && !caseStudiesCount">
-          <v-expansion-panel-header>
+
+      <VExpansionPanels :value="[0, 1]" flat accordion multiple>
+        <VExpansionPanel :disabled="!isLoading && !caseStudiesCount">
+          <VExpansionPanelHeader>
             Use Cases
             <template #actions>
-              <v-chip small :disabled="!caseStudiesCount" color="amber lighten-3">
+              <VChip small :disabled="!caseStudiesCount" color="amber lighten-3">
                 {{ caseStudiesCount }}
-              </v-chip>
-              <v-icon>mdi-chevron-down</v-icon>
+              </VChip>
+              <VIcon>mdi-chevron-down</VIcon>
             </template>
-          </v-expansion-panel-header>
-          <v-expansion-panel-content>
-            <v-list v-if="!isLoading">
-              <v-list-item v-if="!caseStudiesCount">
-                <v-list-item-content>
+          </VExpansionPanelHeader>
+          <VExpansionPanelContent>
+            <VList v-if="!isLoading">
+              <VListItem v-if="!caseStudiesCount">
+                <VListItemContent>
                   <v-list-item-title class="grey--text"> none </v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
-              <v-list-item
+                </VListItemContent>
+              </VListItem>
+              <VListItem
                 v-for="caseStudy of caseStudies"
                 :key="caseStudy.id"
                 three-line
@@ -135,51 +140,51 @@ const isFullScreen = useFullScreen();
                   query: route.query,
                 }"
               >
-                <v-list-item-content>
-                  <v-list-item-title>
-                    {{ caseStudy.title }}
-                  </v-list-item-title>
-                  <v-list-item-subtitle v-if="caseStudy.principal_investigator">
+                <VListItemContent>
+                  <VListItemTitle>{{ caseStudy.title }}</VListItemTitle>
+                  <VListItemSubtitle v-if="caseStudy.principal_investigator">
                     {{ caseStudy.principal_investigator }}
-                  </v-list-item-subtitle>
-                  <v-list-item-subtitle v-if="caseStudy.description">
+                  </VListItemSubtitle>
+                  <VListItemSubtitle v-if="caseStudy.description">
                     {{ caseStudy.description }}
-                  </v-list-item-subtitle>
-                </v-list-item-content>
-                <v-list-item-icon>
-                  <v-icon>mdi-chevron-right</v-icon>
-                </v-list-item-icon>
-              </v-list-item>
-            </v-list>
-            <v-list v-else>
-              <v-list-item>
-                <v-list-item-content>
-                  <v-list-item-title>
-                    <v-skeleton-loader type="sentences@7" />
-                  </v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
-            </v-list>
-          </v-expansion-panel-content>
-        </v-expansion-panel>
-        <v-expansion-panel :disabled="!isLoading && !passagesCount">
-          <v-expansion-panel-header>
+                  </VListItemSubtitle>
+                </VListItemContent>
+                <VListItemIcon>
+                  <VIcon>mdi-chevron-right</VIcon>
+                </VListItemIcon>
+              </VListItem>
+            </VList>
+
+            <VList v-else>
+              <VListItem>
+                <VListItemContent>
+                  <VListItemTitle>
+                    <VSkeletonLoader type="sentences@7" />
+                  </VListItemTitle>
+                </VListItemContent>
+              </VListItem>
+            </VList>
+          </VExpansionPanelContent>
+        </VExpansionPanel>
+
+        <VExpansionPanel :disabled="!isLoading && !passagesCount">
+          <VExpansionPanelHeader>
             Passages
             <template #actions>
-              <v-chip small :disabled="!passagesCount" color="teal lighten-4">
+              <VChip small :disabled="!passagesCount" color="teal lighten-4">
                 {{ passagesCount }}
-              </v-chip>
-              <v-icon>mdi-chevron-down</v-icon>
+              </VChip>
+              <VIcon>mdi-chevron-down</VIcon>
             </template>
-          </v-expansion-panel-header>
-          <v-expansion-panel-content>
-            <v-list v-if="!isLoading">
-              <v-list-item v-if="!passagesCount">
-                <v-list-item-content>
-                  <v-list-item-title class="grey--text"> none </v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
-              <v-list-item
+          </VExpansionPanelHeader>
+          <VExpansionPanelContent>
+            <VList v-if="!isLoading">
+              <VListItem v-if="!passagesCount">
+                <VListItemContent>
+                  <VListItemTitle class="grey--text">none</VListItemTitle>
+                </VListItemContent>
+              </VListItem>
+              <VListItem
                 v-for="passage of passages"
                 :key="passage.id"
                 three-line
@@ -189,35 +194,34 @@ const isFullScreen = useFullScreen();
                   params: { id: passage.id },
                 }"
               >
-                <v-list-item-content>
-                  <v-list-item-title>
-                    {{ passage.display_label }}
-                  </v-list-item-title>
-                  <v-list-item-subtitle v-if="passage.text?.autor.length">
+                <VListItemContent>
+                  <VListItemTitle>{{ passage.display_label }}</VListItemTitle>
+                  <VListItemSubtitle v-if="passage.text?.autor.length">
                     {{ passage.text.title }},
                     {{ passage.text.autor.map(getAuthorLabel).join(', ') }}
-                  </v-list-item-subtitle>
-                  <v-list-item-subtitle v-if="passage.text?.jahrhundert">
+                  </VListItemSubtitle>
+                  <VListItemSubtitle v-if="passage.text?.jahrhundert">
                     {{ passage.text.jahrhundert }} century
-                  </v-list-item-subtitle>
-                </v-list-item-content>
-                <v-list-item-icon>
-                  <v-icon>mdi-chevron-right</v-icon>
-                </v-list-item-icon>
-              </v-list-item>
-            </v-list>
-            <v-list v-else>
-              <v-list-item>
-                <v-list-item-content>
-                  <v-list-item-title>
-                    <v-skeleton-loader type="sentences@7" />
-                  </v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
-            </v-list>
-          </v-expansion-panel-content>
-        </v-expansion-panel>
-      </v-expansion-panels>
-    </v-container>
-  </v-navigation-drawer>
+                  </VListItemSubtitle>
+                </VListItemContent>
+                <VListItemIcon>
+                  <VIcon>mdi-chevron-right</VIcon>
+                </VListItemIcon>
+              </VListItem>
+            </VList>
+
+            <VList v-else>
+              <VListItem>
+                <VListItemContent>
+                  <VListItemTitle>
+                    <VSkeletonLoader type="sentences@7" />
+                  </VListItemTitle>
+                </VListItemContent>
+              </VListItem>
+            </VList>
+          </VExpansionPanelContent>
+        </VExpansionPanel>
+      </VExpansionPanels>
+    </VContainer>
+  </VNavigationDrawer>
 </template>

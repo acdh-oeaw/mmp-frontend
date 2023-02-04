@@ -51,7 +51,7 @@ import type {
   SortableSearchParams,
   StringLookupSearchParams,
 } from '@/api/types';
-import { createResourceKey } from '@/lib/resource-key';
+import { createResourceKey } from '@/lib/search/resource-key';
 
 //
 

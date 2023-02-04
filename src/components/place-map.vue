@@ -15,14 +15,14 @@ const baseLayer = {
 </script>
 
 <template>
-  <l-map
+  <LMap
     height="400"
     :bounds="[
       [34.016242, 5.488281],
       [71.663663, 34.667969],
     ]"
   >
-    <l-tile-layer :url="baseLayer.url" :attribution="baseLayer.attribution" />
-    <l-marker :lat-lng="[point.lat, point.lng]" />
-  </l-map>
+    <LTileLayer :url="baseLayer.url" :attribution="baseLayer.attribution" />
+    <LMarker :lat-lng="[point.lat, point.lng]" />
+  </LMap>
 </template>

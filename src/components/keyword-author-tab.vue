@@ -2,13 +2,13 @@
 import { computed } from 'vue';
 import { useRoute } from 'vue-router/composables';
 
-import type { Author, Passage, Text } from '@/api';
+import type { Author, GetPassages, Passage, Text } from '@/api';
 import { getAuthorLabel } from '@/lib/get-label';
 import { isNotNullable } from '@/lib/is-not-nullable';
 import { keywordColors } from '@/lib/search/search.config';
 
 const props = defineProps<{
-  passages: Array<Passage>;
+  passages: GetPassages.Response['results'];
 }>();
 
 const route = useRoute();
@@ -51,29 +51,29 @@ function getPassagesByAuthor(id: Author['id'], passages: Array<Passage>) {
 </script>
 
 <template>
-  <v-list color="transparent">
+  <VList color="transparent">
     <div v-for="author of authors" :key="author.id">
-      <v-list-group prepend-icon="mdi-account-edit">
+      <VListGroup prepend-icon="mdi-account-edit">
         <template #activator>
-          <v-list-item>
-            <v-list-item-content>
-              <v-list-item-title>
+          <VListItem>
+            <VListItemContent>
+              <VListItemTitle>
                 {{ getAuthorLabel(author) }}
-              </v-list-item-title>
-              <v-list-item-subtitle>
+              </VListItemTitle>
+              <VListItemSubtitle>
                 {{ getTextsByAuthor(author.id, texts).length }}
                 text{{ getTextsByAuthor(author.id, texts).length === 1 ? '' : 's' }} and
-              </v-list-item-subtitle>
-              <v-list-item-subtitle>
+              </VListItemSubtitle>
+              <VListItemSubtitle>
                 {{ getPassagesByAuthor(author.id, passages).length }} passage{{
                   getPassagesByAuthor(author.id, passages).length === 1 ? '' : 's'
                 }}
                 found.
-              </v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item>
+              </VListItemSubtitle>
+            </VListItemContent>
+          </VListItem>
         </template>
-        <v-list-group
+        <VListGroup
           v-for="text of getTextsByAuthor(author.id, texts)"
           :key="text.id"
           :ripple="false"
@@ -82,20 +82,20 @@ function getPassagesByAuthor(id: Author['id'], passages: Array<Passage>) {
           no-action
         >
           <template #activator>
-            <v-list-item>
-              <v-list-item-content>
-                <v-list-item-title>
+            <VListItem>
+              <VListItemContent>
+                <VListItemTitle>
                   {{ text.title }}
-                </v-list-item-title>
-                <v-list-item-subtitle>
+                </VListItemTitle>
+                <VListItemSubtitle>
                   {{ getPassagesByText(text.id, passages).length }} passage{{
                     getPassagesByText(text.id, passages).length === 1 ? '' : 's'
                   }}
-                </v-list-item-subtitle>
-              </v-list-item-content>
-            </v-list-item>
+                </VListItemSubtitle>
+              </VListItemContent>
+            </VListItem>
           </template>
-          <v-list-item
+          <VListItem
             v-for="passage of getPassagesByText(text.id, passages)"
             :key="passage.id"
             :to="{
@@ -106,24 +106,24 @@ function getPassagesByAuthor(id: Author['id'], passages: Array<Passage>) {
           >
             <div class="passage-list-item">
               {{ passage.display_label }}
-              <v-chip-group column>
-                <v-chip
+              <VChipGroup column>
+                <VChip
                   v-for="keyword of passage.key_word"
                   :key="keyword.id"
                   :color="keywordColors[keyword.art]"
                   small
                 >
                   {{ keyword.stichwort }}
-                </v-chip>
-              </v-chip-group>
+                </VChip>
+              </VChipGroup>
             </div>
-            <v-icon>mdi-chevron-right</v-icon>
-          </v-list-item>
-        </v-list-group>
-      </v-list-group>
-      <v-divider inset />
+            <VIcon>mdi-chevron-right</VIcon>
+          </VListItem>
+        </VListGroup>
+      </VListGroup>
+      <VDivider inset />
     </div>
-  </v-list>
+  </VList>
 </template>
 
 <style>

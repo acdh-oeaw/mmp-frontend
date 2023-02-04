@@ -7,15 +7,15 @@ const isFullScreen = useFullScreen();
 </script>
 
 <template>
-  <v-app class="app-class">
+  <VApp class="app">
     <template v-if="!isFullScreen">
-      <app-bar />
+      <AppBar />
       <div class="buffer" :class="{ light: !isHomePage, smaller: $vuetify.breakpoint.mobile }" />
     </template>
-    <v-main>
-      <router-view />
-    </v-main>
-  </v-app>
+    <VMain>
+      <RouterView />
+    </VMain>
+  </VApp>
 </template>
 
 <style>
@@ -27,7 +27,7 @@ a {
   word-break: keep-all !important;
 }
 
-.app-class {
+.app {
   background-color: #f1f5fa !important;
 }
 

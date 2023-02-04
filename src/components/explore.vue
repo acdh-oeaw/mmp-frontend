@@ -33,104 +33,76 @@ const currentView = computed({
     router.push({ name, query: route.query });
   },
 });
+
+const tabs = {
+  'search-results': { name: 'List', label: 'List' },
+  'network-graph': { name: 'Network Graph', label: 'Network Graph' },
+  'geo-map': { name: 'Map', label: 'Map' },
+  'word-cloud': { name: 'Word Cloud', label: 'Word Cloud' },
+};
 </script>
 
 <template>
   <div>
-    <v-container>
-      <v-row :justify="isDetailsPage ? 'start' : 'center'">
-        <v-col cols="12" :lg="isDetailsPage ? 8 : 12" xl="8">
-          <v-row class="grey-bg">
-            <v-col :cols="$vuetify.breakpoint.mobile ? 12 : 1">
-              <v-menu :close-on-content-click="false">
+    <VContainer>
+      <VRow :justify="isDetailsPage ? 'start' : 'center'">
+        <VCol cols="12" :lg="isDetailsPage ? 8 : 12" xl="8">
+          <VRow class="grey-bg">
+            <VCol :cols="$vuetify.breakpoint.mobile ? 12 : 1">
+              <VMenu :close-on-content-click="false">
                 <template #activator="{ on, attrs }">
-                  <v-btn min-height="50px" height="100%" block depressed v-bind="attrs" v-on="on">
-                    <v-icon>mdi-cog</v-icon>
-                    <v-icon>mdi-chevron-down</v-icon>
-                  </v-btn>
+                  <VBtn min-height="50px" height="100%" block depressed v-bind="attrs" v-on="on">
+                    <VIcon>mdi-cog</VIcon>
+                    <VIcon>mdi-chevron-down</VIcon>
+                  </VBtn>
                 </template>
                 <SearchOptions />
-              </v-menu>
-            </v-col>
+              </VMenu>
+            </VCol>
 
-            <v-col :cols="$vuetify.breakpoint.mobile ? 12 : 11">
+            <VCol :cols="$vuetify.breakpoint.mobile ? 12 : 11">
               <PassageSearchForm @submit="isWelcomeScreenVisible = false" />
-            </v-col>
-          </v-row>
-          <v-row class="grey-bg">
+            </VCol>
+          </VRow>
+
+          <VRow class="grey-bg">
             <template v-if="!$vuetify.breakpoint.mobile">
-              <v-col>
+              <VCol>
+                <!-- FIXME: this should not be a button -->
                 <v-btn text small class="disable-events">View as</v-btn>
-              </v-col>
-              <v-col>
-                <v-btn
+              </VCol>
+              <VCol v-for="(tab, key) of tabs" :key="key">
+                <VBtn
                   text
                   block
                   small
                   class="view-picker"
-                  :disabled="currentView === 'List'"
-                  :class="{ active: currentView === 'List' }"
-                  :to="{ name: 'List', query: route.query }"
+                  :disabled="currentView === tab.name"
+                  :class="{ active: currentView === tab.name }"
+                  :to="{ name: tab.name, query: route.query }"
                 >
-                  List
-                </v-btn>
-              </v-col>
-              <v-col>
-                <v-btn
-                  text
-                  block
-                  small
-                  class="view-picker"
-                  :disabled="currentView === 'Network Graph'"
-                  :class="{ active: currentView === 'Network Graph' }"
-                  :to="{ name: 'Network Graph', query: route.query }"
-                >
-                  Network Graph
-                </v-btn>
-              </v-col>
-              <v-col>
-                <v-btn
-                  text
-                  block
-                  small
-                  class="view-picker"
-                  :disabled="currentView === 'Map'"
-                  :class="{ active: currentView === 'Map' }"
-                  :to="{ name: 'Map', query: route.query }"
-                >
-                  Map
-                </v-btn>
-              </v-col>
-              <v-col>
-                <v-btn
-                  text
-                  block
-                  small
-                  class="view-picker"
-                  :disabled="currentView === 'Word Cloud'"
-                  :class="{ active: currentView === 'Word Cloud' }"
-                  :to="{ name: 'Word Cloud', query: route.query }"
-                >
-                  Word Cloud
-                </v-btn>
-              </v-col>
+                  {{ tab.label }}
+                </VBtn>
+              </VCol>
             </template>
+
             <template v-else>
-              <v-col cols="12">
-                <v-select
+              <VCol cols="12">
+                <VSelect
                   v-model="currentView"
-                  :items="['List', 'Network Graph', 'Map', 'Word Cloud']"
+                  :items="Object.values(tabs).map((tab) => tab.name)"
                   label="View as"
                 />
-              </v-col>
+              </VCol>
             </template>
-            <v-col
+
+            <VCol
               :class="{
                 'text-right': !$vuetify.breakpoint.mobile,
                 'text-center': $vuetify.breakpoint.mobile,
               }"
             >
-              <v-btn
+              <VBtn
                 text
                 block
                 small
@@ -138,14 +110,14 @@ const currentView = computed({
                 :to="{ name: 'List All', query: route.query }"
               >
                 &nbsp;
-                <v-icon>mdi-format-list-bulleted</v-icon>
+                <VIcon>mdi-format-list-bulleted</VIcon>
                 List All Entities
-              </v-btn>
-            </v-col>
-          </v-row>
+              </VBtn>
+            </VCol>
+          </VRow>
 
-          <v-row v-if="isWelcomeScreenVisible" align="center" justify="center">
-            <v-col cols="12" md="8">
+          <VRow v-if="isWelcomeScreenVisible" align="center" justify="center">
+            <VCol cols="12" md="8">
               <div class="text-center no-query">
                 <p>
                   Search our database for medieval <b>authors</b>, <b>passages</b>,
@@ -153,27 +125,27 @@ const currentView = computed({
                 </p>
                 <p>
                   For instance, try
-                  <v-chip
+                  <VChip
                     color="red lighten-3"
-                    :href="{ query: createSearchFilterParams({ ...searchFilters, author: [8] }) }"
+                    :to="{ query: createSearchFilterParams({ ...searchFilters, author: [8] }) }"
                   >
-                    Baudonivia von Poitiers</v-chip
+                    Baudonivia von Poitiers</VChip
                   >
                   &#32;
-                  <v-chip
+                  <VChip
                     color="blue lighten-4"
-                    :href="{ query: createSearchFilterParams({ ...searchFilters, keyword: [33] }) }"
+                    :to="{ query: createSearchFilterParams({ ...searchFilters, keyword: [33] }) }"
                   >
-                    barbari</v-chip
+                    barbari</VChip
                   >
                   or
-                  <v-chip
+                  <VChip
                     color="amber lighten-3"
-                    :href="{
+                    :to="{
                       query: createSearchFilterParams({ ...searchFilters, 'case-study': [3] }),
                     }"
                   >
-                    Steppe Peoples 1: "Schwarzes Meer"</v-chip
+                    Steppe Peoples 1: "Schwarzes Meer"</VChip
                   >
                 </p>
                 <p>
@@ -181,20 +153,21 @@ const currentView = computed({
                   of your query.
                 </p>
               </div>
-            </v-col>
-          </v-row>
-          <v-row v-else>
-            <router-view />
-          </v-row>
+            </VCol>
+          </VRow>
 
-          <v-row v-show="isSliderVisible">
-            <v-col>
+          <VRow v-else>
+            <RouterView />
+          </VRow>
+
+          <VRow v-show="isSliderVisible">
+            <VCol>
               <DateRangeForm />
-            </v-col>
-          </v-row>
-        </v-col>
-      </v-row>
-    </v-container>
+            </VCol>
+          </VRow>
+        </VCol>
+      </VRow>
+    </VContainer>
   </div>
 </template>
 

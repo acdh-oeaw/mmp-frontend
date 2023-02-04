@@ -90,33 +90,34 @@ const drawerWidth = useDrawerWidth();
 </script>
 
 <template>
-  <v-navigation-drawer permanent fixed right color="#F1F5FA" :width="drawerWidth">
-    <v-list-item>
-      <v-list-item-action>
-        <router-link
+  <VNavigationDrawer color="background" fixed permanent right :width="drawerWidth">
+    <VListItem>
+      <VListItemAction>
+        <RouterLink
           :to="{ name: isFullScreen ? 'List Fullscreen' : 'List', query: route.query }"
           class="text-decoration-none"
         >
           <v-icon>mdi-close</v-icon>
-        </router-link>
-      </v-list-item-action>
-      <v-list-item-content>
+        </RouterLink>
+      </VListItemAction>
+      <VListItemContent>
         <div v-if="!isLoading">
-          <v-list-item-title class="text-h5">
+          <VListItemTitle class="text-h5">
             {{ title.title }}
-          </v-list-item-title>
-          <v-list-item-subtitle>
+          </VListItemTitle>
+          <VListItemSubtitle>
             <!-- this is a weird way to ensure the colon is only displayed when both these values have been loaded -->
             {{ [title.written, title.author].join(', ') }}
-          </v-list-item-subtitle>
+          </VListItemSubtitle>
         </div>
-        <v-skeleton-loader v-else type="heading, text" />
-      </v-list-item-content>
-    </v-list-item>
 
-    <v-divider />
+        <VSkeletonLoader v-else type="heading, text" />
+      </VListItemContent>
+    </VListItem>
 
-    <v-simple-table v-if="!isLoading" class="data-table">
+    <VDivider />
+
+    <VSimpleTable v-if="!isLoading" class="data-table">
       <tbody>
         <tr v-for="item of items" :key="item.key">
           <td class="grey--text text--darken-1">
@@ -124,19 +125,19 @@ const drawerWidth = useDrawerWidth();
           </td>
           <td v-if="item.key === 'Keywords'">
             <div v-for="keyword of item.value" :key="keyword.id" class="keyword-chip">
-              <v-chip
+              <VChip
                 :color="keywordColors[keyword.art]"
                 small
-                :href="{
+                :to="{
                   query: createSearchFilterParams({ ...searchFilters, keyword: [keyword.id] }),
                 }"
               >
                 {{ keyword.stichwort }}
-              </v-chip>
+              </VChip>
             </div>
           </td>
           <td v-else-if="item.key === 'Place' || item.key === 'Author'">
-            <router-link
+            <RouterLink
               v-for="(val, i) of item.value"
               :key="val.id"
               :to="{
@@ -150,18 +151,18 @@ const drawerWidth = useDrawerWidth();
             >
               <span v-if="i != 0">, </span>
               {{ item.key === 'Place' ? getPlaceLabel(val) : getAuthorLabel(val) }}
-              <v-icon>mdi-chevron-right</v-icon>
-            </router-link>
+              <VIcon>mdi-chevron-right</VIcon>
+            </RouterLink>
           </td>
           <td v-else>
             {{ item.value }}
           </td>
         </tr>
       </tbody>
-    </v-simple-table>
+    </VSimpleTable>
 
-    <v-container v-else>
-      <v-skeleton-loader type="table-row-divider@11" />
-    </v-container>
-  </v-navigation-drawer>
+    <VContainer v-else>
+      <VSkeletonLoader type="table-row-divider@11" />
+    </VContainer>
+  </VNavigationDrawer>
 </template>

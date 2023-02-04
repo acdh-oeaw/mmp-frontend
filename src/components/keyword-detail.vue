@@ -9,10 +9,11 @@ import {
   usePassages,
   useSpatialCoveragesGeojson,
 } from '@/api';
-import KeywordAuthorTab from '@/components/KeywordAuthorTab.vue';
-import KeywordListItem from '@/components/KeywordListItem.vue';
-import KeywordOverTime from '@/components/KeywordOverTime.vue';
-import Leaflet from '@/components/Leaflet.vue';
+import GeoMap from '@/components/geo-map.vue';
+import KeywordAuthorTab from '@/components/keyword-author-tab.vue';
+import KeywordListItem from '@/components/keyword-list-item.vue';
+import KeywordOverTime from '@/components/keyword-over-time.vue';
+import { useSearchFilters } from '@/lib/search/use-search-filters';
 import { truncate } from '@/lib/truncate';
 import { useDrawerWidth } from '@/lib/use-drawer-width';
 import { useFullScreen } from '@/lib/use-full-screen';
@@ -31,10 +32,15 @@ const id = computed(() => {
 const keywordQuery = useKeywordById({ id });
 const keywordByCenturyQuery = useKeywordByCenturyById({ id });
 const keywordGraphQuery = useKeywordGraph({ id });
+
+const { createSearchFilterParams, searchFilters } = useSearchFilters();
 const passagesQuery = usePassages(
   computed(() => {
     return {
-      [store.state.apiParams.intersect ? 'key_word_and' : 'key_word']: id.value,
+      [searchFilters.value['query-mode'] === 'intersection' ? 'key_word_and' : 'key_word']: [
+        id.value,
+      ],
+      // has_usecase: searchFilters.value['dataset'] === 'case-studies',
       limit: 500, // FIXME: you already know
     };
   })
@@ -42,8 +48,9 @@ const passagesQuery = usePassages(
 const spatialCoveragesQuery = useSpatialCoveragesGeojson(
   computed(() => {
     return {
-      // FIXME: should this respect apiParams.intersect?
-      key_word: [id.value],
+      [searchFilters.value['query-mode'] === 'intersection' ? 'key_word_and' : 'key_word']: [
+        id.value,
+      ],
     };
   })
 );
@@ -141,21 +148,21 @@ const xPressLinkName = computed(() => {
 </script>
 
 <template>
-  <v-navigation-drawer permanent fixed right color="#f1f5fa" :width="drawerWidth">
-    <v-list-item>
-      <v-list-item-action>
-        <router-link :to="{ name: xPressLinkName, query: route.query }">
-          <v-icon>mdi-close</v-icon>
-        </router-link>
-      </v-list-item-action>
-      <v-list-item-content>
+  <VNavigationDrawer color="background" fixed permanent right :width="drawerWidth">
+    <VListItem>
+      <VListItemAction>
+        <RouterLink :to="{ name: xPressLinkName, query: route.query }">
+          <VIcon>mdi-close</VIcon>
+        </RouterLink>
+      </VListItemAction>
+      <VListItemContent>
         <div v-if="!isLoading">
-          <v-list-item-title class="text-h5">
+          <VListItemTitle class="text-h5">
             {{ keywords.map((x) => x.stichwort).join(', ') }}
-          </v-list-item-title>
-          <v-list-item-subtitle>
+          </VListItemTitle>
+          <VListItemSubtitle>
             Mentioned in
-            <router-link
+            <RouterLink
               :to="{
                 name: isFullScreen ? 'List Fullscreen' : 'List',
                 query: { ...route.query, Keyword: route.params.id },
@@ -163,84 +170,91 @@ const xPressLinkName = computed(() => {
             >
               <span v-if="passageCount">
                 {{ passageCount }} passage{{ passageCount === 1 ? '' : 's' }}
-                <v-icon small>mdi-link</v-icon>,
+                <VIcon small>mdi-link</VIcon>,
               </span>
-            </router-link>
-            <router-link
+            </RouterLink>
+            <RouterLink
               :to="{
                 params: { id: route.params.id },
                 query: { ...route.query, Keyword: route.params.id },
               }"
             >
-              show all connections<v-icon small>mdi-link</v-icon>
-            </router-link>
-          </v-list-item-subtitle>
+              show all connections<VIcon small>mdi-link</VIcon>
+            </RouterLink>
+          </VListItemSubtitle>
         </div>
-        <v-skeleton-loader v-else type="heading, text" />
-      </v-list-item-content>
-    </v-list-item>
-    <v-divider />
-    <v-container>
-      <v-col>
-        <v-checkbox
+
+        <VSkeletonLoader v-else type="heading, text" />
+      </VListItemContent>
+    </VListItem>
+
+    <VDivider />
+
+    <VContainer>
+      <VCol>
+        <VCheckbox
           v-model="neighbors"
           label="Only show keywords that are directly connected to selection"
         />
-      </v-col>
-      <v-row>
-        <v-col>
-          <v-tabs v-model="tab" grow background-color="transparent">
-            <v-tab key="Authors">Authors</v-tab>
-            <v-tab key="Geography">Geography</v-tab>
-            <v-tab key="Over Time">Over Time</v-tab>
-          </v-tabs>
-          <v-tabs-items v-model="tab" background-color="transparent">
-            <v-tab-item key="Authors">
-              <keyword-author-tab v-if="!isLoading" :passages="passages" />
-              <v-skeleton-loader v-else type="text@10" />
-            </v-tab-item>
-            <v-tab-item key="Geography">
-              <leaflet v-if="!isLoading" :data="geography" />
-              <v-skeleton-loader v-else type="image@2" />
-            </v-tab-item>
-            <v-tab-item key="Over Time">
-              <keyword-over-time v-if="!isLoading" :data="overtime" />
-              <v-skeleton-loader v-else type="image@2" />
-            </v-tab-item>
-          </v-tabs-items>
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col>
-          <v-expansion-panels v-if="!isLoading" accordion flat>
-            <v-expansion-panel v-for="conn in connections" :key="conn.id">
-              <v-expansion-panel-header>
+      </VCol>
+
+      <VRow>
+        <VCol>
+          <VTabs v-model="tab" grow background-color="transparent">
+            <VTab key="Authors">Authors</VTab>
+            <VTab key="Geography">Geography</VTab>
+            <VTab key="Over Time">Over Time</VTab>
+          </VTabs>
+          <VTabsItems v-model="tab" background-color="transparent">
+            <VTabItem key="Authors">
+              <KeywordAuthorTab v-if="!isLoading" :passages="passages" />
+              <VSkeletonLoader v-else type="text@10" />
+            </VTabItem>
+            <VTabItem key="Geography">
+              <GeoMap v-if="!isLoading" :data="geography" />
+              <VSkeletonLoader v-else type="image@2" />
+            </VTabItem>
+            <VTabItem key="Over Time">
+              <KeywordOverTime v-if="!isLoading" :data="overtime" />
+              <VSkeletonLoader v-else type="image@2" />
+            </VTabItem>
+          </VTabsItems>
+        </VCol>
+      </VRow>
+
+      <VRow>
+        <VCol>
+          <VExpansionPanels v-if="!isLoading" accordion flat>
+            <VExpansionPanel v-for="conn in connections" :key="conn.id">
+              <VExpansionPanelHeader>
                 <span>
                   {{ keywords.map((x) => x.stichwort).join(', ') }}
-                  <v-icon small>mdi-arrow-left-right</v-icon> {{ conn.label }}
+                  <VIcon small>mdi-arrow-left-right</VIcon> {{ conn.label }}
                 </span>
                 <template #actions>
-                  <v-chip small>{{ conn.count }} connections</v-chip>
-                  <v-icon>mdi-chevron-down</v-icon>
+                  <VChip small>{{ conn.count }} connections</VChip>
+                  <VIcon>mdi-chevron-down</VIcon>
                 </template>
-              </v-expansion-panel-header>
-              <v-expansion-panel-content>
-                <keyword-list-item
+              </VExpansionPanelHeader>
+              <VExpansionPanelContent>
+                <KeywordListItem
                   :parent-nodes="keywords.map((x) => x.id)"
                   :sibling-node="conn.id"
                 />
-              </v-expansion-panel-content>
-            </v-expansion-panel>
-          </v-expansion-panels>
-          <v-skeleton-loader v-else type="list-item@5" class="transparent-skeleton" />
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col>
+              </VExpansionPanelContent>
+            </VExpansionPanel>
+          </VExpansionPanels>
+
+          <VSkeletonLoader v-else type="list-item@5" class="transparent-skeleton" />
+        </VCol>
+      </VRow>
+
+      <VRow>
+        <VCol>
           <template v-if="!isLoading">
-            <v-row>
-              <v-col>
-                <v-btn
+            <VRow>
+              <VCol>
+                <VBtn
                   dark
                   color="#171d3b"
                   block
@@ -256,12 +270,13 @@ const xPressLinkName = computed(() => {
                       40
                     )
                   }}
-                </v-btn>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col>
-                <v-btn
+                </VBtn>
+              </VCol>
+            </VRow>
+
+            <VRow>
+              <VCol>
+                <VBtn
                   light
                   outlined
                   block
@@ -273,15 +288,16 @@ const xPressLinkName = computed(() => {
                   }"
                 >
                   Show all Connections in Graph
-                </v-btn>
-              </v-col>
-            </v-row>
+                </VBtn>
+              </VCol>
+            </VRow>
           </template>
-          <v-skeleton-loader v-else type="button@2" />
-        </v-col>
-      </v-row>
-    </v-container>
-  </v-navigation-drawer>
+
+          <VSkeletonLoader v-else type="button@2" />
+        </VCol>
+      </VRow>
+    </VContainer>
+  </VNavigationDrawer>
 </template>
 
 <style>

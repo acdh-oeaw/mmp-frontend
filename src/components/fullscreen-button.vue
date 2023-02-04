@@ -39,8 +39,8 @@ const isFullScreen = useFullScreen();
 </script>
 
 <template>
-  <v-btn absolute bottom :right="props.left !== true" depressed icon @click="onClick">
-    <v-icon v-if="isFullScreen">mdi-fullscreen-exit</v-icon>
-    <v-icon v-else>mdi-fullscreen</v-icon>
-  </v-btn>
+  <VBtn absolute bottom :right="props.left !== true" depressed icon @click="onClick">
+    <VIcon v-if="isFullScreen">mdi-fullscreen-exit</VIcon>
+    <VIcon v-else>mdi-fullscreen</VIcon>
+  </VBtn>
 </template>

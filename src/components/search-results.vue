@@ -3,7 +3,7 @@ import { computed, ref } from 'vue';
 import { useRoute } from 'vue-router/composables';
 
 import { type KeywordType, usePassages } from '@/api';
-import FullscreenButton from '@/components/FullscreenButton.vue';
+import FullscreenButton from '@/components/fullscreen-button.vue';
 import { getAuthorLabel, getDateRangeLabel } from '@/lib/get-label';
 import { keywordColors } from '@/lib/search/search.config';
 import { usePassagesSearchParams } from '@/lib/search/use-passages-search-params';
@@ -57,8 +57,8 @@ const isFullScreen = useFullScreen();
 </script>
 
 <template>
-  <v-card color="transparent" width="100%" flat>
-    <v-data-table
+  <VCard color="transparent" width="100%" flat>
+    <VDataTable
       :items="items"
       :headers="headers"
       :loading="isFetching"
@@ -75,7 +75,7 @@ const isFullScreen = useFullScreen();
     >
       <template #[`item.text.autor`]="{ item }">
         <template v-if="item.text">
-          <router-link
+          <RouterLink
             v-for="(author, i) of item.text.autor"
             :key="author.id"
             :to="{
@@ -87,13 +87,13 @@ const isFullScreen = useFullScreen();
           >
             <span v-if="i != 0">, </span>
             {{ getAuthorLabel(author) }}
-            <v-icon>mdi-chevron-right</v-icon>
-          </router-link>
+            <VIcon>mdi-chevron-right</VIcon>
+          </RouterLink>
         </template>
       </template>
       <template #[`item.text.title`]="{ item }">
         <template v-if="item.text">
-          <router-link
+          <RouterLink
             :to="{
               name: isFullScreen ? 'Passage Detail Fullscreen' : 'Passage Detail',
               params: { id: item.id },
@@ -102,13 +102,13 @@ const isFullScreen = useFullScreen();
             class="text-decoration-none"
           >
             <b>{{ item.text.title }}</b>
-            <v-icon>mdi-chevron-right</v-icon>
-          </router-link>
+            <VIcon>mdi-chevron-right</VIcon>
+          </RouterLink>
         </template>
       </template>
       <template #[`item.keywords`]="{ item }">
         <div v-for="keyword of item.key_word" :key="keyword.stichwort" class="keyword-chip">
-          <v-chip
+          <VChip
             small
             :color="getColor(keyword.art)"
             :to="{
@@ -119,7 +119,7 @@ const isFullScreen = useFullScreen();
             }"
           >
             {{ keyword.stichwort }}
-          </v-chip>
+          </VChip>
         </div>
       </template>
       <template #[`item.written`]="{ item }">
@@ -129,11 +129,12 @@ const isFullScreen = useFullScreen();
         {{ getDateRangeLabel(item.start_date, item.end_date) }}
       </template>
       <template #[`footer.prepend`]>
-        <fullscreen-button left />
+        <FullscreenButton left />
       </template>
-    </v-data-table>
-    <router-view />
-  </v-card>
+    </VDataTable>
+
+    <RouterView />
+  </VCard>
 </template>
 
 <style>

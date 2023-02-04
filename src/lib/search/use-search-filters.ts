@@ -2,8 +2,9 @@ import { type ComputedRef, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router/composables';
 
 import type { Author, CaseStudy, Keyword, Passage, Place } from '@/api';
-import { getResourceIds } from '@/lib/get-resource-ids';
 import { isNonEmptyString } from '@/lib/is-nonempty-string';
+import { noop } from '@/lib/noop';
+import { getResourceIds } from '@/lib/search/get-resource-ids';
 import { getLimit, getOffset } from '@/lib/search/pagination';
 import { defaultLimit } from '@/lib/search/pagination.config';
 import { maxYear, minYear } from '@/lib/search/search.config';
@@ -47,7 +48,7 @@ export const defaultSearchFilters = Object.freeze({
   passage: [],
   place: [],
   'date-range': [minYear, maxYear],
-  'date-filter': 'content',
+  'date-filter': 'composition',
   dataset: 'case-studies',
   'query-mode': 'intersection',
   limit: defaultLimit,
@@ -78,7 +79,7 @@ export function useSearchFilters(): UseSearchFiltersResult {
 
   function setSearchFilters(searchFilters: SearchFilters) {
     const query = createSearchFilterParams(searchFilters);
-    router.push({ query });
+    router.push({ query }).catch(noop);
   }
 
   return {
@@ -96,7 +97,7 @@ function isValidNumber(value: number) {
 }
 
 function getDateRange(param: LocationQueryValue | undefined) {
-  const values = Array.isArray(param) ? param : [param];
+  const values = Array.isArray(param) ? param : [param ?? null];
   const numbers = values
     .filter(isNonEmptyString)
     .map(Number)

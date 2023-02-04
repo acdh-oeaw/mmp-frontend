@@ -11,7 +11,7 @@ import {
   usePlaceById,
   useTextById,
 } from '@/api';
-import { createResourceKey } from '@/lib/resource-key';
+import { createResourceKey } from '@/lib/search/resource-key';
 import type { Item } from '@/lib/search/search.types';
 
 const props = defineProps<{

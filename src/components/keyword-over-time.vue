@@ -51,6 +51,6 @@ const chartData = computed(() => {
 
 <template>
   <div>
-    <chart :options="chartData" />
+    <Chart :options="chartData" />
   </div>
 </template>

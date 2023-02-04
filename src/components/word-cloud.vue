@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { computed, onMounted, ref } from 'vue';
 // @ts-expect-error Missing module declaration.
-import cloud from 'vue-d3-cloud';
+import Cloud from 'vue-d3-cloud';
 
 const props = defineProps<{
   data: any;
@@ -44,7 +44,7 @@ function sizeFunction(word: any) {
 <template>
   <div ref="cloudRef" class="cloud-wrapper">
     <h3 class="text-center">{{ title }}</h3>
-    <cloud
+    <Cloud
       :key="renderKey"
       :data="words"
       :font-size-mapper="sizeFunction"

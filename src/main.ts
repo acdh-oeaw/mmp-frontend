@@ -4,7 +4,7 @@ import '@/styles/global.css';
 
 import Vue from 'vue';
 
-import App from '@/App.vue';
+import App from '@/app.vue';
 import { query, queryOptions } from '@/plugins/query';
 import { router } from '@/plugins/router';
 import { store } from '@/plugins/store';

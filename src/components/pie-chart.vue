@@ -61,7 +61,7 @@ const pieOptions = computed(() => {
 
 <template>
   <div class="pieWrapper">
-    <chart :options="pieOptions" />
+    <Chart :options="pieOptions" />
   </div>
 </template>
 

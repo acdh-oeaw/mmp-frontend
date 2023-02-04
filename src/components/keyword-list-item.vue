@@ -4,8 +4,8 @@ import { useRoute } from 'vue-router/composables';
 
 import { type Keyword, usePassages } from '@/api';
 import { getAuthorLabel } from '@/lib/get-label';
+import { useSearchFilters } from '@/lib/search/use-search-filters';
 import { useFullScreen } from '@/lib/use-full-screen';
-import { useStore } from '@/lib/use-store';
 
 const props = defineProps<{
   parentNodes: Array<Keyword['id']>;
@@ -13,15 +13,14 @@ const props = defineProps<{
 }>();
 
 const route = useRoute();
-const store = useStore();
-
+const { searchFilters } = useSearchFilters();
 const passagesQuery = usePassages(
   computed(() => ({
-    [store.state.apiParams.intersect ? 'key_word_and' : 'key_word']: [
+    [searchFilters.value['query-mode'] === 'intersection' ? 'key_word_and' : 'key_word']: [
       props.siblingNode,
       ...props.parentNodes,
     ],
-    has_usecase: store.state.apiParams.hasUsecase === 'true',
+    has_usecase: searchFilters.value['dataset'] === 'case-studies',
   }))
 );
 
@@ -37,15 +36,16 @@ const isFullScreen = useFullScreen();
 </script>
 
 <template>
-  <v-card flat color="rgba(0, 0, 0, 0)">
-    <v-list two-line>
-      <v-skeleton-loader
+  <VCard flat color="rgba(0, 0, 0, 0)">
+    <VList two-line>
+      <VSkeletonLoader
         v-if="isLoading"
         type="list-item-three-line@3"
         class="transparent-skeleton"
       />
+
       <template v-else-if="passages.length">
-        <v-list-item
+        <VListItem
           v-for="passage of passages"
           :key="passage.id"
           three-line
@@ -55,26 +55,27 @@ const isFullScreen = useFullScreen();
             params: { id: passage.id },
           }"
         >
-          <v-list-item-content>
-            <v-list-item-title>
+          <VListItemContent>
+            <VListItemTitle>
               {{ passage.display_label }}
-            </v-list-item-title>
-            <v-list-item-subtitle v-if="passage.text?.autor?.length">
+            </VListItemTitle>
+            <VListItemSubtitle v-if="passage.text?.autor?.length">
               {{ passage.text.title }},
               {{ passage.text.autor.map(getAuthorLabel).join(', ') }}
-            </v-list-item-subtitle>
-            <v-list-item-subtitle v-if="passage.text?.jahrhundert">
+            </VListItemSubtitle>
+            <VListItemSubtitle v-if="passage.text?.jahrhundert">
               {{ passage.text.jahrhundert }} century
-            </v-list-item-subtitle>
-          </v-list-item-content>
-          <v-list-item-icon>
-            <v-icon>mdi-chevron-right</v-icon>
-          </v-list-item-icon>
-        </v-list-item>
+            </VListItemSubtitle>
+          </VListItemContent>
+          <VListItemIcon>
+            <VIcon>mdi-chevron-right</VIcon>
+          </VListItemIcon>
+        </VListItem>
       </template>
-      <v-list-item v-else>No passages found!</v-list-item>
-    </v-list>
-  </v-card>
+
+      <VListItem v-else>No passages found!</VListItem>
+    </VList>
+  </VCard>
 </template>
 
 <style>

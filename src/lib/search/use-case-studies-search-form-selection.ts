@@ -3,7 +3,7 @@ import { ref } from 'vue';
 import type { ResourceKey } from '@/api';
 import { unique } from '@/lib/unique';
 
-export function usePassageSearchFormSelection() {
+export function useCaseStudiesSearchFormSelection() {
   const selectedKeys = ref<Array<ResourceKey>>([]);
 
   function setSelectedKeys(keys: Array<ResourceKey>) {

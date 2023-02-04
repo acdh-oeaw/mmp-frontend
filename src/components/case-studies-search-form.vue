@@ -4,23 +4,23 @@ import { computed, ref, watch } from 'vue';
 
 import { type GetAutoComplete, type ResourceKey, useAutoComplete } from '@/api';
 import SearchAutocompleteSelectedItem from '@/components/search-autocomplete-selected-item.vue';
-import { createSearchFilterKey } from '@/lib/search/create-search-filter-key';
+import { createSearchFilterKey } from '@/lib/search/create-case-studies-search-filter-key';
 import { getResourceColor } from '@/lib/search/get-resource-color';
 import { createResourceKey, splitResourceKey } from '@/lib/search/resource-key';
 import { keywordTypeLabels, kindLabels } from '@/lib/search/search.config';
 import type { Item } from '@/lib/search/search.types';
-import type { SearchFilters } from '@/lib/search/use-search-filters';
-import { useSearchFilters } from '@/lib/search/use-search-filters';
-import { usePassageSearchFormSelection } from '@/lib/search/use-search-form-selection';
+import type { SearchFilters } from '@/lib/search/use-case-studies-search-filters';
+import { useCaseStudiesSearchFilters } from '@/lib/search/use-case-studies-search-filters';
+import { useCaseStudiesSearchFormSelection } from '@/lib/search/use-case-studies-search-form-selection';
 import { truncate } from '@/lib/truncate';
 
 const emit = defineEmits<{
   (event: 'submit', searchFilters: SearchFilters): void;
 }>();
 
-const { searchFilters, setSearchFilters } = useSearchFilters();
+const { searchFilters, setSearchFilters } = useCaseStudiesSearchFilters();
 const { selectedKeys, setSelectedKeys, removeSelectedKey, clearSelectedKeys } =
-  usePassageSearchFormSelection();
+  useCaseStudiesSearchFormSelection();
 
 function onUpdateSelectedKeys(keys: Array<ResourceKey>) {
   setSelectedKeys(keys);
@@ -40,10 +40,7 @@ function onSubmit() {
   const nextSearchFilters: SearchFilters = {
     ...searchFilters.value,
     author: [],
-    'case-study': [],
     keyword: [],
-    passage: [],
-    place: [],
   };
 
   selectedKeys.value.forEach((key) => {
@@ -69,7 +66,7 @@ function onUpdateSearchTerm(value: string | null) {
 
 const searchParams = computed<GetAutoComplete.SearchParams>(() => {
   return {
-    kind: ['autor', 'keyword', 'ort', 'stelle', 'usecase'],
+    kind: ['autor', 'keyword'],
     // return 10 results per `kind`. note that results will be sorted by `kind`.
     page_size: 10,
     q: searchTerm.value.trim(),
@@ -115,7 +112,6 @@ const items = computed(() => {
   });
 
   return items.sort((a, b) => {
-    // TODO: sort keywords to top
     return a.label.localeCompare(b.label);
   });
 });
@@ -132,15 +128,6 @@ watch(
       ...searchFilters.value['keyword'].map((id) => {
         return createResourceKey({ kind: 'keyword', id });
       }),
-      ...searchFilters.value['passage'].map((id) => {
-        return createResourceKey({ kind: 'stelle', id });
-      }),
-      ...searchFilters.value['place'].map((id) => {
-        return createResourceKey({ kind: 'ort', id });
-      }),
-      ...searchFilters.value['case-study'].map((id) => {
-        return createResourceKey({ kind: 'usecase', id });
-      }),
     ];
   },
   { immediate: true }
@@ -156,7 +143,7 @@ const nothingFoundText = computed(() => {
   return autoCompleteQuery.isFetching.value ? 'Loading...' : 'Nothing found';
 });
 
-const label = 'Search for passages';
+const label = 'Search for case studies by authors or keywords';
 
 //
 
@@ -170,13 +157,7 @@ function getKindLabel(value: Item) {
 </script>
 
 <template>
-  <form
-    class="passage-search-form"
-    novalidate
-    role="search"
-    :class="{ stacked: $vuetify.breakpoint.mobile }"
-    @submit.prevent="onSubmit"
-  >
+  <form class="case-studies-search-form" novalidate role="search" @submit.prevent="onSubmit">
     <VAutocomplete
       :aria-label="label"
       auto-select-first
@@ -188,7 +169,7 @@ function getKindLabel(value: Item) {
       :items="items"
       :loading="isFetching"
       multiple
-      name="search-filters"
+      name="case-studies-search-filters"
       :no-data-text="nothingFoundText"
       no-filter
       :placeholder="label"
@@ -259,15 +240,11 @@ function getKindLabel(value: Item) {
 </template>
 
 <style scoped>
-.passage-search-form {
+.case-studies-search-form {
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 16px;
   align-items: center;
-}
-
-.passage-search-form.stacked {
-  grid-template-columns: 1fr;
 }
 </style>
 

@@ -3,20 +3,17 @@ import { forceLink } from 'd3';
 import { computed, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router/composables';
 
-import { type GetKeywordByAuthorGraph, useKeywordByAuthorGraph } from '@/api';
-import FullscreenButton from '@/components/FullscreenButton.vue';
-import Visualization from '@/components/Visualization2D.vue';
-import { isNotNullable } from '@/lib/is-not-nullable';
+import { useKeywordByAuthorGraph } from '@/api';
+import FullscreenButton from '@/components/fullscreen-button.vue';
+import Visualization from '@/components/network-graph.vue';
+import { useNetworkGraphSearchParams } from '@/lib/search/use-network-graph-search-params';
 import { unique } from '@/lib/unique';
 import { useFullScreen } from '@/lib/use-full-screen';
 import { useStore } from '@/lib/use-store';
 
+// FIXME:
 const props = defineProps<{
   usecase?: any;
-  keyword?: any;
-  passage?: any;
-  author?: any;
-  place?: any;
 }>();
 
 const route = useRoute();
@@ -47,70 +44,7 @@ const typefilters = ref({
 const renderKey = ref(0);
 const zoomToFit = ref(true);
 
-const searchParams = computed(() => {
-  const hasUseCase = store.state.apiParams.hasUsecase === 'true';
-  const intersect = store.state.apiParams.intersect;
-
-  if (Object.values(props).some(isNotNullable)) {
-    const searchParams: GetKeywordByAuthorGraph.SearchParams = {
-      ids: props.passage?.toString().split('+').join(','),
-      author: props.author,
-      // FIXME: 'text__autor_and' does not work currently
-      [intersect ? 'text__autor' : 'text__autor']: props.author,
-      [intersect ? 'key_word_and' : 'key_word']: props.keyword,
-      use_case: props.usecase,
-      text__ort: props.place,
-    };
-
-    return searchParams;
-  }
-
-  function getDateFilters() {
-    if (route.query['time'] == null) return {};
-
-    const [start, end] = String(route.query['time']).includes('+')
-      ? String(route.query['time']).split('+').map(Number)
-      : [Number(route.query['time']) - 5, Number(route.query['time']) + 4];
-
-    const dateFilters: GetKeywordByAuthorGraph.SearchParams =
-      store.state.apiParams.slider === 'passage'
-        ? {
-            start_date: start,
-            start_date_lookup: 'gt',
-            end_date: end,
-            end_date_lookup: 'lt',
-          }
-        : {
-            text__start_date: start,
-            text__start_date_lookup: 'gt',
-            text__end_date: end,
-            text__end_date_lookup: 'lt',
-          };
-
-    return dateFilters;
-  }
-
-  const searchParams: GetKeywordByAuthorGraph.SearchParams = {
-    ids: route.query['Passage']?.toString().split('+').join(),
-    author: route.query['Author']?.toString().split('+').map(Number),
-    // FIXME: 'text__autor_and' does not work currently
-    [intersect ? 'text__autor' : 'text__autor']: route.query['Author']
-      ?.toString()
-      .split('+')
-      .map(Number),
-    [intersect ? 'key_word_and' : 'key_word']: route.query['Keyword']
-      ?.toString()
-      .split('+')
-      .map(Number),
-    use_case: route.query['Use Case']?.toString().split('+').map(Number),
-    text__ort: route.query['Place']?.toString().split('+').map(Number),
-    has_usecase: hasUseCase,
-    ...getDateFilters(),
-  };
-
-  return searchParams;
-});
-
+const searchParams = useNetworkGraphSearchParams();
 const graphQuery = useKeywordByAuthorGraph(searchParams);
 const graph = computed(() => graphQuery.data.value ?? { nodes: [], edges: [] });
 const isFetching = computed(() => graphQuery.isFetching.value);
@@ -406,14 +340,14 @@ const isFullScreen = useFullScreen();
 
 <template>
   <!-- the only way to make this overlay behave the way i want it to is to use a v-card here -->
-  <v-card color="transparent" width="100%" height="100%">
-    <v-overlay absolute class="overlay" opacity=".2" :value="!nodeCount || isFetching">
+  <VCard color="transparent" width="100%" height="100%">
+    <VOverlay absolute class="overlay" opacity=".2" :value="!nodeCount || isFetching">
       <h1 v-if="!isFetching" class="no-nodes">No nodes found!</h1>
       <h1 v-else class="no-nodes">
         <v-progress-circular indeterminate color="#0F1226" />
       </h1>
-    </v-overlay>
-    <visualization
+    </VOverlay>
+    <Visualization
       id="visId"
       :graph="weightedGraph"
       :on-node-click="nodeClick"
@@ -421,7 +355,7 @@ const isFullScreen = useFullScreen();
       :node-canvas-object="nodeObject"
       :node-pointer-area-paint="areaPaint"
       :node-canvas-object-mode="() => 'replace'"
-      :height="isFullScreen ? undefined : '500'"
+      :height="isFullScreen ? undefined : 500"
       :zoom-to-fit="zoomToFit"
       :link-directional-particles="1"
       :link-directional-particle-width="1.7"
@@ -432,8 +366,8 @@ const isFullScreen = useFullScreen();
       :force-center="() => null"
       :force-link="linkForces"
     />
-    <router-view />
-    <v-speed-dial
+    <RouterView />
+    <VSpeedDial
       v-model="fab.download"
       absolute
       top
@@ -442,46 +376,46 @@ const isFullScreen = useFullScreen();
       transition="slide-y-transition"
     >
       <template #activator>
-        <v-btn v-model="fab.download" icon small>
-          <v-icon v-if="fab.download"> mdi-close </v-icon>
-          <v-icon v-else> mdi-tray-arrow-down </v-icon>
-        </v-btn>
+        <VBtn v-model="fab.download" icon small>
+          <VIcon v-if="fab.download"> mdi-close </VIcon>
+          <VIcon v-else> mdi-tray-arrow-down </VIcon>
+        </VBtn>
       </template>
-      <v-tooltip left transition="slide-x-reverse-transition">
+      <VTooltip left transition="slide-x-reverse-transition">
         <template #activator="{ on, attrs }">
-          <v-btn fab small v-bind="attrs" @click="getCanvasData" v-on="on">
+          <VBtn fab small v-bind="attrs" @click="getCanvasData" v-on="on">
             <v-icon>mdi-image-outline</v-icon>
-          </v-btn>
+          </VBtn>
         </template>
         <span>Download canvas as .png</span>
-      </v-tooltip>
-      <v-tooltip left transition="slide-x-reverse-transition">
+      </VTooltip>
+      <VTooltip left transition="slide-x-reverse-transition">
         <template #activator="{ on, attrs }">
-          <v-btn fab small v-bind="attrs" @click="getJsonData" v-on="on">
-            <v-icon>mdi-code-json</v-icon>
-          </v-btn>
+          <VBtn fab small v-bind="attrs" @click="getJsonData" v-on="on">
+            <VIcon>mdi-code-json</VIcon>
+          </VBtn>
         </template>
         <span>Download node data as .json</span>
-      </v-tooltip>
-      <v-tooltip left transition="slide-x-reverse-transition">
+      </VTooltip>
+      <VTooltip left transition="slide-x-reverse-transition">
         <template #activator="{ on, attrs }">
-          <v-btn fab small v-bind="attrs" @click="getTextData" v-on="on">
+          <VBtn fab small v-bind="attrs" @click="getTextData" v-on="on">
             <v-icon>mdi-text-box-outline</v-icon>
-          </v-btn>
+          </VBtn>
         </template>
         <span>Download node data as .txt</span>
-      </v-tooltip>
-      <v-tooltip left transition="slide-x-reverse-transition">
+      </VTooltip>
+      <VTooltip left transition="slide-x-reverse-transition">
         <template #activator="{ on, attrs }">
-          <v-btn fab small v-bind="attrs" @click="getCsvData" v-on="on">
+          <VBtn fab small v-bind="attrs" @click="getCsvData" v-on="on">
             <v-icon>mdi-file-delimited-outline</v-icon>
-          </v-btn>
+          </VBtn>
         </template>
         <span>Download node data as .csv</span>
-      </v-tooltip>
-    </v-speed-dial>
-    <fullscreen-button :usecase="usecase" />
-    <v-speed-dial
+      </VTooltip>
+    </VSpeedDial>
+    <FullscreenButton :usecase="usecase" />
+    <VSpeedDial
       v-model="fab.control"
       absolute
       top
@@ -490,51 +424,51 @@ const isFullScreen = useFullScreen();
       transition="slide-y-transition"
     >
       <template #activator>
-        <v-btn v-model="fab.control" icon small>
-          <v-icon v-if="fab.control"> mdi-close </v-icon>
-          <v-icon v-else> mdi-dots-vertical </v-icon>
-        </v-btn>
+        <VBtn v-model="fab.control" icon small>
+          <VIcon v-if="fab.control"> mdi-close </VIcon>
+          <VIcon v-else> mdi-dots-vertical </VIcon>
+        </VBtn>
       </template>
-      <v-tooltip right transition="slide-x-transition">
+      <VTooltip right transition="slide-x-transition">
         <template #activator="{ on, attrs }">
-          <v-btn fab small v-bind="attrs" @click.stop="paused = !paused" v-on="on">
-            <v-icon v-if="!paused">mdi-pause</v-icon>
-            <v-icon v-else>mdi-play</v-icon>
-          </v-btn>
+          <VBtn fab small v-bind="attrs" @click.stop="paused = !paused" v-on="on">
+            <VIcon v-if="!paused">mdi-pause</VIcon>
+            <VIcon v-else>mdi-play</VIcon>
+          </VBtn>
         </template>
-        <span>{{ paused ? 'Unp' : 'P' /* hehehehe*/ }}ause Simulation</span>
-      </v-tooltip>
-      <v-tooltip right transition="slide-x-transition">
+        <span>{{ paused ? 'Unp' : 'P' }}ause Simulation</span>
+      </VTooltip>
+      <VTooltip right transition="slide-x-transition">
         <template #activator="{ on, attrs }">
-          <v-btn fab small v-bind="attrs" @click.stop="zoomToFit = !zoomToFit" v-on="on">
-            <v-icon>mdi-fit-to-screen-outline</v-icon>
-          </v-btn>
+          <VBtn fab small v-bind="attrs" @click.stop="zoomToFit = !zoomToFit" v-on="on">
+            <VIcon>mdi-fit-to-screen-outline</VIcon>
+          </VBtn>
         </template>
         <span>Fit Nodes to Screen</span>
-      </v-tooltip>
-      <v-tooltip right transition="slide-x-transition">
+      </VTooltip>
+      <VTooltip right transition="slide-x-transition">
         <template #activator="{ on, attrs }">
-          <v-btn fab small v-bind="attrs" @click.stop="refresh" v-on="on">
+          <VBtn fab small v-bind="attrs" @click.stop="refresh" v-on="on">
             <v-icon>mdi-pin-off</v-icon>
-          </v-btn>
+          </VBtn>
         </template>
         <span>Unpin all nodes</span>
-      </v-tooltip>
-    </v-speed-dial>
+      </VTooltip>
+    </VSpeedDial>
     <div absolute bottom left class="legend">
-      <v-list dense color="transparent">
-        <v-list-item v-for="key in types" :key="key" dense style="min-height: unset">
-          <v-checkbox
+      <VList dense color="transparent">
+        <VListItem v-for="key in types" :key="key" dense style="min-height: unset">
+          <VCheckbox
             v-model="typefilters[key]"
             :color="colors[key]"
             :label="key.charAt(0).toUpperCase() + key.slice(1)"
             dense
             hide-details
           />
-        </v-list-item>
-      </v-list>
+        </VListItem>
+      </VList>
     </div>
-  </v-card>
+  </VCard>
 </template>
 
 <style>

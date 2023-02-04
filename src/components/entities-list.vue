@@ -153,15 +153,15 @@ const route = useRoute();
 </script>
 
 <template>
-  <v-container>
-    <v-row justify="center">
-      <v-col cols="12" xl="8" class="grey-bg">
-        <v-tabs v-model="activeTabIndex" background-color="transparent" grow>
-          <v-tab v-for="(tab, key) of tabs" :key="key">{{ tab.label }}</v-tab>
-        </v-tabs>
-        <v-tabs-items v-model="activeTabIndex">
-          <v-tab-item v-for="(tab, key) in tabs" :key="key">
-            <v-data-table
+  <VContainer>
+    <VRow justify="center">
+      <VCol cols="12" xl="8" class="grey-bg">
+        <VTabs v-model="activeTabIndex" background-color="transparent" grow>
+          <VTab v-for="(tab, key) of tabs" :key="key">{{ tab.label }}</VTab>
+        </VTabs>
+        <VTabsItems v-model="activeTabIndex">
+          <VTabItem v-for="(tab, key) in tabs" :key="key">
+            <VDataTable
               :items="tab.items.value"
               :headers="tab.header"
               :loading="tab.isFetching.value"
@@ -177,7 +177,7 @@ const route = useRoute();
                 {{ item.id }}
               </template>
               <template #item.name="{ item }">
-                <v-chip
+                <VChip
                   v-if="'gnd_id' in item"
                   :to="{
                     name: 'List',
@@ -185,9 +185,9 @@ const route = useRoute();
                   }"
                   color="red lighten-3"
                 >
-                  {{ item.name }}&nbsp;<v-icon>mdi-chevron-right</v-icon>
-                </v-chip>
-                <v-chip
+                  {{ item.name }}&nbsp;<VIcon>mdi-chevron-right</VIcon>
+                </VChip>
+                <VChip
                   v-else
                   :to="{
                     name: 'List',
@@ -195,40 +195,40 @@ const route = useRoute();
                   }"
                   color="green lighten-3"
                 >
-                  {{ item.name }}&nbsp;<v-icon>mdi-chevron-right</v-icon>
-                </v-chip>
+                  {{ item.name }}&nbsp;<VIcon>mdi-chevron-right</VIcon>
+                </VChip>
               </template>
               <template #item.zitat="{ item }">
-                <router-link
+                <RouterLink
                   :to="{
                     name: 'List',
                     query: { ...route.query, Passage: item.id },
                   }"
                 >
-                  <b> {{ item.zitat }}&nbsp;<v-icon>mdi-chevron-right</v-icon> </b>
-                </router-link>
+                  <b> {{ item.zitat }}&nbsp;<VIcon>mdi-chevron-right</VIcon> </b>
+                </RouterLink>
               </template>
               <template #item.stichwort="{ item }">
-                <v-chip
+                <VChip
                   :to="{
                     name: 'List',
                     query: { ...route.query, Keyword: item.id },
                   }"
                   color="blue lighten-4"
                 >
-                  {{ item.stichwort }}&nbsp;<v-icon>mdi-chevron-right</v-icon>
-                </v-chip>
+                  {{ item.stichwort }}&nbsp;<VIcon>mdi-chevron-right</VIcon>
+                </VChip>
               </template>
               <template #item.title="{ item }">
-                <router-link
+                <RouterLink
                   :to="{ name: 'Case Study', params: { id: item.id, query: route.query } }"
                 >
-                  <b> {{ item.title }}&nbsp;<v-icon>mdi-chevron-right</v-icon> </b>
-                </router-link>
+                  <b> {{ item.title }}&nbsp;<VIcon>mdi-chevron-right</VIcon> </b>
+                </RouterLink>
               </template>
               <template #top>
-                <v-container>
-                  <v-text-field
+                <VContainer>
+                  <VTextField
                     v-model="tab.searchTerm"
                     append-icon="mdi-magnify"
                     label="Search"
@@ -236,12 +236,12 @@ const route = useRoute();
                     hide-details
                     type="search"
                   />
-                </v-container>
+                </VContainer>
               </template>
-            </v-data-table>
-          </v-tab-item>
-        </v-tabs-items>
-      </v-col>
-    </v-row>
-  </v-container>
+            </VDataTable>
+          </VTabItem>
+        </VTabsItems>
+      </VCol>
+    </VRow>
+  </VContainer>
 </template>

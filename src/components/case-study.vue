@@ -10,10 +10,10 @@ import {
   useCaseStudyTimeTableById,
   usePassages,
 } from '@/api';
-import Graph from '@/components/GraphWrapper.vue';
-import KeywordAuthorTab from '@/components/KeywordAuthorTab.vue';
-import MapWrapper from '@/components/MapWrapper.vue';
-import WordCloudWrapper from '@/components/WordCloudWrapper.vue';
+import GeoMap from '@/components/geo-map-wrapper.vue';
+import KeywordAuthorTab from '@/components/keyword-author-tab.vue';
+import Graph from '@/components/network-graph-wrapper.vue';
+import WordCloud from '@/components/word-cloud-wrapper.vue';
 import { getDateRangeLabel } from '@/lib/get-label';
 import { useVuetify } from '@/lib/use-vuetify';
 
@@ -80,39 +80,42 @@ const vuetify = useVuetify();
 </script>
 
 <template>
-  <v-container>
-    <v-row justify="center">
-      <v-col cols="12" xl="8">
+  <VContainer>
+    <VRow justify="center">
+      <VCol cols="12" xl="8">
         <template v-if="!isLoading && caseStudy">
           <p class="text-h7 grey--text">
-            <v-btn icon plain :to="{ name: 'Case Studies' }">
-              <v-icon>mdi-chevron-left</v-icon>
-            </v-btn>
-            CASE STUDY<span v-if="caseStudy.principal_investigator"
-              >&nbsp;&nbsp;&bull;&nbsp;&nbsp;{{ caseStudy.principal_investigator }}</span
-            >
+            <VBtn icon plain :to="{ name: 'Case Studies' }">
+              <VIcon>mdi-chevron-left</VIcon>
+            </VBtn>
+            CASE STUDY<span v-if="caseStudy.principal_investigator">
+              &nbsp;&nbsp;&bull;&nbsp;&nbsp;{{ caseStudy.principal_investigator }}
+            </span>
           </p>
+
           <p class="text-h4">{{ caseStudy.title }}</p>
           <p v-if="caseStudy.description">{{ caseStudy.description }}</p>
-          <v-tabs fixed-tabs show-arrows background-color="transparent">
-            <v-tab exact :to="{ query: { ...route.query, tab: 'timeline' } }"> Timeline </v-tab>
-            <v-tab
+          <VTabs fixed-tabs show-arrows background-color="transparent">
+            <VTab exact :to="{ query: { ...route.query, tab: 'timeline' } }"> Timeline </VTab>
+            <VTab
               v-if="caseStudy.story_map"
               exact
               :to="{ query: { ...route.query, tab: 'story' } }"
             >
               Story Map
-            </v-tab>
-            <v-tab exact :to="{ query: { ...route.query, tab: 'graph' } }"> Graph </v-tab>
-            <v-tab exact :to="{ query: { ...route.query, tab: 'map' } }"> Map </v-tab>
-            <v-tab exact :to="{ query: { ...route.query, tab: 'cloud' } }"> Word Cloud </v-tab>
-            <v-tab exact :to="{ query: { ...route.query, tab: 'texts' } }"> Texts & Authors </v-tab>
-          </v-tabs>
+            </VTab>
+            <VTab exact :to="{ query: { ...route.query, tab: 'graph' } }">Graph</VTab>
+            <VTab exact :to="{ query: { ...route.query, tab: 'map' } }">Map</VTab>
+            <VTab exact :to="{ query: { ...route.query, tab: 'cloud' } }">Word Cloud</VTab>
+            <VTab exact :to="{ query: { ...route.query, tab: 'texts' } }">Texts & Authors</VTab>
+          </VTabs>
+
           <br />
-          <v-tabs-items :value="route.query.tab || 'timeline'">
-            <v-tab-item value="timeline">
-              <v-timeline :dense="vuetify.breakpoint.mobile">
-                <v-timeline-item
+
+          <VTabsItems :value="route.query.tab || 'timeline'">
+            <VTabItem value="timeline">
+              <VTimeline :dense="vuetify.breakpoint.mobile">
+                <VTimelineItem
                   v-for="(event, i) in events"
                   :key="`${event.id}&${i}`"
                   large
@@ -126,7 +129,7 @@ const vuetify = useVuetify();
                   <span v-if="vuetify.breakpoint.mobile" class="font-weight-medium">
                     {{ getDateRangeLabel(event.start_date, event.end_date) }}: <br />
                   </span>
-                  <router-link
+                  <RouterLink
                     v-if="event.ent_type === 'autor'"
                     class="font-weight-medium"
                     :to="{
@@ -136,8 +139,8 @@ const vuetify = useVuetify();
                   >
                     {{ event.ent_description }}
                     &nbsp;
-                    <v-icon>mdi-chevron-right</v-icon>
-                  </router-link>
+                    <VIcon>mdi-chevron-right</VIcon>
+                  </RouterLink>
                   <span
                     v-else
                     :class="{
@@ -146,42 +149,48 @@ const vuetify = useVuetify();
                   >
                     {{ event.ent_description }}
                   </span>
-                </v-timeline-item>
-              </v-timeline>
-            </v-tab-item>
-            <v-tab-item v-if="caseStudy.story_map" value="story">
-              <v-card color="transparent">
+                </VTimelineItem>
+              </VTimeline>
+            </VTabItem>
+
+            <VTabItem v-if="caseStudy.story_map" value="story">
+              <VCard color="transparent">
                 <div v-html="caseStudy.story_map" />
-              </v-card>
-            </v-tab-item>
-            <v-tab-item value="graph">
-              <v-card color="transparent">
-                <graph :usecase="id || route.params.id" />
-              </v-card>
-            </v-tab-item>
-            <v-tab-item value="map">
-              <v-card color="transparent">
-                <map-wrapper :usecase="id || route.params.id" />
-              </v-card>
-            </v-tab-item>
-            <v-tab-item value="cloud">
-              <word-cloud-wrapper :usecase="id || route.params.id" />
-            </v-tab-item>
-            <v-tab-item value="texts">
-              <keyword-author-tab :passages="passages" />
-            </v-tab-item>
-          </v-tabs-items>
+              </VCard>
+            </VTabItem>
+
+            <VTabItem value="graph">
+              <VCard color="transparent">
+                <Graph :usecase="id || route.params.id" />
+              </VCard>
+            </VTabItem>
+
+            <VTabItem value="map">
+              <VCard color="transparent">
+                <GeoMap :usecase="id || route.params.id" />
+              </VCard>
+            </VTabItem>
+
+            <VTabItem value="cloud">
+              <WordCloud :usecase="id || route.params.id" />
+            </VTabItem>
+
+            <VTabItem value="texts">
+              <KeywordAuthorTab :passages="passages" />
+            </VTabItem>
+          </VTabsItems>
         </template>
+
         <template v-else>
-          <v-skeleton-loader type="text@3" />
+          <VSkeletonLoader type="text@3" />
           <br />
-          <v-skeleton-loader type="heading" />
+          <VSkeletonLoader type="heading" />
           <br />
-          <v-skeleton-loader type="text@50" />
+          <VSkeletonLoader type="text@50" />
         </template>
-      </v-col>
-    </v-row>
-  </v-container>
+      </VCol>
+    </VRow>
+  </VContainer>
 </template>
 
 <style>
