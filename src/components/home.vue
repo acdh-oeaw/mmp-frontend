@@ -38,15 +38,13 @@ const caseStudyId = 4;
 
           <VRow justify="center">
             <VCol cols="12" lg="3" sm="5">
-              <VBtn large block color="secondary" :to="{ name: 'Interface' }">
-                Search our Data
-              </VBtn>
+              <VBtn large block color="secondary" :to="{ name: 'explore' }"> Search our Data </VBtn>
               <span class="button-subtitle">For Interactive Analyses</span>
             </VCol>
 
             <VCol cols="12" lg="3" sm="5">
               <p>
-                <VBtn block color="primary" large :to="{ name: 'Case Study', params: { id: 4 } }">
+                <VBtn block color="primary" large :to="{ name: 'case-study', params: { id: 4 } }">
                   Read &bdquo;Carolingian Avaria&ldquo;
                 </VBtn>
                 <span class="button-subtitle">A Case Study</span>

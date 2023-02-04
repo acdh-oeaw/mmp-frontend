@@ -25,7 +25,7 @@ function onToggleDrawer() {
       <v-list-item-content>
         <v-list-item-title class="text-h4 font-weight-bold">
           <v-icon @click.prevent="onToggleDrawer">mdi-close</v-icon>
-          <router-link :to="{ name: 'Home' }">MMP</router-link>
+          <router-link :to="{ name: 'home' }">MMP</router-link>
         </v-list-item-title>
       </v-list-item-content>
     </v-list-item>

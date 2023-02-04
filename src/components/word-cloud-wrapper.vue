@@ -6,12 +6,6 @@ import FullscreenButton from '@/components/fullscreen-button.vue';
 import PieChart from '@/components/pie-chart.vue';
 import WordCloud from '@/components/word-cloud.vue';
 import { useWordCloudSearchParams } from '@/lib/search/use-word-cloud-search-params';
-import { useFullScreen } from '@/lib/use-full-screen';
-
-// FIXME:
-const props = defineProps<{
-  usecase?: any;
-}>();
 
 const searchParams = useWordCloudSearchParams();
 
@@ -72,12 +66,10 @@ const type = ref('cloud');
 const showWords = computed(() => {
   return [check.value.includes('words'), check.value.includes('keywords')];
 });
-
-const isFullScreen = useFullScreen();
 </script>
 
 <template>
-  <VCard width="100%" color="transparent" :height="isFullScreen ? 'calc(100vh - 4px)' : 500">
+  <VCard width="100%" color="transparent" :height="500">
     <VOverlay
       absolute
       opacity=".2"
@@ -96,7 +88,7 @@ const isFullScreen = useFullScreen();
           :key="JSON.stringify(filtered) + i"
           :cols="showWords.filter((x) => x).length >= 2 ? 6 : 12"
         >
-          <PieChart :data="filtered" :title="titles[i]" :height="isFullScreen ? '100%' : '500px'" />
+          <PieChart :data="filtered" :title="titles[i]" :height="500" />
         </VCol>
       </template>
     </VRow>
@@ -113,7 +105,7 @@ const isFullScreen = useFullScreen();
     </VRow>
 
     <VNavigationDrawer v-model="drawer" absolute right>
-      <VCard :min-height="isFullScreen ? 'calc(100vh - 4px)' : 498">
+      <VCard :min-height="498">
         <VBtn absolute top right icon style="z-index: 100" @click="drawer = false">
           <VIcon>mdi-close</VIcon>
         </VBtn>
@@ -161,7 +153,7 @@ const isFullScreen = useFullScreen();
       <VIcon>mdi-menu</VIcon>
     </VBtn>
 
-    <FullscreenButton :usecase="usecase" />
+    <FullscreenButton />
 
     <VSpeedDial
       v-model="speeddial"

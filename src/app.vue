@@ -1,17 +1,13 @@
 <script lang="ts" setup>
-import { useFullScreen } from '@/lib/use-full-screen';
 import { useHomePage } from '@/lib/use-home-page';
 
 const isHomePage = useHomePage();
-const isFullScreen = useFullScreen();
 </script>
 
 <template>
   <VApp class="app">
-    <template v-if="!isFullScreen">
-      <AppBar />
-      <div class="buffer" :class="{ light: !isHomePage, smaller: $vuetify.breakpoint.mobile }" />
-    </template>
+    <AppBar />
+    <div class="buffer" :class="{ light: !isHomePage, smaller: $vuetify.breakpoint.mobile }" />
     <VMain>
       <RouterView />
     </VMain>

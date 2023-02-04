@@ -1,19 +1,16 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
-import { useRoute } from 'vue-router/composables';
 
 import { type Keyword, usePassages } from '@/api';
 import { getAuthorLabel } from '@/lib/get-label';
 import { useSearchFilters } from '@/lib/search/use-search-filters';
-import { useFullScreen } from '@/lib/use-full-screen';
 
 const props = defineProps<{
   parentNodes: Array<Keyword['id']>;
   siblingNode: Keyword['id'];
 }>();
 
-const route = useRoute();
-const { searchFilters } = useSearchFilters();
+const { createSearchFilterParams, searchFilters } = useSearchFilters();
 const passagesQuery = usePassages(
   computed(() => ({
     [searchFilters.value['query-mode'] === 'intersection' ? 'key_word_and' : 'key_word']: [
@@ -31,8 +28,6 @@ const isLoading = computed(() => {
 const passages = computed(() => {
   return passagesQuery.data.value?.results ?? [];
 });
-
-const isFullScreen = useFullScreen();
 </script>
 
 <template>
@@ -50,8 +45,7 @@ const isFullScreen = useFullScreen();
           :key="passage.id"
           three-line
           :to="{
-            name: isFullScreen ? 'Passage Detail Fullscreen' : 'Passage Detail',
-            query: { ...route.query, Passage: passage.id },
+            query: createSearchFilterParams({ ...searchFilters, passage: [passage.id] }),
             params: { id: passage.id },
           }"
         >

@@ -8,7 +8,6 @@ import { getAuthorLabel, getDateRangeLabel } from '@/lib/get-label';
 import { keywordColors } from '@/lib/search/search.config';
 import { usePassagesSearchParams } from '@/lib/search/use-passages-search-params';
 import { useSearchFilters } from '@/lib/search/use-search-filters';
-import { useFullScreen } from '@/lib/use-full-screen';
 
 const headers = [
   { text: 'Author', value: 'text.autor', width: '150px' },
@@ -52,8 +51,6 @@ function onUpdatePage(value: number) {
 function getColor(type: KeywordType) {
   return keywordColors[type];
 }
-
-const isFullScreen = useFullScreen();
 </script>
 
 <template>
@@ -79,7 +76,6 @@ const isFullScreen = useFullScreen();
             v-for="(author, i) of item.text.autor"
             :key="author.id"
             :to="{
-              name: isFullScreen ? 'Author Detail Fullscreen' : 'Author Detail',
               params: { id: author.id },
               query: route.query,
             }"
@@ -95,7 +91,6 @@ const isFullScreen = useFullScreen();
         <template v-if="item.text">
           <RouterLink
             :to="{
-              name: isFullScreen ? 'Passage Detail Fullscreen' : 'Passage Detail',
               params: { id: item.id },
               query: route.query,
             }"

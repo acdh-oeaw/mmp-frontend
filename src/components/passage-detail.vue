@@ -6,8 +6,6 @@ import { usePassageById } from '@/api';
 import { getAuthorLabel, getPlaceLabel } from '@/lib/get-label';
 import { keywordColors } from '@/lib/search/search.config';
 import { useSearchFilters } from '@/lib/search/use-search-filters';
-import { useDrawerWidth } from '@/lib/use-drawer-width';
-import { useFullScreen } from '@/lib/use-full-screen';
 
 const route = useRoute();
 const id = computed(() => Number(route.params.id));
@@ -84,17 +82,14 @@ const items = computed(() => {
     },
   ] as const;
 });
-
-const isFullScreen = useFullScreen();
-const drawerWidth = useDrawerWidth();
 </script>
 
 <template>
-  <VNavigationDrawer color="background" fixed permanent right :width="drawerWidth">
+  <div>
     <VListItem>
       <VListItemAction>
         <RouterLink
-          :to="{ name: isFullScreen ? 'List Fullscreen' : 'List', query: route.query }"
+          :to="{ name: 'search-results', query: route.query }"
           class="text-decoration-none"
         >
           <v-icon>mdi-close</v-icon>
@@ -141,7 +136,6 @@ const drawerWidth = useDrawerWidth();
               v-for="(val, i) of item.value"
               :key="val.id"
               :to="{
-                name: isFullScreen ? `${item.key} Detail Fullscreen` : `${item.key} Detail`,
                 query:
                   item.key === 'Place'
                     ? createSearchFilterParams({ ...searchFilters, place: [val.id] })
@@ -164,5 +158,5 @@ const drawerWidth = useDrawerWidth();
     <VContainer v-else>
       <VSkeletonLoader type="table-row-divider@11" />
     </VContainer>
-  </VNavigationDrawer>
+  </div>
 </template>

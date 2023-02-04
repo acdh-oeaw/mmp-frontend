@@ -18,9 +18,9 @@ function onTogglePanel() {
 }
 
 const links = {
-  about: { name: 'About', label: 'About the Project' },
-  'case-studies': { name: 'Case Studies', label: 'Case Studies' },
-  explore: { name: 'Interface', label: 'Explore the Data' },
+  about: { name: 'about', label: 'About the Project' },
+  'case-studies': { name: 'case-studies', label: 'Case Studies' },
+  explore: { name: 'explore', label: 'Explore the Data' },
 };
 </script>
 
@@ -35,7 +35,7 @@ const links = {
             @click.stop="onTogglePanel"
           />
           <VToolbarTitle class="d-inline font-display font-weight-bold text-decoration-none">
-            <RouterLink :to="{ name: 'Home' }" class="nav-link" :class="{ light: !isHomePage }">
+            <RouterLink :to="{ name: 'home' }" class="nav-link" :class="{ light: !isHomePage }">
               MMP
             </RouterLink>
           </VToolbarTitle>

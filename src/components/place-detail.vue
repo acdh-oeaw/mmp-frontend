@@ -6,8 +6,6 @@ import { useAuthors, usePlaceById, useTexts } from '@/api';
 import PlaceMap from '@/components/place-map.vue';
 import { getAuthorLabel, getPlaceLabel } from '@/lib/get-label';
 import { useSearchFilters } from '@/lib/search/use-search-filters';
-import { useDrawerWidth } from '@/lib/use-drawer-width';
-import { useFullScreen } from '@/lib/use-full-screen';
 
 const route = useRoute();
 const id = computed(() => Number(route.params.id));
@@ -41,19 +39,13 @@ const authors = computed(() => authorsQuery.data.value?.results ?? []);
 
 const textCount = computed(() => textsQuery.data.value?.count);
 const authorCount = computed(() => authorsQuery.data.value?.count);
-
-const isFullScreen = useFullScreen();
-const drawerWidth = useDrawerWidth();
 </script>
 
 <template>
-  <VNavigationDrawer color="background" fixed permanent right :width="drawerWidth">
+  <div>
     <VListItem>
       <VListItemAction>
-        <RouterLink
-          :to="{ name: isFullScreen ? 'Map Fullscreen' : 'Map', query: $route.query }"
-          class="text-decoration-none"
-        >
+        <RouterLink :to="{ name: 'geo-map', query: route.query }" class="text-decoration-none">
           <VIcon>mdi-close</VIcon>
         </RouterLink>
       </VListItemAction>
@@ -100,7 +92,6 @@ const drawerWidth = useDrawerWidth();
               v-for="author in authors"
               :key="author.id"
               :to="{
-                name: isFullScreen ? 'Author Detail Fullscreen' : 'Author Detail',
                 query: createSearchFilterParams({ ...searchFilters, author: [author.id] }),
                 params: { id: author.id },
               }"
@@ -144,5 +135,5 @@ const drawerWidth = useDrawerWidth();
 
       <VSkeletonLoader v-else type="paragraph@2" />
     </VContainer>
-  </VNavigationDrawer>
+  </div>
 </template>

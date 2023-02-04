@@ -1,17 +1,17 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
-import { useRoute } from 'vue-router/composables';
 
 import type { Author, GetPassages, Passage, Text } from '@/api';
 import { getAuthorLabel } from '@/lib/get-label';
 import { isNotNullable } from '@/lib/is-not-nullable';
 import { keywordColors } from '@/lib/search/search.config';
+import { useSearchFilters } from '@/lib/search/use-search-filters';
 
 const props = defineProps<{
   passages: GetPassages.Response['results'];
 }>();
 
-const route = useRoute();
+const { createSearchFilterParams, searchFilters } = useSearchFilters();
 
 const texts = computed(() => {
   return props.passages.map((passage) => passage.text).filter(isNotNullable);
@@ -99,8 +99,8 @@ function getPassagesByAuthor(id: Author['id'], passages: Array<Passage>) {
             v-for="passage of getPassagesByText(text.id, passages)"
             :key="passage.id"
             :to="{
-              name: 'List',
-              query: { ...route.query, Passage: passage.id },
+              name: 'search-results',
+              query: createSearchFilterParams({ ...searchFilters, passage: [passage.id] }),
             }"
             prepend-icon="mdi-format-quote-close"
           >

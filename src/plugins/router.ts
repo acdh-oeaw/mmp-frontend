@@ -1,19 +1,14 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 
-import AuthorDetail from '@/components/author-detail.vue';
+import Browse from '@/components/browse.vue';
 import CaseStudies from '@/components/case-studies.vue';
 import CaseStudy from '@/components/case-study.vue';
-import EntitiesList from '@/components/entities-list.vue';
 import Explore from '@/components/explore.vue';
 import GeoMap from '@/components/geo-map-wrapper.vue';
 import Home from '@/components/home.vue';
-import KeywordDetail from '@/components/keyword-detail.vue';
 import NetworkGraph from '@/components/network-graph-wrapper.vue';
-import PassageDetail from '@/components/passage-detail.vue';
-import PlaceDetail from '@/components/place-detail.vue';
 import SearchResults from '@/components/search-results.vue';
-import SpatialCoverageDetail from '@/components/spatial-coverage-detail.vue';
 import WordCloud from '@/components/word-cloud-wrapper.vue';
 
 Vue.use(VueRouter);
@@ -21,86 +16,74 @@ Vue.use(VueRouter);
 const routes = [
   {
     path: '/',
-    name: 'Home',
+    name: 'home',
     component: Home,
   },
   {
     path: '/case-studies/',
-    name: 'Case Studies',
+    name: 'case-studies',
     component: CaseStudies,
   },
   {
     path: '/case-studies/:id',
-    name: 'Case Study',
+    name: 'case-study',
     component: CaseStudy,
-  },
-  {
-    path: '/explore/',
-    name: 'Interface',
-    component: Explore,
+    // TODO:
     children: [
       {
         path: 'geo-map',
-        name: 'Map',
+        name: 'geo-map',
         component: GeoMap,
-        children: [
-          {
-            path: 'spatial-coverage/:id',
-            name: 'Spatial Detail',
-            component: SpatialCoverageDetail,
-          },
-          {
-            path: 'place/:id',
-            name: 'Place Detail',
-            component: PlaceDetail,
-          },
-        ],
       },
       {
         path: 'network-graph',
-        name: 'Network Graph',
+        name: 'network-graph',
         component: NetworkGraph,
-        children: [
-          {
-            path: 'detail/:id',
-            name: 'Keyword Detail',
-            component: KeywordDetail,
-          },
-          {
-            path: 'author/:id',
-            name: 'Graph Author Detail',
-            component: AuthorDetail,
-          },
-        ],
       },
       {
         path: 'search-results',
-        name: 'List',
+        name: 'search-results',
         component: SearchResults,
-        children: [
-          {
-            path: 'passage/:id',
-            name: 'Passage Detail',
-            component: PassageDetail,
-          },
-          {
-            path: 'author/:id',
-            name: 'Author Detail',
-            component: AuthorDetail,
-          },
-        ],
       },
       {
         path: 'word-cloud',
-        name: 'Word Cloud',
+        name: 'word-cloud',
         component: WordCloud,
       },
     ],
   },
   {
-    path: '/entities/',
-    name: 'List All',
-    component: EntitiesList,
+    path: '/explore/',
+    name: 'explore',
+    component: Explore,
+    children: [
+      {
+        path: 'geo-map',
+        name: 'geo-map',
+        component: GeoMap,
+      },
+      {
+        path: 'network-graph',
+        name: 'network-graph',
+        component: NetworkGraph,
+      },
+      {
+        path: 'search-results',
+        name: 'search-results',
+        component: SearchResults,
+      },
+      {
+        path: 'word-cloud',
+        name: 'word-cloud',
+        component: WordCloud,
+      },
+    ],
+  },
+  {
+    path: '/browse/',
+    name: 'browse',
+    component: Browse,
+    // TODO: child routes per entity type (?)
   },
 ];
 

@@ -8,13 +8,7 @@ import FullscreenButton from '@/components/fullscreen-button.vue';
 import Visualization from '@/components/network-graph.vue';
 import { useNetworkGraphSearchParams } from '@/lib/search/use-network-graph-search-params';
 import { unique } from '@/lib/unique';
-import { useFullScreen } from '@/lib/use-full-screen';
 import { useStore } from '@/lib/use-store';
-
-// FIXME:
-const props = defineProps<{
-  usecase?: any;
-}>();
 
 const route = useRoute();
 const router = useRouter();
@@ -299,8 +293,8 @@ function nodeClick(node: any) {
     } else ret.params = { id: [...String(id).split('+'), node.id].join('+') };
   }
 
-  if (isFullScreen.value) ret.name += ' Fullscreen';
-  (ret.query = props.usecase ? { 'Use Case': props.usecase } : route.query), router.push(ret);
+  ret.query = route.query;
+  router.push(ret);
 }
 
 function nodeDragEnd(node: any) {
@@ -334,8 +328,6 @@ function lightenColor(color: string | null, fade: number) {
 
   return `rgba(${numArray.join()}, ${fade})`;
 }
-
-const isFullScreen = useFullScreen();
 </script>
 
 <template>
@@ -347,6 +339,7 @@ const isFullScreen = useFullScreen();
         <v-progress-circular indeterminate color="#0F1226" />
       </h1>
     </VOverlay>
+
     <Visualization
       id="visId"
       :graph="weightedGraph"
@@ -355,7 +348,7 @@ const isFullScreen = useFullScreen();
       :node-canvas-object="nodeObject"
       :node-pointer-area-paint="areaPaint"
       :node-canvas-object-mode="() => 'replace'"
-      :height="isFullScreen ? undefined : 500"
+      :height="500"
       :zoom-to-fit="zoomToFit"
       :link-directional-particles="1"
       :link-directional-particle-width="1.7"
@@ -366,7 +359,9 @@ const isFullScreen = useFullScreen();
       :force-center="() => null"
       :force-link="linkForces"
     />
+
     <RouterView />
+
     <VSpeedDial
       v-model="fab.download"
       absolute
@@ -414,7 +409,9 @@ const isFullScreen = useFullScreen();
         <span>Download node data as .csv</span>
       </VTooltip>
     </VSpeedDial>
-    <FullscreenButton :usecase="usecase" />
+
+    <FullscreenButton />
+
     <VSpeedDial
       v-model="fab.control"
       absolute

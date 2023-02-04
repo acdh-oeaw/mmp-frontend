@@ -35,10 +35,10 @@ const currentView = computed({
 });
 
 const tabs = {
-  'search-results': { name: 'List', label: 'List' },
-  'network-graph': { name: 'Network Graph', label: 'Network Graph' },
-  'geo-map': { name: 'Map', label: 'Map' },
-  'word-cloud': { name: 'Word Cloud', label: 'Word Cloud' },
+  'search-results': { name: 'search-results', label: 'Search results' },
+  'network-graph': { name: 'network-graph', label: 'Network Graph' },
+  'geo-map': { name: 'geo-map', label: 'Map' },
+  'word-cloud': { name: 'word-cloud', label: 'Word Cloud' },
 };
 </script>
 
@@ -102,13 +102,7 @@ const tabs = {
                 'text-center': $vuetify.breakpoint.mobile,
               }"
             >
-              <VBtn
-                text
-                block
-                small
-                class="justify-end"
-                :to="{ name: 'List All', query: route.query }"
-              >
+              <VBtn text block small class="justify-end" :to="{ name: 'browse' }">
                 &nbsp;
                 <VIcon>mdi-format-list-bulleted</VIcon>
                 List All Entities

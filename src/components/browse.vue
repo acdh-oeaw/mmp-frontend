@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 import { type Ref, computed, ref } from 'vue';
-import { useRoute } from 'vue-router/composables';
 
 import { useAuthors, useCaseStudies, useKeywords, usePassages, usePlaces } from '@/api';
 import { kindLabels } from '@/lib/search/search.config';
+import { useSearchFilters } from '@/lib/search/use-search-filters';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyFunction = (...args: any) => any;
@@ -13,6 +13,8 @@ type CreateTabParams<TQueryFn extends AnyFunction> = {
   header: Array<{ text: string; value: string }>;
   createQuery: (q: Ref<string>, limit: Ref<number>, offset: Ref<number>) => ReturnType<TQueryFn>;
 };
+
+const { createSearchFilterParams, searchFilters } = useSearchFilters();
 
 function createTab<TQueryFn extends AnyFunction>(params: CreateTabParams<TQueryFn>) {
   const { createQuery, header, label } = params;
@@ -148,8 +150,6 @@ const places = createTab<typeof usePlaces>({
 const activeTabIndex = ref(0);
 
 const tabs = { authors, passages, keywords, caseStudies, places };
-
-const route = useRoute();
 </script>
 
 <template>
@@ -180,8 +180,8 @@ const route = useRoute();
                 <VChip
                   v-if="'gnd_id' in item"
                   :to="{
-                    name: 'List',
-                    query: { ...route.query, Author: item.id },
+                    name: 'explore',
+                    query: createSearchFilterParams({ ...searchFilters, author: [item.id] }),
                   }"
                   color="red lighten-3"
                 >
@@ -190,8 +190,8 @@ const route = useRoute();
                 <VChip
                   v-else
                   :to="{
-                    name: 'List',
-                    query: { ...route.query, Place: item.id },
+                    name: 'explore',
+                    query: createSearchFilterParams({ ...searchFilters, place: [item.id] }),
                   }"
                   color="green lighten-3"
                 >
@@ -201,8 +201,8 @@ const route = useRoute();
               <template #item.zitat="{ item }">
                 <RouterLink
                   :to="{
-                    name: 'List',
-                    query: { ...route.query, Passage: item.id },
+                    name: 'explore',
+                    query: createSearchFilterParams({ ...searchFilters, passage: [item.id] }),
                   }"
                 >
                   <b> {{ item.zitat }}&nbsp;<VIcon>mdi-chevron-right</VIcon> </b>
@@ -211,8 +211,8 @@ const route = useRoute();
               <template #item.stichwort="{ item }">
                 <VChip
                   :to="{
-                    name: 'List',
-                    query: { ...route.query, Keyword: item.id },
+                    name: 'explore',
+                    query: createSearchFilterParams({ ...searchFilters, keyword: item.id }),
                   }"
                   color="blue lighten-4"
                 >
@@ -221,7 +221,11 @@ const route = useRoute();
               </template>
               <template #item.title="{ item }">
                 <RouterLink
-                  :to="{ name: 'Case Study', params: { id: item.id, query: route.query } }"
+                  :to="{
+                    name: 'case-study',
+                    params: { id: item.id },
+                    query: createSearchFilterParams(searchFilters),
+                  }"
                 >
                   <b> {{ item.title }}&nbsp;<VIcon>mdi-chevron-right</VIcon> </b>
                 </RouterLink>

@@ -39,7 +39,7 @@ const caseStudies = computed(() => {
           </VCardSubtitle>
           <VCardText v-if="caseStudy.description">{{ caseStudy.description }}</VCardText>
           <VCardActions>
-            <VBtn text :to="{ name: 'Case Study', params: { id: caseStudy.id } }">Read More</VBtn>
+            <VBtn text :to="{ name: 'case-study', params: { id: caseStudy.id } }">Read More</VBtn>
           </VCardActions>
         </VCard>
       </VCol>

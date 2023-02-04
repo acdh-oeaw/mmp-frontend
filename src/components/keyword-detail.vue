@@ -15,8 +15,6 @@ import KeywordListItem from '@/components/keyword-list-item.vue';
 import KeywordOverTime from '@/components/keyword-over-time.vue';
 import { useSearchFilters } from '@/lib/search/use-search-filters';
 import { truncate } from '@/lib/truncate';
-import { useDrawerWidth } from '@/lib/use-drawer-width';
-import { useFullScreen } from '@/lib/use-full-screen';
 import { useStore } from '@/lib/use-store';
 
 const route = useRoute();
@@ -138,20 +136,13 @@ const neighbors = computed({
     store.commit('setGraphParam', { key: 'showNeighborsOnly', value });
   },
 });
-
-const isFullScreen = useFullScreen();
-const drawerWidth = useDrawerWidth();
-const xPressLinkName = computed(() => {
-  if (isFullScreen) return 'Network Graph Fullscreen';
-  return 'Network Graph';
-});
 </script>
 
 <template>
-  <VNavigationDrawer color="background" fixed permanent right :width="drawerWidth">
+  <div>
     <VListItem>
       <VListItemAction>
-        <RouterLink :to="{ name: xPressLinkName, query: route.query }">
+        <RouterLink :to="{ name: 'network-graph', query: route.query }">
           <VIcon>mdi-close</VIcon>
         </RouterLink>
       </VListItemAction>
@@ -164,8 +155,8 @@ const xPressLinkName = computed(() => {
             Mentioned in
             <RouterLink
               :to="{
-                name: isFullScreen ? 'List Fullscreen' : 'List',
-                query: { ...route.query, Keyword: route.params.id },
+                name: 'explore',
+                query: createSearchFilterParams({ ...searchFilters, keyword: [id] }),
               }"
             >
               <span v-if="passageCount">
@@ -176,7 +167,7 @@ const xPressLinkName = computed(() => {
             <RouterLink
               :to="{
                 params: { id: route.params.id },
-                query: { ...route.query, Keyword: route.params.id },
+                query: createSearchFilterParams({ ...searchFilters, keyword: [id] }),
               }"
             >
               show all connections<VIcon small>mdi-link</VIcon>
@@ -260,8 +251,11 @@ const xPressLinkName = computed(() => {
                   block
                   class="detail-button"
                   :to="{
-                    name: isFullScreen ? 'List Fullscreen' : 'List',
-                    query: { ...route.query, Keyword: keywords.map((x) => x.id).join('+') },
+                    name: 'search-results',
+                    query: createSearchFilterParams({
+                      ...searchFilters,
+                      keyword: keywords.map((x) => x.id),
+                    }),
                   }"
                 >
                   {{
@@ -282,9 +276,8 @@ const xPressLinkName = computed(() => {
                   block
                   class="detail-button"
                   :to="{
-                    name: isFullScreen ? 'Keyword Detail Fullscreen' : 'Keyword Detail',
                     params: { id: route.params.id },
-                    query: { ...route.query, Keyword: route.params.id },
+                    query: createSearchFilterParams({ ...searchFilters, keyword: [id] }),
                   }"
                 >
                   Show all Connections in Graph
@@ -297,7 +290,7 @@ const xPressLinkName = computed(() => {
         </VCol>
       </VRow>
     </VContainer>
-  </VNavigationDrawer>
+  </div>
 </template>
 
 <style>

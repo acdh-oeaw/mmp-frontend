@@ -4,7 +4,6 @@ import { computed } from 'vue';
 import { useRoute } from 'vue-router/composables';
 
 import {
-  type CaseStudy,
   type GetCaseStudyTimetableById,
   useCaseStudyById,
   useCaseStudyTimeTableById,
@@ -15,25 +14,22 @@ import KeywordAuthorTab from '@/components/keyword-author-tab.vue';
 import Graph from '@/components/network-graph-wrapper.vue';
 import WordCloud from '@/components/word-cloud-wrapper.vue';
 import { getDateRangeLabel } from '@/lib/get-label';
+import { useSearchFilters } from '@/lib/search/use-search-filters';
 import { useVuetify } from '@/lib/use-vuetify';
 
 type EventType = GetCaseStudyTimetableById.Response[number]['ent_type'];
 
-const props = defineProps<{
-  id?: CaseStudy['id'];
-}>();
-
 const route = useRoute();
 const id = computed(() => {
-  if (props.id != null) return props.id;
   const id = route.params.id;
   assert(id != null);
   return Number(id);
 });
 
+const { createSearchFilterParams, searchFilters } = useSearchFilters();
 const caseStudyQuery = useCaseStudyById({ id });
 const caseStudyTimeTableQuery = useCaseStudyTimeTableById({ id });
-const passageQuery = usePassages({ use_case: [id], limit: 200 }); // TODO: proper pagination + infinite scroll
+const passageQuery = usePassages({ use_case: [id], limit: 200 });
 
 const isLoading = computed(() => {
   return [caseStudyQuery, caseStudyTimeTableQuery, passageQuery].some((query) => {
@@ -42,13 +38,7 @@ const isLoading = computed(() => {
 });
 
 const caseStudy = computed(() => {
-  if (caseStudyQuery.data.value == null) return caseStudyQuery.data.value;
-
-  return {
-    ...caseStudyQuery.data.value,
-    // FIXME: why is this necessary?
-    story_map: caseStudyQuery.data.value.story_map?.replaceAll('/explore/', '/view/'),
-  };
+  return caseStudyQuery.data.value;
 });
 const events = computed(() => {
   return caseStudyTimeTableQuery.data.value ?? [];
@@ -85,7 +75,7 @@ const vuetify = useVuetify();
       <VCol cols="12" xl="8">
         <template v-if="!isLoading && caseStudy">
           <p class="text-h7 grey--text">
-            <VBtn icon plain :to="{ name: 'Case Studies' }">
+            <VBtn icon plain :to="{ name: 'case-studies' }">
               <VIcon>mdi-chevron-left</VIcon>
             </VBtn>
             CASE STUDY<span v-if="caseStudy.principal_investigator">
@@ -133,8 +123,8 @@ const vuetify = useVuetify();
                     v-if="event.ent_type === 'autor'"
                     class="font-weight-medium"
                     :to="{
-                      name: 'List',
-                      query: { ...route.query, Author: event.id },
+                      name: 'explore',
+                      query: createSearchFilterParams({ ...searchFilters, author: [event.id] }),
                     }"
                   >
                     {{ event.ent_description }}

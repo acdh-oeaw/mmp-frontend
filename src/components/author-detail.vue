@@ -7,8 +7,6 @@ import { useAuthorById, useCaseStudies, useKeywords, usePassages } from '@/api';
 import { getAuthorLabel, getPlaceLabel } from '@/lib/get-label';
 import { keywordColors } from '@/lib/search/search.config';
 import { useSearchFilters } from '@/lib/search/use-search-filters';
-import { useDrawerWidth } from '@/lib/use-drawer-width';
-import { useFullScreen } from '@/lib/use-full-screen';
 import { useParentRoute } from '@/lib/use-parent-route';
 
 const route = useRoute();
@@ -56,20 +54,19 @@ const keywords = computed(() => {
   return keywordsQuery.data.value?.results ?? [];
 });
 
-const drawerWidth = useDrawerWidth();
 const parentRoute = useParentRoute();
-const isFullScreen = useFullScreen();
 </script>
 
 <template>
-  <VNavigationDrawer color="background" fixed permanent right :width="drawerWidth">
+  <div>
     <VListItem>
       <VListItemAction>
+        <!-- FIXME: close button -->
         <RouterLink
           :to="{ name: parentRoute?.name, query: route.query }"
           class="text-decoration-none"
         >
-          <v-icon>mdi-close</v-icon>
+          <VIcon>mdi-close</VIcon>
         </RouterLink>
       </VListItemAction>
 
@@ -135,7 +132,7 @@ const isFullScreen = useFullScreen();
                 :key="caseStudy.id"
                 three-line
                 :to="{
-                  name: 'Case Study',
+                  name: 'case-study',
                   params: { id: caseStudy.id },
                   query: route.query,
                 }"
@@ -189,9 +186,7 @@ const isFullScreen = useFullScreen();
                 :key="passage.id"
                 three-line
                 :to="{
-                  name: isFullScreen ? 'Passage Detail Fullscreen' : 'Passage Detail',
-                  query: { ...route.query, Passage: passage.id },
-                  params: { id: passage.id },
+                  query: createSearchFilterParams({ ...searchFilters, passage: [passage.id] }),
                 }"
               >
                 <VListItemContent>
@@ -223,5 +218,5 @@ const isFullScreen = useFullScreen();
         </VExpansionPanel>
       </VExpansionPanels>
     </VContainer>
-  </VNavigationDrawer>
+  </div>
 </template>

@@ -62,7 +62,19 @@ export function useSearchFilters(): UseSearchFiltersResult {
   const searchFilters = computed<SearchFilters>(() => {
     const searchFilters: SearchFilters = {
       author: getResourceIds(route.query['author']),
-      'case-study': getResourceIds(route.query['case-study']),
+      /**
+       * There's an asymmetry in search filter handling, because it is allowed
+       * to set multiple "case-study" filters via search params, but the
+       * separate `/case-study/:id` routes *also* set "case-study" to the route param.
+       *
+       * TODO: should we just append case study search param to `/case-study/:id?case-study=id`.
+       *
+       * FIXME: add child routes for case-study
+       */
+      'case-study':
+        route.name === 'Case Study'
+          ? [Number(route.params.id)]
+          : getResourceIds(route.query['case-study']),
       keyword: getResourceIds(route.query['keyword']),
       passage: getResourceIds(route.query['passage']),
       place: getResourceIds(route.query['place']),
