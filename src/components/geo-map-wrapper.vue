@@ -19,8 +19,8 @@ import { useDetailsSearchFilters } from '@/lib/search/use-details-search-filters
 import { useGeoMapSearchParams } from '@/lib/search/use-geo-map-search-params';
 import { useSearchFilters } from '@/lib/search/use-search-filters';
 
-const { createSearchFilterParams, searchFilters } = useSearchFilters();
 const searchParams = useGeoMapSearchParams();
+const { createSearchFilterParams, searchFilters } = useSearchFilters();
 
 const areasGeojsonQuery = useSpatialCoveragesGeojson(searchParams);
 const linesPointsGeojsonQuery = useLinesPointsGeojson(searchParams);
@@ -140,7 +140,6 @@ function onClickGeojsonFeature(id: number, kind: 'area' | 'place') {
 			...createSearchFilterParams(searchFilters.value),
 			...createDetailSearchFilterParams({ 'detail-kind': detailKind, 'detail-id': [id] }),
 		},
-		params: { id: String(id) },
 	});
 }
 

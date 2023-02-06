@@ -34,7 +34,7 @@ import bgImage from '@/assets/images/europe.jpg';
 
 				<VRow justify="center">
 					<VCol cols="12" lg="3" sm="5">
-						<VBtn large block color="secondary" :to="{ name: 'explore' }"> Search our Data </VBtn>
+						<VBtn large block color="secondary" :to="{ name: 'explore' }">Search our Data</VBtn>
 						<span class="button-subtitle">For Interactive Analyses</span>
 					</VCol>
 

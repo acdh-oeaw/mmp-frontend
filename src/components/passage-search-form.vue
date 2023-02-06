@@ -13,48 +13,49 @@ import type { SearchFilters } from '@/lib/search/use-search-filters';
 import { useSearchFilters } from '@/lib/search/use-search-filters';
 import { usePassageSearchFormSelection } from '@/lib/search/use-search-form-selection';
 import { truncate } from '@/lib/truncate';
+import { useVuetify } from '@/lib/use-vuetify';
 
 const emit = defineEmits<{
-  (event: 'submit', searchFilters: SearchFilters): void;
+	(event: 'submit', searchFilters: SearchFilters): void;
 }>();
 
 const { searchFilters, setSearchFilters } = useSearchFilters();
 const { selectedKeys, setSelectedKeys, removeSelectedKey, clearSelectedKeys } =
-  usePassageSearchFormSelection();
+	usePassageSearchFormSelection();
 
 function onUpdateSelectedKeys(keys: Array<ResourceKey>) {
-  setSelectedKeys(keys);
+	setSelectedKeys(keys);
 }
 
 function onRemoveSelectedKey(key: ResourceKey) {
-  removeSelectedKey(key);
+	removeSelectedKey(key);
 }
 
 function onClearSelectedKeys() {
-  clearSelectedKeys();
+	clearSelectedKeys();
 }
 
 //
 
 function onSubmit() {
-  const nextSearchFilters: SearchFilters = {
-    ...searchFilters.value,
-    author: [],
-    'case-study': [],
-    keyword: [],
-    passage: [],
-    place: [],
-  };
+	const nextSearchFilters: SearchFilters = {
+		...searchFilters.value,
+		author: [],
+		'case-study': [],
+		keyword: [],
+		passage: [],
+		place: [],
+	};
 
-  selectedKeys.value.forEach((key) => {
-    const { kind, id } = splitResourceKey(key);
-    const filter = createSearchFilterKey(kind);
-    nextSearchFilters[filter].push(id);
-  });
+	selectedKeys.value.forEach((key) => {
+		const { kind, id } = splitResourceKey(key);
+		const filter = createSearchFilterKey(kind);
+		nextSearchFilters[filter].push(id);
+	});
 
-  setSearchFilters(nextSearchFilters);
+	setSearchFilters(nextSearchFilters);
 
-  emit('submit', nextSearchFilters);
+	emit('submit', nextSearchFilters);
 }
 
 //
@@ -62,34 +63,34 @@ function onSubmit() {
 const searchTerm = ref('');
 
 function onUpdateSearchTerm(value: string | null) {
-  searchTerm.value = value ?? '';
+	searchTerm.value = value ?? '';
 }
 
 //
 
 const searchParams = computed<GetAutoComplete.SearchParams>(() => {
-  return {
-    kind: ['autor', 'keyword', 'ort', 'stelle', 'usecase'],
-    // return 10 results per `kind`. note that results will be sorted by `kind`.
-    page_size: 10,
-    q: searchTerm.value.trim(),
-  };
+	return {
+		kind: ['autor', 'keyword', 'ort', 'stelle', 'usecase'],
+		// return 10 results per `kind`. note that results will be sorted by `kind`.
+		page_size: 10,
+		q: searchTerm.value.trim(),
+	};
 });
 
 const autoCompleteQuery = useAutoComplete(searchParams);
 
 const isFetching = computed(() => {
-  return autoCompleteQuery.isFetching.value;
+	return autoCompleteQuery.isFetching.value;
 });
 
 const _isLoading = computed(() => {
-  return autoCompleteQuery.isInitialLoading.value;
+	return autoCompleteQuery.isInitialLoading.value;
 });
 
 const itemsByKey = computed<Map<ResourceKey, Item>>(() => {
-  return keyByToMap(autoCompleteQuery.data.value?.results ?? [], (item) => {
-    return item.key;
-  });
+	return keyByToMap(autoCompleteQuery.data.value?.results ?? [], (item) => {
+		return item.key;
+	});
 });
 
 //
@@ -97,63 +98,63 @@ const itemsByKey = computed<Map<ResourceKey, Item>>(() => {
 const cache = ref(new Map<ResourceKey, Item>());
 
 watch(itemsByKey, (itemsByKey) => {
-  itemsByKey.forEach((item, key) => {
-    cache.value.set(key, item);
-  });
+	itemsByKey.forEach((item, key) => {
+		cache.value.set(key, item);
+	});
 });
 
 const items = computed(() => {
-  const items = [...itemsByKey.value.values()];
+	const items = [...itemsByKey.value.values()];
 
-  selectedKeys.value.forEach((key) => {
-    if (!itemsByKey.value.has(key)) {
-      const item = cache.value.get(key);
-      if (item != null) {
-        items.push(item);
-      }
-    }
-  });
+	selectedKeys.value.forEach((key) => {
+		if (!itemsByKey.value.has(key)) {
+			const item = cache.value.get(key);
+			if (item != null) {
+				items.push(item);
+			}
+		}
+	});
 
-  return items.sort((a, b) => {
-    // TODO: sort keywords to top
-    return a.label.localeCompare(b.label);
-  });
+	return items.sort((a, b) => {
+		// TODO: sort keywords to top
+		return a.label.localeCompare(b.label);
+	});
 });
 
 //
 
 watch(
-  searchFilters,
-  () => {
-    selectedKeys.value = [
-      ...searchFilters.value['author'].map((id) => {
-        return createResourceKey({ kind: 'autor', id });
-      }),
-      ...searchFilters.value['keyword'].map((id) => {
-        return createResourceKey({ kind: 'keyword', id });
-      }),
-      ...searchFilters.value['passage'].map((id) => {
-        return createResourceKey({ kind: 'stelle', id });
-      }),
-      ...searchFilters.value['place'].map((id) => {
-        return createResourceKey({ kind: 'ort', id });
-      }),
-      ...searchFilters.value['case-study'].map((id) => {
-        return createResourceKey({ kind: 'usecase', id });
-      }),
-    ];
-  },
-  { immediate: true }
+	searchFilters,
+	() => {
+		selectedKeys.value = [
+			...searchFilters.value['author'].map((id) => {
+				return createResourceKey({ kind: 'autor', id });
+			}),
+			...searchFilters.value['keyword'].map((id) => {
+				return createResourceKey({ kind: 'keyword', id });
+			}),
+			...searchFilters.value['passage'].map((id) => {
+				return createResourceKey({ kind: 'stelle', id });
+			}),
+			...searchFilters.value['place'].map((id) => {
+				return createResourceKey({ kind: 'ort', id });
+			}),
+			...searchFilters.value['case-study'].map((id) => {
+				return createResourceKey({ kind: 'usecase', id });
+			}),
+		];
+	},
+	{ immediate: true }
 );
 
 function onLoadItem(item: Item) {
-  cache.value.set(item.key, item);
+	cache.value.set(item.key, item);
 }
 
 //
 
 const nothingFoundText = computed(() => {
-  return autoCompleteQuery.isFetching.value ? 'Loading...' : 'Nothing found';
+	return autoCompleteQuery.isFetching.value ? 'Loading...' : 'Nothing found';
 });
 
 const label = 'Search for passages';
@@ -161,124 +162,128 @@ const label = 'Search for passages';
 //
 
 function getKindLabel(value: Item) {
-  const kindLabel = kindLabels[value.kind].one;
-  if (value.kind === 'keyword') {
-    return `${kindLabel} (${keywordTypeLabels[value.type].one})`;
-  }
-  return kindLabel;
+	const kindLabel = kindLabels[value.kind].one;
+	if (value.kind === 'keyword') {
+		return `${kindLabel} (${keywordTypeLabels[value.type].one})`;
+	}
+	return kindLabel;
 }
+
+//
+
+const vuetify = useVuetify();
 </script>
 
 <template>
-  <form
-    class="passage-search-form"
-    novalidate
-    role="search"
-    :class="{ stacked: $vuetify.breakpoint.mobile }"
-    @submit.prevent="onSubmit"
-  >
-    <VAutocomplete
-      :aria-label="label"
-      auto-select-first
-      :cache-items="false"
-      color="primary"
-      hide-details
-      item-text="label"
-      item-value="key"
-      :items="items"
-      :loading="isFetching"
-      multiple
-      name="search-filters"
-      :no-data-text="nothingFoundText"
-      no-filter
-      :placeholder="label"
-      :search-input="searchTerm"
-      type="search"
-      :value="selectedKeys"
-      @change="searchTerm = ''"
-      @input="onUpdateSelectedKeys"
-      @update:search-input="onUpdateSearchTerm"
-    >
-      <!-- In Vuetify 3 we can use a single #chip slot, instead of #prepend-inner and #selection. -->
-      <template #prepend-inner>
-        <template v-for="key of selectedKeys">
-          <SearchAutocompleteSelectedItem
-            v-if="!cache.has(key)"
-            :key="key"
-            v-bind="splitResourceKey(key)"
-            @load-item="onLoadItem"
-          >
-            <VSkeletonLoader type="chip" />
-          </SearchAutocompleteSelectedItem>
-        </template>
-      </template>
-      <template #selection="{ item }">
-        <VChip
-          v-if="cache.has(item.key)"
-          close
-          :close-label="`Remove ${item.label}`"
-          :color="getResourceColor(item)"
-          @click:close="onRemoveSelectedKey(item.key)"
-        >
-          {{ truncate(item.label, 30) }}
-        </VChip>
-      </template>
+	<form
+		class="passage-search-form"
+		novalidate
+		role="search"
+		:class="{ stacked: vuetify.breakpoint.mobile }"
+		@submit.prevent="onSubmit"
+	>
+		<VAutocomplete
+			:aria-label="label"
+			auto-select-first
+			:cache-items="false"
+			color="primary"
+			hide-details
+			item-text="label"
+			item-value="key"
+			:items="items"
+			:loading="isFetching"
+			multiple
+			name="search-filters"
+			:no-data-text="nothingFoundText"
+			no-filter
+			:placeholder="label"
+			:search-input="searchTerm"
+			type="search"
+			:value="selectedKeys"
+			@change="searchTerm = ''"
+			@input="onUpdateSelectedKeys"
+			@update:search-input="onUpdateSearchTerm"
+		>
+			<!-- In Vuetify 3 we can use a single #chip slot, instead of #prepend-inner and #selection. -->
+			<template #prepend-inner>
+				<template v-for="key of selectedKeys">
+					<SearchAutocompleteSelectedItem
+						v-if="!cache.has(key)"
+						:key="key"
+						v-bind="splitResourceKey(key)"
+						@load-item="onLoadItem"
+					>
+						<VSkeletonLoader type="chip" />
+					</SearchAutocompleteSelectedItem>
+				</template>
+			</template>
+			<template #selection="{ item }">
+				<VChip
+					v-if="cache.has(item.key)"
+					close
+					:close-label="`Remove ${item.label}`"
+					:color="getResourceColor(item)"
+					@click:close="onRemoveSelectedKey(item.key)"
+				>
+					{{ truncate(item.label, 30) }}
+				</VChip>
+			</template>
 
-      <template #item="{ item }">
-        <VListItemContent>
-          <VListItemTitle>{{ item.label }}</VListItemTitle>
-          <VListItemSubtitle>{{ getKindLabel(item) }}</VListItemSubtitle>
-        </VListItemContent>
-      </template>
+			<template #item="{ item }">
+				<VListItemContent>
+					<VListItemTitle>{{ item.label }}</VListItemTitle>
+					<VListItemSubtitle>{{ getKindLabel(item) }}</VListItemSubtitle>
+				</VListItemContent>
+			</template>
 
-      <template #append>
-        <VIcon
-          v-if="selectedKeys.length"
-          aria-label="Clear search filters"
-          color="primary"
-          @click="onClearSelectedKeys"
-        >
-          mdi-close
-        </VIcon>
-      </template>
-    </VAutocomplete>
+			<template #append>
+				<VIcon
+					v-if="selectedKeys.length"
+					aria-label="Clear search filters"
+					color="primary"
+					@click="onClearSelectedKeys"
+				>
+					mdi-close
+				</VIcon>
+			</template>
+		</VAutocomplete>
 
-    <VBtn
-      block
-      :class="{ square: !$vuetify.breakpoint.mobile }"
-      depressed
-      height="100%"
-      min-height="50px"
-      type="submit"
-      x-large
-    >
-      <VIcon :left="$vuetify.breakpoint.mobile">mdi-magnify</VIcon>
-      <span :class="{ 'd-sr-only': !$vuetify.breakpoint.mobile }">Search</span>
-    </VBtn>
-  </form>
+		<VBtn
+			block
+			:class="{ square: !vuetify.breakpoint.mobile }"
+			depressed
+			height="100%"
+			min-height="50px"
+			type="submit"
+			x-large
+		>
+			<VIcon :left="vuetify.breakpoint.mobile">mdi-magnify</VIcon>
+			<span :class="{ 'd-sr-only': !vuetify.breakpoint.mobile }">Search</span>
+		</VBtn>
+	</form>
 </template>
 
 <style scoped>
 .passage-search-form {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 16px;
-  align-items: center;
+	display: grid;
+	grid-template-columns: 1fr auto;
+	gap: 16px;
+	align-items: center;
 }
 
 .passage-search-form.stacked {
-  grid-template-columns: 1fr;
+	grid-template-columns: 1fr;
 }
 </style>
 
 <style>
 /* An absolute value ensures the overlay is not wider than the input. */
 .v-autocomplete__content {
-  max-width: 768px;
+	max-width: 768px;
 }
 
 .v-input__prepend-inner {
-  margin-block: 4px;
-  gap: 4px;
+	margin-block: 4px;
+	gap: 4px;
 }
 </style>

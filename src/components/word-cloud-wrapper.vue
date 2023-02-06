@@ -9,7 +9,6 @@ import { useWordCloudSearchParams } from '@/lib/search/use-word-cloud-search-par
 import type { Token } from '@/lib/word-cloud/word-cloud.types';
 
 const searchParams = useWordCloudSearchParams();
-
 const passageNlpDataQuery = usePassageNlpData(searchParams);
 const passageKeywordsQuery = usePassageKeywords(searchParams);
 

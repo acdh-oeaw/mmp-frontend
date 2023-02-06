@@ -1,46 +1,48 @@
 <script lang="ts" setup>
 import DetailPanel from '@/components/detail-panel.vue';
 import { useHomePage } from '@/lib/use-home-page';
+import { useVuetify } from '@/lib/use-vuetify';
 
 const isHomePage = useHomePage();
+const vuetify = useVuetify();
 </script>
 
 <template>
-  <VApp class="app">
-    <AppBar />
-    <div class="buffer" :class="{ light: !isHomePage, smaller: $vuetify.breakpoint.mobile }" />
+	<VApp class="app">
+		<AppBar />
+		<div class="buffer" :class="{ light: !isHomePage, smaller: vuetify.breakpoint.mobile }" />
 
-    <DetailPanel />
+		<DetailPanel />
 
-    <VMain>
-      <RouterView />
-    </VMain>
-  </VApp>
+		<VMain>
+			<RouterView />
+		</VMain>
+	</VApp>
 </template>
 
 <style>
 a {
-  text-decoration: none !important;
+	text-decoration: none !important;
 }
 
 .v-card__title {
-  word-break: keep-all !important;
+	word-break: keep-all !important;
 }
 
 .app {
-  background-color: #f1f5fa !important;
+	background-color: #f1f5fa !important;
 }
 
 .buffer {
-  background-color: #0f1226;
-  height: 140px;
+	background-color: #0f1226;
+	height: 140px;
 }
 
 .buffer.smaller {
-  height: 130px;
+	height: 130px;
 }
 
 .buffer.light {
-  background: unset;
+	background: unset;
 }
 </style>
