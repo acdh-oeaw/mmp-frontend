@@ -6,6 +6,7 @@ import FullscreenButton from '@/components/fullscreen-button.vue';
 import PieChart from '@/components/pie-chart.vue';
 import WordCloud from '@/components/word-cloud.vue';
 import { useWordCloudSearchParams } from '@/lib/search/use-word-cloud-search-params';
+import type { Token } from '@/lib/word-cloud/word-cloud.types';
 
 const searchParams = useWordCloudSearchParams();
 
@@ -30,7 +31,7 @@ const data = computed(() => {
 		Object.entries(nlpData.token_dict),
 		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 		keywords.token_dict.map((x) => Object.entries(x)[0]!),
-	];
+	] as [Token[], Token[]];
 
 	function sortWords(a: any, b: any) {
 		// sorts after occurences, then alphabetically
@@ -41,7 +42,7 @@ const data = computed(() => {
 		return 0;
 	}
 
-	const words = allWords.map((x) => x.sort(sortWords));
+	const words = allWords.map((x) => x.sort(sortWords)) as [Token[], Token[]];
 
 	for (let i = 0; i < allWords.length; i += 1) {
 		// improves performance by a lot, removing unused and non words
