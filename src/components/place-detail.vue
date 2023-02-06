@@ -3,7 +3,7 @@ import { computed } from 'vue';
 import { useRoute } from 'vue-router/composables';
 
 import { useAuthors, usePlaceById, useTexts } from '@/api';
-import PlaceMap from '@/components/place-map.vue';
+import GeoMapPlace from '@/components/geo-map-place.vue';
 import { getAuthorLabel, getPlaceLabel } from '@/lib/get-label';
 import { useSearchFilters } from '@/lib/search/use-search-filters';
 
@@ -68,7 +68,7 @@ const authorCount = computed(() => authorsQuery.data.value?.count);
 
     <VContainer>
       <div :style="{ height: '400px' }">
-        <PlaceMap
+        <GeoMapPlace
           v-if="place?.lat != null && place?.long != null"
           :point="{ lat: place.lat, lng: place.long }"
         />

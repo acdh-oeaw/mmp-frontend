@@ -1,6 +1,6 @@
 import '@fontsource/roboto-flex/variable-full.css';
 import '@mdi/font/css/materialdesignicons.css';
-import '@/styles/global.css';
+import '@/styles/index.css';
 
 import Vue from 'vue';
 
@@ -15,8 +15,8 @@ Vue.config.productionTip = false;
 Vue.use(query, queryOptions);
 
 new Vue({
-  router,
-  store,
-  vuetify,
-  render: (h) => h(App),
+	router,
+	store,
+	vuetify,
+	render: (h) => h(App),
 }).$mount('#app');

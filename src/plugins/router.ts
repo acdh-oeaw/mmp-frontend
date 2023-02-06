@@ -2,14 +2,16 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 
 import Browse from '@/components/browse.vue';
-import CaseStudies from '@/components/case-studies.vue';
 import CaseStudy from '@/components/case-study.vue';
 import Explore from '@/components/explore.vue';
 import GeoMap from '@/components/geo-map-wrapper.vue';
-import Home from '@/components/home.vue';
 import NetworkGraph from '@/components/network-graph-wrapper.vue';
 import SearchResults from '@/components/search-results.vue';
 import WordCloud from '@/components/word-cloud-wrapper.vue';
+import About from '@/pages/about.vue';
+import CaseStudies from '@/pages/case-studies/index.vue';
+import Imprint from '@/pages/imprint.vue';
+import Home from '@/pages/index.vue';
 
 Vue.use(VueRouter);
 
@@ -18,6 +20,16 @@ const routes = [
     path: '/',
     name: 'home',
     component: Home,
+  },
+  {
+    path: '/about',
+    name: 'about',
+    component: About,
+  },
+  {
+    path: '/imprint',
+    name: 'imprint',
+    component: Imprint,
   },
   {
     path: '/case-studies/',

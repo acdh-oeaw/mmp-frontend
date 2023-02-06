@@ -2,6 +2,10 @@
 
 interface ImportMetaEnv {
   readonly VITE_APP_BASE_URL: string;
+  readonly VITE_APP_MMP_API_BASE_URL: string;
+  readonly VITE_APP_REDMINE_ID: string;
+  readonly VITE_APP_MATOMO_BASE_URL: string;
+  readonly VITE_APP_MATOMO_ID: string;
 }
 
 interface ImportMeta {

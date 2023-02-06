@@ -1,24 +1,15 @@
 {
-  "extends": "@vue/tsconfig/tsconfig.web.json",
+  "extends": "@stefanprobst/tsconfig",
   "compilerOptions": {
-    "allowJs": true,
     "baseUrl": ".",
-    "checkJs": false,
-    "lib": ["dom", "dom.iterable", "es2022"],
-    "noEmit": true,
-    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": false,
     "paths": {
       "@/*": ["./src/*"],
       "~/*": ["./*"]
     },
     "types": ["d3", "leaflet", "node", "vuetify"]
   },
-  "include": ["./app.d.ts", "./**/*.js", "./**/*.ts", "./**/*.vue"],
-  "ts-node": {
-    "esm": true,
-    "experimentalSpecifierResolution": "node",
-    "transpileOnly": true
-  },
+  "include": ["./env.d.ts", "./**/*.js", "./**/*.ts", "./**/*.vue"],
   "vueCompilerOptions": {
     "target": 2.7
   }
