@@ -26,7 +26,7 @@ const offset = ref(0);
 const headers = [
   { text: 'Author', value: 'text.autor', width: '150px' },
   { text: 'Title', value: 'text.title' },
-  { text: 'Label', value: 'display_label' },
+  { text: 'Passage', value: 'display_label' },
   { text: 'Keywords', value: 'keywords' },
   { text: 'Time Frame', value: 'written', width: '100px' },
   { text: 'Coverage', value: 'coverage', width: '100px' },
@@ -158,35 +158,46 @@ const isFullScreen = useFullScreen();
     >
       <template #[`item.text.autor`]="{ item }">
         <template v-if="item.text">
-          <router-link
-            v-for="(author, i) of item.text.autor"
-            :key="author.id"
-            :to="{
-              name: isFullScreen ? 'Author Detail Fullscreen' : 'Author Detail',
-              params: { id: author.id },
-              query: route.query,
-            }"
-            class="text-decoration-none"
-          >
-            <span v-if="i != 0">, </span>
-            {{ getAuthorLabel(author) }}
-            <v-icon>mdi-chevron-right</v-icon>
-          </router-link>
+          <v-list color="transparent">
+            <v-list-item
+              v-for="author of item.text.autor"
+              :key="author.id"
+              :to="{
+                name: isFullScreen ? 'Author Detail Fullscreen' : 'Author Detail',
+                params: { id: author.id },
+                query: route.query,
+              }"
+              class="text-decoration-none"
+            >
+              <v-list-item-title>
+                {{ getAuthorLabel(author) }}
+              </v-list-item-title>
+              <v-list-item-icon>
+                <v-icon>mdi-chevron-right</v-icon>
+              </v-list-item-icon>
+            </v-list-item>
+          </v-list>
         </template>
       </template>
       <template #[`item.text.title`]="{ item }">
         <template v-if="item.text">
-          <router-link
-            :to="{
-              name: isFullScreen ? 'Passage Detail Fullscreen' : 'Passage Detail',
-              params: { id: item.id },
-              query: route.query,
-            }"
-            class="text-decoration-none"
-          >
-            <b>{{ item.text.title }}</b
-            ><v-icon>mdi-chevron-right</v-icon>
-          </router-link>
+          <v-list color="transparent">
+            <v-list-item
+              :to="{
+                name: isFullScreen ? 'Passage Detail Fullscreen' : 'Passage Detail',
+                params: { id: item.id },
+                query: route.query,
+              }"
+              class="text-decoration-none"
+            >
+              <v-list-item-title>
+                <b class="text-title">{{ item.text.title }}</b>
+              </v-list-item-title>
+              <v-list-item-icon>
+                <v-icon>mdi-chevron-right</v-icon>
+              </v-list-item-icon>
+            </v-list-item>
+          </v-list>
         </template>
       </template>
       <template #[`item.keywords`]="{ item }">
@@ -222,5 +233,9 @@ div.v-data-table.data-table {
 .keyword-chip {
   display: inline-block;
   margin: 1.5px;
+}
+
+.text-title {
+  white-space: normal;
 }
 </style>
