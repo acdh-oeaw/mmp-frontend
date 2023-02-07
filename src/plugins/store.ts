@@ -33,7 +33,7 @@ export const store = new Vuex.Store({
     apiParams: {
       hasUsecase: 'true', // theres three options so I cant use true booleans // ok i could but I dont want to and it doesnt matter
       intersect: true,
-      slider: 'passage',
+      slider: 'text',
     },
     graphOptions: {
       showNeighborsOnly: true,
