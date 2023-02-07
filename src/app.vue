@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import AppBar from '@/components/app-bar.vue';
 import DetailPanel from '@/components/detail-panel.vue';
 import { useHomePage } from '@/lib/use-home-page';
 import { useVuetify } from '@/lib/use-vuetify';
@@ -9,10 +10,10 @@ const vuetify = useVuetify();
 
 <template>
 	<VApp class="app">
+		<DetailPanel />
+
 		<AppBar />
 		<div class="buffer" :class="{ light: !isHomePage, smaller: vuetify.breakpoint.mobile }" />
-
-		<DetailPanel />
 
 		<VMain>
 			<RouterView />

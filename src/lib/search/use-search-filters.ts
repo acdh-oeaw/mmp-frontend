@@ -14,10 +14,10 @@ import type { LocationQuery, LocationQueryValue } from '@/types/router';
 export const queryModes = ['intersection', 'union'] as const;
 export type QueryMode = typeof queryModes[number];
 
-export const dataSets = ['all', 'case-studies', 'gens'] as const;
+export const dataSets = ['case-studies', 'gens', 'all'] as const;
 export type DataSet = typeof dataSets[number];
 
-export const dateFilters = ['content', 'composition'] as const;
+export const dateFilters = ['composition', 'content'] as const;
 export type DateFilter = typeof dateFilters[number];
 
 export type SearchFilters = {
