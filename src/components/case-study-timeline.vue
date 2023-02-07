@@ -66,7 +66,7 @@ const vuetify = useVuetify();
 				v-if="event.ent_type === 'autor'"
 				class="font-weight-medium"
 				:to="{
-					name: 'explore',
+					name: 'explore-search-results',
 					query: createSearchFilterParams({ ...searchFilters, author: [event.id] }),
 				}"
 			>

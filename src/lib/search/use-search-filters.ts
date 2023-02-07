@@ -67,10 +67,9 @@ export function useSearchFilters(): UseSearchFiltersResult {
 			 * to set multiple "case-study" filters via search params, but the
 			 * separate `/case-study/:id` routes *also* set "case-study" to the route param.
 			 */
-			'case-study':
-				route.name === 'Case Study'
-					? [Number(route.params['id'])]
-					: getResourceIds(route.query['case-study']),
+			'case-study': route.name?.startsWith('case-study')
+				? [Number(route.params['id'])]
+				: getResourceIds(route.query['case-study']),
 			keyword: getResourceIds(route.query['keyword']),
 			passage: getResourceIds(route.query['passage']),
 			place: getResourceIds(route.query['place']),

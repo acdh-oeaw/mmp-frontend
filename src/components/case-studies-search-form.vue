@@ -92,11 +92,11 @@ const itemsByKey = computed<Map<ResourceKey, Item>>(() => {
 
 //
 
-const cache = ref(new Map<ResourceKey, Item>());
+const cache = ref<Record<ResourceKey, Item>>({});
 
 watch(itemsByKey, (itemsByKey) => {
 	itemsByKey.forEach((item, key) => {
-		cache.value.set(key, item);
+		cache.value[key] = item;
 	});
 });
 
@@ -105,7 +105,7 @@ const items = computed(() => {
 
 	selectedKeys.value.forEach((key) => {
 		if (!itemsByKey.value.has(key)) {
-			const item = cache.value.get(key);
+			const item = cache.value[key];
 			if (item != null) {
 				items.push(item);
 			}
@@ -135,7 +135,7 @@ watch(
 );
 
 function onLoadItem(item: Item) {
-	cache.value.set(item.key, item);
+	cache.value[item.key] = item;
 }
 
 //
@@ -189,7 +189,7 @@ const vuetify = useVuetify();
 			<template #prepend-inner>
 				<template v-for="key of selectedKeys">
 					<SearchAutocompleteSelectedItem
-						v-if="!cache.has(key)"
+						v-if="!(key in cache)"
 						:key="key"
 						v-bind="splitResourceKey(key)"
 						@load-item="onLoadItem"
@@ -200,7 +200,7 @@ const vuetify = useVuetify();
 			</template>
 			<template #selection="{ item }">
 				<VChip
-					v-if="cache.has(item.key)"
+					v-if="item.key in cache"
 					close
 					:close-label="`Remove ${item.label}`"
 					:color="getResourceColor(item)"

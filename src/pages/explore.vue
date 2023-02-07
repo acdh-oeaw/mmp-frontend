@@ -15,9 +15,14 @@ const isSliderVisible = computed(() => route.name !== 'Word Cloud');
 /**
  * When no search filters have been set, display an initial welcome screen.
  */
-const isWelcomeScreenVisible = ref(
-	Object.keys(route.query).length === 0 && Object.keys(route.params).length === 0
-);
+const hasDispatchedQuery = ref(false);
+const isWelcomeScreenVisible = computed(() => {
+	return (
+		!hasDispatchedQuery.value &&
+		Object.keys(route.query).length === 0 &&
+		Object.keys(route.params).length === 0
+	);
+});
 
 const tabs = {
 	'search-results': { name: 'explore-search-results', label: 'Search results' },
@@ -52,18 +57,16 @@ const vuetify = useVuetify();
 						</VCol>
 
 						<VCol :cols="vuetify.breakpoint.mobile ? 12 : 11">
-							<PassageSearchForm @submit="isWelcomeScreenVisible = false" />
+							<PassageSearchForm @submit="hasDispatchedQuery = true" />
 						</VCol>
 					</VRow>
 
 					<VRow class="grey-bg">
 						<template v-if="!vuetify.breakpoint.mobile">
 							<VCol>
-								<!-- FIXME: this should not be a button -->
-								<VBtn text small class="disable-events">View as</VBtn>
+								<span class="v-btn v-size--small">View as</span>
 							</VCol>
 							<VCol v-for="(tab, key) of tabs" :key="key">
-								<!-- TODO: on case-study view these are Tabs -->
 								<VBtn
 									text
 									block

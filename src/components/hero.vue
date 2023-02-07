@@ -34,13 +34,20 @@ import bgImage from '@/assets/images/europe.jpg';
 
 				<VRow justify="center">
 					<VCol cols="12" lg="3" sm="5">
-						<VBtn large block color="secondary" :to="{ name: 'explore' }">Search our Data</VBtn>
+						<VBtn large block color="secondary" :to="{ name: 'explore-search-results' }">
+							Search our Data
+						</VBtn>
 						<span class="button-subtitle">For Interactive Analyses</span>
 					</VCol>
 
 					<VCol cols="12" lg="3" sm="5">
 						<p>
-							<VBtn block color="primary" large :to="{ name: 'case-study', params: { id: 4 } }">
+							<VBtn
+								block
+								color="primary"
+								large
+								:to="{ name: 'case-study-timeline', params: { id: 4 } }"
+							>
 								Read &bdquo;Carolingian Avaria&ldquo;
 							</VBtn>
 							<span class="button-subtitle">A Case Study</span>

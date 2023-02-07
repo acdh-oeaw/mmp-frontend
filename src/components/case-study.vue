@@ -3,6 +3,7 @@ import { computed } from 'vue';
 import { useRoute } from 'vue-router/composables';
 
 import { useCaseStudyById } from '@/api';
+import { isNonEmptyString } from '@/lib/is-nonempty-string';
 
 const route = useRoute();
 const id = computed(() => {
@@ -18,6 +19,23 @@ const isLoading = computed(() => {
 const caseStudy = computed(() => {
 	return caseStudyQuery.data.value;
 });
+
+const tabs = computed(() => {
+	const tabs = {
+		timeline: { name: 'case-study-timeline', label: 'Timeline' },
+		story: { name: 'case-study-story', label: 'Story' },
+		'network-graph': { name: 'case-study-network-graph', label: 'Network Graph' },
+		'geo-map': { name: 'case-study-geo-map', label: 'Map' },
+		'word-cloud': { name: 'case-study-word-cloud', label: 'Word Cloud' },
+	};
+
+	if (!isNonEmptyString(caseStudy.value)) {
+		const { story: _, ...rest } = tabs;
+		return rest;
+	}
+
+	return tabs;
+});
 </script>
 
 <template>
@@ -29,33 +47,24 @@ const caseStudy = computed(() => {
 						<VBtn icon plain :to="{ name: 'case-studies' }">
 							<VIcon>mdi-chevron-left</VIcon>
 						</VBtn>
-						CASE STUDY<span v-if="caseStudy.principal_investigator">
-							&nbsp;&nbsp;&bull;&nbsp;&nbsp;{{ caseStudy.principal_investigator }}
+						CASE STUDY
+						<span v-if="caseStudy.principal_investigator">
+							<span class="mx-2">&bull;</span>{{ caseStudy.principal_investigator }}
 						</span>
 					</p>
 
 					<p class="text-h4">{{ caseStudy.title }}</p>
 					<p v-if="caseStudy.description">{{ caseStudy.description }}</p>
+
 					<VTabs fixed-tabs show-arrows background-color="transparent">
-						<VTab exact :to="{ name: 'case-study-timeline' }">Timeline</VTab>
-						<VTab v-if="caseStudy.story_map" exact :to="{ name: 'case-study-story' }">
-							Story Map
+						<VTab v-for="(tab, key) of tabs" :key="key" exact :to="{ name: tab.name }">
+							{{ tab.label }}
 						</VTab>
-						<VTab exact :to="{ name: 'case-study-network-graph' }">Graph</VTab>
-						<VTab exact :to="{ name: 'case-study-geo-map' }">Map</VTab>
-						<VTab exact :to="{ name: 'case-study-word-cloud' }">Word Cloud</VTab>
-						<VTab exact :to="{ name: 'case-study-texts-by-authors' }">Texts & Authors</VTab>
 					</VTabs>
 
 					<br />
 
-					<VTabsItems>
-						<VTabItem value="timeline">
-							<VCard color="transparent">
-								<RouterView />
-							</VCard>
-						</VTabItem>
-					</VTabsItems>
+					<RouterView />
 				</template>
 
 				<template v-else>

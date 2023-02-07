@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { createSearchFilterKey } from '@/lib/search/create-search-filter-key';
+import { getResourceColor } from '@/lib/search/get-resource-color';
 import { useSearchFilters } from '@/lib/search/use-search-filters';
 import { recommendedSearchFilters } from '~/config/search.config';
 
@@ -17,16 +19,18 @@ const count = Object.keys(recommendedSearchFilters).length;
 			For instance, try
 			<template v-for="(recommended, key, index) of recommendedSearchFilters">
 				<span v-if="index !== 0" :key="key + 'separator'">
-					<template v-if="index !== count - 1">&#32;</template>
+					<template v-if="index !== 0 && index !== count - 1">,</template>
 					<template v-else>or</template>
 				</span>
 				<VChip
 					:key="key"
-					color="red lighten-3"
+					class="mx-1"
+					:color="getResourceColor(recommended)"
 					:to="{
+						name: 'explore-search-results',
 						query: createSearchFilterParams({
 							...defaultSearchFilters,
-							[recommended.kind]: [recommended.id],
+							[createSearchFilterKey(recommended.kind)]: [recommended.id],
 						}),
 					}"
 				>

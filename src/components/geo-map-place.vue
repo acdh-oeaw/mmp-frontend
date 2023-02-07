@@ -8,12 +8,12 @@ import { onMounted, onUnmounted, watch } from 'vue';
 import { config, initialViewState } from '@/lib/geo-map/geo-map.config';
 
 const props = defineProps<{
-	point: { lat: number; lng: number };
+	points: Array<{ lat: number; lng: number }>;
 }>();
 
 const context = {
 	map: null as LeafletMap | null,
-	point: null as LeafletMarker | null,
+	points: [] as Array<LeafletMarker>,
 };
 
 onMounted(() => {
@@ -22,8 +22,9 @@ onMounted(() => {
 
 	tileLayer(config.baseLayer.url, { attribution: config.baseLayer.attribution }).addTo(map);
 
-	const point = marker([props.point.lat, props.point.lng]).addTo(map);
-	context.point = point;
+	props.points.forEach(({ lat, lng }) => {
+		context.points.push(marker([lat, lng]).addTo(map));
+	});
 });
 
 onUnmounted(() => {
@@ -31,10 +32,19 @@ onUnmounted(() => {
 });
 
 watch(
-	() => props.point,
-	(point) => {
-		if (context.point == null) return;
-		context.point.setLatLng([point.lat, point.lng]);
+	() => props.points,
+	(points) => {
+		context.points.forEach((point) => {
+			point.remove();
+		});
+
+		context.points = [];
+		const map = context.map;
+		if (map == null) return;
+
+		points.forEach(({ lat, lng }) => {
+			context.points.push(marker([lat, lng]).addTo(map));
+		});
 	}
 );
 </script>

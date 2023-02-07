@@ -18,7 +18,7 @@ function onTogglePanel() {
 const links = {
 	about: { name: 'about', label: 'About the Project' },
 	'case-studies': { name: 'case-studies', label: 'Case Studies' },
-	explore: { name: 'explore', label: 'Explore the Data' },
+	explore: { name: 'explore-search-results', label: 'Explore the Data' },
 };
 </script>
 
