@@ -22,6 +22,7 @@ function createTab<TQueryFn extends AnyFunction>(params: CreateTabParams<TQueryF
 	const searchTerm = ref('');
 	const q = computed(() => searchTerm.value.trim());
 
+	// TODO: limit/offset should be read from search params?
 	const limit = ref(10);
 	const offset = ref(0);
 

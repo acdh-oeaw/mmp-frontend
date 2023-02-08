@@ -117,7 +117,8 @@ const items = computed(() => {
 	});
 
 	return items.sort((a, b) => {
-		// TODO: sort keywords to top
+		if (a.kind === 'keyword' && b.kind !== 'keyword') return -1;
+		if (a.kind !== 'keyword' && b.kind === 'keyword') return 1;
 		return a.label.localeCompare(b.label);
 	});
 });

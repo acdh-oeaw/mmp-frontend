@@ -12,7 +12,7 @@ export const recommendedSearchFilters: Record<Item['key'], Item> = {
 		id: 33,
 		label: 'barbari',
 		kind: 'keyword',
-		type: 'Ethnonym',
+		type: 'Keyword',
 		key: 'keyword__33',
 	},
 	usecase__3: {

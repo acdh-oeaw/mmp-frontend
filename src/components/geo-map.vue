@@ -357,10 +357,13 @@ watch(
 				layer?.remove();
 			});
 
+			const map = geoMap.map;
+			if (map == null) return;
+
 			Object.values(layers).forEach((layer) => {
 				if (visibleLayers.has(layer.id)) {
 					// TODO:
-					geoMap.layers[layer.id] = geoJSON(layer.data).addTo(geoMap.map)
+					geoMap.layers[layer.id] = geoJSON(layer.data).addTo(map);
 				}
 			});
 		});

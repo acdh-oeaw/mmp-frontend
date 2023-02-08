@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { assert } from '@stefanprobst/assert';
 import { computed } from 'vue';
-import { useRoute } from 'vue-router/composables';
 
 import { useAuthorById, useCaseStudies, useKeywords, usePassages } from '@/api';
 import { getAuthorLabel, getPlaceLabel } from '@/lib/get-label';
@@ -9,8 +8,10 @@ import { keywordColors } from '@/lib/search/search.config';
 import { useDetailsSearchFilters } from '@/lib/search/use-details-search-filters';
 import { useSearchFilters } from '@/lib/search/use-search-filters';
 
-const route = useRoute();
-const { searchFilters: detailSearchFilters } = useDetailsSearchFilters();
+const {
+	searchFilters: detailSearchFilters,
+	createSearchFilterParams: createDetailSearchFilterParams,
+} = useDetailsSearchFilters();
 const id = computed(() => {
 	assert(detailSearchFilters.value['detail-kind'] === 'author');
 	const id = detailSearchFilters.value['detail-id'][0];
@@ -88,6 +89,7 @@ const keywords = computed(() => {
 					:color="keywordColors[keyword.art]"
 					small
 					:to="{
+						name: 'explore-search-results',
 						query: createSearchFilterParams({
 							...searchFilters,
 							keyword: [...searchFilters.keyword, keyword.id],
@@ -113,7 +115,7 @@ const keywords = computed(() => {
 						<VList v-if="!isLoading">
 							<VListItem v-if="!caseStudiesCount">
 								<VListItemContent>
-									<v-list-item-title class="grey--text"> none </v-list-item-title>
+									<VListItemTitle class="grey--text">None</VListItemTitle>
 								</VListItemContent>
 							</VListItem>
 							<VListItem
@@ -123,7 +125,7 @@ const keywords = computed(() => {
 								:to="{
 									name: 'case-study-timeline',
 									params: { id: caseStudy.id },
-									query: route.query,
+									query: createSearchFilterParams(searchFilters),
 								}"
 							>
 								<VListItemContent>
@@ -175,7 +177,14 @@ const keywords = computed(() => {
 								:key="passage.id"
 								three-line
 								:to="{
-									query: createSearchFilterParams({ ...searchFilters, passage: [passage.id] }),
+									name: 'explore-search-results',
+									query: {
+										...createSearchFilterParams(searchFilters),
+										...createDetailSearchFilterParams({
+											'detail-kind': 'passage',
+											'detail-id': [passage.id],
+										}),
+									},
 								}"
 							>
 								<VListItemContent>

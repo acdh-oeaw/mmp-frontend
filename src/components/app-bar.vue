@@ -24,7 +24,15 @@ const links = {
 
 <template>
 	<div>
-		<VAppBar class="app-bar" :color="backgroundColor" fixed flat min-height="84px" shrink-on-scroll>
+		<VAppBar
+			app
+			class="app-bar"
+			:color="backgroundColor"
+			fixed
+			flat
+			min-height="84px"
+			shrink-on-scroll
+		>
 			<VRow justify="center">
 				<VCol cols="12" md="2" class="title-wrapper">
 					<VAppBarNavIcon

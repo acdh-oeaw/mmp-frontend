@@ -27,6 +27,7 @@ const tabs = computed(() => {
 		'network-graph': { name: 'case-study-network-graph', label: 'Network Graph' },
 		'geo-map': { name: 'case-study-geo-map', label: 'Map' },
 		'word-cloud': { name: 'case-study-word-cloud', label: 'Word Cloud' },
+		authors: { name: 'case-study-texts-by-authors', label: 'Texts by authors' },
 	};
 
 	if (!isNonEmptyString(caseStudy.value)) {

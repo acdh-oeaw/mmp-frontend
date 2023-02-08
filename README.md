@@ -5,8 +5,16 @@ Web frontend for the [MMP project](https://github.com/acdh-oeaw/mmp). Deployed a
 
 ## Project setup
 
+Install dependencies:
+
 ```bash
 npm install
+```
+
+Set environment variables:
+
+```
+cp .env.example .env.local
 ```
 
 ### Compile and hot-reload for development

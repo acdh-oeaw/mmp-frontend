@@ -10,7 +10,10 @@ import { useDetailsSearchFilters } from '@/lib/search/use-details-search-filters
 import { useSearchFilters } from '@/lib/search/use-search-filters';
 
 const route = useRoute();
-const { searchFilters: detailSearchFilters } = useDetailsSearchFilters();
+const {
+	searchFilters: detailSearchFilters,
+	createSearchFilterParams: createDetailSearchFilterParams,
+} = useDetailsSearchFilters();
 const id = computed(() => {
 	assert(detailSearchFilters.value['detail-kind'] === 'passage');
 	const id = detailSearchFilters.value['detail-id'][0];
@@ -131,27 +134,52 @@ const items = computed(() => {
 								:color="keywordColors[keyword.art]"
 								small
 								:to="{
-									query: createSearchFilterParams({ ...searchFilters, keyword: [keyword.id] }),
+									name: 'explore-search-results',
+									query: createSearchFilterParams({
+										...searchFilters,
+										keyword: [...searchFilters.keyword, keyword.id],
+									}),
 								}"
 							>
 								{{ keyword.stichwort }}
 							</VChip>
 						</div>
 					</td>
-					<td v-else-if="item.key === 'Place' || item.key === 'Author'">
+					<td v-else-if="item.key === 'Place'">
 						<RouterLink
-							v-for="(val, i) of item.value"
-							:key="val.id"
+							v-for="(value, index) of item.value"
+							:key="value.id"
 							:to="{
-								query:
-									item.key === 'Place'
-										? createSearchFilterParams({ ...searchFilters, place: [val.id] })
-										: route.query,
-								params: { id: val.id },
+								query: {
+									...createSearchFilterParams(searchFilters),
+									...createDetailSearchFilterParams({
+										'detail-kind': 'place',
+										'detail-id': [value.id],
+									}),
+								},
 							}"
 						>
-							<span v-if="i != 0">, </span>
-							{{ item.key === 'Place' ? getPlaceLabel(val) : getAuthorLabel(val) }}
+							<span v-if="index != 0">, </span>
+							{{ getPlaceLabel(value) }}
+							<VIcon>mdi-chevron-right</VIcon>
+						</RouterLink>
+					</td>
+					<td v-else-if="item.key === 'Author'">
+						<RouterLink
+							v-for="(value, index) of item.value"
+							:key="value.id"
+							:to="{
+								query: {
+									...createSearchFilterParams(searchFilters),
+									...createDetailSearchFilterParams({
+										'detail-kind': 'author',
+										'detail-id': [value.id],
+									}),
+								},
+							}"
+						>
+							<span v-if="index != 0">, </span>
+							{{ getAuthorLabel(value) }}
 							<VIcon>mdi-chevron-right</VIcon>
 						</RouterLink>
 					</td>

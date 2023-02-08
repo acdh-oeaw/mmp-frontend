@@ -92,6 +92,7 @@ const itemsByKey = computed<Map<ResourceKey, Item>>(() => {
 
 //
 
+// FIXME: vue 2 reactivity does not work with Map
 const cache = ref<Record<ResourceKey, Item>>({});
 
 watch(itemsByKey, (itemsByKey) => {
@@ -113,6 +114,8 @@ const items = computed(() => {
 	});
 
 	return items.sort((a, b) => {
+		if (a.kind === 'keyword' && b.kind !== 'keyword') return -1;
+		if (a.kind !== 'keyword' && b.kind === 'keyword') return 1;
 		return a.label.localeCompare(b.label);
 	});
 });
@@ -135,7 +138,8 @@ watch(
 );
 
 function onLoadItem(item: Item) {
-	cache.value[item.key] = item;
+	// FIXME: not sure why this needs to be immutable
+	cache.value = { ...cache.value, [item.key]: item };
 }
 
 //

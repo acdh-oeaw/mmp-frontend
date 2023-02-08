@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { useQueries } from '@tanstack/vue-query';
 import { computed, ref } from 'vue';
-import { useRoute } from 'vue-router/composables';
 
 import { createKey, useKeywordGraph, usePassages } from '@/api';
 import * as api from '@/api/client';
@@ -15,7 +14,6 @@ import { useSearchFilters } from '@/lib/search/use-search-filters';
 import { truncate } from '@/lib/truncate';
 import { useStore } from '@/lib/use-store';
 
-const route = useRoute();
 const store = useStore();
 const { createSearchFilterParams, searchFilters } = useSearchFilters();
 const { searchFilters: detailSearchFilters } = useDetailsSearchFilters();
@@ -97,43 +95,6 @@ const passageCount = computed(() => passagesQuery.data.value?.count);
 
 const tab = ref(null);
 
-function getNumbersFromString(value: string) {
-	return value.replace(/\D/g, '');
-}
-
-const connections = computed(() => {
-	const retArr: any[] = [];
-
-	if (!keywords.value || !keywordGraph.value) return retArr;
-
-	// const keyIds = this.data.keywords.map((x) => x.id);
-	const edges = keywordGraph.value.edges;
-
-	// edges = this.removeDuplicates(edges, ['source', 'target']);
-
-	const targets = edges.map((edge) => ({ target: edge.target, count: edge.count }));
-	const count: Record<string, number> = {};
-
-	targets.forEach((target) => {
-		count[target.target] = (count[target.target] ?? 0) + target.count;
-	});
-
-	Object.entries(count).forEach(([target, count]) => {
-		retArr.push({
-			key: target,
-			id: getNumbersFromString(target),
-			label: keywordGraph.value?.nodes.find((node) => node.key === target)?.label,
-			count,
-		});
-	});
-
-	// priorise connections with keyword in query
-	// return retArr.sort((a) => (route.query?.Keyword.split('+').includes(a.id) ? -1 : 1));
-
-	// sort by connection count
-	return retArr.sort((a, b) => b.count - a.count);
-});
-
 const neighbors = computed({
 	get() {
 		return store.state.graphOptions.showNeighborsOnly;
@@ -150,14 +111,14 @@ const neighbors = computed({
 			<VListItemContent>
 				<div v-if="!isLoading">
 					<VListItemTitle class="text-h5">
-						{{ keywords.map((x) => x.stichwort).join(', ') }}
+						{{ keywords.map((keyword) => keyword.stichwort).join(', ') }}
 					</VListItemTitle>
 					<VListItemSubtitle>
 						Mentioned in
 						<RouterLink
 							:to="{
 								name: 'explore-search-results',
-								query: createSearchFilterParams({ ...searchFilters, keyword: [id] }),
+								query: createSearchFilterParams({ ...searchFilters, keyword: ids }),
 							}"
 						>
 							<span v-if="passageCount">
@@ -167,8 +128,7 @@ const neighbors = computed({
 						</RouterLink>
 						<RouterLink
 							:to="{
-								params: { id: route.params.id },
-								query: createSearchFilterParams({ ...searchFilters, keyword: [id] }),
+								query: createSearchFilterParams({ ...searchFilters, keyword: ids }),
 							}"
 						>
 							show all connections<VIcon small>mdi-link</VIcon>
@@ -216,33 +176,6 @@ const neighbors = computed({
 
 			<VRow>
 				<VCol>
-					<VExpansionPanels v-if="!isLoading" accordion flat>
-						<VExpansionPanel v-for="conn in connections" :key="conn.id">
-							<VExpansionPanelHeader>
-								<span>
-									{{ keywords.map((x) => x.stichwort).join(', ') }}
-									<VIcon small>mdi-arrow-left-right</VIcon> {{ conn.label }}
-								</span>
-								<template #actions>
-									<VChip small>{{ conn.count }} connections</VChip>
-									<VIcon>mdi-chevron-down</VIcon>
-								</template>
-							</VExpansionPanelHeader>
-							<VExpansionPanelContent>
-								<KeywordListItem
-									:parent-nodes="keywords.map((x) => x.id)"
-									:sibling-node="conn.id"
-								/>
-							</VExpansionPanelContent>
-						</VExpansionPanel>
-					</VExpansionPanels>
-
-					<VSkeletonLoader v-else type="list-item@5" class="transparent-skeleton" />
-				</VCol>
-			</VRow>
-
-			<VRow>
-				<VCol>
 					<template v-if="!isLoading">
 						<VRow>
 							<VCol>
@@ -253,10 +186,7 @@ const neighbors = computed({
 									class="detail-button"
 									:to="{
 										name: 'explore-search-results',
-										query: createSearchFilterParams({
-											...searchFilters,
-											keyword: keywords.map((x) => x.id),
-										}),
+										query: createSearchFilterParams({ ...searchFilters, keyword: ids }),
 									}"
 								>
 									{{
@@ -277,8 +207,7 @@ const neighbors = computed({
 									block
 									class="detail-button"
 									:to="{
-										params: { id: route.params.id },
-										query: createSearchFilterParams({ ...searchFilters, keyword: [id] }),
+										query: createSearchFilterParams({ ...searchFilters, keyword: ids }),
 									}"
 								>
 									Show all Connections in Graph

@@ -1,3 +1,13 @@
 .square {
-  aspect-ratio: 1;
+	aspect-ratio: 1;
+}
+
+.v-list-item--active::before,
+.v-chip--active::before {
+	opacity: 0 !important;
+}
+
+.v-list-item--active:hover::before,
+.v-chip--active:hover::before {
+	opacity: 0.12 !important;
 }

@@ -50,7 +50,7 @@ function draw(words: Array<WordToken>) {
 const layout = wordcloud<WordToken>()
 	.font("'Roboto FlexVariable', system-ui, sans-serif")
 	.padding(2)
-	// .rotate(() => Math.floor(Math.random() * 2) * 90)
+	.rotate(() => Math.floor(Math.random() * 2) * 90)
 	.timeInterval(16)
 	.on('end', draw);
 

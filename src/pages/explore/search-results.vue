@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { computed, ref } from 'vue';
-import { useRoute } from 'vue-router/composables';
 
 import { type KeywordType, usePassages } from '@/api';
 import FullscreenButton from '@/components/fullscreen-button.vue';
@@ -13,18 +12,22 @@ import { useSearchFilters } from '@/lib/search/use-search-filters';
 const headers = [
 	{ text: 'Author', value: 'text.autor', width: '150px' },
 	{ text: 'Title', value: 'text.title' },
-	{ text: 'Label', value: 'display_label' },
+	{ text: 'Passage', value: 'display_label' },
 	{ text: 'Keywords', value: 'keywords' },
 	{ text: 'Time Frame', value: 'written', width: '100px' },
 	{ text: 'Coverage', value: 'coverage', width: '100px' },
 ];
 
-const route = useRoute();
+// TODO: limit/offset should be read from search params
 const limit = ref(10);
 const offset = ref(0);
 const { createSearchFilterParams, searchFilters } = useSearchFilters();
 const searchParams = usePassagesSearchParams();
-const passagesQuery = usePassages(searchParams);
+const passagesQuery = usePassages(
+	computed(() => {
+		return { ...searchParams.value, limit: limit.value, offset: offset.value };
+	})
+);
 const { createSearchFilterParams: createDetailsSearchFilterParams } = useDetailsSearchFilters();
 
 const _isLoading = computed(() => {
@@ -74,12 +77,12 @@ function getColor(type: KeywordType) {
 		>
 			<template #[`item.text.autor`]="{ item }">
 				<template v-if="item.text">
-					<RouterLink
-						v-for="(author, index) of item.text.autor"
+					<VListItem
+						v-for="author of item.text.autor"
 						:key="author.id"
 						:to="{
 							query: {
-								...route.query,
+								...createSearchFilterParams(searchFilters),
 								...createDetailsSearchFilterParams({
 									'detail-kind': 'author',
 									'detail-id': [author.id],
@@ -88,19 +91,22 @@ function getColor(type: KeywordType) {
 						}"
 						class="text-decoration-none"
 					>
-						<span v-if="index !== 0">, </span>
-						{{ getAuthorLabel(author) }}
-						<VIcon>mdi-chevron-right</VIcon>
-					</RouterLink>
+						<VListItemTitle>
+							{{ getAuthorLabel(author) }}
+						</VListItemTitle>
+						<VListItemIcon>
+							<VIcon>mdi-chevron-right</VIcon>
+						</VListItemIcon>
+					</VListItem>
 				</template>
 			</template>
 			<template #[`item.text.title`]="{ item }">
 				<template v-if="item.text">
-					<RouterLink
+					<VListItem
 						:to="{
 							params: { id: item.id },
 							query: {
-								...route.query,
+								...createSearchFilterParams(searchFilters),
 								...createDetailsSearchFilterParams({
 									'detail-kind': 'passage',
 									'detail-id': [item.id],
@@ -109,10 +115,19 @@ function getColor(type: KeywordType) {
 						}"
 						class="text-decoration-none"
 					>
-						<b>{{ item.text.title }}</b>
-						<VIcon>mdi-chevron-right</VIcon>
-					</RouterLink>
+						<VListItemTitle>
+							<b class="text-title">{{ item.text.title }}</b>
+						</VListItemTitle>
+						<VListItemIcon>
+							<VIcon>mdi-chevron-right</VIcon>
+						</VListItemIcon>
+					</VListItem>
 				</template>
+			</template>
+			<template #[`item.display_label`]="{ item }">
+				<span>
+					{{ item.display_label.replace(item.text.title, '').replace(/ \(\d+ - \d+\), /, '') }}
+				</span>
 			</template>
 			<template #[`item.keywords`]="{ item }">
 				<div v-for="keyword of item.key_word" :key="keyword.stichwort" class="keyword-chip">
@@ -137,7 +152,7 @@ function getColor(type: KeywordType) {
 				{{ getDateRangeLabel(item.start_date, item.end_date) }}
 			</template>
 			<template #[`footer.prepend`]>
-				<FullscreenButton left />
+				<FullscreenButton position="left" />
 			</template>
 		</VDataTable>
 
@@ -157,5 +172,9 @@ div.v-data-table.data-table {
 .keyword-chip {
 	display: inline-block;
 	margin: 1.5px;
+}
+
+.text-title {
+	white-space: normal;
 }
 </style>

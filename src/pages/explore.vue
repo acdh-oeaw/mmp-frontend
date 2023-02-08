@@ -6,10 +6,12 @@ import DateRangeForm from '@/components/date-range-form.vue';
 import ExploreWelcomeScreen from '@/components/explore-welcome-screen.vue';
 import PassageSearchForm from '@/components/passage-search-form.vue';
 import SearchOptions from '@/components/search-options.vue';
+import { useSearchFilters } from '@/lib/search/use-search-filters';
 import { useVuetify } from '@/lib/use-vuetify';
 
 const router = useRouter();
 const route = useRoute();
+const { createSearchFilterParams, searchFilters } = useSearchFilters();
 
 const isSliderVisible = computed(() => route.name !== 'Word Cloud');
 /**
@@ -74,7 +76,7 @@ const vuetify = useVuetify();
 									class="view-picker"
 									:disabled="route.name === tab.name"
 									:class="{ active: route.name === tab.name }"
-									:to="{ name: tab.name, query: route.query }"
+									:to="{ name: tab.name, query: createSearchFilterParams(searchFilters) }"
 								>
 									{{ tab.label }}
 								</VBtn>
@@ -85,7 +87,7 @@ const vuetify = useVuetify();
 							<VCol cols="12">
 								<!-- FIXME: this should be a menu, not a select -->
 								<VSelect
-									:items="Object.values(tabs).map((tab) => tab.name)"
+									:items="Object.values(tabs)"
 									item-text="label"
 									item-value="name"
 									label="View as"
@@ -130,16 +132,12 @@ const vuetify = useVuetify();
 
 <style>
 div.row a.view-picker.theme--light.v-btn.v-btn--disabled {
-	color: rgb(0 0 0 / 87%) !important;
+	color: hsl(0deg 0% 0% / 87%) !important;
 }
 
 img.icon {
 	height: 100%;
 	width: 100%;
-}
-
-.disable-events {
-	pointer-events: none;
 }
 
 .active {
@@ -167,6 +165,6 @@ img.icon {
 div.v-slider__thumb-label.primary {
 	background-color: transparent !important;
 	height: 1.2rem !important;
-	color: rgb(0 0 0 / 87%) !important;
+	color: hsl(0deg 0% 0% / 87%) !important;
 }
 </style>
