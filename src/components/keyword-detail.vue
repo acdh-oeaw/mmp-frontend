@@ -2,11 +2,10 @@
 import { useQueries } from '@tanstack/vue-query';
 import { computed, ref } from 'vue';
 
-import { createKey, useKeywordGraph, usePassages } from '@/api';
+import { createKey, usePassages } from '@/api';
 import * as api from '@/api/client';
 import GeoMapPlace from '@/components/geo-map-place.vue';
 import KeywordAuthorTab from '@/components/keyword-author-tab.vue';
-import KeywordListItem from '@/components/keyword-list-item.vue';
 import KeywordOverTime from '@/components/keyword-over-time.vue';
 import { isNotNullable } from '@/lib/is-not-nullable';
 import { useDetailsSearchFilters } from '@/lib/search/use-details-search-filters';
@@ -48,8 +47,6 @@ const keywordByCenturyQueries = useQueries({
 	}),
 });
 
-const keywordGraphQuery = useKeywordGraph({ ids: ids.value.join(',') });
-
 const passagesQuery = usePassages(
 	computed(() => {
 		return {
@@ -65,7 +62,7 @@ const isLoading = computed(() => {
 	return (
 		keywordQueries.value.some((query) => query.isInitialLoading) ||
 		keywordByCenturyQueries.value.some((query) => query.isInitialLoading) ||
-		[keywordGraphQuery, passagesQuery].some((query) => query.isInitialLoading.value)
+		passagesQuery.isInitialLoading.value
 	);
 });
 
@@ -75,7 +72,6 @@ const keywords = computed(() => {
 const keywordsByCentury = computed(() => {
 	return keywordByCenturyQueries.value.map((query) => query.data).filter(isNotNullable);
 });
-const keywordGraph = computed(() => keywordGraphQuery.data.value);
 const passages = computed(() => passagesQuery.data.value?.results ?? []);
 const points = computed(() => {
 	const points: Array<{ lat: number; lng: number }> = [];
