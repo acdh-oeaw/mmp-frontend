@@ -46,7 +46,21 @@ const spatialCoverages = computed(() => {
 
 <template>
 	<div>
-		<VList v-if="!isLoading">
+		<VListItem>
+			<VListItemAction>
+				<RouterLink
+					aria-label="Close panel"
+					:to="{ query: createSearchFilterParams(searchFilters) }"
+				>
+					<VIcon>mdi-close</VIcon>
+				</RouterLink>
+			</VListItemAction>
+			<VListItemContent>Spatial coverages</VListItemContent>
+		</VListItem>
+
+		<VDivider />
+
+		<template v-if="!isLoading">
 			<VList v-for="d in spatialCoverages" :key="d.id">
 				<VListItem>
 					<VListItemContent>
@@ -93,9 +107,9 @@ const spatialCoverages = computed(() => {
 				</VListItem>
 				<VDivider />
 			</VList>
-		</VList>
+		</template>
 
-		<VList v-else>
+		<template v-else>
 			<VListItem>
 				<VListItemContent>
 					<VListItemTitle>
@@ -103,6 +117,6 @@ const spatialCoverages = computed(() => {
 					</VListItemTitle>
 				</VListItemContent>
 			</VListItem>
-		</VList>
+		</template>
 	</div>
 </template>

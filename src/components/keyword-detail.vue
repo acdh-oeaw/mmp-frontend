@@ -104,6 +104,14 @@ const neighbors = computed({
 <template>
 	<div>
 		<VListItem>
+			<VListItemAction>
+				<RouterLink
+					aria-label="Close panel"
+					:to="{ query: createSearchFilterParams(searchFilters) }"
+				>
+					<VIcon>mdi-close</VIcon>
+				</RouterLink>
+			</VListItemAction>
 			<VListItemContent>
 				<div v-if="!isLoading">
 					<VListItemTitle class="text-h5">

@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { assert } from '@stefanprobst/assert';
 import { computed } from 'vue';
-import { useRoute } from 'vue-router/composables';
 
 import { usePassageById } from '@/api';
 import { getAuthorLabel, getPlaceLabel } from '@/lib/get-label';
@@ -9,7 +8,6 @@ import { keywordColors } from '@/lib/search/search.config';
 import { useDetailsSearchFilters } from '@/lib/search/use-details-search-filters';
 import { useSearchFilters } from '@/lib/search/use-search-filters';
 
-const route = useRoute();
 const {
 	searchFilters: detailSearchFilters,
 	createSearchFilterParams: createDetailSearchFilterParams,
@@ -99,8 +97,8 @@ const items = computed(() => {
 		<VListItem>
 			<VListItemAction>
 				<RouterLink
-					:to="{ name: 'explore-search-results', query: route.query }"
-					class="text-decoration-none"
+					aria-label="Close panel"
+					:to="{ query: createSearchFilterParams(searchFilters) }"
 				>
 					<VIcon>mdi-close</VIcon>
 				</RouterLink>

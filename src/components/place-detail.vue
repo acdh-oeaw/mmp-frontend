@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { assert } from '@stefanprobst/assert';
 import { computed } from 'vue';
-import { useRoute } from 'vue-router/composables';
 
 import { useAuthors, usePlaceById, useTexts } from '@/api';
 import GeoMapPlace from '@/components/geo-map-place.vue';
@@ -9,7 +8,6 @@ import { getAuthorLabel, getPlaceLabel } from '@/lib/get-label';
 import { useDetailsSearchFilters } from '@/lib/search/use-details-search-filters';
 import { useSearchFilters } from '@/lib/search/use-search-filters';
 
-const route = useRoute();
 const { searchFilters: detailSearchFilters } = useDetailsSearchFilters();
 const id = computed(() => {
 	assert(detailSearchFilters.value['detail-kind'] === 'place');
@@ -54,8 +52,8 @@ const authorCount = computed(() => authorsQuery.data.value?.count);
 		<VListItem>
 			<VListItemAction>
 				<RouterLink
-					:to="{ name: 'explore-geo-map', query: route.query }"
-					class="text-decoration-none"
+					aria-label="Close panel"
+					:to="{ query: createSearchFilterParams(searchFilters) }"
 				>
 					<VIcon>mdi-close</VIcon>
 				</RouterLink>
