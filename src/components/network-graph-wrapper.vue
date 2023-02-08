@@ -6,14 +6,14 @@ import { useRouter } from 'vue-router/composables';
 import { useKeywordByAuthorGraph } from '@/api';
 import FullscreenButton from '@/components/fullscreen-button.vue';
 import Visualization from '@/components/network-graph.vue';
+import { useNetworkGraphStore } from '@/lib/network-graph/use-network-graph-store';
 import { useDetailsSearchFilters } from '@/lib/search/use-details-search-filters';
 import { useNetworkGraphSearchParams } from '@/lib/search/use-network-graph-search-params';
 import { useSearchFilters } from '@/lib/search/use-search-filters';
 import { unique } from '@/lib/unique';
-import { useStore } from '@/lib/use-store';
 
 const router = useRouter();
-const store = useStore();
+const store = useNetworkGraphStore();
 
 const colors = {
 	Keyword: '#039be5', // blue darken-1
@@ -79,7 +79,7 @@ const weightedGraph = computed(() => {
 			});
 		}
 
-		if (neighborNodes.length && store.state.graphOptions.showNeighborsOnly) {
+		if (neighborNodes.length && store.showNeighborsOnly) {
 			ret.nodes = ret.nodes.filter((node) => {
 				if (
 					ret.edges.filter(

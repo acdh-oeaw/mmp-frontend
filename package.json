@@ -41,10 +41,10 @@
 		"highcharts": "^9.3.2",
 		"highcharts-vue": "^1.4.0",
 		"leaflet": "1.7.1",
+		"pinia": "^2.0.30",
 		"vue": "^2.7.10",
 		"vue-router": "^3.6.5",
-		"vuetify": "^2.6.10",
-		"vuex": "^3.6.2"
+		"vuetify": "^2.6.10"
 	},
 	"devDependencies": {
 		"@stefanprobst/favicons": "^2.2.1",

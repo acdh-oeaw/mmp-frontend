@@ -8,12 +8,12 @@ import GeoMapPlace from '@/components/geo-map-place.vue';
 import KeywordAuthorTab from '@/components/keyword-author-tab.vue';
 import KeywordOverTime from '@/components/keyword-over-time.vue';
 import { isNotNullable } from '@/lib/is-not-nullable';
+import { useNetworkGraphStore } from '@/lib/network-graph/use-network-graph-store';
 import { useDetailsSearchFilters } from '@/lib/search/use-details-search-filters';
 import { useSearchFilters } from '@/lib/search/use-search-filters';
 import { truncate } from '@/lib/truncate';
-import { useStore } from '@/lib/use-store';
 
-const store = useStore();
+const store = useNetworkGraphStore();
 const { createSearchFilterParams, searchFilters } = useSearchFilters();
 const { searchFilters: detailSearchFilters } = useDetailsSearchFilters();
 const ids = computed(() => {
@@ -90,15 +90,6 @@ const points = computed(() => {
 const passageCount = computed(() => passagesQuery.data.value?.count);
 
 const tab = ref(null);
-
-const neighbors = computed({
-	get() {
-		return store.state.graphOptions.showNeighborsOnly;
-	},
-	set(value) {
-		store.commit('setGraphParam', { key: 'showNeighborsOnly', value });
-	},
-});
 </script>
 
 <template>
@@ -149,7 +140,7 @@ const neighbors = computed({
 		<VContainer>
 			<VCol>
 				<VCheckbox
-					v-model="neighbors"
+					v-model="store.showNeighborsOnly"
 					label="Only show keywords that are directly connected to selection"
 				/>
 			</VCol>
