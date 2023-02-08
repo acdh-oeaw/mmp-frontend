@@ -12,6 +12,7 @@ USER node
 
 COPY --chown=node:node package.json package-lock.json ./
 COPY --chown=node:node env.d.ts index.html tsconfig.json vite.config.ts ./
+COPY --chown=node:node patches ./patches
 COPY --chown=node:node scripts ./scripts
 COPY --chown=node:node public ./public
 COPY --chown=node:node config ./config

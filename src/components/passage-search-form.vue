@@ -149,7 +149,8 @@ watch(
 );
 
 function onLoadItem(item: Item) {
-	cache.value[item.key] = item;
+	// FIXME: not sure why this needs to be immutable
+	cache.value = { ...cache.value, [item.key]: item };
 }
 
 //

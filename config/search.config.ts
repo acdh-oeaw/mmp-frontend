@@ -1,5 +1,6 @@
 import type { Item } from '@/lib/search/search.types';
 
+// TODO: only keys should be in config, full objects should be fetched
 export const recommendedSearchFilters: Record<Item['key'], Item> = {
 	autor__8: {
 		id: 8,

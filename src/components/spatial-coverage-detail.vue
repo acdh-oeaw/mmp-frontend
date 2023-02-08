@@ -1,51 +1,53 @@
 <script lang="ts" setup>
+import { useQueries } from '@tanstack/vue-query';
 import { computed } from 'vue';
-import { useRoute } from 'vue-router/composables';
 
-import { useSpatialCoverageGeojsonById } from '@/api';
+import { createKey } from '@/api';
+import * as api from '@/api/client';
 import { getDateRangeLabel } from '@/lib/get-label';
+import { isNotNullable } from '@/lib/is-not-nullable';
 import { useDetailsSearchFilters } from '@/lib/search/use-details-search-filters';
 import { useSearchFilters } from '@/lib/search/use-search-filters';
 
 const { createSearchFilterParams, searchFilters } = useSearchFilters();
-const route = useRoute();
 const { searchFilters: detailSearchFilters } = useDetailsSearchFilters();
 const ids = computed(() => {
 	if (detailSearchFilters.value['detail-kind'] !== 'spatial-coverage') return [];
 	return detailSearchFilters.value['detail-id'];
 });
 
-const spatialCoverageQuery = useSpatialCoverageGeojsonById({ id });
+const spatialCoverageQueries = useQueries({
+	queries: computed(() => {
+		return ids.value.map((id) => {
+			return {
+				queryKey: createKey('geojson-spatial-coverage', 'by-id', { id }),
+				queryFn: () => {
+					return api.getSpatialCoverageGeojsonById({ id });
+				},
+			};
+		});
+	}),
+});
 
-const isLoading = computed(() => spatialCoverageQuery.isInitialLoading.value);
+const isLoading = computed(() => {
+	return spatialCoverageQueries.value.some((query) => {
+		return query.isInitialLoading;
+	});
+});
 
-const spatialCoverage = computed(() => spatialCoverageQuery.data.value);
-
-// FIXME: only temporary
-const data = computed(() => {
-	if (spatialCoverage.value == null) return [];
-	return [spatialCoverage.value];
+const spatialCoverages = computed(() => {
+	return spatialCoverageQueries.value
+		.map((query) => {
+			return query.data;
+		})
+		.filter(isNotNullable);
 });
 </script>
 
 <template>
 	<div>
-		<VListItem>
-			<VListItemAction>
-				<RouterLink
-					:to="{ name: 'explore-geo-map', query: route.query }"
-					class="text-decoration-none"
-				>
-					<VIcon>mdi-close</VIcon>
-				</RouterLink>
-			</VListItemAction>
-			<VListItemTitle>Keyword(s) found at point</VListItemTitle>
-		</VListItem>
-
-		<VDivider />
-
-		<VList v-if="!isLoading" v-model="data">
-			<VList v-for="d in data" :key="d.id">
+		<VList v-if="!isLoading">
+			<VList v-for="d in spatialCoverages" :key="d.id">
 				<VListItem>
 					<VListItemContent>
 						<VListItemTitle v-if="d.properties.key_word?.stichwort" class="text-h5">
@@ -92,6 +94,7 @@ const data = computed(() => {
 				<VDivider />
 			</VList>
 		</VList>
+
 		<VList v-else>
 			<VListItem>
 				<VListItemContent>

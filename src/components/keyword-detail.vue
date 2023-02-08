@@ -1,12 +1,15 @@
 <script lang="ts" setup>
+import { useQueries } from '@tanstack/vue-query';
 import { computed, ref } from 'vue';
 import { useRoute } from 'vue-router/composables';
 
-import { useKeywordByCenturyById, useKeywordById, useKeywordGraph, usePassages } from '@/api';
+import { createKey, useKeywordGraph, usePassages } from '@/api';
+import * as api from '@/api/client';
 import GeoMapPlace from '@/components/geo-map-place.vue';
 import KeywordAuthorTab from '@/components/keyword-author-tab.vue';
 import KeywordListItem from '@/components/keyword-list-item.vue';
 import KeywordOverTime from '@/components/keyword-over-time.vue';
+import { isNotNullable } from '@/lib/is-not-nullable';
 import { useDetailsSearchFilters } from '@/lib/search/use-details-search-filters';
 import { useSearchFilters } from '@/lib/search/use-search-filters';
 import { truncate } from '@/lib/truncate';
@@ -14,17 +17,41 @@ import { useStore } from '@/lib/use-store';
 
 const route = useRoute();
 const store = useStore();
+const { createSearchFilterParams, searchFilters } = useSearchFilters();
 const { searchFilters: detailSearchFilters } = useDetailsSearchFilters();
 const ids = computed(() => {
 	if (detailSearchFilters.value['detail-kind'] !== 'keyword') return [];
 	return detailSearchFilters.value['detail-id'];
 });
 
-const keywordQuery = useKeywordById({ id });
-const keywordByCenturyQuery = useKeywordByCenturyById({ id });
-const keywordGraphQuery = useKeywordGraph({ id });
+const keywordQueries = useQueries({
+	queries: computed(() => {
+		return ids.value.map((id) => {
+			return {
+				queryKey: createKey('keyword', 'by-id', { id }),
+				queryFn: () => {
+					return api.getKeywordById({ id });
+				},
+			};
+		});
+	}),
+});
 
-const { createSearchFilterParams, searchFilters } = useSearchFilters();
+const keywordByCenturyQueries = useQueries({
+	queries: computed(() => {
+		return ids.value.map((id) => {
+			return {
+				queryKey: createKey('keyword', 'by-id', { id }, 'century'),
+				queryFn: () => {
+					return api.getKeywordByCenturyById({ id });
+				},
+			};
+		});
+	}),
+});
+
+const keywordGraphQuery = useKeywordGraph({ ids: ids.value.join(',') });
+
 const passagesQuery = usePassages(
 	computed(() => {
 		return {
@@ -37,13 +64,19 @@ const passagesQuery = usePassages(
 );
 
 const isLoading = computed(() => {
-	return [keywordQuery, keywordByCenturyQuery, keywordGraphQuery, passagesQuery].some((query) => {
-		return query.isInitialLoading.value;
-	});
+	return (
+		keywordQueries.value.some((query) => query.isInitialLoading) ||
+		keywordByCenturyQueries.value.some((query) => query.isInitialLoading) ||
+		[keywordGraphQuery, passagesQuery].some((query) => query.isInitialLoading.value)
+	);
 });
 
-const keyword = computed(() => keywordQuery.data.value);
-const keywordByCentury = computed(() => keywordByCenturyQuery.data.value);
+const keywords = computed(() => {
+	return keywordQueries.value.map((query) => query.data).filter(isNotNullable);
+});
+const keywordsByCentury = computed(() => {
+	return keywordByCenturyQueries.value.map((query) => query.data).filter(isNotNullable);
+});
 const keywordGraph = computed(() => keywordGraphQuery.data.value);
 const passages = computed(() => passagesQuery.data.value?.results ?? []);
 const points = computed(() => {
@@ -60,8 +93,6 @@ const points = computed(() => {
 	return points;
 });
 
-const overtime = keywordsByCentury;
-const graph = keywordGraph;
 const passageCount = computed(() => passagesQuery.data.value?.count);
 
 const tab = ref(null);
@@ -73,10 +104,10 @@ function getNumbersFromString(value: string) {
 const connections = computed(() => {
 	const retArr: any[] = [];
 
-	if (!keywords.value || !graph.value) return retArr;
+	if (!keywords.value || !keywordGraph.value) return retArr;
 
 	// const keyIds = this.data.keywords.map((x) => x.id);
-	const edges = graph.value.edges;
+	const edges = keywordGraph.value.edges;
 
 	// edges = this.removeDuplicates(edges, ['source', 'target']);
 
@@ -91,7 +122,7 @@ const connections = computed(() => {
 		retArr.push({
 			key: target,
 			id: getNumbersFromString(target),
-			label: graph.value?.nodes.find((node) => node.key === target)?.label,
+			label: keywordGraph.value?.nodes.find((node) => node.key === target)?.label,
 			count,
 		});
 	});
@@ -116,11 +147,6 @@ const neighbors = computed({
 <template>
 	<div>
 		<VListItem>
-			<VListItemAction>
-				<RouterLink :to="{ name: 'explore-network-graph', query: route.query }">
-					<VIcon>mdi-close</VIcon>
-				</RouterLink>
-			</VListItemAction>
 			<VListItemContent>
 				<div v-if="!isLoading">
 					<VListItemTitle class="text-h5">
