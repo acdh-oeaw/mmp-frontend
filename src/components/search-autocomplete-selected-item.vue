@@ -11,7 +11,7 @@ import {
   usePlaceById,
   useTextById,
 } from '@/api';
-import { createResourceKey } from '@/lib/resource-key';
+import { createResourceKey } from '@/lib/search/resource-key';
 import type { Item } from '@/lib/search/search.types';
 
 const props = defineProps<{
@@ -153,6 +153,8 @@ if (props.kind === 'usecase') {
 </script>
 
 <template>
-  <!-- eslint-disable-next-line vue/no-multiple-template-root -->
-  <slot />
+  <!-- Vue 2 does not allow slots as template root. -->
+  <span>
+    <slot />
+  </span>
 </template>

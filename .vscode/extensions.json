@@ -1,10 +1,12 @@
 {
-  "recommendations": [
-    "dbaeumer.vscode-eslint",
-    "editorConfig.editorConfig",
-    "esbenp.prettier-vscode",
-    "stylelint.vscode-stylelint",
-    "vue.volar",
-    "vue.vscode-typescript-vue-plugin"
-  ]
+	"recommendations": [
+		"dbaeumer.vscode-eslint",
+		"editorConfig.editorConfig",
+		"esbenp.prettier-vscode",
+		"mikestead.dotenv",
+		"stylelint.vscode-stylelint",
+		"vue.volar",
+		"vue.vscode-typescript-vue-plugin",
+		"unifiedjs.vscode-mdx"
+	]
 }

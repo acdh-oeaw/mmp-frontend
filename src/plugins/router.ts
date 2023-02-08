@@ -1,181 +1,128 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 
-import AuthorDetail from '@/components/AuthorDetail.vue';
-import CaseStudies from '@/components/CaseStudies.vue';
-import CaseStudy from '@/components/CaseStudy.vue';
-import Debug from '@/components/Debug.vue';
-import FullscreenView from '@/components/FullscreenView.vue';
-import Graph from '@/components/GraphWrapper.vue';
-import Home from '@/components/Home.vue';
-import Interface from '@/components/InterfaceWrapper.vue';
-import KeywordDetail from '@/components/KeywordDetail.vue';
-import List from '@/components/List.vue';
-import ListAll from '@/components/ListAll.vue';
-import Map from '@/components/MapWrapper.vue';
-import PassageDetail from '@/components/PassageDetail.vue';
-import PlaceDetail from '@/components/PlaceDetail.vue';
-import SpatialDetail from '@/components/SpatialDetail.vue';
-import WordCloudWrapper from '@/components/WordCloudWrapper.vue';
+import Browse from '@/components/browse.vue';
+import CaseStudy from '@/components/case-study.vue';
+import ExploreGeoMap from '@/components/geo-map-wrapper.vue';
+import ExploreWordCloud from '@/components/word-cloud-wrapper.vue';
+import About from '@/pages/about.vue';
+import CaseStudyTextsByAuthors from '@/pages/case-studies/[id]/authors.vue';
+import CaseStudyGeoMap from '@/pages/case-studies/[id]/geo-map.vue';
+import CaseStudyNetworkGraph from '@/pages/case-studies/[id]/network-graph.vue';
+import CaseStudyStory from '@/pages/case-studies/[id]/story.vue';
+import CaseStudyTimeline from '@/pages/case-studies/[id]/timeline.vue';
+import CaseStudyWordCloud from '@/pages/case-studies/[id]/word-cloud.vue';
+import CaseStudies from '@/pages/case-studies/index.vue';
+import Explore from '@/pages/explore.vue';
+import ExploreNetworkGraph from '@/pages/explore/network-graph.vue';
+import ExploreSearchResults from '@/pages/explore/search-results.vue';
+import Imprint from '@/pages/imprint.vue';
+import Home from '@/pages/index.vue';
 
 Vue.use(VueRouter);
 
 const routes = [
-  {
-    path: '/',
-    name: 'Home',
-    component: Home,
-  },
-  {
-    path: '/debug',
-    name: 'Debug',
-    component: Debug,
-  },
-  {
-    path: '/studies/',
-    name: 'Case Studies',
-    component: CaseStudies,
-  },
-  {
-    path: '/studies/:id',
-    name: 'Case Study',
-    component: CaseStudy,
-  },
-  {
-    path: '/explore/',
-    name: 'Interface',
-    component: Interface,
-    children: [
-      {
-        path: 'map',
-        name: 'Map',
-        component: Map,
-        children: [
-          {
-            path: 'spatial/:id',
-            name: 'Spatial Detail',
-            component: SpatialDetail,
-          },
-          {
-            path: 'place/:id',
-            name: 'Place Detail',
-            component: PlaceDetail,
-          },
-        ],
-      },
-      {
-        path: 'graph',
-        name: 'Network Graph',
-        component: Graph,
-        children: [
-          {
-            path: 'detail/:id',
-            name: 'Keyword Detail',
-            component: KeywordDetail,
-          },
-          {
-            path: 'author/:id',
-            name: 'Graph Author Detail',
-            component: AuthorDetail,
-          },
-        ],
-      },
-      {
-        path: 'list',
-        name: 'List',
-        component: List,
-        children: [
-          {
-            path: 'passage/:id',
-            name: 'Passage Detail',
-            component: PassageDetail,
-          },
-          {
-            path: 'author/:id',
-            name: 'Author Detail',
-            component: AuthorDetail,
-          },
-        ],
-      },
-      {
-        path: 'cloud',
-        name: 'Word Cloud',
-        component: WordCloudWrapper,
-      },
-    ],
-  },
-  {
-    path: '/list-all/',
-    name: 'List All',
-    component: ListAll,
-  },
-  {
-    path: '/view/',
-    name: 'View',
-    component: FullscreenView,
-    children: [
-      {
-        path: 'map',
-        name: 'Map Fullscreen',
-        component: Map,
-        children: [
-          {
-            path: 'spatial/:id',
-            name: 'Spatial Detail Fullscreen',
-            component: SpatialDetail,
-          },
-          {
-            path: 'place/:id',
-            name: 'Place Detail Fullscreen',
-            component: PlaceDetail,
-          },
-        ],
-      },
-      {
-        path: 'graph',
-        name: 'Network Graph Fullscreen',
-        component: Graph,
-        children: [
-          {
-            path: 'detail/:id',
-            name: 'Keyword Detail Fullscreen',
-            component: KeywordDetail,
-          },
-          {
-            path: 'author/:id',
-            name: 'Graph Author Detail Fullscreen',
-            component: AuthorDetail,
-          },
-        ],
-      },
-      {
-        path: 'list',
-        name: 'List Fullscreen',
-        component: List,
-        children: [
-          {
-            path: 'passage/:id',
-            name: 'Passage Detail Fullscreen',
-            component: PassageDetail,
-          },
-          {
-            path: 'author/:id',
-            name: 'Author Detail Fullscreen',
-            component: AuthorDetail,
-          },
-        ],
-      },
-      {
-        path: 'cloud',
-        name: 'Word Cloud Fullscreen',
-        component: WordCloudWrapper,
-      },
-    ],
-  },
+	{
+		path: '/',
+		name: 'home',
+		component: Home,
+	},
+	{
+		path: '/about',
+		name: 'about',
+		component: About,
+	},
+	{
+		path: '/imprint',
+		name: 'imprint',
+		component: Imprint,
+	},
+	{
+		path: '/case-studies/',
+		name: 'case-studies',
+		component: CaseStudies,
+	},
+	{
+		path: '/case-studies/:id',
+		name: 'case-study',
+		component: CaseStudy,
+		children: [
+			{
+				path: 'timeline',
+				name: 'case-study-timeline',
+				component: CaseStudyTimeline,
+			},
+			{
+				path: 'story',
+				name: 'case-study-story',
+				component: CaseStudyStory,
+			},
+			{
+				path: 'network-graph',
+				name: 'case-study-network-graph',
+				component: CaseStudyNetworkGraph,
+			},
+			{
+				path: 'geo-map',
+				name: 'case-study-geo-map',
+				component: CaseStudyGeoMap,
+			},
+			{
+				path: 'word-cloud',
+				name: 'case-study-word-cloud',
+				component: CaseStudyWordCloud,
+			},
+			{
+				path: 'authors',
+				name: 'case-study-texts-by-authors',
+				component: CaseStudyTextsByAuthors,
+			},
+		],
+	},
+	{
+		path: '/explore/',
+		name: 'explore',
+		component: Explore,
+		children: [
+			{
+				path: 'search-results',
+				name: 'explore-search-results',
+				component: ExploreSearchResults,
+			},
+			{
+				path: 'network-graph',
+				name: 'explore-network-graph',
+				component: ExploreNetworkGraph,
+			},
+			{
+				path: 'geo-map',
+				name: 'explore-geo-map',
+				component: ExploreGeoMap,
+			},
+			{
+				path: 'word-cloud',
+				name: 'explore-word-cloud',
+				component: ExploreWordCloud,
+			},
+		],
+	},
+	{
+		path: '/browse/',
+		name: 'browse',
+		component: Browse,
+		// TODO: child routes per entity type (?)
+	},
 ];
 
 export const router = new VueRouter({
-  base: import.meta.env.BASE_URL,
-  mode: 'hash',
-  routes,
+	base: import.meta.env.BASE_URL,
+	mode: 'history',
+	routes,
+	scrollBehavior(to, from, savedPosition) {
+		if (savedPosition) return savedPosition;
+
+		if (to.hash) return { selector: to.hash };
+
+		return { x: 0, y: 0 };
+	},
 });

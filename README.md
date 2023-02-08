@@ -1,12 +1,20 @@
 # MMP Frontend
 
 Web frontend for the [MMP project](https://github.com/acdh-oeaw/mmp). Deployed at
-<https://acdh-oeaw.github.io/mmp-frontend>.
+<https://mmp-frontend.acdh-dev.oeaw.ac.at>.
 
 ## Project setup
 
+Install dependencies:
+
 ```bash
 npm install
+```
+
+Set environment variables:
+
+```
+cp .env.example .env.local
 ```
 
 ### Compile and hot-reload for development

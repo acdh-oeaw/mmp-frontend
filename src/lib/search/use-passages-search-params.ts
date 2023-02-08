@@ -46,6 +46,7 @@ export function usePassagesSearchParams(): ComputedRef<GetPassages.SearchParams>
       limit: searchFilters.value['limit'],
       offset: searchFilters.value['offset'],
     };
+
     return searchParams;
   });
 

@@ -1,20 +1,31 @@
 # dependencies
 node_modules/
+.pnpm-store/
 
-# build output
+# build
 /dist
-
-# local env files
-.env.local
-.env.*.local
 
 # logs
 *.log
+
+# misc
+.DS_Store
+
+# non-public environment variables
+.env.local
+.env.*.local
 
 # caches
 .eslintcache
 .stylelintcache
 *.tsbuildinfo
 
-# misc
-.DS_Store
+# generated assets
+/public/favicon.ico
+/public/icon.svg
+/public/android-chrome-192x192.png
+/public/android-chrome-512x512.png
+/public/apple-touch-icon.png
+/public/app.webmanifest
+/public/image.webp
+/public/robots.txt
