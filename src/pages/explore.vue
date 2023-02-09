@@ -7,6 +7,7 @@ import ExploreWelcomeScreen from '@/components/explore-welcome-screen.vue';
 import PassageSearchForm from '@/components/passage-search-form.vue';
 import SearchOptions from '@/components/search-options.vue';
 import { useSearchFilters } from '@/lib/search/use-search-filters';
+import { useViewMode } from '@/lib/use-view-mode';
 import { useVuetify } from '@/lib/use-vuetify';
 
 const router = useRouter();
@@ -38,6 +39,8 @@ function onChange(name: string) {
 }
 
 const vuetify = useVuetify();
+const { searchFilters: viewModeSearchFilters } = useViewMode();
+const isFullScreen = computed(() => viewModeSearchFilters.value['view-mode'] === 'fullscreen');
 </script>
 
 <template>
@@ -116,7 +119,9 @@ const vuetify = useVuetify();
 					</VRow>
 
 					<VRow v-else>
-						<RouterView />
+						<VCol :class="{ 'fullscreen-container': isFullScreen }">
+							<RouterView />
+						</VCol>
 					</VRow>
 
 					<VRow v-show="isSliderVisible">
@@ -166,5 +171,12 @@ div.v-slider__thumb-label.primary {
 	background-color: transparent !important;
 	height: 1.2rem !important;
 	color: hsl(0deg 0% 0% / 87%) !important;
+}
+
+.fullscreen-container {
+	position: absolute;
+	inset: 0;
+	background: #f1f5fa;
+	z-index: 1;
 }
 </style>
