@@ -1,16 +1,11 @@
 {
-  "extends": "@stefanprobst/tsconfig",
-  "compilerOptions": {
-    "baseUrl": ".",
-    "exactOptionalPropertyTypes": false,
-    "paths": {
-      "@/*": ["./src/*"],
-      "~/*": ["./*"]
-    },
-    "types": ["d3", "leaflet", "node", "vuetify"]
-  },
-  "include": ["./env.d.ts", "./**/*.js", "./**/*.ts", "./**/*.vue"],
-  "vueCompilerOptions": {
-    "target": 2.7
-  }
+	"$schema": "https://json.schemastore.org/tsconfig",
+	"extends": "./.nuxt/tsconfig.json",
+	"compilerOptions": {
+		"incremental": true,
+		"noFallthroughCasesInSwitch": true,
+		"noImplicitReturns": true,
+		"noPropertyAccessFromIndexSignature": true,
+		"noUncheckedIndexedAccess": true
+	}
 }

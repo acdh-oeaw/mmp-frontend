@@ -1,15 +1,21 @@
-.square {
-	aspect-ratio: 1;
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+	min-width: 0;
+	min-height: 0;
+	margin: 0;
+	padding: 0;
 }
 
-.v-btn--active::before,
-.v-chip--active::before,
-.v-list-item--active::before {
-	opacity: 0 !important;
+:root,
+body,
+#__nuxt {
+	block-size: 100%;
 }
 
-.v-btn--active:hover::before,
-.v-chip--active:hover::before,
-.v-list-item--active:hover::before {
-	opacity: 0.12 !important;
+:root {
+	background-color: theme(colors.background);
+	color: theme(colors.primary);
+	font-family: theme(fontFamily.sans);
 }

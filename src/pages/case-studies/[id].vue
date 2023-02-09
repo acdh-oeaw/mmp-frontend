@@ -1,37 +1,38 @@
 <script lang="ts" setup>
 import MainContent from "@/components/main-content.vue";
-import PassageSearchForm from "@/components/passage-search-form.vue";
 import { NuxtLink, NuxtPage } from "#components";
 
 const links = {
-	"search-results": {
-		href: "/explore/search-results",
-		label: "Search results",
+	timeline: {
+		href: "timeline",
+		label: "Timeline",
+	},
+	story: {
+		href: "story",
+		label: "Story",
 	},
 	"network-graph-visualisation": {
-		href: "/explore/network-graph-visualisation",
+		href: "network-graph-visualisation",
 		label: "Network graph",
 	},
 	"geo-visualisation": {
-		href: "/explore/geo-visualisation",
+		href: "geo-visualisation",
 		label: "Map",
 	},
 	"word-cloud-visualisation": {
-		href: "/explore/word-cloud-visualisation",
+		href: "word-cloud-visualisation",
 		label: "Word cloud",
+	},
+	"texts-by-authors": {
+		href: "texts-by-authors",
+		label: "Texts by authors",
 	},
 };
 </script>
 
 <template>
 	<div>
-		<h1 class="sr-only">Explore the data</h1>
-
-		<aside>
-			<div class="max-w-7xl px-8 py-4">
-				<PassageSearchForm />
-			</div>
-		</aside>
+		<h1>Case study</h1>
 
 		<nav aria-label="Passages">
 			<ul role="list">

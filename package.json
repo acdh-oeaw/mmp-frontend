@@ -2,89 +2,73 @@
 	"name": "@acdh-oeaw/mmp-frontend",
 	"private": true,
 	"license": "MIT",
-	"scripts": {
-		"build": "vite build",
-		"dev": "vite",
-		"format:check": "prettier . --cache --check --ignore-path .gitignore",
-		"format:fix": "npm run format:check -- --write",
-		"generate:favicons": "dotenv -- tsx ./scripts/generate-favicons.ts",
-		"lint": "run-p 'lint:*:check'",
-		"lint:fix": "run-p 'lint:*:fix'",
-		"lint:code:check": "eslint . --cache --ext cjs,mjs,ts,vue --ignore-path .gitignore",
-		"lint:code:fix": "npm run lint:code:check -- --fix",
-		"lint:styles:check": "stylelint \"**/*.@(css|html|vue)\" --cache --ignore-path .gitignore",
-		"lint:styles:fix": "npm run lint:styles:check -- --fix",
-		"postinstall": "patch-package",
-		"prepare": "npm run setup 'generate:*'",
-		"preview": "vite preview",
-		"setup": "simple-git-hooks || exit 0",
-		"serve": "npm run dev",
-		"types:check": "vue-tsc --noEmit",
-		"validate": "run-s format:check lint:check types:check"
-	},
+	"type": "module",
 	"engines": {
 		"node": "18.x",
-		"npm": "8.x"
+		"npm": "9.x"
 	},
-	"packageManager": "npm@8.19.3",
+	"packageManager": "npm@9.3.1",
+	"scripts": {
+		"build": "nuxt build",
+		"dev": "nuxt dev",
+		"format:check": "prettier . --cache --check --ignore-path ./.gitignore",
+		"format:fix": "npm run format:check -- --write",
+		"generate": "nuxt generate",
+		"generate:favicons": "dotenv -- tsx ./scripts/generate-favicons.ts",
+		"lint:check": "run-p lint:*:check",
+		"lint:fix": "run-p lint:*:fix",
+		"lint:code:check": "eslint . --cache --ext .cjs,.mjs,.ts,.vue --ignore-path ./.gitignore",
+		"lint:code:fix": "npm run lint:code:check -- --fix",
+		"lint:styles:check": "stylelint \"./**/*.@(css|vue)\" --allow-empty-input --cache --ignore-path ./.gitignore",
+		"lint:styles:fix": "npm run lint:styles:check -- --fix",
+		"postinstall": "nuxt prepare",
+		"prepare": "npm run setup",
+		"preview": "nuxt preview",
+		"setup": "simple-git-hooks || exit 0",
+		"test": "exit 0",
+		"types:check": "nuxi typecheck",
+		"validate": "run-s format:check lint:check types:check test"
+	},
 	"dependencies": {
 		"@fontsource/roboto-flex": "^4.5.2",
-		"@mdi/font": "^7.0.96",
+		"@headlessui/vue": "^1.7.9",
+		"@heroicons/vue": "^2.0.15",
 		"@stefanprobst/assert": "^1.0.3",
-		"@stefanprobst/group-by": "^1.1.0",
-		"@stefanprobst/key-by": "^1.0.1",
 		"@stefanprobst/request": "^0.2.1",
-		"@tanstack/vue-query": "^4.14.3",
-		"d3": "^7.4.4",
-		"d3-cloud": "^1.2.5",
-		"force-graph": "^1.42.2",
-		"highcharts": "^9.3.2",
-		"highcharts-vue": "^1.4.0",
-		"leaflet": "1.7.1",
-		"pinia": "^2.0.30",
-		"vue": "^2.7.10",
-		"vue-router": "^3.6.5",
-		"vuetify": "^2.6.10"
+		"nuxt": "^3.2.0",
+		"zod": "^3.20.6"
 	},
 	"devDependencies": {
+		"@stefanprobst/eslint-config": "^1.0.10",
+		"@stefanprobst/eslint-config-vue": "^1.0.2",
 		"@stefanprobst/favicons": "^2.2.1",
 		"@stefanprobst/log": "^1.0.3",
-		"@stefanprobst/tsconfig": "^2.2.2",
-		"@types/d3": "^7.4.0",
-		"@types/d3-cloud": "^1.2.5",
+		"@stefanprobst/prettier-config": "^3.0.0",
+		"@stefanprobst/stylelint-config": "^3.0.1",
+		"@tanstack/eslint-plugin-query": "^4.24.5",
+		"@tanstack/vue-query": "^4.24.4",
 		"@types/geojson": "^7946.0.10",
-		"@types/leaflet": "^1.7.11",
-		"@types/node": "^18.11.10",
 		"@types/sharp": "^0.31.1",
-		"@typescript-eslint/eslint-plugin": "^5.44.0",
-		"@typescript-eslint/parser": "^5.44.0",
-		"@vitejs/plugin-vue2": "^2.0.0",
-		"autoprefixer": "^10.4.12",
+		"autoprefixer": "^10.4.13",
 		"dotenv-cli": "^7.0.0",
-		"eslint": "^8.24.0",
-		"eslint-config-prettier": "^8.5.0",
-		"eslint-import-resolver-typescript": "^3.5.1",
-		"eslint-plugin-import": "^2.26.0",
-		"eslint-plugin-simple-import-sort": "^8.0.0",
-		"eslint-plugin-vue": "^9.5.1",
-		"lint-staged": "^13.0.3",
+		"eslint": "^8.33.0",
+		"eslint-plugin-nuxt": "^4.0.0",
+		"eslint-plugin-tailwindcss": "^3.8.3",
+		"lint-staged": "^13.1.0",
 		"npm-run-all": "^4.1.5",
-		"patch-package": "^6.5.1",
-		"postcss": "^8.4.16",
+		"postcss": "^8.4.21",
+		"postcss-custom-media": "^9.1.2",
 		"postcss-html": "^1.5.0",
-		"prettier": "^2.8.0",
-		"sass": "~1.32.13",
+		"postcss-nesting": "^11.1.0",
+		"prettier": "^2.8.4",
 		"sharp": "^0.31.3",
-		"simple-git-hooks": "^2.8.0",
-		"stylelint": "^14.13.0",
+		"simple-git-hooks": "^2.8.1",
+		"stylelint": "^15.0.0",
 		"stylelint-config-html": "^1.1.0",
-		"stylelint-config-prettier": "^9.0.3",
-		"stylelint-config-standard": "^28.0.0",
-		"tsx": "^3.12.2",
-		"typescript": "^4.9.3",
-		"unplugin-vue-components": "^0.22.9",
-		"vite": "^3.2.0",
-		"vue-tsc": "^1.0.9"
+		"tailwindcss": "^3.2.6",
+		"tsx": "^3.12.3",
+		"typescript": "^4.9.5",
+		"vue-tsc": "^1.0.24"
 	},
 	"browserslist": {
 		"development": [
@@ -99,84 +83,44 @@
 		]
 	},
 	"eslintConfig": {
-		"root": true,
-		"reportUnusedDisableDirectives": true,
-		"env": {
-			"browser": true,
-			"es6": true,
-			"node": true
-		},
 		"extends": [
-			"eslint:recommended",
-			"plugin:@typescript-eslint/recommended",
-			"plugin:import/recommended",
-			"plugin:vue/recommended",
-			"prettier"
+			"plugin:eslint-plugin-nuxt/recommended",
+			"@stefanprobst/eslint-config",
+			"@stefanprobst/eslint-config-vue",
+			"plugin:@tanstack/eslint-plugin-query/recommended",
+			"plugin:eslint-plugin-tailwindcss/recommended"
 		],
-		"plugins": [
-			"simple-import-sort"
-		],
-		"parserOptions": {
-			"ecmaVersion": 2022,
-			"extraFileExtensions": [
-				".vue"
-			],
-			"parser": "@typescript-eslint/parser",
-			"project": "tsconfig.json"
-		},
-		"rules": {
-			"no-console": [
-				"warn",
-				{
-					"allow": [
-						"warn",
-						"error"
-					]
-				}
-			],
-			"no-debugger": "warn",
-			"@typescript-eslint/no-unused-vars": [
-				"error",
-				{
-					"argsIgnorePattern": "^_",
-					"varsIgnorePattern": "^_"
-				}
-			],
-			"@typescript-eslint/consistent-type-exports": "error",
-			"@typescript-eslint/consistent-type-imports": "error",
-			"import/first": "error",
-			"import/newline-after-import": "error",
-			"import/no-duplicates": "error",
-			"import/no-named-as-default-member": "off",
-			"simple-import-sort/exports": "error",
-			"simple-import-sort/imports": "error",
-			"vue/multi-word-component-names": "off",
-			"vue/no-template-shadow": "off",
-			"vue/no-v-html": "off",
-			"vue/require-default-prop": "off",
-			"vue/require-prop-types": "off",
-			"vue/valid-v-slot": "off"
-		},
 		"settings": {
-			"import/resolver": {
-				"typescript": {
-					"extensions": [
-						".cjs",
-						".mjs",
-						".ts",
-						".vue"
-					],
-					"project": "tsconfig.json"
+			"tailwindcss": {
+				"config": "./tailwind.config.cjs"
+			}
+		},
+		"overrides": [
+			{
+				"files": [
+					"*.vue"
+				],
+				"rules": {
+					"vue/multi-word-component-names": "off"
+				}
+			},
+			{
+				"files": [
+					"./src/layouts/**/*.vue",
+					"./src/pages/**/*.vue"
+				],
+				"rules": {
+					"vue/no-multiple-template-root": "error"
 				}
 			}
-		}
+		]
 	},
 	"lint-staged": {
 		"*.@(cjs|mjs|ts)": [
 			"eslint --cache --fix",
 			"prettier --cache --write"
 		],
-		"*.@(css|html)": [
+		"*.css": [
 			"stylelint --cache --fix",
 			"prettier --cache --write"
 		],
@@ -185,38 +129,19 @@
 			"stylelint --cache --fix",
 			"prettier --cache --write"
 		],
-		"*.!(cjs|css|html|mjs|ts|vue)": "prettier --cache --ignore-unknown --write"
+		"*.!(cjs|css|mjs|ts|vue)": "prettier --cache --ignore-unknown --write"
 	},
-	"postcss": {
-		"plugins": {
-			"postcss-html": {},
-			"autoprefixer": {}
-		}
-	},
-	"prettier": {
-		"printWidth": 100,
-		"proseWrap": "always",
-		"semi": true,
-		"singleQuote": true,
-		"tabWidth": 2,
-		"useTabs": true
-	},
+	"prettier": "@stefanprobst/prettier-config",
 	"simple-git-hooks": {
 		"pre-commit": "npx lint-staged"
 	},
 	"stylelint": {
-		"reportNeedlessDisables": true,
 		"extends": [
-			"stylelint-config-standard",
-			"stylelint-config-prettier",
-			"stylelint-config-html/html",
-			"stylelint-config-html/vue"
-		],
-		"rules": {
-			"selector-class-pattern": null
-		}
+			"stylelint-config-html/vue",
+			"@stefanprobst/stylelint-config"
+		]
 	},
 	"volta": {
-		"node": "18.13.0"
+		"node": "18.14.0"
 	}
 }

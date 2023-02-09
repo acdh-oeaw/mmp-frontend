@@ -1,56 +1,23 @@
 <script lang="ts" setup>
-import { computed } from 'vue';
-
-import { useCaseStudies } from '@/api';
-import CaseStudiesSearchForm from '@/components/case-studies-search-form.vue';
-import { useCaseStudiesSearchParams } from '@/lib/search/use-case-studies-search-params';
-
-const searchParams = useCaseStudiesSearchParams();
-const caseStudiesQuery = useCaseStudies(searchParams);
-
-const _isFetching = computed(() => {
-	return caseStudiesQuery.isFetching.value;
-});
-
-const _isLoading = computed(() => {
-	return caseStudiesQuery.isInitialLoading.value;
-});
-
-const caseStudies = computed(() => {
-	return caseStudiesQuery.data.value?.results ?? [];
-});
+import CaseStudiesSearchForm from "@/components/case-studies-search-form.vue";
+import MainContent from "@/components/main-content.vue";
+import { NuxtPage } from "#components";
 </script>
 
 <template>
-	<VContainer>
-		<VRow>
-			<VCol offset="0" offset-lg="4" cols="12" lg="6">
+	<div>
+		<h1>Case studies</h1>
+
+		<aside>
+			<div class="max-w-7xl px-8 py-4">
 				<CaseStudiesSearchForm />
-			</VCol>
-		</VRow>
+			</div>
+		</aside>
 
-		<VRow justify="center">
-			<VCol cols="12" lg="8">
-				<!-- TODO: loading indicator, nothing found message -->
-				<VCard v-for="caseStudy of caseStudies" :key="caseStudy.id" class="case-study-card">
-					<VCardTitle>{{ caseStudy.title }}</VCardTitle>
-					<VCardSubtitle v-if="caseStudy.principal_investigator">
-						{{ caseStudy.principal_investigator }}
-					</VCardSubtitle>
-					<VCardText v-if="caseStudy.description">{{ caseStudy.description }}</VCardText>
-					<VCardActions>
-						<VBtn text :to="{ name: 'case-study-timeline', params: { id: caseStudy.id } }"
-							>Read More</VBtn
-						>
-					</VCardActions>
-				</VCard>
-			</VCol>
-		</VRow>
-	</VContainer>
+		<MainContent>
+			<div class="max-w-7xl px-8 py-4">
+				<NuxtPage />
+			</div>
+		</MainContent>
+	</div>
 </template>
-
-<style scoped>
-.case-study-card {
-	margin-bottom: 20px;
-}
-</style>

@@ -2,16 +2,16 @@
 node_modules/
 .pnpm-store/
 
-# build
-/dist
+# nuxt.js
+.nuxt
+.nitro
+.output
 
 # logs
 *.log
 
-# misc
-.DS_Store
-
 # non-public environment variables
+.env
 .env.local
 .env.*.local
 
@@ -19,6 +19,9 @@ node_modules/
 .eslintcache
 .stylelintcache
 *.tsbuildinfo
+
+# misc
+.DS_Store
 
 # generated assets
 /public/favicon.ico
@@ -28,4 +31,3 @@ node_modules/
 /public/apple-touch-icon.png
 /public/app.webmanifest
 /public/image.webp
-/public/robots.txt

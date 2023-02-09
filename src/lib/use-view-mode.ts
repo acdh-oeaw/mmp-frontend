@@ -1,59 +1,58 @@
-import { type ComputedRef, computed } from 'vue';
-import { useRoute } from 'vue-router/composables';
+import { type ComputedRef, computed } from "vue";
+import type { LocationQuery } from "vue-router";
 
-import { noop } from '@/lib/noop';
-import { router } from '@/plugins/router';
-import type { LocationQuery } from '@/types/router';
+import { useRoute, useRouter } from "#imports";
 
-type ViewMode = 'fullscreen' | 'normal';
+type ViewMode = "fullscreen" | "normal";
 
 type SearchFilters = {
-  'view-mode': ViewMode;
+	"view-mode": ViewMode;
 };
 
 type UseSearchFiltersResult = {
-  searchFilters: ComputedRef<SearchFilters>;
-  setSearchFilters: (searchFilters: SearchFilters) => void;
-  createSearchFilterParams: (searchFilters: SearchFilters) => LocationQuery;
-  defaultSearchFilters: SearchFilters;
+	searchFilters: ComputedRef<SearchFilters>;
+	setSearchFilters: (searchFilters: SearchFilters) => void;
+	createSearchFilterParams: (searchFilters: SearchFilters) => LocationQuery;
+	defaultSearchFilters: SearchFilters;
 };
 
 export const defaultSearchFilters = Object.freeze({
-  'view-mode': 'normal',
+	"view-mode": "normal",
 } satisfies SearchFilters);
 
 export function useViewMode(): UseSearchFiltersResult {
-  const route = useRoute();
+	const router = useRouter();
+	const route = useRoute();
 
-  const searchFilters = computed(() => {
-    const searchFilters: SearchFilters = {
-      'view-mode': route.query['view-mode'] === 'fullscreen' ? 'fullscreen' : 'normal',
-    };
+	const searchFilters = computed(() => {
+		const searchFilters: SearchFilters = {
+			"view-mode": route.query["view-mode"] === "fullscreen" ? "fullscreen" : "normal",
+		};
 
-    return searchFilters;
-  });
+		return searchFilters;
+	});
 
-  function setSearchFilters(searchFilters: SearchFilters) {
-    const query = createSearchFilterParams(searchFilters);
-    router.push({ query }).catch(noop);
-  }
+	function setSearchFilters(searchFilters: SearchFilters) {
+		const query = createSearchFilterParams(searchFilters);
+		router.push({ query });
+	}
 
-  return {
-    searchFilters,
-    setSearchFilters,
-    createSearchFilterParams,
-    defaultSearchFilters,
-  };
+	return {
+		searchFilters,
+		setSearchFilters,
+		createSearchFilterParams,
+		defaultSearchFilters,
+	};
 }
 
 //
 
 function createSearchFilterParams(searchFilters: SearchFilters): LocationQuery {
-  const searchParams: LocationQuery = {};
+	const searchParams: LocationQuery = {};
 
-  if (searchFilters['view-mode'] === 'fullscreen') {
-    searchParams['view-mode'] = searchFilters['view-mode'];
-  }
+	if (searchFilters["view-mode"] === "fullscreen") {
+		searchParams["view-mode"] = searchFilters["view-mode"];
+	}
 
-  return searchParams;
+	return searchParams;
 }

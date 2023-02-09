@@ -1,86 +1,55 @@
-<script lang="ts" setup>
-import bgImage from '@/assets/images/europe.jpg';
-</script>
-
 <template>
-	<VParallax :src="bgImage" class="home-parallax text-center home-head">
-		<div class="parallax-wrapper">
-			<VContainer>
-				<VRow align="center" justify="center">
-					<VCol cols="12">
-						<h1 class="home-title text-h3 text-lg-h1 text-decoration-none">
-							Mapping Medieval Peoples
-						</h1>
-					</VCol>
-				</VRow>
+	<section>
+		<div class="relative grid place-items-center border-b px-8 py-24">
+			<img
+				alt=""
+				class="absolute inset-0 h-full w-full object-cover"
+				src="@/assets/images/europe.jpg"
+			/>
+			<div class="absolute inset-0 bg-gradient-to-b from-primary via-primary/75 to-primary/25" />
 
-				<VRow justify="center">
-					<VCol cols="12" lg="8">
-						<p class="text-subtitle-1 font-weight-bold">
-							In the turbulent world of the early Middle Ages, ethnicity became a key resource in
-							the reorganization of the political landscape. Mapping Medieval Peoples (MMP) proposes
-							an innovative technical solution to analyze and visualize the "mental maps" and the
-							semantic fields that emerge from the analysis of late antique and early medieval
-							source material.
-						</p>
-						<p class="text-subtitle-1">
-							We attempt to reconstruct "mental maps" of a world of peoples, and will offer insights
-							into the interplay between ethnonyms, religious terms, as well as attributes, traits
-							and stereotypes, thus surveying the language employed to create ethnic entities and to
-							distinguish them from each other.
-						</p>
-					</VCol>
-				</VRow>
+			<div class="relative grid justify-items-center gap-8 text-center text-white">
+				<h1 class="font-display text-8xl">Mapping Medieval Peoples</h1>
 
-				<VRow justify="center">
-					<VCol cols="12" lg="3" sm="5">
-						<VBtn large block color="secondary" :to="{ name: 'explore-search-results' }">
-							Search our Data
-						</VBtn>
-						<span class="button-subtitle">For Interactive Analyses</span>
-					</VCol>
+				<div class="grid max-w-3xl gap-4 leading-7">
+					<p class="font-bold">
+						In the turbulent world of the early Middle Ages, ethnicity became a key resource in the
+						reorganization of the political landscape. Mapping Medieval Peoples (MMP) proposes an
+						innovative technical solution to analyze and visualize the "mental maps" and the
+						semantic fields that emerge from the analysis of late antique and early medieval source
+						material.
+					</p>
 
-					<VCol cols="12" lg="3" sm="5">
-						<p>
-							<VBtn
-								block
-								color="primary"
-								large
-								:to="{ name: 'case-study-timeline', params: { id: 4 } }"
-							>
-								Read &bdquo;Carolingian Avaria&ldquo;
-							</VBtn>
-							<span class="button-subtitle">A Case Study</span>
-						</p>
-					</VCol>
-				</VRow>
-			</VContainer>
+					<p>
+						We attempt to reconstruct &quot;mental maps&quot; of a world of peoples, and will offer
+						insights into the interplay between ethnonyms, religious terms, as well as attributes,
+						traits and stereotypes, thus surveying the language employed to create ethnic entities
+						and to distinguish them from each other.
+					</p>
+				</div>
+
+				<div class="grid grid-cols-2 gap-6">
+					<div class="grid gap-1">
+						<NuxtLink
+							class="rounded border bg-primary px-12 py-4 text-sm font-medium uppercase tracking-wider shadow-md transition hover:bg-neutral-700"
+							href="/explore"
+						>
+							Search our data
+						</NuxtLink>
+						<span>For interactive analyses</span>
+					</div>
+
+					<div class="grid gap-1">
+						<NuxtLink
+							class="rounded border bg-primary px-12 py-4 text-sm font-medium uppercase tracking-wider shadow-md transition hover:bg-neutral-700"
+							href="/case-studies/4"
+						>
+							Read &quot;Carolingian Avaria&quot;
+						</NuxtLink>
+						<span>A case study</span>
+					</div>
+				</div>
+			</div>
 		</div>
-	</VParallax>
+	</section>
 </template>
-
-<style>
-.button-subtitle {
-	line-height: 40px;
-	font-size: 1rem;
-	vertical-align: top;
-}
-
-.home-head {
-	min-height: 600px;
-	height: unset !important;
-}
-
-.home-head div.v-parallax__content {
-	background: linear-gradient(180deg, rgb(15 18 38 / 100%) 25%, rgb(15 18 38 / 30%) 100%);
-	padding: 0;
-	min-height: 600px;
-}
-
-h1.home-title {
-	text-decoration-line: underline;
-	text-underline-offset: 3px;
-	text-decoration-thickness: 3px;
-	z-index: 100;
-}
-</style>
