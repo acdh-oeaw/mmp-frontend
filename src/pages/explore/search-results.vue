@@ -8,6 +8,7 @@ import { keywordColors } from '@/lib/search/search.config';
 import { useDetailsSearchFilters } from '@/lib/search/use-details-search-filters';
 import { usePassagesSearchParams } from '@/lib/search/use-passages-search-params';
 import { useSearchFilters } from '@/lib/search/use-search-filters';
+import { useViewMode } from '@/lib/use-view-mode';
 
 const headers = [
 	{ text: 'Author', value: 'text.autor', width: '150px' },
@@ -22,6 +23,10 @@ const headers = [
 const limit = ref(10);
 const offset = ref(0);
 const { createSearchFilterParams, searchFilters } = useSearchFilters();
+const {
+	createSearchFilterParams: createViewModeSearchFilterParams,
+	searchFilters: viewModeSearchFilters,
+} = useViewMode();
 const searchParams = usePassagesSearchParams();
 const passagesQuery = usePassages(
 	computed(() => {
@@ -82,6 +87,7 @@ function getColor(type: KeywordType) {
 						:key="author.id"
 						:to="{
 							query: {
+								...createViewModeSearchFilterParams(viewModeSearchFilters),
 								...createSearchFilterParams(searchFilters),
 								...createDetailsSearchFilterParams({
 									'detail-kind': 'author',
@@ -106,6 +112,7 @@ function getColor(type: KeywordType) {
 						:to="{
 							params: { id: item.id },
 							query: {
+								...createViewModeSearchFilterParams(viewModeSearchFilters),
 								...createSearchFilterParams(searchFilters),
 								...createDetailsSearchFilterParams({
 									'detail-kind': 'passage',

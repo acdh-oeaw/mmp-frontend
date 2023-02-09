@@ -18,9 +18,14 @@ import type { ConeOriginGeojson, SpatialCoverageCenterPoint } from '@/lib/geo-ma
 import { useDetailsSearchFilters } from '@/lib/search/use-details-search-filters';
 import { useGeoMapSearchParams } from '@/lib/search/use-geo-map-search-params';
 import { useSearchFilters } from '@/lib/search/use-search-filters';
+import { useViewMode } from '@/lib/use-view-mode';
 
 const searchParams = useGeoMapSearchParams();
 const { createSearchFilterParams, searchFilters } = useSearchFilters();
+const {
+	createSearchFilterParams: createViewModeSearchFilterParams,
+	searchFilters: viewModeSearchFilters,
+} = useViewMode();
 
 const areasGeojsonQuery = useSpatialCoveragesGeojson(searchParams);
 const linesPointsGeojsonQuery = useLinesPointsGeojson(searchParams);
@@ -137,6 +142,7 @@ function onClickGeojsonFeature(id: number, kind: 'area' | 'place') {
 
 	router.push({
 		query: {
+			...createViewModeSearchFilterParams(viewModeSearchFilters.value),
 			...createSearchFilterParams(searchFilters.value),
 			...createDetailSearchFilterParams({ 'detail-kind': detailKind, 'detail-id': [id] }),
 		},

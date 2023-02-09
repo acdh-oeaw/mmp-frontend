@@ -4,6 +4,7 @@ import { computed } from 'vue';
 
 import { createKey } from '@/api';
 import * as api from '@/api/client';
+import LoadingIndicator from '@/components/loading-indicator.vue';
 import { getDateRangeLabel } from '@/lib/get-label';
 import { isNotNullable } from '@/lib/is-not-nullable';
 import { useDetailsSearchFilters } from '@/lib/search/use-details-search-filters';
@@ -113,7 +114,7 @@ const spatialCoverages = computed(() => {
 			<VListItem>
 				<VListItemContent>
 					<VListItemTitle>
-						<VSkeletonLoader type="sentences@7" />
+						<LoadingIndicator />
 					</VListItemTitle>
 				</VListItemContent>
 			</VListItem>

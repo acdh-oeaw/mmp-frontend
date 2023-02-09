@@ -4,19 +4,23 @@ import { useRoute } from 'vue-router/composables';
 
 import { usePassages } from '@/api';
 import KeywordAuthorTab from '@/components/keyword-author-tab.vue';
+import LoadingIndicator from '@/components/loading-indicator.vue';
 
 const route = useRoute();
 const id = computed(() => {
 	return Number(route.params['id']);
 });
 
-const passageQuery = usePassages({ use_case: [id], limit: 200 });
+const passagesQuery = usePassages({ use_case: [id], limit: 200 });
 
 const passages = computed(() => {
-	return passageQuery.data.value?.results ?? [];
+	return passagesQuery.data.value?.results ?? [];
 });
 </script>
 
 <template>
-	<KeywordAuthorTab :passages="passages" />
+	<div v-if="passagesQuery.isInitialLoading.value" class="d-flex justify-center">
+		<LoadingIndicator />
+	</div>
+	<KeywordAuthorTab v-else :passages="passages" />
 </template>

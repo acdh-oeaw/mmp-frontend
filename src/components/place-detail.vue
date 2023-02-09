@@ -4,6 +4,7 @@ import { computed } from 'vue';
 
 import { useAuthors, usePlaceById, useTexts } from '@/api';
 import GeoMapPlace from '@/components/geo-map-place.vue';
+import LoadingIndicator from '@/components/loading-indicator.vue';
 import { getAuthorLabel, getPlaceLabel } from '@/lib/get-label';
 import { useDetailsSearchFilters } from '@/lib/search/use-details-search-filters';
 import { useSearchFilters } from '@/lib/search/use-search-filters';
@@ -69,7 +70,7 @@ const authorCount = computed(() => authorsQuery.data.value?.count);
 					<VListItemSubtitle>{{ place.lat }}, {{ place.long }}</VListItemSubtitle>
 				</template>
 
-				<VSkeletonLoader v-else type="heading, text@2" />
+				<LoadingIndicator v-else />
 			</VListItemContent>
 		</VListItem>
 
@@ -142,7 +143,7 @@ const authorCount = computed(() => authorsQuery.data.value?.count);
 				</VExpansionPanel>
 			</VExpansionPanels>
 
-			<VSkeletonLoader v-else type="paragraph@2" />
+			<LoadingIndicator v-else />
 		</VContainer>
 	</div>
 </template>

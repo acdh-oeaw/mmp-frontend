@@ -6,28 +6,18 @@ import { useRouter } from 'vue-router/composables';
 import { useKeywordByAuthorGraph } from '@/api';
 import FullscreenButton from '@/components/fullscreen-button.vue';
 import Visualization from '@/components/network-graph.vue';
+import { getNodeColor } from '@/lib/network-graph/get-node-color';
 import { useNetworkGraphStore } from '@/lib/network-graph/use-network-graph-store';
 import { useDetailsSearchFilters } from '@/lib/search/use-details-search-filters';
 import { useNetworkGraphSearchParams } from '@/lib/search/use-network-graph-search-params';
 import { useSearchFilters } from '@/lib/search/use-search-filters';
 import { unique } from '@/lib/unique';
+import { useFullScreen } from '@/lib/use-full-screen';
+import { useViewMode } from '@/lib/use-view-mode';
 
 const router = useRouter();
 const store = useNetworkGraphStore();
 
-const colors = {
-	Keyword: '#039be5', // blue darken-1
-	Ethnonym: '#00897b', // teal darken-1
-	Name: '#ffb300', // amber darken-1
-	Region: '#43a047', // green darken-1
-	author: '#ff5858', // red
-	Unsicher: '#808080', // grey
-};
-
-const fab = ref({
-	download: false,
-	control: false,
-});
 const paused = ref(true);
 const typefilters = ref({
 	Region: true,
@@ -45,6 +35,10 @@ const {
 	searchFilters: detailSearchFilters,
 	createSearchFilterParams: createDetailSearchFilterParams,
 } = useDetailsSearchFilters();
+const {
+	searchFilters: viewModeSearchFilters,
+	createSearchFilterParams: createViewModeSearchFilterParams,
+} = useViewMode();
 const graphQuery = useKeywordByAuthorGraph(searchParams);
 const graph = computed(() => graphQuery.data.value ?? { nodes: [], edges: [] });
 const isFetching = computed(() => graphQuery.isFetching.value);
@@ -54,7 +48,10 @@ const nodeCount = computed(() => {
 });
 
 const types = computed(() => {
-	const ret = graph.value?.nodes?.map((x) => x.type || x.kind);
+	const ret = graph.value?.nodes?.map((node) => {
+		if (node.kind === 'keyword') return node.type;
+		return node.kind;
+	});
 	return unique(ret ?? []);
 });
 
@@ -127,7 +124,7 @@ const weightedGraph = computed(() => {
 		const targetNode = ret.nodes.filter((node) =>
 			[edge.source.key, edge.source].includes(node.key)
 		)[0];
-		edge.color = lightenColor(colors[targetNode?.type], 0.3 ** edge.count) || '#d5d5d5';
+		edge.color = lightenColor(getNodeColor(targetNode), 0.3 ** edge.count) || '#d5d5d5';
 
 		if (targetNode?.targets) targetNode.targets += edge.count || 1;
 		else if (targetNode) targetNode.targets = edge.count || 1;
@@ -136,7 +133,7 @@ const weightedGraph = computed(() => {
 	// color nodes
 	ret.nodes = ret.nodes.map((node) => {
 		const retNode = node;
-		retNode.color = colors[node.type] || colors[node.kind];
+		retNode.color = getNodeColor(node);
 		return retNode;
 	});
 
@@ -282,6 +279,7 @@ function nodeClick(node: any) {
 		if (detailPanelKind === 'author' && detailPanelIds.includes(node.id)) {
 			router.push({
 				query: {
+					...createViewModeSearchFilterParams(viewModeSearchFilters.value),
 					...createSearchFilterParams(searchFilters.value),
 					...createDetailSearchFilterParams({
 						'detail-kind': 'author',
@@ -292,6 +290,7 @@ function nodeClick(node: any) {
 		} else {
 			router.push({
 				query: {
+					...createViewModeSearchFilterParams(viewModeSearchFilters.value),
 					...createSearchFilterParams(searchFilters.value),
 					...createDetailSearchFilterParams({
 						'detail-kind': 'author',
@@ -305,6 +304,7 @@ function nodeClick(node: any) {
 	if (detailPanelKind === 'keyword' && detailPanelIds.includes(node.id)) {
 		router.push({
 			query: {
+				...createViewModeSearchFilterParams(viewModeSearchFilters.value),
 				...createSearchFilterParams(searchFilters.value),
 				...createDetailSearchFilterParams({
 					'detail-kind': 'keyword',
@@ -315,6 +315,7 @@ function nodeClick(node: any) {
 	} else {
 		router.push({
 			query: {
+				...createViewModeSearchFilterParams(viewModeSearchFilters.value),
 				...createSearchFilterParams(searchFilters.value),
 				...createDetailSearchFilterParams({
 					'detail-kind': 'keyword',
@@ -357,6 +358,8 @@ function lightenColor(color: string | null, fade: number) {
 
 	return `rgba(${numArray.join()}, ${fade})`;
 }
+
+const isFullScreen = useFullScreen();
 </script>
 
 <template>
@@ -377,7 +380,7 @@ function lightenColor(color: string | null, fade: number) {
 			:node-canvas-object="nodeObject"
 			:node-pointer-area-paint="areaPaint"
 			:node-canvas-object-mode="() => 'replace'"
-			:height="500"
+			:height="isFullScreen ? undefined : 500"
 			:zoom-to-fit="zoomToFit"
 			:link-directional-particles="1"
 			:link-directional-particle-width="1.7"
@@ -391,20 +394,7 @@ function lightenColor(color: string | null, fade: number) {
 
 		<RouterView />
 
-		<VSpeedDial
-			v-model="fab.download"
-			absolute
-			top
-			right
-			direction="bottom"
-			transition="slide-y-transition"
-		>
-			<template #activator>
-				<VBtn v-model="fab.download" icon small>
-					<VIcon v-if="fab.download"> mdi-close </VIcon>
-					<VIcon v-else> mdi-tray-arrow-down </VIcon>
-				</VBtn>
-			</template>
+		<div style="position: absolute; top: 0; right: 0; padding: 16px; display: flex; gap: 8px">
 			<VTooltip left transition="slide-x-reverse-transition">
 				<template #activator="{ on, attrs }">
 					<VBtn fab small v-bind="attrs" @click="getCanvasData" v-on="on">
@@ -437,24 +427,11 @@ function lightenColor(color: string | null, fade: number) {
 				</template>
 				<span>Download node data as .csv</span>
 			</VTooltip>
-		</VSpeedDial>
+		</div>
 
 		<FullscreenButton />
 
-		<VSpeedDial
-			v-model="fab.control"
-			absolute
-			top
-			left
-			direction="bottom"
-			transition="slide-y-transition"
-		>
-			<template #activator>
-				<VBtn v-model="fab.control" icon small>
-					<VIcon v-if="fab.control"> mdi-close </VIcon>
-					<VIcon v-else> mdi-dots-vertical </VIcon>
-				</VBtn>
-			</template>
+		<div style="position: absolute; top: 0; left: 0; padding: 16px; display: flex; gap: 8px">
 			<VTooltip right transition="slide-x-transition">
 				<template #activator="{ on, attrs }">
 					<VBtn fab small v-bind="attrs" @click.stop="paused = !paused" v-on="on">
@@ -480,13 +457,14 @@ function lightenColor(color: string | null, fade: number) {
 				</template>
 				<span>Unpin all nodes</span>
 			</VTooltip>
-		</VSpeedDial>
+		</div>
+
 		<div absolute bottom left class="legend">
 			<VList dense color="transparent">
 				<VListItem v-for="key in types" :key="key" dense style="min-height: unset">
 					<VCheckbox
 						v-model="typefilters[key]"
-						:color="colors[key]"
+						:color="getNodeColor(key === 'autor' ? { kind: key } : { kind: 'keyword', type: key })"
 						:label="key.charAt(0).toUpperCase() + key.slice(1)"
 						dense
 						hide-details

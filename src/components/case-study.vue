@@ -3,6 +3,7 @@ import { computed } from 'vue';
 import { useRoute } from 'vue-router/composables';
 
 import { useCaseStudyById } from '@/api';
+import LoadingIndicator from '@/components/loading-indicator.vue';
 import { isNonEmptyString } from '@/lib/is-nonempty-string';
 
 const route = useRoute();
@@ -68,13 +69,9 @@ const tabs = computed(() => {
 					<RouterView />
 				</template>
 
-				<template v-else>
-					<VSkeletonLoader type="text@3" />
-					<br />
-					<VSkeletonLoader type="heading" />
-					<br />
-					<VSkeletonLoader type="text@50" />
-				</template>
+				<div v-else class="d-flex justify-center">
+					<LoadingIndicator />
+				</div>
 			</VCol>
 		</VRow>
 	</VContainer>

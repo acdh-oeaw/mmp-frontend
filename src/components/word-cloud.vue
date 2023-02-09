@@ -38,7 +38,6 @@ function draw(words: Array<WordToken>) {
 		.style('font-size', function (d) {
 			return d.size + 'px';
 		})
-		.style('font-family', 'Impact')
 		.style('fill', (d) => fill(d.text))
 		.attr('text-anchor', 'middle')
 		.attr('transform', function (d) {
@@ -48,7 +47,7 @@ function draw(words: Array<WordToken>) {
 }
 
 const layout = wordcloud<WordToken>()
-	.font("'Roboto FlexVariable', system-ui, sans-serif")
+	.font("'Roboto FlexVariable', ui-sans-serif, system-ui, sans-serif")
 	.padding(2)
 	.rotate(() => Math.floor(Math.random() * 2) * 90)
 	.timeInterval(16)

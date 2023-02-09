@@ -6,6 +6,7 @@ import FullscreenButton from '@/components/fullscreen-button.vue';
 import PieChart from '@/components/pie-chart.vue';
 import WordCloud from '@/components/word-cloud.vue';
 import { useWordCloudSearchParams } from '@/lib/search/use-word-cloud-search-params';
+import { useFullScreen } from '@/lib/use-full-screen';
 import type { Token } from '@/lib/word-cloud/word-cloud.types';
 
 const searchParams = useWordCloudSearchParams();
@@ -59,18 +60,19 @@ const data = computed(() => {
 });
 
 const drawer = ref(false);
-const speeddial = ref(false);
 const check = ref(['words', 'keywords']);
 const titles = ['All Words', 'Keywords'];
-const type = ref('cloud');
+const type = ref<'pie-chart' | 'word-cloud'>('word-cloud');
 
 const showWords = computed(() => {
 	return [check.value.includes('words'), check.value.includes('keywords')];
 });
+
+const isFullScreen = useFullScreen();
 </script>
 
 <template>
-	<VCard width="100%" color="transparent" :height="500">
+	<VCard width="100%" color="transparent" :height="isFullScreen ? '100%' : 500">
 		<VOverlay
 			absolute
 			opacity=".2"
@@ -82,14 +84,14 @@ const showWords = computed(() => {
 			<h1 v-else class="no-nodes">No words found!</h1>
 		</VOverlay>
 
-		<VRow v-if="type === 'pie'">
+		<VRow v-if="type === 'pie-chart'">
 			<template v-for="(filtered, i) in data.filteredWords">
 				<VCol
 					v-if="showWords[i]"
 					:key="JSON.stringify(filtered) + i"
 					:cols="showWords.filter((x) => x).length >= 2 ? 6 : 12"
 				>
-					<PieChart :data="filtered" :title="titles[i]" :height="500" />
+					<PieChart :data="filtered" :title="titles[i]" :height="isFullScreen ? '100%' : 500" />
 				</VCol>
 			</template>
 		</VRow>
@@ -156,47 +158,21 @@ const showWords = computed(() => {
 
 		<FullscreenButton />
 
-		<VSpeedDial
-			v-model="speeddial"
-			absolute
-			top
-			left
-			direction="bottom"
-			transition="slide-y-transition"
-		>
-			<template #activator>
-				<VBtn v-model="speeddial" icon small>
-					<VIcon v-if="speeddial">mdi-close</VIcon>
-					<VIcon v-else>mdi-dots-vertical</VIcon>
+		<VTooltip v-if="type === 'pie-chart'" right transition="slide-x-transition">
+			<template #activator="{ on, attrs }">
+				<VBtn v-bind="attrs" icon absolute top left v-on="on" @click="type = 'word-cloud'">
+					<VIcon>mdi-cloud</VIcon>
 				</VBtn>
 			</template>
-			<VTooltip right transition="slide-x-transition">
-				<template #activator="{ on, attrs }">
-					<VBtn fab small v-bind="attrs" @click="type = 'cloud'" v-on="on">
-						<VIcon>mdi-cloud</VIcon>
-					</VBtn>
-				</template>
-				<span>Word Cloud</span>
-			</VTooltip>
-			<VTooltip right transition="slide-x-transition">
-				<template #activator="{ on, attrs }">
-					<VBtn fab small v-bind="attrs" @click="type = 'pie'" v-on="on">
-						<VIcon>mdi-chart-pie</VIcon>
-					</VBtn>
-				</template>
-				<span>Pie Chart</span>
-			</VTooltip>
-		</VSpeedDial>
+			<span>Word cloud</span>
+		</VTooltip>
+		<VTooltip v-else right transition="slide-x-transition">
+			<template #activator="{ on, attrs }">
+				<VBtn v-bind="attrs" icon absolute top left v-on="on" @click="type = 'pie-chart'">
+					<VIcon>mdi-chart-pie</VIcon>
+				</VBtn>
+			</template>
+			<span>Pie chart</span>
+		</VTooltip>
 	</VCard>
 </template>
-
-<style scoped>
-.word-cloud {
-	min-height: 500px;
-	width: 50%;
-}
-
-.full-height {
-	height: 100vh !important;
-}
-</style>

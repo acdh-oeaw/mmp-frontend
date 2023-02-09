@@ -7,6 +7,7 @@ import * as api from '@/api/client';
 import GeoMapPlace from '@/components/geo-map-place.vue';
 import KeywordAuthorTab from '@/components/keyword-author-tab.vue';
 import KeywordOverTime from '@/components/keyword-over-time.vue';
+import LoadingIndicator from '@/components/loading-indicator.vue';
 import { isNotNullable } from '@/lib/is-not-nullable';
 import { useNetworkGraphStore } from '@/lib/network-graph/use-network-graph-store';
 import { useDetailsSearchFilters } from '@/lib/search/use-details-search-filters';
@@ -131,7 +132,7 @@ const tab = ref(null);
 					</VListItemSubtitle>
 				</div>
 
-				<VSkeletonLoader v-else type="heading, text" />
+				<LoadingIndicator v-else />
 			</VListItemContent>
 		</VListItem>
 
@@ -155,15 +156,15 @@ const tab = ref(null);
 					<VTabsItems v-model="tab" background-color="transparent">
 						<VTabItem key="Authors">
 							<KeywordAuthorTab v-if="!isLoading" :passages="passages" />
-							<VSkeletonLoader v-else type="text@10" />
+							<LoadingIndicator v-else />
 						</VTabItem>
 						<VTabItem key="Geography">
 							<GeoMapPlace v-if="!isLoading" :points="points" />
-							<VSkeletonLoader v-else type="image@2" />
+							<LoadingIndicator v-else />
 						</VTabItem>
 						<VTabItem key="Over Time">
 							<KeywordOverTime v-if="!isLoading" :data="keywordsByCentury" />
-							<VSkeletonLoader v-else type="image@2" />
+							<LoadingIndicator v-else />
 						</VTabItem>
 					</VTabsItems>
 				</VCol>
@@ -211,7 +212,7 @@ const tab = ref(null);
 						</VRow>
 					</template>
 
-					<VSkeletonLoader v-else type="button@2" />
+					<LoadingIndicator v-else />
 				</VCol>
 			</VRow>
 		</VContainer>
@@ -230,10 +231,6 @@ button.v-expansion-panel-header {
 .fixed-bottom {
 	position: fixed;
 	bottom: 0;
-	width: 100%;
-}
-
-.v-skeleton-loader__button {
 	width: 100%;
 }
 

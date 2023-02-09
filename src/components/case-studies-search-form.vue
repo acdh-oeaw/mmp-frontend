@@ -198,7 +198,7 @@ const vuetify = useVuetify();
 						v-bind="splitResourceKey(key)"
 						@load-item="onLoadItem"
 					>
-						<VSkeletonLoader type="chip" />
+						<VChip color="grey lighten-2">Loading...</VChip>
 					</SearchAutocompleteSelectedItem>
 				</template>
 			</template>

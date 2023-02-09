@@ -3,6 +3,7 @@ import { assert } from '@stefanprobst/assert';
 import { computed } from 'vue';
 
 import { useAuthorById, useCaseStudies, useKeywords, usePassages } from '@/api';
+import LoadingIndicator from '@/components/loading-indicator.vue';
 import { getAuthorLabel, getPlaceLabel } from '@/lib/get-label';
 import { keywordColors } from '@/lib/search/search.config';
 import { useDetailsSearchFilters } from '@/lib/search/use-details-search-filters';
@@ -85,7 +86,7 @@ const keywords = computed(() => {
 					</VListItemSubtitle>
 				</div>
 
-				<VSkeletonLoader v-else type="heading, text@2" />
+				<LoadingIndicator v-else />
 			</VListItemContent>
 		</VListItem>
 
@@ -155,7 +156,7 @@ const keywords = computed(() => {
 							<VListItem>
 								<VListItemContent>
 									<VListItemTitle>
-										<VSkeletonLoader type="sentences@7" />
+										<LoadingIndicator />
 									</VListItemTitle>
 								</VListItemContent>
 							</VListItem>
@@ -215,7 +216,7 @@ const keywords = computed(() => {
 							<VListItem>
 								<VListItemContent>
 									<VListItemTitle>
-										<VSkeletonLoader type="sentences@7" />
+										<LoadingIndicator />
 									</VListItemTitle>
 								</VListItemContent>
 							</VListItem>

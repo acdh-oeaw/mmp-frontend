@@ -3,6 +3,7 @@ import { assert } from '@stefanprobst/assert';
 import { computed } from 'vue';
 
 import { usePassageById } from '@/api';
+import LoadingIndicator from '@/components/loading-indicator.vue';
 import { getAuthorLabel, getPlaceLabel } from '@/lib/get-label';
 import { keywordColors } from '@/lib/search/search.config';
 import { useDetailsSearchFilters } from '@/lib/search/use-details-search-filters';
@@ -114,7 +115,7 @@ const items = computed(() => {
 					</VListItemSubtitle>
 				</div>
 
-				<VSkeletonLoader v-else type="heading, text" />
+				<LoadingIndicator v-else />
 			</VListItemContent>
 		</VListItem>
 
@@ -189,7 +190,7 @@ const items = computed(() => {
 		</VSimpleTable>
 
 		<VContainer v-else>
-			<VSkeletonLoader type="table-row-divider@11" />
+			<LoadingIndicator />
 		</VContainer>
 	</div>
 </template>
