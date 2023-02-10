@@ -18,7 +18,7 @@ const props = defineProps<{
 	areas: Array<SpatialCoverageGeojson>;
 	cones: Array<ConeGeojson>;
 	height: number;
-	layers: Array<GeojsonLayer>;
+	layers: Map<GeojsonLayer["id"], GeojsonLayer>;
 	linesPoints: Array<LinesPointsGeojson>;
 	selectedKeys: Set<ResourceKey>;
 	width: number;

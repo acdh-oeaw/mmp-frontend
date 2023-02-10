@@ -59,9 +59,11 @@ const isEnabled = computed(() => {
 // TODO: useQueries
 const caseStudiesQuery = useCaseStudies(caseStudiesSearchParams, { isEnabled });
 const layers = computed(() => {
-	const layers: Array<GeojsonLayer> = [];
+	const layers = new Map<GeojsonLayer["id"], GeojsonLayer>();
 	caseStudiesQuery.data.value?.results.forEach((caseStudy) => {
-		layers.push(...caseStudy.layer);
+		caseStudy.layer.forEach((layer) => {
+			layers.set(layer.id, layer);
+		});
 	});
 	return layers;
 });
