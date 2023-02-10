@@ -6,7 +6,7 @@ import { NuxtLink, NuxtPage } from "#components";
 const links = {
 	"search-results": { href: "search-results", label: "Search results" },
 	"network-graph-visualisation": { href: "network-graph-visualisation", label: "Network graph" },
-	"geo-visualisation": { href: "geo-visualisation", label: "Map" },
+	"geo-map-visualisation": { href: "geo-map-visualisation", label: "Map" },
 	"word-cloud-visualisation": { href: "word-cloud-visualisation", label: "Word cloud" },
 };
 </script>

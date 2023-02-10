@@ -23,13 +23,14 @@ useHead({
 const searchParams = useNetworkGraphSearchParams();
 const graphQuery = useKeywordByAuthorGraph(searchParams);
 const isLoading = graphQuery.isInitialLoading;
+const isFetching = graphQuery.isFetching;
 const isError = graphQuery.isError;
 const graph = computed(() => {
 	return createGraph(graphQuery.data.value ?? { edges: [], nodes: [] });
 });
 
 const { selection } = useSelection();
-const selectedNodes = computed(() => {
+const selectedKeys = computed(() => {
 	return new Set(selection.value.selection);
 });
 </script>
@@ -56,11 +57,15 @@ const selectedNodes = computed(() => {
 					<LoadingIndicator>Loading network visualisation...</LoadingIndicator>
 				</template>
 
+				<template v-if="isFetching">
+					<LoadingIndicator>Updating network graph...</LoadingIndicator>
+				</template>
+
 				<VisualisationContainer v-slot="{ width, height }">
 					<NetworkGraph
-						:data="graph"
+						:graph="graph"
 						:height="height"
-						:selected-nodes="selectedNodes"
+						:selected-keys="selectedKeys"
 						:width="width"
 					/>
 				</VisualisationContainer>

@@ -6,7 +6,7 @@ const links = {
 	timeline: { href: "timeline", label: "Timeline" },
 	story: { href: "story", label: "Story" },
 	"network-graph-visualisation": { href: "network-graph-visualisation", label: "Network graph" },
-	"geo-visualisation": { href: "geo-visualisation", label: "Map" },
+	"geo-map-visualisation": { href: "geo-map-visualisation", label: "Map" },
 	"word-cloud-visualisation": { href: "word-cloud-visualisation", label: "Word cloud" },
 	"texts-by-authors": { href: "texts-by-authors", label: "Texts by authors" },
 };

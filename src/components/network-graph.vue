@@ -3,15 +3,17 @@ import { type ForceGraphInstance } from "force-graph";
 import { onMounted, onUnmounted, ref, watch } from "vue";
 
 import { debounce } from "@/lib/debounce";
+import { getEdgeColor } from "@/lib/network-graph/get-edge-color";
+import { getNodeColor } from "@/lib/network-graph/get-node-color";
 import {
 	type NetworkGraphData,
 	type NetworkGraphNode,
 } from "@/lib/network-graph/network-graph.types";
 
 const props = defineProps<{
-	data: NetworkGraphData;
+	graph: NetworkGraphData;
 	height: number;
-	selectedNodes: Set<NetworkGraphNode["key"]>;
+	selectedKeys: Set<NetworkGraphNode["key"]>;
 	width: number;
 }>();
 
@@ -42,8 +44,8 @@ onMounted(async () => {
 	context.graph.nodeLabel("label");
 	context.graph.linkLabel("label");
 
-	const nodes = Array.from(props.data.nodes.values());
-	const links = Array.from(props.data.edges.values());
+	const nodes = Array.from(props.graph.nodes.values());
+	const links = Array.from(props.graph.edges.values());
 	context.graph.graphData({ links, nodes });
 
 	// context.graph.nodeVisibility((node) => {
@@ -55,8 +57,8 @@ onMounted(async () => {
 	// 	return false;
 	// });
 
-	// context.graph.nodeColor(getNodeColor)
-	// context.graph.linkColor(getEdgeColor)
+	context.graph.nodeColor(getNodeColor);
+	context.graph.linkColor(getEdgeColor);
 
 	// context.graph.nodeCanvasObjectMode(() => {
 	// 	return "replace";
@@ -104,7 +106,7 @@ watch(
 
 watch(
 	() => {
-		return props.data;
+		return props.graph;
 	},
 	(data) => {
 		if (context.graph == null) return;

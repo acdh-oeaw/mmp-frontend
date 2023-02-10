@@ -16,3 +16,5 @@ export const keywordNodeColors: Record<KeywordType, string> = {
 	Region: "#43a047" /** green darken-1 */,
 	unclear: "#9e9e9e" /** grey */,
 };
+
+export const edgeColor = "#e8e8e8";
