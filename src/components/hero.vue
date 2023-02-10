@@ -32,7 +32,7 @@
 					<div class="grid gap-1">
 						<NuxtLink
 							class="rounded border bg-primary px-12 py-4 text-sm font-medium uppercase tracking-wider shadow-md transition hover:bg-neutral-700"
-							href="/explore"
+							href="/explore/search-results"
 						>
 							Search our data
 						</NuxtLink>

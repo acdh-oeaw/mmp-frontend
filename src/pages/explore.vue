@@ -4,22 +4,10 @@ import PassageSearchForm from "@/components/passage-search-form.vue";
 import { NuxtLink, NuxtPage } from "#components";
 
 const links = {
-	"search-results": {
-		href: "/explore/search-results",
-		label: "Search results",
-	},
-	"network-graph-visualisation": {
-		href: "/explore/network-graph-visualisation",
-		label: "Network graph",
-	},
-	"geo-visualisation": {
-		href: "/explore/geo-visualisation",
-		label: "Map",
-	},
-	"word-cloud-visualisation": {
-		href: "/explore/word-cloud-visualisation",
-		label: "Word cloud",
-	},
+	"search-results": { href: "search-results", label: "Search results" },
+	"network-graph-visualisation": { href: "network-graph-visualisation", label: "Network graph" },
+	"geo-visualisation": { href: "geo-visualisation", label: "Map" },
+	"word-cloud-visualisation": { href: "word-cloud-visualisation", label: "Word cloud" },
 };
 </script>
 

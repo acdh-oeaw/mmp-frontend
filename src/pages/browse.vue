@@ -3,22 +3,10 @@ import MainContent from "@/components/main-content.vue";
 import { NuxtLink, NuxtPage } from "#components";
 
 const links = {
-	authors: {
-		href: "authors",
-		label: "Authors",
-	},
-	keywords: {
-		href: "keywords",
-		label: "Keywords",
-	},
-	passages: {
-		href: "passages",
-		label: "Passages",
-	},
-	places: {
-		href: "places",
-		label: "Places",
-	},
+	authors: { href: "authors", label: "Authors" },
+	keywords: { href: "keywords", label: "Keywords" },
+	passages: { href: "passages", label: "Passages" },
+	places: { href: "places", label: "Places" },
 };
 </script>
 

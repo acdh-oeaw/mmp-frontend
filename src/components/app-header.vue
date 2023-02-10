@@ -5,8 +5,8 @@ import { ref } from "vue";
 import { NuxtLink } from "#components";
 
 const links = {
-	explore: { href: "/explore", label: "Explore the data" },
-	browse: { href: "/browse", label: "Browse the data" },
+	explore: { href: "/explore/search-results", label: "Explore the data" },
+	browse: { href: "/browse/authors", label: "Browse the data" },
 	"case-studies": { href: "/case-studies", label: "Case studies" },
 	about: { href: "/about", label: "About the project" },
 };

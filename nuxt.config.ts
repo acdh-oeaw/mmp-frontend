@@ -25,9 +25,7 @@ export default defineNuxtConfig({
 				{ property: "og:locale", content: metadata.locale },
 			],
 			title: metadata.title,
-			titleTemplate(title) {
-				return [title, metadata.title].join(" - ");
-			},
+			titleTemplate: `%s - ${metadata.title}`,
 		},
 	},
 	css: [
