@@ -3,6 +3,7 @@
 const colors = require("tailwindcss/colors");
 
 const neutral = colors.slate;
+const negative = colors.red;
 const primary = "#0f1226";
 const background = "#f1f5fa";
 
@@ -14,6 +15,7 @@ const config = {
 		extend: {
 			colors: {
 				neutral,
+				negative,
 				primary,
 				background,
 			},

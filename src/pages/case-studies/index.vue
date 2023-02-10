@@ -2,6 +2,14 @@
 import CaseStudiesSearchForm from "@/components/case-studies-search-form.vue";
 import MainContent from "@/components/main-content.vue";
 import { NuxtPage } from "#components";
+import { useHead } from "#imports";
+
+const title = "Case studies";
+
+useHead({
+	title,
+	meta: [{ property: "og:title", content: title }],
+});
 </script>
 
 <template>

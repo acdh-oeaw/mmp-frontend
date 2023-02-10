@@ -1,21 +1,21 @@
-import type { Feature, Point } from 'geojson';
+import type { Feature, Point } from "geojson";
 
 import type {
 	PlaceGeojsonProperty,
 	SpatialCoverageGeojson,
 	SpatialCoverageGeojsonProperties,
-} from '@/api';
+} from "@/api";
 
-export type ConeOriginGeojson = { id: PlaceGeojsonProperty['id'] } & Feature<
+export type ConeOriginGeojson = Feature<
 	Point,
 	{
-		name: PlaceGeojsonProperty['name'];
-		art: PlaceGeojsonProperty['art'];
-		spatialCoverages: Map<SpatialCoverageGeojson['id'], SpatialCoverageGeojsonProperties>;
+		name: PlaceGeojsonProperty["name"];
+		art: PlaceGeojsonProperty["art"];
+		spatialCoverages: Map<SpatialCoverageGeojson["id"], SpatialCoverageGeojsonProperties>;
 	}
->;
+> & { id: PlaceGeojsonProperty["id"] };
 
-export type SpatialCoverageCenterPoint = { id: SpatialCoverageGeojson['id'] } & Feature<
+export type SpatialCoverageCenterPoint = Feature<
 	Point,
-	SpatialCoverageGeojson['properties']
->;
+	SpatialCoverageGeojson["properties"]
+> & { id: SpatialCoverageGeojson["id"] };

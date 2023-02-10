@@ -12,7 +12,7 @@ const links = {
 </script>
 
 <template>
-	<div>
+	<div class="grid h-full grid-rows-[auto_auto_1fr]">
 		<h1 class="sr-only">Explore the data</h1>
 
 		<aside>
@@ -22,7 +22,7 @@ const links = {
 		</aside>
 
 		<nav aria-label="Passages">
-			<ul role="list">
+			<ul class="flex flex-wrap justify-center gap-8" role="list">
 				<li v-for="(link, key) of links" :key="key">
 					<NuxtLink :href="link.href">{{ link.label }}</NuxtLink>
 				</li>
@@ -30,9 +30,7 @@ const links = {
 		</nav>
 
 		<MainContent>
-			<div class="max-w-7xl px-8 py-4">
-				<NuxtPage />
-			</div>
+			<NuxtPage />
 		</MainContent>
 	</div>
 </template>

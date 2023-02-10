@@ -1,0 +1,133 @@
+<script lang="ts" setup>
+import { type ForceGraphInstance } from "force-graph";
+import { onMounted, onUnmounted, ref, watch } from "vue";
+
+import { debounce } from "@/lib/debounce";
+import {
+	type NetworkGraphData,
+	type NetworkGraphNode,
+} from "@/lib/network-graph/network-graph.types";
+
+const props = defineProps<{
+	data: NetworkGraphData;
+	height: number;
+	selectedNodes: Set<NetworkGraphNode["key"]>;
+	width: number;
+}>();
+
+const emit = defineEmits<{
+	(event: "node-click", node: NetworkGraphNode | null): void;
+	(event: "node-hover", node: NetworkGraphNode | null): void;
+}>();
+
+const context = {
+	graph: null as ForceGraphInstance | null,
+};
+
+const elementRef = ref<HTMLElement | null>(null);
+
+onMounted(async () => {
+	if (elementRef.value == null) return;
+
+	/** `force-graph` assumes `window` global. */
+	const ForceGraph = await import("force-graph").then((module) => {
+		return module.default;
+	});
+
+	context.graph = ForceGraph();
+	context.graph.width(props.width);
+	context.graph.height(props.height);
+
+	context.graph.nodeId("key");
+	context.graph.nodeLabel("label");
+	context.graph.linkLabel("label");
+
+	const nodes = Array.from(props.data.nodes.values());
+	const links = Array.from(props.data.edges.values());
+	context.graph.graphData({ links, nodes });
+
+	// context.graph.nodeVisibility((node) => {
+	// 	if (props.selectedNodes.size === 0) return true;
+	// 	if (props.selectedNodes.has(node.key)) return true;
+	// 	for (const key of node.neighbors) {
+	// 		if (props.selectedNodes.has(key)) return true;
+	// 	}
+	// 	return false;
+	// });
+
+	// context.graph.nodeColor(getNodeColor)
+	// context.graph.linkColor(getEdgeColor)
+
+	// context.graph.nodeCanvasObjectMode(() => {
+	// 	return "replace";
+	// });
+	// context.graph.nodeCanvasObject(paintNode)
+	// context.nodePointerAreaPaint(getNodePaintArea)
+
+	context.graph.onNodeClick((node) => {
+		emit("node-click", node);
+	});
+	context.graph.onNodeHover((node) => {
+		emit("node-hover", node);
+	});
+
+	context.graph.onNodeDragEnd((node) => {
+		node.fx = node.x;
+		node.fy = node.y;
+	});
+
+	// context.graph.d3Force("charge")?.["strength"](-100);
+
+	context.graph(elementRef.value);
+});
+
+const resize = debounce((width: number, height: number) => {
+	if (context.graph == null) return;
+
+	context.graph.width(width);
+	context.graph.height(height);
+});
+
+watch(
+	[
+		() => {
+			return props.width;
+		},
+		() => {
+			return props.height;
+		},
+	],
+	([width, height]) => {
+		resize(width, height);
+	},
+);
+
+watch(
+	() => {
+		return props.data;
+	},
+	(data) => {
+		if (context.graph == null) return;
+
+		const nodes = Array.from(data.nodes.values());
+		const links = Array.from(data.edges.values());
+		context.graph.graphData({ links, nodes });
+	},
+);
+
+onUnmounted(() => {
+	context.graph?._destructor();
+});
+</script>
+
+<template>
+	<div ref="elementRef" class="absolute inset-0 grid" data-network-graph>
+		<slot />
+	</div>
+</template>
+
+<style>
+[data-network-graph] .force-graph-container .graph-tooltip {
+	font-size: 0.75rem;
+}
+</style>

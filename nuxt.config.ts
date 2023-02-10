@@ -20,12 +20,11 @@ export default defineNuxtConfig({
 				{ name: "description", content: metadata.description },
 				{ property: "og:type", content: "website" },
 				{ property: "og:title", content: metadata.title },
+				{ property: "og:site_name", content: metadata.title },
 				{ property: "og:description", content: metadata.description },
 				{ property: "og:image", content: "/" + openGraphImageName },
 				{ property: "og:locale", content: metadata.locale },
 			],
-			title: metadata.title,
-			titleTemplate: `%s - ${metadata.title}`,
 		},
 	},
 	css: [
@@ -36,7 +35,6 @@ export default defineNuxtConfig({
 	imports: {
 		autoImport: false,
 	},
-	// modules: ["@nuxtjs/tailwindcss"],
 	postcss: {
 		plugins: {
 			"postcss-custom-media": {},

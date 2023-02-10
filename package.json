@@ -26,7 +26,7 @@
 		"preview": "nuxt preview",
 		"setup": "simple-git-hooks || exit 0",
 		"test": "exit 0",
-		"types:check": "nuxi typecheck",
+		"types:check": "nuxt typecheck",
 		"validate": "run-s format:check lint:check types:check test"
 	},
 	"dependencies": {
@@ -35,6 +35,7 @@
 		"@heroicons/vue": "^2.0.15",
 		"@stefanprobst/assert": "^1.0.3",
 		"@stefanprobst/request": "^0.2.1",
+		"force-graph": "^1.43.0",
 		"nuxt": "^3.2.0",
 		"zod": "^3.20.6"
 	},
@@ -94,6 +95,9 @@
 			"tailwindcss": {
 				"config": "./tailwind.config.cjs"
 			}
+		},
+		"rules": {
+			"@typescript-eslint/explicit-module-boundary-types": "off"
 		},
 		"overrides": [
 			{
