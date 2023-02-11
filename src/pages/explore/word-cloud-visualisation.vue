@@ -69,7 +69,7 @@ const tokens = computed(() => {
 
 		<template v-else>
 			<template v-if="isFetching">
-				<LoadingIndicator>Updating network graph...</LoadingIndicator>
+				<LoadingIndicator>Updating word cloud...</LoadingIndicator>
 			</template>
 
 			<VisualisationContainer v-slot="{ width, height }">

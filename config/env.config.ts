@@ -8,4 +8,11 @@ const schema = z.object({
 	VITE_APP_REDMINE_ID: z.string(),
 });
 
-export const env = schema.parse(import.meta.env);
+const result = schema.safeParse(import.meta.env);
+
+if (!result.success) {
+	const message = ["Missing environment variables.\n", result.error.flatten()].join("\n");
+	throw new Error(message);
+}
+
+export const env = result.data;

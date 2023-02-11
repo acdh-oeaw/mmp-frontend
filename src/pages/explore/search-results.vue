@@ -6,13 +6,13 @@ import ErrorMessage from "@/components/error-message.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import { getAuthorLabel, getDateRangeLabel } from "@/lib/get-label";
-import { getResourceColor } from "@/lib/search/get-resource-color";
 import { createResourceKey } from "@/lib/search/resource-key";
 import { usePassagesSearchParams } from "@/lib/search/use-passages-search-params";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
 import { useSelection } from "@/lib/search/use-selection";
 import { NuxtLink } from "#components";
 import { useHead } from "#imports";
+import { keywordColors } from "~~/src/lib/search/search.config";
 
 const title = "Search results";
 
@@ -65,7 +65,7 @@ const columns = {
 		-->
 		<template v-else>
 			<template v-if="isFetching">
-				<LoadingIndicator>Updating network graph...</LoadingIndicator>
+				<LoadingIndicator>Updating search results...</LoadingIndicator>
 			</template>
 
 			<table>
@@ -127,7 +127,7 @@ const columns = {
 									},
 								}"
 							>
-								<span :class="getResourceColor()">
+								<span :class="keywordColors[keyword.art]">
 									{{ keyword.stichwort }}
 								</span>
 							</NuxtLink>

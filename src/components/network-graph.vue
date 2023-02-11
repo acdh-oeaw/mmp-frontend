@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { type ForceGraphInstance } from "force-graph";
+import { type ForceGraphInstance, type LinkObject, type NodeObject } from "force-graph";
 import { onMounted, onUnmounted, ref, watch } from "vue";
 
 import { debounce } from "@/lib/debounce";
@@ -44,8 +44,8 @@ onMounted(async () => {
 	context.graph.nodeLabel("label");
 	context.graph.linkLabel("label");
 
-	const nodes = Array.from(props.graph.nodes.values());
-	const links = Array.from(props.graph.edges.values());
+	const nodes = Array.from(props.graph.nodes.values()) as Array<NodeObject>;
+	const links = Array.from(props.graph.edges.values()) as Array<LinkObject>;
 	context.graph.graphData({ links, nodes });
 
 	// context.graph.nodeVisibility((node) => {
@@ -67,10 +67,10 @@ onMounted(async () => {
 	// context.nodePointerAreaPaint(getNodePaintArea)
 
 	context.graph.onNodeClick((node) => {
-		emit("node-click", node);
+		emit("node-click", node as NetworkGraphNode);
 	});
 	context.graph.onNodeHover((node) => {
-		emit("node-hover", node);
+		emit("node-hover", node as NetworkGraphNode);
 	});
 
 	context.graph.onNodeDragEnd((node) => {
@@ -111,8 +111,8 @@ watch(
 	(data) => {
 		if (context.graph == null) return;
 
-		const nodes = Array.from(data.nodes.values());
-		const links = Array.from(data.edges.values());
+		const nodes = Array.from(data.nodes.values()) as Array<NodeObject>;
+		const links = Array.from(data.edges.values()) as Array<LinkObject>;
 		context.graph.graphData({ links, nodes });
 	},
 );
