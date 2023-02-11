@@ -1,3 +1,5 @@
-export type Token = [string, number];
+import type { Word } from "d3-cloud";
 
-export type TokenData = { words: Array<Token>; keywords: Array<Token> };
+export type Token = { text: string; value: number };
+
+export type WordToken = Token & Word;
