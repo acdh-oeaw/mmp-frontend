@@ -63,7 +63,7 @@ const tokens = computed(() => {
 			<ErrorMessage>Failed to load word cloud.</ErrorMessage>
 		</template>
 
-		<template v-else-if="graph.nodes.size === 0">
+		<template v-else-if="tokens.words.length === 0">
 			<NothingFoundMessage></NothingFoundMessage>
 		</template>
 
