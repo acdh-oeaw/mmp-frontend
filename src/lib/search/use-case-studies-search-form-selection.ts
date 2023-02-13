@@ -15,7 +15,9 @@ export function useCaseStudiesSearchFormSelection() {
 	}
 
 	function removeSelectedKey(key: ResourceKey) {
-		selectedKeys.value = selectedKeys.value.filter((selectedKey) => {return selectedKey !== key});
+		selectedKeys.value = selectedKeys.value.filter((selectedKey) => {
+			return selectedKey !== key;
+		});
 	}
 
 	function clearSelectedKeys() {

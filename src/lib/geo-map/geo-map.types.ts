@@ -15,7 +15,6 @@ export type ConeOriginGeojson = Feature<
 	}
 > & { id: PlaceGeojsonProperty["id"] };
 
-export type SpatialCoverageCenterPoint = Feature<
-	Point,
-	SpatialCoverageGeojson["properties"]
-> & { id: SpatialCoverageGeojson["id"] };
+export type SpatialCoverageCenterPoint = Feature<Point, SpatialCoverageGeojson["properties"]> & {
+	id: SpatialCoverageGeojson["id"];
+};
