@@ -99,7 +99,11 @@ function onSubmit() {
 			:selected-keys="selectedKeys"
 			@change-selection="onChangeSelection"
 			@change-search-term="onChangeSearchTerm"
-		/>
+		>
+			<template #loading-item="{ loadItem: onLoadItem }">
+				<!--  -->
+			</template>
+		</SearchAutocomplete>
 
 		<button class="flex items-center gap-2" type="submit">
 			<span class="md:hidden">Search</span>

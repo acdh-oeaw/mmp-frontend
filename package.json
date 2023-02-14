@@ -34,6 +34,7 @@
 		"@headlessui/vue": "^1.7.9",
 		"@heroicons/vue": "^2.0.15",
 		"@stefanprobst/assert": "^1.0.3",
+		"@stefanprobst/group-by": "^1.1.0",
 		"@stefanprobst/request": "^0.2.1",
 		"force-graph": "^1.43.0",
 		"leaflet": "^1.9.3",

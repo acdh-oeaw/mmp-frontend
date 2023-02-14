@@ -12,6 +12,7 @@ import {
 	ChevronUpDownIcon as SelectorIcon,
 	XMarkIcon,
 } from "@heroicons/vue/20/solid";
+import { groupByToMap } from "@stefanprobst/group-by";
 import { computed, ref, watch } from "vue";
 
 import { getResourceColor } from "@/lib/search/get-resource-color";
@@ -74,15 +75,21 @@ watch(
 	{ immediate: true },
 );
 
-const items = computed(() => {
-	return [...props.items].sort((a, b) => {
-		if (a.kind === "keyword" && b.kind !== "keyword") return -1;
-		if (a.kind !== "keyword" && b.kind === "keyword") return 1;
-		return a.label.localeCompare(b.label);
+const itemsByKind = computed(() => {
+	const groups = groupByToMap(props.items, (item) => {
+		return item.kind;
 	});
+
+	groups.forEach((group) => {
+		group.sort((a, z) => {
+			return a.label.localeCompare(z.label);
+		});
+	});
+
+	return groups;
 });
 
-function onLoad(item: Item) {
+function onLoadItem(item: Item) {
 	cache.value.set(item.key, item);
 }
 
@@ -119,7 +126,7 @@ function getKindLabel(value: Item) {
 			</ComboboxLabel>
 
 			<div
-				class="bg-neutral-0 focus-visible:ring-neutral-0/75 focus-visible:ring-offset-primary-300 relative flex w-full cursor-default flex-wrap items-center overflow-hidden rounded-lg text-left text-sm shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+				class="relative flex w-full cursor-default flex-wrap items-center overflow-hidden rounded-lg bg-white text-left text-sm shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/75 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-300"
 			>
 				<ul
 					v-if="selectedKeys.length > 0"
@@ -129,7 +136,7 @@ function getKindLabel(value: Item) {
 					<li
 						v-for="key of selectedKeys"
 						:key="key"
-						class="bg-primary-200 relative inline-flex items-center gap-1 overflow-hidden rounded px-2 py-1 font-medium"
+						class="relative inline-flex items-center gap-1 overflow-hidden rounded bg-neutral-200 px-2 py-1 font-medium"
 					>
 						<template v-if="cache.has(key)">
 							<span class="relative block truncate">{{ getDisplayLabel(key) }}</span>
@@ -139,7 +146,7 @@ function getKindLabel(value: Item) {
 							</button>
 						</template>
 						<template v-else>
-							<slot name="loading-selected-key" />
+							<slot name="loading-item" :load-item="onLoadItem" />
 						</template>
 					</li>
 				</ul>
@@ -149,6 +156,7 @@ function getKindLabel(value: Item) {
 						autocomplete="off"
 						class="w-full border-none py-2 pl-3 pr-10 text-sm leading-5 text-neutral-900 focus-visible:outline-none"
 						:placeholder="placeholder"
+						type="search"
 						:value="props.searchTerm"
 						@input="onChangeSearchTerm"
 					/>
@@ -167,7 +175,7 @@ function getKindLabel(value: Item) {
 			leave-to-class="opacity-0"
 		>
 			<ComboboxOptions
-				class="z-overlay bg-neutral-0 ring-neutral-1000/5 absolute mt-1 w-full rounded-md py-1 text-sm shadow-lg ring-1 focus:outline-none"
+				class="absolute z-50 mt-1 w-full rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black/5 focus:outline-none"
 			>
 				<div
 					v-if="searchTerm !== '' && props.items.length === 0"
@@ -175,23 +183,24 @@ function getKindLabel(value: Item) {
 				>
 					{{ nothingFoundMessage }}
 				</div>
-				<div lass="max-h-80 overflow-auto">
-					<ComboboxOption
-						v-for="item of items"
-						v-slot="{ selected }"
-						:key="item.key"
-						:value="item.key"
-						class="ui-active:bg-primary-100 ui-active:text-primary-900 relative cursor-default select-none py-2 pl-10 pr-4"
-						style="height: 36px"
-					>
-						<span class="ui-selected:font-medium block truncate">{{ item.label }}</span>
-						<span
-							v-if="selected"
-							class="text-primary-600 absolute inset-y-0 left-0 grid place-items-center pl-3"
+				<div class="max-h-80 overflow-auto">
+					<div v-for="[key, _items] of itemsByKind" :key="key">
+						<ComboboxOption
+							v-for="item of _items"
+							v-slot="{ selected }"
+							:key="item.key"
+							:value="item.key"
+							class="ui-active:bg-neutral-100 ui-active:text-neutral-900 relative cursor-default select-none py-2 pl-10 pr-4"
 						>
-							<CheckMarkIcon aria-hidden="true" class="h-5 w-5" />
-						</span>
-					</ComboboxOption>
+							<span class="ui-selected:font-medium block truncate">{{ item.label }}</span>
+							<span
+								v-if="selected"
+								class="absolute inset-y-0 left-0 grid place-items-center pl-3 text-neutral-600"
+							>
+								<CheckMarkIcon aria-hidden="true" class="h-5 w-5" />
+							</span>
+						</ComboboxOption>
+					</div>
 				</div>
 			</ComboboxOptions>
 		</transition>
