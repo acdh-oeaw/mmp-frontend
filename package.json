@@ -39,6 +39,8 @@
 		"force-graph": "^1.43.0",
 		"leaflet": "^1.9.3",
 		"nuxt": "^3.2.0",
+		"rehype-parse": "^8.0.4",
+		"unified": "^10.1.2",
 		"zod": "^3.20.6"
 	},
 	"devDependencies": {
