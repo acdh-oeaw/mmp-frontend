@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import "leaflet/dist/leaflet.css";
 
-import { type Map as LeafletMap, map as createMap } from "leaflet";
+import { type Map as LeafletMap } from "leaflet";
 import { onMounted, onUnmounted, ref, watch } from "vue";
 
 import {
@@ -38,6 +38,10 @@ const context = {
 const elementRef = ref<HTMLElement | null>(null);
 
 onMounted(async () => {
+	const createMap = await import("leaflet").then((module) => {
+		return module.map;
+	});
+
 	if (elementRef.value == null) return;
 
 	context.map = createMap(elementRef.value);

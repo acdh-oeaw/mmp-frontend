@@ -33,14 +33,16 @@
 		"@fontsource/roboto-flex": "^4.5.2",
 		"@headlessui/vue": "^1.7.9",
 		"@heroicons/vue": "^2.0.15",
+		"@mdx-js/mdx": "^2.3.0",
 		"@stefanprobst/assert": "^1.0.3",
 		"@stefanprobst/group-by": "^1.1.0",
+		"@stefanprobst/key-by": "^1.0.1",
 		"@stefanprobst/request": "^0.2.1",
 		"force-graph": "^1.43.0",
 		"leaflet": "^1.9.3",
 		"nuxt": "^3.2.0",
-		"rehype-parse": "^8.0.4",
-		"unified": "^10.1.2",
+		"unist-util-visit": "^4.1.2",
+		"vue-jsx-runtime": "^0.1.0",
 		"zod": "^3.20.6"
 	},
 	"devDependencies": {

@@ -8,6 +8,7 @@ import LoadingIndicator from "@/components/loading-indicator.vue";
 import MainContent from "@/components/main-content.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import { useCaseStudiesSearchParams } from "@/lib/search/use-case-studies-search-params";
+import { NuxtLink } from "#components";
 import { useHead } from "#imports";
 
 const title = "Case studies";
@@ -61,7 +62,11 @@ const caseStudies = computed(() => {
 					<ul role="list">
 						<li v-for="caseStudy of caseStudies" :key="caseStudy.id">
 							<article>
-								<h3>{{ caseStudy.title }}</h3>
+								<h3>
+									<NuxtLink :href="`/case-studies/${caseStudy.id}/timeline`">
+										{{ caseStudy.title }}
+									</NuxtLink>
+								</h3>
 								<p>{{ caseStudy.description }}</p>
 							</article>
 						</li>
