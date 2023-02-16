@@ -38,6 +38,7 @@
 		"@stefanprobst/group-by": "^1.1.0",
 		"@stefanprobst/key-by": "^1.0.1",
 		"@stefanprobst/request": "^0.2.1",
+		"estree-util-value-to-estree": "^2.1.0",
 		"force-graph": "^1.43.0",
 		"leaflet": "^1.9.3",
 		"nuxt": "^3.2.0",

@@ -2,6 +2,7 @@ import { compile } from "@mdx-js/mdx";
 import { assert } from "@stefanprobst/assert";
 import { keyByToMap } from "@stefanprobst/key-by";
 import { HttpError } from "@stefanprobst/request";
+import { valueToEstree } from "estree-util-value-to-estree";
 import type * as Hast from "hast";
 import type * as _Mdxast from "remark-mdx";
 import { type Transformer } from "unified";
@@ -30,11 +31,13 @@ function withReplacedIframes(): Transformer<Hast.Root> {
 			const visualisation = {
 				type: url.pathname.split("/").filter(Boolean).at(-1),
 				params: {
-					author: url.searchParams.getAll("Author"),
-					"case-study": url.searchParams.getAll("Use Case"),
-					keyword: url.searchParams.getAll("Keyword"),
-					passage: url.searchParams.getAll("Passage"),
-					place: url.searchParams.getAll("Place"),
+					author: url.searchParams.getAll("Author").map(Number),
+					"case-study": url.pathname.startsWith("/studies")
+						? Number(url.pathname.split("/").at(1))
+						: url.searchParams.getAll("Use Case").map(Number),
+					keyword: url.searchParams.getAll("Keyword").map(Number),
+					passage: url.searchParams.getAll("Passage").map(Number),
+					place: url.searchParams.getAll("Place").map(Number),
 				},
 			};
 
@@ -42,6 +45,9 @@ function withReplacedIframes(): Transformer<Hast.Root> {
 				type: "mdxJsxFlowElement",
 				name: "StoryVisualisation",
 				children: [],
+				data: {
+					_mdxExplicitJsx: true,
+				},
 				attributes: [
 					{
 						type: "mdxJsxAttribute",
@@ -58,6 +64,7 @@ function withReplacedIframes(): Transformer<Hast.Root> {
 						name: "filters",
 						value: {
 							type: "mdxJsxAttributeValueExpression",
+							value: JSON.stringify(visualisation.params),
 							data: {
 								estree: {
 									type: "Program",
@@ -66,8 +73,7 @@ function withReplacedIframes(): Transformer<Hast.Root> {
 									body: [
 										{
 											type: "ExpressionStatement",
-											/* @ts-expect-error TODO: type */
-											expression: visualisation.params,
+											expression: valueToEstree(visualisation.params),
 										},
 									],
 								},

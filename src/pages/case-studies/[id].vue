@@ -13,10 +13,10 @@ const links = {
 </script>
 
 <template>
-	<div class="grid h-full grid-rows-[auto_1fr]">
+	<div class="grid h-full grid-rows-[auto_auto_1fr]">
 		<h1>Case study</h1>
 
-		<nav aria-label="Passages">
+		<nav aria-label="Case study">
 			<ul class="flex flex-wrap justify-center gap-8" role="list">
 				<li v-for="(link, key) of links" :key="key">
 					<NuxtLink :href="link.href">{{ link.label }}</NuxtLink>
