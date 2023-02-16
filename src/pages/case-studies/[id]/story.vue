@@ -37,6 +37,9 @@ const code = computed(() => {
 });
 
 const components = {
+	h1: "h3",
+	h2: "h4",
+	h3: "h5",
 	StoryVisualisation,
 };
 
@@ -44,7 +47,7 @@ const StoryContent = code.value?.default;
 </script>
 
 <template>
-	<div class="h-full w-full max-w-7xl px-8 py-4">
+	<div class="relative mx-auto h-full w-full max-w-7xl px-8 py-4">
 		<h2 class="sr-only">Story</h2>
 
 		<template v-if="isLoading">
@@ -60,7 +63,9 @@ const StoryContent = code.value?.default;
 		</template>
 
 		<template v-else>
-			<StoryContent :components="components" />
+			<div class="prose max-w-none">
+				<StoryContent :components="components" />
+			</div>
 		</template>
 	</div>
 </template>

@@ -7,12 +7,12 @@ import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import { getAuthorLabel, getDateRangeLabel } from "@/lib/get-label";
 import { createResourceKey } from "@/lib/search/resource-key";
+import { keywordColors } from "@/lib/search/search.config";
 import { usePassagesSearchParams } from "@/lib/search/use-passages-search-params";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
 import { useSelection } from "@/lib/search/use-selection";
 import { NuxtLink } from "#components";
 import { useHead } from "#imports";
-import { keywordColors } from "~~/src/lib/search/search.config";
 
 const title = "Search results";
 
@@ -21,7 +21,8 @@ useHead({
 	meta: [{ property: "og:title", content: title }],
 });
 
-const searchParams = usePassagesSearchParams();
+const { searchFilters, createSearchFilterParams } = useSearchFilters();
+const searchParams = usePassagesSearchParams(searchFilters);
 const passagesQuery = usePassages(searchParams);
 const isLoading = passagesQuery.isInitialLoading;
 const isFetching = passagesQuery.isFetching;
@@ -30,7 +31,6 @@ const passages = computed(() => {
 	return passagesQuery.data.value?.results ?? [];
 });
 
-const { searchFilters, createSearchFilterParams } = useSearchFilters();
 const { createSelectionParams } = useSelection();
 
 const columns = {
@@ -44,7 +44,7 @@ const columns = {
 </script>
 
 <template>
-	<div class="h-full w-full max-w-7xl px-8 py-4">
+	<div class="relative mx-auto h-full w-full max-w-7xl px-8 py-4">
 		<h2 class="sr-only">Search results</h2>
 
 		<template v-if="isLoading">
@@ -78,20 +78,22 @@ const columns = {
 					<tr v-for="passage of passages" :key="passage.id">
 						<td>
 							<template v-if="passage.text != null">
-								<NuxtLink
-									v-for="author of passage.text.autor"
-									:key="author.id"
-									:href="{
-										query: {
-											...createSearchFilterParams(searchFilters),
-											...createSelectionParams({
-												selection: [createResourceKey({ kind: 'autor', id: author.id })],
-											}),
-										},
-									}"
-								>
-									{{ getAuthorLabel(author) }}
-								</NuxtLink>
+								<ul role="list">
+									<li v-for="author of passage.text.autor" :key="author.id">
+										<NuxtLink
+											:href="{
+												query: {
+													...createSearchFilterParams(searchFilters),
+													...createSelectionParams({
+														selection: [createResourceKey({ kind: 'autor', id: author.id })],
+													}),
+												},
+											}"
+										>
+											{{ getAuthorLabel(author) }}
+										</NuxtLink>
+									</li>
+								</ul>
 							</template>
 						</td>
 						<td>
@@ -115,22 +117,24 @@ const columns = {
 							{{ passage.display_label }}
 						</td>
 						<td>
-							<NuxtLink
-								v-for="keyword of passage.key_word"
-								:key="keyword.id"
-								:href="{
-									query: {
-										...createSearchFilterParams({
-											...searchFilters,
-											keyword: [...searchFilters.keyword, keyword.id],
-										}),
-									},
-								}"
-							>
-								<span :class="keywordColors[keyword.art]">
-									{{ keyword.stichwort }}
-								</span>
-							</NuxtLink>
+							<ul role="list">
+								<li v-for="keyword of passage.key_word" :key="keyword.id">
+									<NuxtLink
+										:href="{
+											query: {
+												...createSearchFilterParams({
+													...searchFilters,
+													keyword: [...searchFilters.keyword, keyword.id],
+												}),
+											},
+										}"
+									>
+										<span :class="keywordColors[keyword.art]">
+											{{ keyword.stichwort }}
+										</span>
+									</NuxtLink>
+								</li>
+							</ul>
 						</td>
 						<td>{{ getDateRangeLabel(passage.text?.not_before, passage.text?.not_after) }}</td>
 						<td>{{ getDateRangeLabel(passage.start_date, passage.end_date) }}</td>

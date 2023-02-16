@@ -1,16 +1,16 @@
 import { type ComputedRef, computed } from "vue";
 
 import type { GetConesGeojson, GetLinesPointsGeojson, GetSpatialCoveragesGeojson } from "@/api";
-import { useSearchFilters } from "@/lib/search/use-search-filters";
+import { type SearchFilters } from "@/lib/search/use-search-filters";
 
 type SearchParams =
 	| GetConesGeojson.SearchParams
 	| GetLinesPointsGeojson.SearchParams
 	| GetSpatialCoveragesGeojson.SearchParams;
 
-export function useGeoMapSearchParams(): ComputedRef<SearchParams> {
-	const { searchFilters } = useSearchFilters();
-
+export function useGeoMapSearchParams(
+	searchFilters: ComputedRef<SearchFilters>,
+): ComputedRef<SearchParams> {
 	const searchParams = computed<SearchParams>(() => {
 		function getDateFilters() {
 			const [start, end] = Array.isArray(searchFilters.value["date-range"])

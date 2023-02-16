@@ -1,10 +1,11 @@
-import { computed } from "vue";
+import { type ComputedRef, computed } from "vue";
 
 import type { GetCaseStudies } from "@/api";
-import { useCaseStudiesSearchFilters } from "@/lib/search/use-case-studies-search-filters";
+import { type SearchFilters } from "@/lib/search/use-case-studies-search-filters";
 
-export function useCaseStudiesSearchParams() {
-	const { searchFilters } = useCaseStudiesSearchFilters();
+export function useCaseStudiesSearchParams(
+	searchFilters: ComputedRef<SearchFilters>,
+): ComputedRef<GetCaseStudies.SearchParams> {
 	const searchParams = computed<GetCaseStudies.SearchParams>(() => {
 		const searchParams: GetCaseStudies.SearchParams = {
 			has_stelle__text__autor: searchFilters.value.author,

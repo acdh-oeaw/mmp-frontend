@@ -2,11 +2,11 @@ import { type ComputedRef, computed } from "vue";
 
 import type { GetPassages } from "@/api";
 import { isNonEmptyArray } from "@/lib/is-nonempty-array";
-import { useSearchFilters } from "@/lib/search/use-search-filters";
+import { type SearchFilters } from "@/lib/search/use-search-filters";
 
-export function usePassagesSearchParams(): ComputedRef<GetPassages.SearchParams> {
-	const { searchFilters } = useSearchFilters();
-
+export function usePassagesSearchParams(
+	searchFilters: ComputedRef<SearchFilters>,
+): ComputedRef<GetPassages.SearchParams> {
 	const searchParams = computed<GetPassages.SearchParams>(() => {
 		function getDateFilters() {
 			const [start, end] = Array.isArray(searchFilters.value["date-range"])

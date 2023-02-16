@@ -3,6 +3,7 @@ import { assert } from "@stefanprobst/assert";
 import { keyByToMap } from "@stefanprobst/key-by";
 import { HttpError } from "@stefanprobst/request";
 import { valueToEstree } from "estree-util-value-to-estree";
+import { H3Error } from "h3";
 import type * as Hast from "hast";
 import type * as _Mdxast from "remark-mdx";
 import { type Transformer } from "unified";
@@ -28,8 +29,10 @@ function withReplacedIframes(): Transformer<Hast.Root> {
 			/** The GitHub pages deployment, which is referenced in iframes, uses hash router. */
 			const hash = new URL(src).hash.slice(1);
 			const url = new URL(hash, "https://n");
+
+			const type = url.pathname.split("/").filter(Boolean).at(-1);
 			const visualisation = {
-				type: url.pathname.split("/").filter(Boolean).at(-1),
+				type,
 				params: {
 					author: url.searchParams.getAll("Author").map(Number),
 					"case-study": url.pathname.startsWith("/studies")
@@ -52,7 +55,7 @@ function withReplacedIframes(): Transformer<Hast.Root> {
 					{
 						type: "mdxJsxAttribute",
 						name: "caption",
-						value: iframeAttributes.get("name")?.value,
+						value: iframeAttributes.get("name")?.value ?? "",
 					},
 					{
 						type: "mdxJsxAttribute",
@@ -88,6 +91,23 @@ function withReplacedIframes(): Transformer<Hast.Root> {
 	};
 }
 
+function withNoStyleAttributes(): Transformer<Hast.Root> {
+	return function transformer(tree) {
+		visit(tree, function onIframe(element) {
+			if (element.type !== "mdxJsxFlowElement" && element.type !== "mdxJsxTextElement") return;
+
+			const index = element.attributes.findIndex((attribute) => {
+				assert(attribute.type === "mdxJsxAttribute");
+				return attribute.name === "style";
+			});
+
+			if (index !== -1) {
+				element.attributes.splice(index, 1);
+			}
+		});
+	};
+}
+
 const schema = z.object({ id: z.coerce.number().int() });
 
 export default defineEventHandler(async (event) => {
@@ -100,7 +120,10 @@ export default defineEventHandler(async (event) => {
 	try {
 		const story = await getCaseStudyById({ id: params.data.id });
 		const html = story.story_map;
-		assert(isNonEmptyString(html));
+
+		if (!isNonEmptyString(html)) {
+			throw createError({ statusCode: 404 });
+		}
 
 		/**
 		 * We assume that the html returned by the backend can be parsed as mdx.
@@ -109,13 +132,19 @@ export default defineEventHandler(async (event) => {
 			await compile(html, {
 				development: false,
 				outputFormat: "function-body",
-				rehypePlugins: [withReplacedIframes],
+				rehypePlugins: [withReplacedIframes, withNoStyleAttributes],
 			}),
 		);
 
 		return { code };
 	} catch (error) {
-		const statusCode = error instanceof HttpError ? error.response.status : 500;
+		const statusCode =
+			error instanceof HttpError
+				? error.response.status
+				: error instanceof H3Error
+				? error.statusCode
+				: 500;
+
 		throw createError({ statusCode });
 	}
 });

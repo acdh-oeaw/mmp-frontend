@@ -1,14 +1,8 @@
 <script lang="ts" setup>
 import { computed } from "vue";
 
-import {
-	type GeojsonLayer,
-	useCaseStudies,
-	useConesGeojson,
-	useLinesPointsGeojson,
-	useSpatialCoveragesGeojson,
-} from "@/api";
-import { useGeoMapSearchParams } from "@/lib/search/use-geo-map-search-params";
+import { type GeojsonLayer, useCaseStudies } from "@/api";
+import { useGeoMap } from "@/lib/geo-map/use-geo-map";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
 import { useSelection } from "@/lib/search/use-selection";
 import { useHead } from "#imports";
@@ -20,36 +14,10 @@ useHead({
 	meta: [{ property: "og:title", content: title }],
 });
 
-const searchParams = useGeoMapSearchParams();
-const areasQuery = useSpatialCoveragesGeojson(searchParams);
-const conesQuery = useConesGeojson(searchParams);
-const linesPointsQuery = useLinesPointsGeojson(searchParams);
-const isLoading = computed(() => {
-	return [areasQuery, conesQuery, linesPointsQuery].some((query) => {
-		return query.isInitialLoading.value;
-	});
-});
-const isFetching = computed(() => {
-	return [areasQuery, conesQuery, linesPointsQuery].some((query) => {
-		return query.isFetching.value;
-	});
-});
-const isError = computed(() => {
-	return [areasQuery, conesQuery, linesPointsQuery].some((query) => {
-		return query.isError.value;
-	});
-});
-const areas = computed(() => {
-	return areasQuery.data.value?.features ?? [];
-});
-const cones = computed(() => {
-	return conesQuery.data.value?.features ?? [];
-});
-const linesPoints = computed(() => {
-	return linesPointsQuery.data.value?.features ?? [];
-});
-
 const { searchFilters } = useSearchFilters();
+const { areas, cones, linesPoints, isFetching, isEmpty, isError, isLoading } =
+	useGeoMap(searchFilters);
+
 const caseStudiesSearchParams = computed(() => {
 	return { ids: searchFilters.value["case-study"].join(",") };
 });
@@ -75,7 +43,7 @@ const selectedKeys = computed(() => {
 </script>
 
 <template>
-	<div class="h-full w-full max-w-7xl px-8 py-4">
+	<div class="relative mx-auto h-full w-full max-w-7xl px-8 py-4">
 		<h2 class="sr-only">Geo visualisation</h2>
 
 		<template v-if="isLoading">
@@ -86,7 +54,7 @@ const selectedKeys = computed(() => {
 			<ErrorMessage>Failed to load map.</ErrorMessage>
 		</template>
 
-		<template v-else-if="areasQuery.data.value?.count === 0">
+		<template v-else-if="isEmpty">
 			<NothingFoundMessage></NothingFoundMessage>
 		</template>
 

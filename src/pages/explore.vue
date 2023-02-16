@@ -16,7 +16,7 @@ const links = {
 		<h1 class="sr-only">Explore the data</h1>
 
 		<aside>
-			<div class="max-w-7xl px-8 py-4">
+			<div class="mx-auto w-full max-w-7xl px-8 py-4">
 				<PassageSearchForm />
 			</div>
 		</aside>

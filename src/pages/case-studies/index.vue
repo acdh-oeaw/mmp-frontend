@@ -7,6 +7,7 @@ import ErrorMessage from "@/components/error-message.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import MainContent from "@/components/main-content.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
+import { useCaseStudiesSearchFilters } from "@/lib/search/use-case-studies-search-filters";
 import { useCaseStudiesSearchParams } from "@/lib/search/use-case-studies-search-params";
 import { NuxtLink } from "#components";
 import { useHead } from "#imports";
@@ -18,7 +19,8 @@ useHead({
 	meta: [{ property: "og:title", content: title }],
 });
 
-const searchParams = useCaseStudiesSearchParams();
+const { searchFilters } = useCaseStudiesSearchFilters();
+const searchParams = useCaseStudiesSearchParams(searchFilters);
 const caseStudiesQuery = useCaseStudies(searchParams);
 const isLoading = caseStudiesQuery.isInitialLoading;
 const isFetching = caseStudiesQuery.isFetching;

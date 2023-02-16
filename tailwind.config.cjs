@@ -1,6 +1,7 @@
 /** @typedef {import('tailwindcss').Config} TailwindConfig */
 
 const colors = require("tailwindcss/colors");
+const typography = require("@tailwindcss/typography");
 
 const neutral = colors.slate;
 const negative = colors.red;
@@ -10,7 +11,7 @@ const background = "#f1f5fa";
 /** @type {TailwindConfig} */
 const config = {
 	content: ["./src/**/*.@(css|ts|vue)"],
-	plugins: [],
+	plugins: [typography],
 	theme: {
 		extend: {
 			colors: {

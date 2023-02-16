@@ -1,14 +1,13 @@
 <script lang="ts" setup>
 import { computed } from "vue";
 
-import { useKeywordByAuthorGraph } from "@/api";
 import ErrorMessage from "@/components/error-message.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NetworkGraph from "@/components/network-graph.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import VisualisationContainer from "@/components/visualisation-container.vue";
-import { createGraph } from "@/lib/network-graph/create-graph";
-import { useNetworkGraphSearchParams } from "@/lib/search/use-network-graph-search-params";
+import { useNetworkGraph } from "@/lib/network-graph/use-network-graph";
+import { useSearchFilters } from "@/lib/search/use-search-filters";
 import { useSelection } from "@/lib/search/use-selection";
 import { ClientOnly } from "#components";
 import { useHead } from "#imports";
@@ -20,14 +19,8 @@ useHead({
 	meta: [{ property: "og:title", content: title }],
 });
 
-const searchParams = useNetworkGraphSearchParams();
-const graphQuery = useKeywordByAuthorGraph(searchParams);
-const isLoading = graphQuery.isInitialLoading;
-const isFetching = graphQuery.isFetching;
-const isError = graphQuery.isError;
-const graph = computed(() => {
-	return createGraph(graphQuery.data.value ?? { edges: [], nodes: [] });
-});
+const { searchFilters } = useSearchFilters();
+const { graph, isEmpty, isError, isFetching, isLoading } = useNetworkGraph(searchFilters);
 
 const { selection } = useSelection();
 const selectedKeys = computed(() => {
@@ -36,7 +29,7 @@ const selectedKeys = computed(() => {
 </script>
 
 <template>
-	<div class="h-full w-full max-w-7xl px-8 py-4">
+	<div class="relative mx-auto h-full w-full max-w-7xl px-8 py-4">
 		<h2 class="sr-only">Network-graph visualisation</h2>
 
 		<template v-if="isLoading">
@@ -47,7 +40,7 @@ const selectedKeys = computed(() => {
 			<ErrorMessage>Failed to load network graph.</ErrorMessage>
 		</template>
 
-		<template v-else-if="graph.nodes.size === 0">
+		<template v-else-if="isEmpty">
 			<NothingFoundMessage></NothingFoundMessage>
 		</template>
 

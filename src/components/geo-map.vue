@@ -14,6 +14,10 @@ import {
 } from "@/api";
 import { debounce } from "@/lib/debounce";
 
+interface GeoMapContext {
+	map: LeafletMap | null;
+}
+
 const props = defineProps<{
 	areas: Array<SpatialCoverageGeojson>;
 	cones: Array<ConeGeojson>;
@@ -31,8 +35,8 @@ const emit = defineEmits<{
 	(event: "point-hover", point: SpatialCoverage | null): void;
 }>();
 
-const context = {
-	map: null as LeafletMap | null,
+const context: GeoMapContext = {
+	map: null,
 };
 
 const elementRef = ref<HTMLElement | null>(null);
@@ -75,6 +79,6 @@ onUnmounted(() => {
 
 <template>
 	<div ref="elementRef" class="absolute inset-0 grid" data-geo-map>
-		<slot />
+		<slot :context="context" />
 	</div>
 </template>

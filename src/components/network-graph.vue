@@ -10,6 +10,10 @@ import {
 	type NetworkGraphNode,
 } from "@/lib/network-graph/network-graph.types";
 
+interface NetworkGraphContext {
+	graph: ForceGraphInstance | null;
+}
+
 const props = defineProps<{
 	graph: NetworkGraphData;
 	height: number;
@@ -22,8 +26,8 @@ const emit = defineEmits<{
 	(event: "node-hover", node: NetworkGraphNode | null): void;
 }>();
 
-const context = {
-	graph: null as ForceGraphInstance | null,
+const context: NetworkGraphContext = {
+	graph: null,
 };
 
 const elementRef = ref<HTMLElement | null>(null);
@@ -124,7 +128,7 @@ onUnmounted(() => {
 
 <template>
 	<div ref="elementRef" class="absolute inset-0 grid" data-network-graph>
-		<slot />
+		<slot :context="context" />
 	</div>
 </template>
 
