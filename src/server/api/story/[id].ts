@@ -1,6 +1,6 @@
 import { compile } from "@mdx-js/mdx";
 import { assert } from "@stefanprobst/assert";
-import { keyBy } from "@stefanprobst/key-by";
+import { keyByToMap } from "@stefanprobst/key-by";
 import { HttpError } from "@stefanprobst/request";
 import type * as Hast from "hast";
 import type * as _Mdxast from "remark-mdx";
@@ -17,15 +17,65 @@ function withReplacedIframes(): Transformer<Hast.Root> {
 			if (element.type !== "mdxJsxFlowElement" || element.name !== "iframe") return;
 			if (index == null || parent == null) return;
 
-			const attributes = keyBy(element.attributes, (attribute) => {
+			const iframeAttributes = keyByToMap(element.attributes, (attribute) => {
 				assert(attribute.type === "mdxJsxAttribute");
 				return attribute.name;
 			});
 
-			console.log(attributes["name"]);
-			console.log(attributes["src"]);
+			const src = iframeAttributes.get("src")?.value;
+			assert(typeof src === "string");
+			/** The GitHub pages deployment, which is referenced in iframes, uses hash router. */
+			const hash = new URL(src).hash.slice(1);
+			const url = new URL(hash, "https://n");
+			const visualisation = {
+				type: url.pathname.split("/").filter(Boolean).at(-1),
+				params: {
+					author: url.searchParams.getAll("Author"),
+					"case-study": url.searchParams.getAll("Use Case"),
+					keyword: url.searchParams.getAll("Keyword"),
+					passage: url.searchParams.getAll("Passage"),
+					place: url.searchParams.getAll("Place"),
+				},
+			};
 
-			parent.children[index] = { type: "text", value: "TEST" };
+			parent.children[index] = {
+				type: "mdxJsxFlowElement",
+				name: "StoryVisualisation",
+				children: [],
+				attributes: [
+					{
+						type: "mdxJsxAttribute",
+						name: "caption",
+						value: iframeAttributes.get("name")?.value,
+					},
+					{
+						type: "mdxJsxAttribute",
+						name: "type",
+						value: visualisation.type,
+					},
+					{
+						type: "mdxJsxAttribute",
+						name: "filters",
+						value: {
+							type: "mdxJsxAttributeValueExpression",
+							data: {
+								estree: {
+									type: "Program",
+									sourceType: "module",
+									comments: [],
+									body: [
+										{
+											type: "ExpressionStatement",
+											/* @ts-expect-error TODO: type */
+											expression: visualisation.params,
+										},
+									],
+								},
+							},
+						},
+					},
+				],
+			};
 
 			return SKIP;
 		});

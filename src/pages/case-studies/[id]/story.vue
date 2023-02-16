@@ -6,7 +6,7 @@ import * as runtime from "vue-jsx-runtime";
 import ErrorMessage from "@/components/error-message.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
-import Test from "@/components/test.vue";
+import StoryVisualisation from "@/components/story-visualisation.vue";
 import { useFetch, useHead, useRoute } from "#imports";
 
 const title = "Story";
@@ -37,7 +37,7 @@ const code = computed(() => {
 });
 
 const components = {
-	Test,
+	StoryVisualisation,
 };
 
 const StoryContent = code.value?.default;
