@@ -39,7 +39,7 @@ await imprintQuery.suspense();
 
 			<template v-else>
 				<!-- eslint-disable-next-line vue/no-v-html -->
-				<div v-html="imprint" />
+				<div class="prose-sm" v-html="imprint" />
 			</template>
 		</div>
 	</MainContent>

@@ -47,6 +47,7 @@
 		"zod": "^3.20.6"
 	},
 	"devDependencies": {
+		"@headlessui/tailwindcss": "^0.1.2",
 		"@stefanprobst/eslint-config": "^1.0.10",
 		"@stefanprobst/eslint-config-vue": "^1.0.2",
 		"@stefanprobst/favicons": "^2.2.1",

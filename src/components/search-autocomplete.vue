@@ -22,6 +22,7 @@ import { truncate } from "@/lib/truncate";
 
 const props = defineProps<{
 	items: Array<Item>;
+	name?: string;
 	searchTerm: string;
 	selectedKeys: Array<Item["key"]>;
 }>();
@@ -67,7 +68,9 @@ function onChangeSearchTerm(event: Event) {
 const cache = ref(new Map<Item["key"], Item>());
 
 watch(
-	props.items,
+	() => {
+		return props.items;
+	},
 	(items) => {
 		items.forEach((item) => {
 			cache.value.set(item.key, item);
@@ -87,9 +90,15 @@ const itemsByKind = computed(() => {
 		});
 	});
 
-	// TODO: sort keyword group to top
+	/** Sort keyword group to top. */
+	const sorted = new Map(
+		[...groups.entries()].sort(([a], [z]) => {
+			if (a === "keyword") return -1;
+			return a.localeCompare(z);
+		}),
+	);
 
-	return groups;
+	return sorted;
 });
 
 function onLoadItem(item: Item) {
@@ -121,6 +130,7 @@ function getKindLabel(value: Item) {
 		class="relative"
 		:model-value="props.selectedKeys"
 		multiple
+		:name="props.name"
 		@update:model-value="onChangeSelection"
 	>
 		<div class="grid gap-y-1">
