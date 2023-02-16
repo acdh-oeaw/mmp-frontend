@@ -53,8 +53,9 @@ function onChangeSelection(value: Array<Item["key"]>) {
 	emit("change-selection", value);
 }
 
-function onChangeSearchTerm(value: string) {
-	emit("change-search-term", value);
+function onChangeSearchTerm(event: Event) {
+	const element = event.currentTarget as HTMLInputElement;
+	emit("change-search-term", element.value);
 }
 
 //
@@ -86,6 +87,8 @@ const itemsByKind = computed(() => {
 		});
 	});
 
+	// TODO: sort keyword group to top
+
 	return groups;
 });
 
@@ -96,7 +99,7 @@ function onLoadItem(item: Item) {
 //
 
 function getDisplayLabel(selectedKey: unknown) {
-	return cache.value.get(selectedKey as Item["key"])?.label ?? "";
+	return cache.value.get(selectedKey as Item["key"])?.label ?? "Unknown";
 }
 
 function getRemoveButtonDisplayLabel(key: Item["key"]) {
@@ -139,7 +142,7 @@ function getKindLabel(value: Item) {
 						class="relative inline-flex items-center gap-1 overflow-hidden rounded bg-neutral-200 px-2 py-1 font-medium"
 					>
 						<template v-if="cache.has(key)">
-							<span class="relative block truncate">{{ getDisplayLabel(key) }}</span>
+							<span class="relative block truncate">{{ truncate(getDisplayLabel(key), 25) }}</span>
 							<button class="relative" @click="onRemoveSelectedKey(key)">
 								<span class="sr-only">{{ getRemoveButtonDisplayLabel(key) }}</span>
 								<XMarkIcon aria-hidden="true" class="h-3 w-3" />
@@ -158,7 +161,7 @@ function getKindLabel(value: Item) {
 						:placeholder="placeholder"
 						type="search"
 						:value="props.searchTerm"
-						@input="onChangeSearchTerm"
+						@change="onChangeSearchTerm"
 					/>
 					<ComboboxButton
 						class="absolute inset-y-0 right-0 flex items-center pr-2 text-neutral-400"
@@ -184,23 +187,34 @@ function getKindLabel(value: Item) {
 					{{ nothingFoundMessage }}
 				</div>
 				<div class="max-h-80 overflow-auto">
-					<div v-for="[key, _items] of itemsByKind" :key="key">
-						<ComboboxOption
-							v-for="item of _items"
-							v-slot="{ selected }"
-							:key="item.key"
-							:value="item.key"
-							class="ui-active:bg-neutral-100 ui-active:text-neutral-900 relative cursor-default select-none py-2 pl-10 pr-4"
+					<li v-for="[key, _items] of itemsByKind" :key="key" role="presentation">
+						<span
+							:id="key"
+							class="block px-4 py-2 text-xs font-medium uppercase tracking-wider text-neutral-500"
+							aria-hidden="true"
 						>
-							<span class="ui-selected:font-medium block truncate">{{ item.label }}</span>
-							<span
-								v-if="selected"
-								class="absolute inset-y-0 left-0 grid place-items-center pl-3 text-neutral-600"
+							{{ key }}
+						</span>
+						<ul role="group" :aria-labelledby="key">
+							<ComboboxOption
+								v-for="item of _items"
+								v-slot="{ selected }"
+								:key="item.key"
+								:value="item.key"
+								class="ui-active:bg-neutral-100 ui-active:text-neutral-900 relative cursor-default select-none py-2 pl-10 pr-4"
 							>
-								<CheckMarkIcon aria-hidden="true" class="h-5 w-5" />
-							</span>
-						</ComboboxOption>
-					</div>
+								<span class="ui-selected:font-medium block truncate">
+									{{ item.label }}
+								</span>
+								<span
+									v-if="selected"
+									class="absolute inset-y-0 left-0 grid place-items-center pl-3 text-neutral-600"
+								>
+									<CheckMarkIcon aria-hidden="true" class="h-5 w-5" />
+								</span>
+							</ComboboxOption>
+						</ul>
+					</li>
 				</div>
 			</ComboboxOptions>
 		</transition>
