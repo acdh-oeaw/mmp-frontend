@@ -4,12 +4,14 @@
 			<img
 				alt=""
 				class="absolute inset-0 h-full w-full object-cover"
-				src="@/assets/images/europe.jpg"
+				src="@/assets/images/hero.jpg"
 			/>
-			<div class="absolute inset-0 bg-gradient-to-b from-primary via-primary/75 to-primary/25" />
+			<div
+				class="absolute inset-0 bg-gradient-to-b from-neutral-900 via-neutral-900/75 to-neutral-900/25"
+			/>
 
 			<div class="relative grid justify-items-center gap-8 text-center text-white">
-				<h1 class="font-display text-8xl">Mapping Medieval Peoples</h1>
+				<h1 class="text-8xl">Mapping Medieval Peoples</h1>
 
 				<div class="grid max-w-3xl gap-4 leading-7">
 					<p class="font-bold">
@@ -31,7 +33,7 @@
 				<div class="grid grid-cols-2 gap-6">
 					<div class="grid gap-1">
 						<NuxtLink
-							class="rounded border bg-primary px-12 py-4 text-sm font-medium uppercase tracking-wider shadow-md transition hover:bg-neutral-700"
+							class="rounded border bg-neutral-900 px-12 py-4 text-sm font-medium uppercase tracking-wider shadow-md transition hover:bg-neutral-700"
 							href="/explore/search-results"
 						>
 							Search our data
@@ -41,7 +43,7 @@
 
 					<div class="grid gap-1">
 						<NuxtLink
-							class="rounded border bg-primary px-12 py-4 text-sm font-medium uppercase tracking-wider shadow-md transition hover:bg-neutral-700"
+							class="rounded border bg-neutral-900 px-12 py-4 text-sm font-medium uppercase tracking-wider shadow-md transition hover:bg-neutral-700"
 							href="/case-studies/4"
 						>
 							Read &quot;Carolingian Avaria&quot;

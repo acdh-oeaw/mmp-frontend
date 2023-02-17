@@ -19,7 +19,7 @@ function onToggleNavigationMenu() {
 </script>
 
 <template>
-	<header class="bg-primary text-white">
+	<header class="bg-neutral-900 text-white">
 		<nav
 			aria-label="Main"
 			class="mx-auto flex w-full max-w-7xl items-center justify-between gap-8 px-8 py-6"
@@ -34,7 +34,7 @@ function onToggleNavigationMenu() {
 				</button>
 
 				<NuxtLink
-					class="font-display text-3xl font-bold transition hover:text-neutral-300 md:text-4xl lg:text-5xl"
+					class="text-3xl font-extrabold transition hover:text-neutral-300 md:text-4xl lg:text-5xl"
 					href="/"
 				>
 					MMP
