@@ -33,10 +33,7 @@ function onToggleNavigationMenu() {
 					<Bars3Icon class="h-6 w-6" />
 				</button>
 
-				<NuxtLink
-					class="text-3xl font-extrabold transition hover:text-neutral-300 md:text-4xl lg:text-5xl"
-					href="/"
-				>
+				<NuxtLink class="text-3xl font-bold transition hover:text-neutral-300 md:text-4xl" href="/">
 					MMP
 				</NuxtLink>
 			</div>

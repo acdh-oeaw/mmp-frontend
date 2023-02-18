@@ -13,11 +13,19 @@ const props = defineProps<{
 	width: number;
 }>();
 
+const emit = defineEmits<{
+	(event: "ready", cloud: null): void;
+}>();
+
 const context: WordCloudContext = {
 	cloud: null,
 };
 
 const elementRef = ref<HTMLElement | null>(null);
+
+onMounted(() => {
+	emit("ready", context.cloud);
+});
 </script>
 
 <template>

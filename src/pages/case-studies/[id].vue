@@ -1,6 +1,14 @@
 <script lang="ts" setup>
 import MainContent from "@/components/main-content.vue";
 import { NuxtLink, NuxtPage } from "#components";
+import { useHead } from "#imports";
+
+const title = "Case study";
+
+useHead({
+	title,
+	meta: [{ property: "og:title", content: title }],
+});
 
 const links = {
 	timeline: { href: "timeline", label: "Timeline" },
@@ -14,7 +22,7 @@ const links = {
 
 <template>
 	<div class="grid h-full grid-rows-[auto_auto_1fr]">
-		<h1>Case study</h1>
+		<h1 class="sr-only">Case study</h1>
 
 		<nav aria-label="Case study">
 			<ul class="flex flex-wrap justify-center gap-8" role="list">

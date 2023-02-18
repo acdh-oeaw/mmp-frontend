@@ -3,13 +3,16 @@ import { MagnifyingGlassIcon } from "@heroicons/vue/24/outline";
 import { computed, ref, watch } from "vue";
 
 import { type GetAutoComplete, useAutoComplete } from "@/api";
+import DatasetSelect from "@/components/dataset-select.vue";
+import QueryModeSelect from "@/components/query-mode-select.vue";
 import SearchAutocomplete from "@/components/search-autocomplete.vue";
+import SearchAutocompleteLoadingItem from "@/components/search-autocomplete-loading-item.vue";
+import { debounce } from "@/lib/debounce";
 import { createSearchFilterKey } from "@/lib/search/create-search-filter-key";
 import { createResourceKey, splitResourceKey } from "@/lib/search/resource-key";
 import type { Item } from "@/lib/search/search.types";
 import type { SearchFilters } from "@/lib/search/use-search-filters";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
-// import { usePassageSearchFormSelection } from '@/lib/search/use-search-form-selection';
 
 const { searchFilters, setSearchFilters } = useSearchFilters();
 const selectedKeys = ref<Array<Item["key"]>>([]);
@@ -49,6 +52,8 @@ function onChangeSearchTerm(value: string) {
 
 //
 
+// TODO: debounce search term change
+
 const searchParams = computed<GetAutoComplete.SearchParams>(() => {
 	return {
 		kind: ["autor", "keyword", "ort", "stelle", "usecase"],
@@ -59,10 +64,10 @@ const searchParams = computed<GetAutoComplete.SearchParams>(() => {
 });
 
 const autoCompleteQuery = useAutoComplete(searchParams);
-const _isFetching = computed(() => {
+const isFetching = computed(() => {
 	return autoCompleteQuery.isFetching.value;
 });
-const _isLoading = computed(() => {
+const isLoading = computed(() => {
 	return autoCompleteQuery.isInitialLoading.value;
 });
 const items = computed(() => {
@@ -79,6 +84,7 @@ function onSubmit() {
 		keyword: [],
 		passage: [],
 		place: [],
+		offset: 0,
 	};
 
 	selectedKeys.value.forEach((key) => {
@@ -89,23 +95,39 @@ function onSubmit() {
 
 	setSearchFilters(nextSearchFilters);
 }
+
+const debouncedSubmit = debounce(onSubmit);
+watch(selectedKeys, debouncedSubmit);
 </script>
 
 <template>
-	<form novalidate role="search" @submit.prevent="onSubmit">
-		<SearchAutocomplete
-			:items="items"
-			:search-term="searchTerm"
-			:selected-keys="selectedKeys"
-			@change-selection="onChangeSelection"
-			@change-search-term="onChangeSearchTerm"
-		>
-			<template #loading-item="{ loadItem: onLoadItem }">
-				<!--  -->
-			</template>
-		</SearchAutocomplete>
+	<form
+		class="relative grid grid-cols-[1fr_auto] gap-4 rounded-lg bg-white p-4 shadow-lg"
+		novalidate
+		role="search"
+		@submit.prevent="onSubmit"
+	>
+		<div class="grid items-center gap-4">
+			<SearchAutocomplete
+				:items="items"
+				:search-term="searchTerm"
+				:selected-keys="selectedKeys"
+				:status="isFetching ? 'fetching' : isLoading ? 'loading' : 'idle'"
+				@change-selection="onChangeSelection"
+				@change-search-term="onChangeSearchTerm"
+			>
+				<template #loading-item="{ loadItem: onLoadItem, id, kind }">
+					<SearchAutocompleteLoadingItem :id="id" :kind="kind" @load-item="onLoadItem" />
+				</template>
+			</SearchAutocomplete>
 
-		<button class="flex items-center gap-2" type="submit">
+			<div class="flex items-center gap-4">
+				<DatasetSelect />
+				<QueryModeSelect />
+			</div>
+		</div>
+
+		<button class="flex items-center gap-2 p-4" type="submit">
 			<span class="md:hidden">Search</span>
 			<MagnifyingGlassIcon class="h-6 w-6" />
 		</button>

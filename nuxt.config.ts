@@ -35,6 +35,7 @@ export default defineNuxtConfig({
 	imports: {
 		autoImport: false,
 	},
+	modules: ["@nuxt/image-edge"],
 	postcss: {
 		plugins: {
 			"postcss-custom-media": {},

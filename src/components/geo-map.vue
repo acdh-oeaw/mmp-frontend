@@ -33,6 +33,7 @@ const emit = defineEmits<{
 	(event: "area-hover", area: SpatialCoverage | null): void;
 	(event: "point-click", point: SpatialCoverage | null): void;
 	(event: "point-hover", point: SpatialCoverage | null): void;
+	(event: "ready", map: LeafletMap): void;
 }>();
 
 const context: GeoMapContext = {
@@ -42,6 +43,7 @@ const context: GeoMapContext = {
 const elementRef = ref<HTMLElement | null>(null);
 
 onMounted(async () => {
+	/** `leaflet` assumes `window` global. */
 	const createMap = await import("leaflet").then((module) => {
 		return module.map;
 	});
@@ -49,6 +51,8 @@ onMounted(async () => {
 	if (elementRef.value == null) return;
 
 	context.map = createMap(elementRef.value);
+
+	emit("ready", context.map);
 });
 
 const resize = debounce((width: number, height: number) => {

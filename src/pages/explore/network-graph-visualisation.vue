@@ -1,11 +1,13 @@
 <script lang="ts" setup>
-import { computed } from "vue";
+import { type ForceGraphInstance } from "force-graph";
+import { computed, ref } from "vue";
 
 import ErrorMessage from "@/components/error-message.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NetworkGraph from "@/components/network-graph.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import VisualisationContainer from "@/components/visualisation-container.vue";
+import { type NetworkGraphNode } from "@/lib/network-graph/network-graph.types";
 import { useNetworkGraph } from "@/lib/network-graph/use-network-graph";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
 import { useSelection } from "@/lib/search/use-selection";
@@ -26,6 +28,24 @@ const { selection } = useSelection();
 const selectedKeys = computed(() => {
 	return new Set(selection.value.selection);
 });
+
+function onNodeClick(node: NetworkGraphNode | null) {
+	//
+}
+
+function onNodeHover(node: NetworkGraphNode | null) {
+	//
+}
+
+//
+
+const context = ref({
+	graph: null as ForceGraphInstance | null,
+});
+
+function onReady(instance: ForceGraphInstance) {
+	context.value.graph = instance;
+}
 </script>
 
 <template>
@@ -60,6 +80,9 @@ const selectedKeys = computed(() => {
 						:height="height"
 						:selected-keys="selectedKeys"
 						:width="width"
+						@node-click="onNodeClick"
+						@node-hover="onNodeHover"
+						@ready="onReady"
 					/>
 				</VisualisationContainer>
 			</ClientOnly>

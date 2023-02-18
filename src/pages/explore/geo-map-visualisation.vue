@@ -1,5 +1,6 @@
 <script lang="ts" setup>
-import { computed } from "vue";
+import { type Map as LeafletMap } from "leaflet";
+import { computed, ref } from "vue";
 
 import { type GeojsonLayer, useCaseStudies } from "@/api";
 import { useGeoMap } from "@/lib/geo-map/use-geo-map";
@@ -40,6 +41,16 @@ const { selection } = useSelection();
 const selectedKeys = computed(() => {
 	return new Set(selection.value.selection);
 });
+
+//
+
+const context = ref({
+	map: null as LeafletMap | null,
+});
+
+function onReady(instance: LeafletMap) {
+	context.value.map = instance;
+}
 </script>
 
 <template>
@@ -77,6 +88,7 @@ const selectedKeys = computed(() => {
 						:lines-points="linesPoints"
 						:selected-keys="selectedKeys"
 						:width="width"
+						@ready="onReady"
 					/>
 				</VisualisationContainer>
 			</ClientOnly>

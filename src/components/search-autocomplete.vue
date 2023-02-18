@@ -15,29 +15,33 @@ import {
 import { groupByToMap } from "@stefanprobst/group-by";
 import { computed, ref, watch } from "vue";
 
+import LoadingIndicator from "@/components/loading-indicator.vue";
+import { createKey } from "@/lib/create-key";
 import { getResourceColor } from "@/lib/search/get-resource-color";
+import { splitResourceKey } from "@/lib/search/resource-key";
 import { keywordTypeLabels, kindLabels } from "@/lib/search/search.config";
 import type { Item } from "@/lib/search/search.types";
 import { truncate } from "@/lib/truncate";
+
+const label = "Search";
+const placeholder = "Search...";
+const _loadingMessage = "Loading...";
+const nothingFoundMessage = "Nothing found";
+
+//
 
 const props = defineProps<{
 	items: Array<Item>;
 	name?: string;
 	searchTerm: string;
 	selectedKeys: Array<Item["key"]>;
+	status?: "fetching" | "idle" | "loading";
 }>();
 
 const emit = defineEmits<{
 	(event: "change-search-term", searchTerm: string): void;
 	(event: "change-selection", selectedKeys: Array<Item["key"]>): void;
 }>();
-
-//
-
-const label = "Search";
-const placeholder = "Search...";
-const loadingMessage = "Loading...";
-const nothingFoundMessage = "Nothing found";
 
 //
 
@@ -50,8 +54,8 @@ function onRemoveSelectedKey(key: Item["key"]) {
 	);
 }
 
-function onChangeSelection(value: Array<Item["key"]>) {
-	emit("change-selection", value);
+function onChangeSelection(selectedKeys: Array<Item["key"]>) {
+	emit("change-selection", selectedKeys);
 }
 
 function onChangeSearchTerm(event: Event) {
@@ -92,8 +96,9 @@ const itemsByKind = computed(() => {
 
 	/** Sort keyword group to top. */
 	const sorted = new Map(
-		[...groups.entries()].sort(([a], [z]) => {
+		Array.from(groups).sort(([a], [z]) => {
 			if (a === "keyword") return -1;
+			if (z === "keyword") return 1;
 			return a.localeCompare(z);
 		}),
 	);
@@ -107,8 +112,14 @@ function onLoadItem(item: Item) {
 
 //
 
-function getDisplayLabel(selectedKey: unknown) {
-	return cache.value.get(selectedKey as Item["key"])?.label ?? "Unknown";
+function getDisplayLabel(key: Item["key"]) {
+	if (cache.value.has(key)) {
+		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+		const item = cache.value.get(key)!;
+		return item.label;
+	}
+
+	return "Unknown";
 }
 
 function getRemoveButtonDisplayLabel(key: Item["key"]) {
@@ -121,6 +132,16 @@ function getKindLabel(value: Item) {
 		return `${kindLabel} (${keywordTypeLabels[value.type].one})`;
 	}
 	return kindLabel;
+}
+
+function getColor(key: Item["key"]) {
+	if (cache.value.has(key)) {
+		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+		const item = cache.value.get(key)!;
+		return getResourceColor(item);
+	}
+
+	return undefined;
 }
 </script>
 
@@ -139,7 +160,7 @@ function getKindLabel(value: Item) {
 			</ComboboxLabel>
 
 			<div
-				class="relative flex w-full cursor-default flex-wrap items-center overflow-hidden rounded-lg bg-white text-left text-sm shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/75 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-300"
+				class="relative flex w-full cursor-default flex-wrap items-center overflow-hidden rounded-lg bg-white text-left text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/75 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-300"
 			>
 				<ul
 					v-if="selectedKeys.length > 0"
@@ -147,19 +168,25 @@ function getKindLabel(value: Item) {
 					role="list"
 				>
 					<li
-						v-for="key of selectedKeys"
-						:key="key"
+						v-for="selectedKey of selectedKeys"
+						:key="selectedKey"
 						class="relative inline-flex items-center gap-1 overflow-hidden rounded bg-neutral-200 px-2 py-1 font-medium"
+						:class="getColor(selectedKey)"
 					>
-						<template v-if="cache.has(key)">
-							<span class="relative block truncate">{{ truncate(getDisplayLabel(key), 25) }}</span>
-							<button class="relative" @click="onRemoveSelectedKey(key)">
-								<span class="sr-only">{{ getRemoveButtonDisplayLabel(key) }}</span>
+						<template v-if="cache.has(selectedKey)">
+							<span class="block truncate">{{ truncate(getDisplayLabel(selectedKey), 25) }}</span>
+							<button @click="onRemoveSelectedKey(selectedKey)">
+								<span class="sr-only">{{ getRemoveButtonDisplayLabel(selectedKey) }}</span>
 								<XMarkIcon aria-hidden="true" class="h-3 w-3" />
 							</button>
 						</template>
+
 						<template v-else>
-							<slot name="loading-item" :load-item="onLoadItem" />
+							<slot
+								name="loading-item"
+								:load-item="onLoadItem"
+								v-bind="splitResourceKey(selectedKey)"
+							/>
 						</template>
 					</li>
 				</ul>
@@ -173,6 +200,9 @@ function getKindLabel(value: Item) {
 						:value="props.searchTerm"
 						@change="onChangeSearchTerm"
 					/>
+					<div class="absolute inset-y-0 right-6 flex items-center pr-2 text-neutral-400">
+						<LoadingIndicator v-if="props.status === 'fetching'" class="h-4 w-4" />
+					</div>
 					<ComboboxButton
 						class="absolute inset-y-0 right-0 flex items-center pr-2 text-neutral-400"
 					>
@@ -182,51 +212,54 @@ function getKindLabel(value: Item) {
 			</div>
 		</div>
 
-		<transition
+		<Transition
 			leave-active-class="transition duration-100 ease-in"
 			leave-from-class="opacity-100"
 			leave-to-class="opacity-0"
 		>
 			<ComboboxOptions
-				class="absolute z-50 mt-1 w-full rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black/5 focus:outline-none"
+				class="absolute z-50 mt-1 max-h-80 w-full overflow-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black/5 transition focus-visible:outline-none"
 			>
-				<div
+				<li
 					v-if="searchTerm !== '' && props.items.length === 0"
 					class="relative cursor-default select-none py-2 px-4 text-neutral-700"
 				>
 					{{ nothingFoundMessage }}
-				</div>
-				<div class="max-h-80 overflow-auto">
-					<li v-for="[key, _items] of itemsByKind" :key="key" role="presentation">
-						<span
-							:id="key"
-							class="block px-4 py-2 text-xs font-medium uppercase tracking-wider text-neutral-500"
-							aria-hidden="true"
+				</li>
+				<li
+					v-for="[key, _items] of itemsByKind"
+					v-else
+					:key="key"
+					:class="{ 'opacity-50': props.status === 'fetching' }"
+					role="presentation"
+				>
+					<span
+						:id="createKey('autocomplete-section', key)"
+						class="block cursor-default select-none px-4 py-2 text-xs font-semibold uppercase tracking-wider text-neutral-500"
+						aria-hidden="true"
+					>
+						{{ kindLabels[key].other }}
+					</span>
+					<ul role="group" :aria-labelledby="createKey('autocomplete-section', key)">
+						<ComboboxOption
+							v-for="item of _items"
+							v-slot="{ selected }"
+							:key="item.key"
+							:value="item.key"
+							class="relative grid cursor-default select-none gap-1 py-2 pr-10 pl-4 ui-active:bg-neutral-100 ui-active:text-neutral-900"
 						>
-							{{ key }}
-						</span>
-						<ul role="group" :aria-labelledby="key">
-							<ComboboxOption
-								v-for="item of _items"
-								v-slot="{ selected }"
-								:key="item.key"
-								:value="item.key"
-								class="ui-active:bg-neutral-100 ui-active:text-neutral-900 relative cursor-default select-none py-2 pl-10 pr-4"
+							<span class="block truncate ui-selected:font-medium">{{ item.label }}</span>
+							<span class="block text-xs text-neutral-500">{{ getKindLabel(item) }}</span>
+							<span
+								v-if="selected"
+								class="absolute inset-y-0 right-0 grid place-items-center pr-3 text-neutral-600"
 							>
-								<span class="ui-selected:font-medium block truncate">
-									{{ item.label }}
-								</span>
-								<span
-									v-if="selected"
-									class="absolute inset-y-0 left-0 grid place-items-center pl-3 text-neutral-600"
-								>
-									<CheckMarkIcon aria-hidden="true" class="h-5 w-5" />
-								</span>
-							</ComboboxOption>
-						</ul>
-					</li>
-				</div>
+								<CheckMarkIcon aria-hidden="true" class="h-5 w-5" />
+							</span>
+						</ComboboxOption>
+					</ul>
+				</li>
 			</ComboboxOptions>
-		</transition>
+		</Transition>
 	</Combobox>
 </template>

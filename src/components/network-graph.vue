@@ -9,6 +9,7 @@ import {
 	type NetworkGraphData,
 	type NetworkGraphNode,
 } from "@/lib/network-graph/network-graph.types";
+import { paintNode } from "@/lib/network-graph/paint-node";
 
 interface NetworkGraphContext {
 	graph: ForceGraphInstance | null;
@@ -24,6 +25,7 @@ const props = defineProps<{
 const emit = defineEmits<{
 	(event: "node-click", node: NetworkGraphNode | null): void;
 	(event: "node-hover", node: NetworkGraphNode | null): void;
+	(event: "ready", forceGraph: ForceGraphInstance): void;
 }>();
 
 const context: NetworkGraphContext = {
@@ -67,7 +69,7 @@ onMounted(async () => {
 	// context.graph.nodeCanvasObjectMode(() => {
 	// 	return "replace";
 	// });
-	// context.graph.nodeCanvasObject(paintNode)
+	context.graph.nodeCanvasObject(paintNode);
 	// context.nodePointerAreaPaint(getNodePaintArea)
 
 	context.graph.onNodeClick((node) => {
@@ -85,6 +87,8 @@ onMounted(async () => {
 	// context.graph.d3Force("charge")?.["strength"](-100);
 
 	context.graph(elementRef.value);
+
+	emit("ready", context.graph);
 });
 
 const resize = debounce((width: number, height: number) => {

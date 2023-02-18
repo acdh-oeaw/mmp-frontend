@@ -2,6 +2,14 @@
 import MainContent from "@/components/main-content.vue";
 import PassageSearchForm from "@/components/passage-search-form.vue";
 import { NuxtLink, NuxtPage } from "#components";
+import { useHead } from "#imports";
+
+const title = "Explore";
+
+useHead({
+	title,
+	meta: [{ property: "og:title", content: title }],
+});
 
 const links = {
 	"search-results": { href: "search-results", label: "Search results" },

@@ -18,20 +18,20 @@ export const keywordTypeLabels: Record<KeywordType, Plurals> = {
 };
 
 export const colors: Record<ResourceKind, string> = {
-	autor: "bg-red-500",
-	stelle: "bg-teal-500",
-	keyword: "bg-blue-500",
-	usecase: "bg-amber-500",
-	ort: "bg-green-500",
-	text: "bg-purple-500",
+	autor: "bg-red-300",
+	stelle: "bg-teal-300",
+	keyword: "bg-blue-300",
+	usecase: "bg-amber-300",
+	ort: "bg-green-300",
+	text: "bg-purple-300",
 };
 
 export const keywordColors: Record<KeywordType, string> = {
-	Keyword: "bg-blue-500",
-	Ethnonym: "bg-teal-500",
-	Name: "bg-amber-500",
-	Region: "bg-green-500",
-	unclear: "bg-grey-500",
+	Keyword: "bg-blue-300",
+	Ethnonym: "bg-teal-300",
+	Name: "bg-amber-300",
+	Region: "bg-green-300",
+	unclear: "bg-grey-300",
 };
 
 // https://github.com/acdh-oeaw/mmp/blob/master/archiv/endpoint_views.py#L17

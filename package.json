@@ -48,6 +48,7 @@
 	},
 	"devDependencies": {
 		"@headlessui/tailwindcss": "^0.1.2",
+		"@nuxt/image-edge": "^1.0.0-27919678.2f5b64b",
 		"@stefanprobst/eslint-config": "^1.0.10",
 		"@stefanprobst/eslint-config-vue": "^1.0.2",
 		"@stefanprobst/favicons": "^2.2.1",

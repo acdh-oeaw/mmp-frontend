@@ -1,6 +1,14 @@
 <script lang="ts" setup>
 import MainContent from "@/components/main-content.vue";
 import { NuxtLink, NuxtPage } from "#components";
+import { useHead } from "#imports";
+
+const title = "Browse";
+
+useHead({
+	title,
+	meta: [{ property: "og:title", content: title }],
+});
 
 const links = {
 	authors: { href: "authors", label: "Authors" },

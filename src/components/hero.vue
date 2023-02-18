@@ -1,17 +1,18 @@
+<script lang="ts" setup>
+import heroImage from "@/assets/images/hero.jpg";
+import { NuxtImg, NuxtLink } from "#components";
+</script>
+
 <template>
 	<section>
-		<div class="relative grid place-items-center border-b px-8 py-24">
-			<img
-				alt=""
-				class="absolute inset-0 h-full w-full object-cover"
-				src="@/assets/images/hero.jpg"
-			/>
+		<div class="relative grid place-items-center border-b px-8 py-32">
+			<NuxtImg alt="" class="absolute inset-0 h-full w-full object-cover" :src="heroImage" />
 			<div
 				class="absolute inset-0 bg-gradient-to-b from-neutral-900 via-neutral-900/75 to-neutral-900/25"
 			/>
 
-			<div class="relative grid justify-items-center gap-8 text-center text-white">
-				<h1 class="text-8xl">Mapping Medieval Peoples</h1>
+			<div class="relative grid justify-items-center gap-12 text-center text-white">
+				<h1 class="text-8xl font-bold">Mapping Medieval Peoples</h1>
 
 				<div class="grid max-w-3xl gap-4 leading-7">
 					<p class="font-bold">
