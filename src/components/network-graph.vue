@@ -18,6 +18,7 @@ interface NetworkGraphContext {
 const props = defineProps<{
 	graph: NetworkGraphData;
 	height: number;
+	highlightedKeys: Set<NetworkGraphNode["key"]>;
 	selectedKeys: Set<NetworkGraphNode["key"]>;
 	width: number;
 }>();
@@ -46,6 +47,9 @@ onMounted(async () => {
 	context.graph.width(props.width);
 	context.graph.height(props.height);
 
+	context.graph.minZoom(0.25);
+	context.graph.maxZoom(10);
+
 	context.graph.nodeId("key");
 	context.graph.nodeLabel("label");
 	context.graph.linkLabel("label");
@@ -66,11 +70,11 @@ onMounted(async () => {
 	context.graph.nodeColor(getNodeColor);
 	context.graph.linkColor(getEdgeColor);
 
-	// context.graph.nodeCanvasObjectMode(() => {
-	// 	return "replace";
-	// });
+	context.graph.nodeCanvasObjectMode(() => {
+		return "replace";
+	});
 	context.graph.nodeCanvasObject(paintNode);
-	// context.nodePointerAreaPaint(getNodePaintArea)
+	// context.graph.nodePointerAreaPaint(getNodePaintArea)
 
 	context.graph.onNodeClick((node) => {
 		emit("node-click", node as NetworkGraphNode);

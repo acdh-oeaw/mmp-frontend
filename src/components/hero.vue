@@ -1,12 +1,16 @@
 <script lang="ts" setup>
-import heroImage from "@/assets/images/hero.jpg";
 import { NuxtImg, NuxtLink } from "#components";
 </script>
 
 <template>
 	<section>
 		<div class="relative grid place-items-center border-b px-8 py-32">
-			<NuxtImg alt="" class="absolute inset-0 h-full w-full object-cover" :src="heroImage" />
+			<NuxtImg
+				alt=""
+				class="absolute inset-0 h-full w-full object-cover"
+				loading="eager"
+				src="@/assets/images/hero.jpg"
+			/>
 			<div
 				class="absolute inset-0 bg-gradient-to-b from-neutral-900 via-neutral-900/75 to-neutral-900/25"
 			/>
@@ -45,7 +49,7 @@ import { NuxtImg, NuxtLink } from "#components";
 					<div class="grid gap-1">
 						<NuxtLink
 							class="rounded border bg-neutral-900 px-12 py-4 text-sm font-medium uppercase tracking-wider shadow-md transition hover:bg-neutral-700"
-							href="/case-studies/4"
+							href="/case-studies/4/timeline"
 						>
 							Read &quot;Carolingian Avaria&quot;
 						</NuxtLink>

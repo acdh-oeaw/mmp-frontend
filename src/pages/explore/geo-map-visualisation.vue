@@ -2,7 +2,7 @@
 import { type Map as LeafletMap } from "leaflet";
 import { computed, ref } from "vue";
 
-import { type GeojsonLayer, useCaseStudies } from "@/api";
+import { type GeojsonLayer, type ResourceKey, useCaseStudies } from "@/api";
 import { useGeoMap } from "@/lib/geo-map/use-geo-map";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
 import { useSelection } from "@/lib/search/use-selection";
@@ -37,10 +37,32 @@ const layers = computed(() => {
 	return layers;
 });
 
+//
+
 const { selection } = useSelection();
-const selectedKeys = computed(() => {
+const selectedKeys = computed<Set<ResourceKey>>(() => {
 	return new Set(selection.value.selection);
 });
+
+function onAreaClick(node: ResourceKey | null) {
+	//
+}
+
+function onPointClick(node: ResourceKey | null) {
+	//
+}
+
+//
+
+const highlightedKeys = ref(new Set<ResourceKey>());
+
+function onAreaHover(node: ResourceKey | null) {
+	//
+}
+
+function onPointHover(node: ResourceKey | null) {
+	//
+}
 
 //
 
@@ -84,6 +106,7 @@ function onReady(instance: LeafletMap) {
 						:areas="areas"
 						:cones="cones"
 						:height="height"
+						:highlighted-keys="highlightedKeys"
 						:layers="layers"
 						:lines-points="linesPoints"
 						:selected-keys="selectedKeys"

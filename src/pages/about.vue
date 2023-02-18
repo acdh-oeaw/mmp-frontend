@@ -12,6 +12,12 @@ useHead({
 
 <template>
 	<MainContent>
-		<h1>About</h1>
+		<div class="mx-auto w-full max-w-4xl px-8 py-4">
+			<h1 class="sr-only">About</h1>
+
+			<div class="prose-sm">
+				<!-- TODO: -->
+			</div>
+		</div>
 	</MainContent>
 </template>

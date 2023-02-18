@@ -20,6 +20,7 @@ const { areas, cones, linesPoints, isEmpty, isError, isFetching, isLoading } =
 const layers = new Map<GeojsonLayer["id"], GeojsonLayer>();
 
 const selectedKeys = new Set<ResourceKey>();
+const highlightedKeys = new Set<ResourceKey>();
 </script>
 
 <template>
@@ -51,6 +52,7 @@ const selectedKeys = new Set<ResourceKey>();
 						:areas="areas"
 						:cones="cones"
 						:height="height"
+						:highlighted-keys="highlightedKeys"
 						:layers="layers"
 						:lines-points="linesPoints"
 						:selected-keys="selectedKeys"

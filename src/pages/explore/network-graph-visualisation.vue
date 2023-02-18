@@ -24,14 +24,20 @@ useHead({
 const { searchFilters } = useSearchFilters();
 const { graph, isEmpty, isError, isFetching, isLoading } = useNetworkGraph(searchFilters);
 
+//
+
 const { selection } = useSelection();
-const selectedKeys = computed(() => {
+const selectedKeys = computed<Set<NetworkGraphNode["key"]>>(() => {
 	return new Set(selection.value.selection);
 });
 
 function onNodeClick(node: NetworkGraphNode | null) {
 	//
 }
+
+//
+
+const highlightedKeys = ref(new Set<NetworkGraphNode["key"]>());
 
 function onNodeHover(node: NetworkGraphNode | null) {
 	//
@@ -78,6 +84,7 @@ function onReady(instance: ForceGraphInstance) {
 					<NetworkGraph
 						:graph="graph"
 						:height="height"
+						:highlighted-keys="highlightedKeys"
 						:selected-keys="selectedKeys"
 						:width="width"
 						@node-click="onNodeClick"

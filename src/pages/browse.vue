@@ -11,10 +11,10 @@ useHead({
 });
 
 const links = {
-	authors: { href: "authors", label: "Authors" },
-	keywords: { href: "keywords", label: "Keywords" },
-	passages: { href: "passages", label: "Passages" },
-	places: { href: "places", label: "Places" },
+	authors: { path: "authors", label: "Authors" },
+	keywords: { path: "keywords", label: "Keywords" },
+	passages: { path: "passages", label: "Passages" },
+	places: { path: "places", label: "Places" },
 };
 </script>
 
@@ -25,7 +25,7 @@ const links = {
 		<nav aria-label="Content types">
 			<ul class="flex flex-wrap justify-center gap-8" role="list">
 				<li v-for="(link, key) of links" :key="key">
-					<NuxtLink :href="link.href">{{ link.label }}</NuxtLink>
+					<NuxtLink :href="{ path: link.path }">{{ link.label }}</NuxtLink>
 				</li>
 			</ul>
 		</nav>

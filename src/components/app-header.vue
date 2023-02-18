@@ -5,10 +5,10 @@ import { ref } from "vue";
 import { NuxtLink } from "#components";
 
 const links = {
-	explore: { href: "/explore/search-results", label: "Explore the data" },
-	browse: { href: "/browse/authors", label: "Browse the data" },
-	"case-studies": { href: "/case-studies", label: "Case studies" },
-	about: { href: "/about", label: "About the project" },
+	explore: { path: "/explore/search-results", label: "Explore the data" },
+	browse: { path: "/browse/authors", label: "Browse the data" },
+	"case-studies": { path: "/case-studies", label: "Case studies" },
+	about: { path: "/about", label: "About the project" },
 };
 
 const isNavigationMenuOpen = ref(false);
@@ -41,7 +41,7 @@ function onToggleNavigationMenu() {
 			<ul class="hidden flex-wrap justify-end md:flex lg:text-xl" role="list">
 				<li v-for="(link, key, index) of links" :key="key">
 					<span v-if="index !== 0" aria-hidden class="mx-4 select-none">&bull;</span>
-					<NuxtLink class="transition hover:text-neutral-300" :href="link.href">
+					<NuxtLink class="transition hover:text-neutral-300" :href="{ path: link.path }">
 						{{ link.label }}
 					</NuxtLink>
 				</li>

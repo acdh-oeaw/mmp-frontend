@@ -1,5 +1,8 @@
 <script lang="ts" setup>
+import { computed } from "vue";
+
 import MainContent from "@/components/main-content.vue";
+import { useSearchFilters } from "@/lib/search/use-search-filters";
 import { NuxtLink, NuxtPage } from "#components";
 import { useHead } from "#imports";
 
@@ -10,13 +13,18 @@ useHead({
 	meta: [{ property: "og:title", content: title }],
 });
 
+const { createSearchFilterParams, searchFilters } = useSearchFilters();
+const query = computed(() => {
+	return createSearchFilterParams(searchFilters.value);
+});
+
 const links = {
-	timeline: { href: "timeline", label: "Timeline" },
-	story: { href: "story", label: "Story" },
-	"network-graph-visualisation": { href: "network-graph-visualisation", label: "Network graph" },
-	"geo-map-visualisation": { href: "geo-map-visualisation", label: "Map" },
-	"word-cloud-visualisation": { href: "word-cloud-visualisation", label: "Word cloud" },
-	"texts-by-authors": { href: "texts-by-authors", label: "Texts by authors" },
+	timeline: { path: "timeline", label: "Timeline" },
+	story: { path: "story", label: "Story" },
+	"network-graph-visualisation": { path: "network-graph-visualisation", label: "Network graph" },
+	"geo-map-visualisation": { path: "geo-map-visualisation", label: "Map" },
+	"word-cloud-visualisation": { path: "word-cloud-visualisation", label: "Word cloud" },
+	"texts-by-authors": { path: "texts-by-authors", label: "Texts by authors" },
 };
 </script>
 
@@ -27,7 +35,7 @@ const links = {
 		<nav aria-label="Case study">
 			<ul class="flex flex-wrap justify-center gap-8" role="list">
 				<li v-for="(link, key) of links" :key="key">
-					<NuxtLink :href="link.href">{{ link.label }}</NuxtLink>
+					<NuxtLink :href="{ path: link.path, query }">{{ link.label }}</NuxtLink>
 				</li>
 			</ul>
 		</nav>

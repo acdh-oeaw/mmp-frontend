@@ -16,6 +16,7 @@ const searchFilters = computed(() => {
 const { graph, isEmpty, isError, isFetching, isLoading } = useNetworkGraph(searchFilters);
 
 const selectedKeys = new Set<ResourceKey>();
+const highlightedKeys = new Set<ResourceKey>();
 </script>
 
 <template>
@@ -45,6 +46,7 @@ const selectedKeys = new Set<ResourceKey>();
 					<NetworkGraph
 						:graph="graph"
 						:height="height"
+						:highlighted-keys="highlightedKeys"
 						:selected-keys="selectedKeys"
 						:width="width"
 					/>
