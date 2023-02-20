@@ -9,7 +9,7 @@ import { NuxtImg, NuxtLink } from "#components";
 				alt=""
 				class="absolute inset-0 h-full w-full object-cover"
 				loading="eager"
-				src="assets/images/hero.jpg"
+				src="/assets/images/hero.jpg"
 			/>
 			<div
 				class="absolute inset-0 bg-gradient-to-b from-neutral-900 via-neutral-900/75 to-neutral-900/25"

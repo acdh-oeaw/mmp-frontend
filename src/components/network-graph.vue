@@ -1,9 +1,10 @@
 <script lang="ts" setup>
 import { type ForceCenter, type ForceLink, type ForceManyBody } from "d3";
 import { type ForceGraphInstance, type LinkObject, type NodeObject } from "force-graph";
-import { onMounted, onUnmounted, ref, watch } from "vue";
+import { onMounted, onUnmounted, provide, ref, watch } from "vue";
 
 import { debounce } from "@/lib/debounce";
+import { key } from "@/lib/network-graph/network-graph.context";
 import {
 	type NetworkGraphContext,
 	type NetworkGraphData,
@@ -209,6 +210,8 @@ watch(
 onUnmounted(() => {
 	context.graph?._destructor();
 });
+
+provide(key, context);
 </script>
 
 <template>

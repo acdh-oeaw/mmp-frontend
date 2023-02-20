@@ -2,7 +2,7 @@
 import "leaflet/dist/leaflet.css";
 
 import { type Map as LeafletMap } from "leaflet";
-import { onMounted, onUnmounted, ref, watch } from "vue";
+import { onMounted, onUnmounted, provide, ref, watch } from "vue";
 
 import {
 	type ConeGeojson,
@@ -13,10 +13,8 @@ import {
 	type SpatialCoverageGeojson,
 } from "@/api";
 import { debounce } from "@/lib/debounce";
-
-interface GeoMapContext {
-	map: LeafletMap | null;
-}
+import { key } from "@/lib/geo-map/geo-map.context";
+import { type GeoMapContext } from "@/lib/geo-map/geo-map.types";
 
 const props = defineProps<{
 	areas: Array<SpatialCoverageGeojson>;
@@ -80,6 +78,8 @@ watch(
 onUnmounted(() => {
 	context.map?.remove();
 });
+
+provide(key, context);
 </script>
 
 <template>

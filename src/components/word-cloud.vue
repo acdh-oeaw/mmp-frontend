@@ -1,11 +1,8 @@
 <script lang="ts" setup>
-import { onMounted, ref } from "vue";
+import { onMounted, onUnmounted, provide, ref } from "vue";
 
-import { type Token } from "@/lib/word-cloud/word-cloud.types";
-
-interface WordCloudContext {
-	cloud: null;
-}
+import { key } from "@/lib/word-cloud/word-cloud.context";
+import { type Token, type WordCloudContext } from "@/lib/word-cloud/word-cloud.types";
 
 const props = defineProps<{
 	cloud: Array<Token>;
@@ -26,6 +23,12 @@ const elementRef = ref<HTMLElement | null>(null);
 onMounted(() => {
 	emit("ready", context.cloud);
 });
+
+onUnmounted(() => {
+	//
+});
+
+provide(key, context);
 </script>
 
 <template>

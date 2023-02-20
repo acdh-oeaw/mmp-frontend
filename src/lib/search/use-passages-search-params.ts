@@ -2,6 +2,7 @@ import { type ComputedRef, computed } from "vue";
 
 import type { GetPassages } from "@/api";
 import { isNonEmptyArray } from "@/lib/is-nonempty-array";
+import { hasUseCase } from "@/lib/search/has-usecase";
 import { type SearchFilters } from "@/lib/search/use-search-filters";
 
 export function usePassagesSearchParams(
@@ -41,7 +42,7 @@ export function usePassagesSearchParams(
 				searchFilters.value["keyword"],
 			use_case: searchFilters.value["case-study"],
 			text__ort: searchFilters.value["place"],
-			has_usecase: searchFilters.value["dataset"] === "case-studies",
+			has_usecase: hasUseCase(searchFilters.value["dataset"]),
 			...getDateFilters(),
 			limit: searchFilters.value["limit"],
 			offset: searchFilters.value["offset"],

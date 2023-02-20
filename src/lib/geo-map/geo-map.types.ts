@@ -1,4 +1,5 @@
 import type { Feature, Point } from "geojson";
+import { type Map as LeafletMap } from "leaflet";
 
 import type {
 	PlaceGeojsonProperty,
@@ -18,3 +19,7 @@ export type ConeOriginGeojson = Feature<
 export type SpatialCoverageCenterPoint = Feature<Point, SpatialCoverageGeojson["properties"]> & {
 	id: SpatialCoverageGeojson["id"];
 };
+
+export interface GeoMapContext {
+	map: LeafletMap | null;
+}

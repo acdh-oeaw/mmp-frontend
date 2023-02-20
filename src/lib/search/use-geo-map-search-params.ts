@@ -1,6 +1,7 @@
 import { type ComputedRef, computed } from "vue";
 
 import type { GetConesGeojson, GetLinesPointsGeojson, GetSpatialCoveragesGeojson } from "@/api";
+import { hasUseCase } from "@/lib/search/has-usecase";
 import { type SearchFilters } from "@/lib/search/use-search-filters";
 
 type SearchParams =
@@ -47,7 +48,7 @@ export function useGeoMapSearchParams(
 				searchFilters.value["keyword"],
 			stelle__use_case: searchFilters.value["case-study"],
 			stelle__text__ort: searchFilters.value["place"],
-			stelle__has_usecase: searchFilters.value["dataset"] === "case-studies",
+			stelle__has_usecase: hasUseCase(searchFilters.value["dataset"]),
 			...getDateFilters(),
 			// page: searchFilters.value['limit'] + 1,
 			// page_size: searchFilters.value['limit'] * searchFilters.value['offset'],
