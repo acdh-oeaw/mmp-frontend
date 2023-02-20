@@ -36,6 +36,11 @@ export default defineNuxtConfig({
 		autoImport: false,
 	},
 	modules: ["@nuxt/image-edge"],
+	nitro: {
+		prerender: {
+			routes: ["/", "/about", "/imprint"],
+		},
+	},
 	postcss: {
 		plugins: {
 			"postcss-custom-media": {},

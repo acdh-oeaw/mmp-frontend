@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 
 import { type Token } from "@/lib/word-cloud/word-cloud.types";
 
@@ -29,7 +29,6 @@ onMounted(() => {
 </script>
 
 <template>
-	<div ref="elementRef" class="absolute inset-0 grid" data-word-cloud>
-		<slot :context="context" />
-	</div>
+	<div ref="elementRef" class="absolute inset-0 grid" data-word-cloud />
+	<slot :context="context" />
 </template>

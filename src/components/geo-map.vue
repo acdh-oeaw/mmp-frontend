@@ -83,7 +83,6 @@ onUnmounted(() => {
 </script>
 
 <template>
-	<div ref="elementRef" class="absolute inset-0 grid" data-geo-map>
-		<slot :context="context" />
-	</div>
+	<div ref="elementRef" class="absolute inset-0 grid" data-geo-map />
+	<slot :context="context" />
 </template>

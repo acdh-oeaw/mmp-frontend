@@ -13,8 +13,10 @@ import { createResourceKey, splitResourceKey } from "@/lib/search/resource-key";
 import type { Item } from "@/lib/search/search.types";
 import type { SearchFilters } from "@/lib/search/use-search-filters";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
+import { useRouter } from "#imports";
+import { useSelection } from "~~/src/lib/search/use-selection";
 
-const { searchFilters, setSearchFilters } = useSearchFilters();
+const { createSearchFilterParams, searchFilters } = useSearchFilters();
 const selectedKeys = ref<Array<Item["key"]>>([]);
 const searchTerm = ref("");
 
@@ -76,6 +78,9 @@ const items = computed(() => {
 
 //
 
+const router = useRouter();
+const { createSelectionParams, selection } = useSelection();
+
 function onSubmit() {
 	const nextSearchFilters: SearchFilters = {
 		...searchFilters.value,
@@ -93,7 +98,12 @@ function onSubmit() {
 		nextSearchFilters[filter].push(id);
 	});
 
-	setSearchFilters(nextSearchFilters);
+	router.push({
+		query: {
+			...createSearchFilterParams(nextSearchFilters),
+			...createSelectionParams(selection.value),
+		},
+	});
 }
 
 const debouncedSubmit = debounce(onSubmit);

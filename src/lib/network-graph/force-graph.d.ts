@@ -11,6 +11,7 @@ declare module "force-graph" {
 		kind: NetworkGraphNode["kind"];
 		type?: KeywordType;
 		label: NetworkGraphNode["label"];
+		color: NetworkGraphNode["color"];
 		neighbors: NetworkGraphNode["neighbors"];
 		__pointerAreaPaint: NetworkGraphNode["__pointerAreaPaint"];
 	}
@@ -20,6 +21,7 @@ declare module "force-graph" {
 		// source: NetworkGraphNode | NetworkGraphNode["key"];
 		// target: NetworkGraphNode | NetworkGraphNode["key"];
 		// label: NetworkGraphEdge["label"];
+		color: NetworkGraphEdge["color"];
 		count: NetworkGraphEdge["count"];
 	}
 }

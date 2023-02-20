@@ -2,17 +2,22 @@
 import { type ForceGraphInstance } from "force-graph";
 import { computed, ref } from "vue";
 
+import { type KeywordType, type ResourceKind } from "@/api";
 import ErrorMessage from "@/components/error-message.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NetworkGraph from "@/components/network-graph.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import VisualisationContainer from "@/components/visualisation-container.vue";
-import { type NetworkGraphNode } from "@/lib/network-graph/network-graph.types";
+import {
+	type NetworkGraphContext,
+	type NetworkGraphData,
+	type NetworkGraphNode,
+} from "@/lib/network-graph/network-graph.types";
 import { useNetworkGraph } from "@/lib/network-graph/use-network-graph";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
 import { useSelection } from "@/lib/search/use-selection";
 import { ClientOnly } from "#components";
-import { useHead } from "#imports";
+import { useHead, useRouter } from "#imports";
 
 const title = "Network-graph visualisation";
 
@@ -21,18 +26,33 @@ useHead({
 	meta: [{ property: "og:title", content: title }],
 });
 
-const { searchFilters } = useSearchFilters();
+const { createSearchFilterParams, searchFilters } = useSearchFilters();
 const { graph, isEmpty, isError, isFetching, isLoading } = useNetworkGraph(searchFilters);
 
 //
 
-const { selection } = useSelection();
+const router = useRouter();
+const { createSelectionParams, selection } = useSelection();
 const selectedKeys = computed<Set<NetworkGraphNode["key"]>>(() => {
 	return new Set(selection.value.selection);
 });
 
 function onNodeClick(node: NetworkGraphNode | null) {
-	//
+	if (node == null) return;
+
+	const _selection = new Set(selectedKeys.value);
+	if (_selection.has(node.key)) {
+		_selection.delete(node.key);
+	} else {
+		_selection.add(node.key);
+	}
+
+	router.push({
+		query: {
+			...createSearchFilterParams(searchFilters.value),
+			...createSelectionParams({ selection: Array.from(_selection) }),
+		},
+	});
 }
 
 //
@@ -45,12 +65,71 @@ function onNodeHover(node: NetworkGraphNode | null) {
 
 //
 
-const context = ref({
-	graph: null as ForceGraphInstance | null,
+const resourceKindFilters = ref(
+	new Map<ResourceKind, boolean>([
+		["autor", true],
+		["keyword", true],
+	]),
+);
+
+const keywordtypeFilters = ref(
+	new Map<KeywordType, boolean>([
+		["Ethnonym", true],
+		["Keyword", true],
+		["Name", true],
+		["Region", true],
+	]),
+);
+
+// TODO: toggle nodeVisibility instead?
+/** Filter by selected node types. */
+const filtered = computed<NetworkGraphData>(() => {
+	const nodes: NetworkGraphData["nodes"] = new Map();
+	const edges: NetworkGraphData["edges"] = new Map();
+
+	graph.value.nodes.forEach((node) => {
+		if (resourceKindFilters.value.get(node.kind) === true) {
+			if (node.kind === "keyword") {
+				if (keywordtypeFilters.value.get(node.type) === true) {
+					nodes.set(node.key, node);
+				}
+			} else {
+				nodes.set(node.key, node);
+			}
+		}
+	});
+
+	graph.value.edges.forEach((edge) => {
+		if (nodes.has(edge.source) && nodes.has(edge.target)) {
+			edges.set(edge.key, edge);
+		}
+	});
+
+	return { nodes, edges };
+});
+
+//
+
+const context = ref<NetworkGraphContext>({
+	graph: null,
 });
 
 function onReady(instance: ForceGraphInstance) {
 	context.value.graph = instance;
+}
+
+//
+
+function onZoomToFit() {
+	context.value.graph?.zoomToFit(150);
+}
+
+function onUnPinNodes() {
+	context.value.graph?.graphData().nodes.forEach((node) => {
+		node.fx = undefined;
+		node.fy = undefined;
+	});
+	context.value.graph?.d3ReheatSimulation();
 }
 </script>
 
@@ -90,7 +169,22 @@ function onReady(instance: ForceGraphInstance) {
 						@node-click="onNodeClick"
 						@node-hover="onNodeHover"
 						@ready="onReady"
-					/>
+					>
+						<div class="absolute top-0 left-0 p-8">
+							<button
+								class="rounded bg-neutral-900 px-2 py-1 text-sm text-white"
+								@click="onZoomToFit"
+							>
+								<span>Zoom to fit</span>
+							</button>
+							<button
+								class="rounded bg-neutral-900 px-2 py-1 text-sm text-white"
+								@click="onUnPinNodes"
+							>
+								<span>Unpin nodes</span>
+							</button>
+						</div>
+					</NetworkGraph>
 				</VisualisationContainer>
 			</ClientOnly>
 		</template>

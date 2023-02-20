@@ -11,8 +11,9 @@ import { createResourceKey, splitResourceKey } from "@/lib/search/resource-key";
 import type { Item } from "@/lib/search/search.types";
 import type { SearchFilters } from "@/lib/search/use-case-studies-search-filters";
 import { useCaseStudiesSearchFilters } from "@/lib/search/use-case-studies-search-filters";
+import { useRouter } from "#imports";
 
-const { searchFilters, setSearchFilters } = useCaseStudiesSearchFilters();
+const { createSearchFilterParams, searchFilters } = useCaseStudiesSearchFilters();
 const selectedKeys = ref<Array<Item["key"]>>([]);
 const searchTerm = ref("");
 
@@ -65,6 +66,8 @@ const items = computed(() => {
 
 //
 
+const router = useRouter();
+
 function onSubmit() {
 	const nextSearchFilters: SearchFilters = {
 		...searchFilters.value,
@@ -79,7 +82,7 @@ function onSubmit() {
 		nextSearchFilters[filter].push(id);
 	});
 
-	setSearchFilters(nextSearchFilters);
+	router.push({ query: createSearchFilterParams(nextSearchFilters) });
 }
 
 const debouncedSubmit = debounce(onSubmit);

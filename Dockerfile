@@ -35,13 +35,10 @@ WORKDIR /app
 
 USER node
 
-COPY --from=build --chown=node:node /app/nuxt.config.ts ./
-COPY --from=build --chown=node:node /app/public ./public
-COPY --from=build --chown=node:node /app/.next/standalone ./
-COPY --from=build --chown=node:node /app/.next/static ./.next/static
+COPY --from=build --chown=node:node /app/.output ./
 
 ENV NODE_ENV=production
 
 EXPOSE 3000
 
-CMD ["node", "./nuxt/"]
+CMD ["node", ".output/server/index.mjs"]

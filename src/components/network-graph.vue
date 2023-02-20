@@ -1,19 +1,14 @@
 <script lang="ts" setup>
+import { type ForceCenter, type ForceLink, type ForceManyBody } from "d3";
 import { type ForceGraphInstance, type LinkObject, type NodeObject } from "force-graph";
 import { onMounted, onUnmounted, ref, watch } from "vue";
 
 import { debounce } from "@/lib/debounce";
-import { getEdgeColor } from "@/lib/network-graph/get-edge-color";
-import { getNodeColor } from "@/lib/network-graph/get-node-color";
 import {
+	type NetworkGraphContext,
 	type NetworkGraphData,
 	type NetworkGraphNode,
 } from "@/lib/network-graph/network-graph.types";
-import { paintNode } from "@/lib/network-graph/paint-node";
-
-interface NetworkGraphContext {
-	graph: ForceGraphInstance | null;
-}
 
 const props = defineProps<{
 	graph: NetworkGraphData;
@@ -59,22 +54,86 @@ onMounted(async () => {
 	context.graph.graphData({ links, nodes });
 
 	// context.graph.nodeVisibility((node) => {
-	// 	if (props.selectedNodes.size === 0) return true;
-	// 	if (props.selectedNodes.has(node.key)) return true;
+	// 	if (props.showNeighborsOnly !== true) return true
+	// 	if (props.selectedKeys.size === 0) return true;
+	// 	if (props.selectedKeys.has(node.key)) return true;
 	// 	for (const key of node.neighbors) {
-	// 		if (props.selectedNodes.has(key)) return true;
+	// 		if (props.selectedKeys.has(key)) return true;
 	// 	}
 	// 	return false;
 	// });
 
-	context.graph.nodeColor(getNodeColor);
-	context.graph.linkColor(getEdgeColor);
+	context.graph.nodeColor("color");
+	context.graph.linkColor("color");
+	// context.graph.linkWidth("count");
+	// context.graph.linkDirectionalParticles(1)
+	// context.graph.linkDirectionalParticleWidth(1.7)
 
 	context.graph.nodeCanvasObjectMode(() => {
 		return "replace";
 	});
-	context.graph.nodeCanvasObject(paintNode);
-	// context.graph.nodePointerAreaPaint(getNodePaintArea)
+	context.graph.nodeCanvasObject(function paintNode(node, ctx, globalScale) {
+		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+		const x = node.x!;
+		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+		const y = node.y!;
+		const label = node.label;
+		const color = node.color;
+
+		// FIXME:
+		// const fontSize = (Math.log2(node.neighbors.size || 1) + 18) / globalScale;
+		const fontSize = 14 / globalScale;
+		ctx.font = `${fontSize}px 'Roboto FlexVariable', ui-sans-serif, system-ui, sans-serif`;
+
+		const textWidth = ctx.measureText(label).width;
+		const dimensions = [textWidth, fontSize].map((n) => {
+			return n + fontSize * /** padding */ 0.2;
+		}) as [number, number];
+		const [width, height] = dimensions;
+
+		ctx.fillStyle = "hsl(0deg 0% 100% / 75%)";
+		ctx.fillRect(x - width / 2, y - height / 2, width, height);
+
+		ctx.textAlign = "center";
+		ctx.textBaseline = "middle";
+
+		//
+		ctx.fillStyle = color;
+		ctx.fillText(label, x, y);
+		// FIXME:
+		// if (props.selectedKeys.has(node.id)) {
+		// 	ctx.shadowColor = node.color;
+		// 	ctx.shadowBlur = 15;
+		// 	ctx.fillStyle = "#f1f5fa";
+		// 	ctx.strokeStyle = node.color;
+		// 	ctx.lineWidth = 2 / globalScale;
+		// } else {
+		// 	ctx.fillStyle = node.color;
+		// 	ctx.strokeStyle = "#f1f5fa";
+		// 	ctx.lineWidth = 1.7 / globalScale;
+		// }
+		// ctx.strokeText(label, x, y);
+		// ctx.fillText(label, x, y);
+		// ctx.shadowBlur = 0;
+		//
+
+		node.__pointerAreaPaint = dimensions;
+	});
+	context.graph.nodePointerAreaPaint(function getNodePaintArea(node, color, ctx) {
+		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+		const x = node.x!;
+		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+		const y = node.y!;
+
+		ctx.fillStyle = color;
+
+		const area = node.__pointerAreaPaint;
+
+		if (area != null) {
+			const [width, height] = area;
+			ctx.fillRect(x - width / 2, y - height / 2, width, height);
+		}
+	});
 
 	context.graph.onNodeClick((node) => {
 		emit("node-click", node as NetworkGraphNode);
@@ -88,8 +147,26 @@ onMounted(async () => {
 		node.fy = node.y;
 	});
 
-	// context.graph.d3Force("charge")?.["strength"](-100);
+	const _linkForce = context.graph.d3Force("link") as ForceLink<
+		NodeObject,
+		Required<LinkObject>
+	> | null;
+	// _linkForce?.strength((link) => {
+	// 	const source = link.source;
+	// 	assert(typeof source === "object");
+	// 	if (source.kind === "autor") {
+	// 		return 0.7;
+	// 	}
+	// 	return 0;
+	// });
 
+	const _chargeForce = context.graph.d3Force("charge") as ForceManyBody<NodeObject> | null;
+	// chargeForce?.strength(-100);
+
+	const _centerForce = context.graph.d3Force("center") as ForceCenter<NodeObject> | null;
+	// context.graph.d3Force("center", null)
+
+	context.graph.autoPauseRedraw(false);
 	context.graph(elementRef.value);
 
 	emit("ready", context.graph);
@@ -135,9 +212,8 @@ onUnmounted(() => {
 </script>
 
 <template>
-	<div ref="elementRef" class="absolute inset-0 grid" data-network-graph>
-		<slot :context="context" />
-	</div>
+	<div ref="elementRef" class="absolute inset-0 grid" data-network-graph />
+	<slot :context="context" />
 </template>
 
 <style>
