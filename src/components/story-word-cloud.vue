@@ -17,7 +17,7 @@ const { clouds, isEmpty, isError, isFetching, isLoading } = useWordClouds(search
 </script>
 
 <template>
-	<div>
+	<div class="relative h-full w-full">
 		<template v-if="isLoading">
 			<LoadingIndicator>Loading word clouds...</LoadingIndicator>
 		</template>

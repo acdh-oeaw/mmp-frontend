@@ -7,7 +7,7 @@ import { log } from "@stefanprobst/log";
 import { manifestFileName, metadata, openGraphImageName } from "~/config/metadata.config";
 
 async function generate() {
-	const publicFolder = join(process.cwd(), "src", "public");
+	const publicFolder = join(process.cwd(), "public");
 	const inputFilePath = join(process.cwd(), metadata.logo.path);
 	const outputFolder = publicFolder;
 

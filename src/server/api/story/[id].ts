@@ -15,7 +15,7 @@ import { isNonEmptyString } from "@/lib/is-nonempty-string";
 
 function withReplacedIframes(): Transformer<Hast.Root> {
 	return function transformer(tree) {
-		visit(tree, function onIframe(element, index, parent) {
+		visit(tree, function onElement(element, index, parent) {
 			if (element.type !== "mdxJsxFlowElement" || element.name !== "iframe") return;
 			if (index == null || parent == null) return;
 
@@ -30,7 +30,7 @@ function withReplacedIframes(): Transformer<Hast.Root> {
 			const hash = new URL(src).hash.slice(1);
 			const url = new URL(hash, "https://n");
 
-			const type = url.pathname.split("/").filter(Boolean).at(-1);
+			const type = url.pathname.split("/").filter(Boolean).at(1);
 			const visualisation = {
 				type,
 				params: {
@@ -93,7 +93,7 @@ function withReplacedIframes(): Transformer<Hast.Root> {
 
 function withNoStyleAttributes(): Transformer<Hast.Root> {
 	return function transformer(tree) {
-		visit(tree, function onIframe(element) {
+		visit(tree, function onElement(element) {
 			if (element.type !== "mdxJsxFlowElement" && element.type !== "mdxJsxTextElement") return;
 
 			const index = element.attributes.findIndex((attribute) => {
@@ -119,7 +119,8 @@ export default defineEventHandler(async (event) => {
 
 	try {
 		const story = await getCaseStudyById({ id: params.data.id });
-		const html = story.story_map;
+		/** @see https://github.com/mdx-js/mdx/discussions/2260 */
+		const html = story.story_map?.replace(/&nbsp;/g, "");
 
 		if (!isNonEmptyString(html)) {
 			throw createError({ statusCode: 404 });

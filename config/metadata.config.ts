@@ -32,12 +32,12 @@ export const metadata: Metadata = {
 	shortTitle: "MMP",
 	description: "Visualizing Semantic Landscapes in Early Medieval Europe",
 	logo: {
-		path: "./src/public/assets/images/logo.svg",
+		path: "./public/assets/images/logo.svg",
 		fit: "contain",
 		maskable: false,
 	},
 	image: {
-		path: "./src/public/assets/images/logo.svg",
+		path: "./public/assets/images/logo.svg",
 		fit: "contain",
 	},
 	twitter: {

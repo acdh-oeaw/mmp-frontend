@@ -20,7 +20,7 @@ const highlightedKeys = new Set<ResourceKey>();
 </script>
 
 <template>
-	<div>
+	<div class="relative h-full w-full">
 		<template v-if="isLoading">
 			<LoadingIndicator>Loading network graph...</LoadingIndicator>
 		</template>
@@ -42,6 +42,7 @@ const highlightedKeys = new Set<ResourceKey>();
 				<template v-if="isFetching">
 					<LoadingIndicator>Updating network graph...</LoadingIndicator>
 				</template>
+
 				<VisualisationContainer v-slot="{ width, height }">
 					<NetworkGraph
 						:graph="graph"

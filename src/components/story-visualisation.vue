@@ -24,7 +24,7 @@ const searchFilters = computed<SearchFilters>(() => {
 			<StoryNetworkGraph v-if="props.type === 'graph'" :search-filters="searchFilters" />
 			<StoryGeoMap v-if="props.type === 'map'" :search-filters="searchFilters" />
 			<StoryWordCloud v-if="props.type === 'cloud'" :search-filters="searchFilters" />
-			<!-- TODO: props.type === 'list' -->
+			<!-- <StorySearchResult v-if="props.type === 'list'" :search-filters="searchFilters" /> -->
 		</div>
 		<figcaption v-if="props.caption">{{ props.caption }}</figcaption>
 	</figure>

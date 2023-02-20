@@ -24,7 +24,7 @@ const highlightedKeys = new Set<ResourceKey>();
 </script>
 
 <template>
-	<div>
+	<div class="relative h-full w-full">
 		<template v-if="isLoading">
 			<LoadingIndicator>Loading map...</LoadingIndicator>
 		</template>

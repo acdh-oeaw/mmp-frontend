@@ -12,7 +12,7 @@ export default defineNuxtConfig({
 	app: {
 		head: {
 			link: [
-				{ href: "/favicons.ico", rel: "icon", sizes: "any" },
+				{ href: "/favicon.ico", rel: "icon", sizes: "any" },
 				{ href: "/apple-touch-icon.png", rel: "apple-touch-icon" },
 				{ href: "/" + manifestFileName, rel: "manifest" },
 			],
@@ -32,15 +32,13 @@ export default defineNuxtConfig({
 		"tailwindcss/tailwind.css",
 		"@/styles/index.css",
 	],
+	dir: {
+		public: "../public",
+	},
 	imports: {
 		autoImport: false,
 	},
 	modules: ["@nuxt/image-edge"],
-	nitro: {
-		prerender: {
-			routes: ["/", "/about", "/imprint"],
-		},
-	},
 	postcss: {
 		plugins: {
 			"postcss-custom-media": {},
@@ -48,6 +46,11 @@ export default defineNuxtConfig({
 			tailwindcss: {},
 			autoprefixer: {},
 		},
+	},
+	routeRules: {
+		"/": { static: true },
+		"/about": { static: true },
+		"/imprint": { static: true },
 	},
 	srcDir: "./src/",
 	typescript: {
