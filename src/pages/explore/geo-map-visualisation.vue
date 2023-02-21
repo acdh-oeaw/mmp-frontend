@@ -3,9 +3,16 @@ import { type Map as LeafletMap } from "leaflet";
 import { computed, ref } from "vue";
 
 import { type GeojsonLayer, type ResourceKey, useCaseStudies } from "@/api";
+import ErrorMessage from "@/components/error-message.vue";
+import GeoMap from "@/components/geo-map.vue";
+import LoadingIndicator from "@/components/loading-indicator.vue";
+import NothingFoundMessage from "@/components/nothing-found-message.vue";
+import VisualisationContainer from "@/components/visualisation-container.vue";
+import { type GeoMapContext } from "@/lib/geo-map/geo-map.types";
 import { useGeoMap } from "@/lib/geo-map/use-geo-map";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
 import { useSelection } from "@/lib/search/use-selection";
+import { ClientOnly } from "#components";
 import { useHead } from "#imports";
 
 const title = "Geo visualisation";
@@ -66,8 +73,8 @@ function onPointHover(node: ResourceKey | null) {
 
 //
 
-const context = ref({
-	map: null as LeafletMap | null,
+const context = ref<GeoMapContext>({
+	map: null,
 });
 
 function onReady(instance: LeafletMap) {

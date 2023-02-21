@@ -1,10 +1,10 @@
 <script lang="ts" setup>
 import ErrorMessage from "@/components/error-message.vue";
+import KeywordTag from "@/components/keyword-tag.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import { getAuthorLabel, getDateRangeLabel } from "@/lib/get-label";
 import { createResourceKey } from "@/lib/search/resource-key";
-import { keywordColors } from "@/lib/search/search.config";
 import { usePassagesSearch } from "@/lib/search/use-passages-search";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
 import { useSelection } from "@/lib/search/use-selection";

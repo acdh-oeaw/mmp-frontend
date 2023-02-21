@@ -3,8 +3,10 @@ import ErrorMessage from "@/components/error-message.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import VisualisationContainer from "@/components/visualisation-container.vue";
+import WordClouds from "@/components/word-clouds.vue";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
 import { useWordClouds } from "@/lib/word-cloud/use-word-clouds";
+import { ClientOnly } from "#components";
 import { useHead } from "#imports";
 
 const title = "Word-cloud visualisation";

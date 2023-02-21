@@ -8,8 +8,9 @@ import LoadingIndicator from "@/components/loading-indicator.vue";
 import NetworkGraph from "@/components/network-graph.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import OverlayPanel from "@/components/overlay-panel.vue";
+import OverlayPanelButton from "@/components/overlay-panel-button.vue";
 import VisualisationContainer from "@/components/visualisation-container.vue";
-import { saveAsCsv, saveAsGexf, saveAsImage, saveAsJson } from "@/lib/network-graph/export-data";
+import { saveAsCsv, saveAsGexf, saveAsImage } from "@/lib/network-graph/export-data";
 import {
 	type NetworkGraphContext,
 	type NetworkGraphData,
