@@ -1,9 +1,7 @@
-import type { Word } from "d3-cloud";
+import { type Chart } from "highcharts";
 
-export type Token = { text: string; value: number };
-
-export type WordToken = Token & Word;
+export type Token = { name: string; weight: number };
 
 export interface WordCloudContext {
-	cloud: null;
+	cloud: Chart | null;
 }

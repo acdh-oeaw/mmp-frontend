@@ -1,17 +1,23 @@
 <script lang="ts" setup>
+import { type Chart } from "highcharts";
+import * as Highcharts from "highcharts";
+import WordCloudChart from "highcharts/modules/wordcloud";
 import { onMounted, onUnmounted, provide, ref } from "vue";
 
 import { key } from "@/lib/word-cloud/word-cloud.context";
 import { type Token, type WordCloudContext } from "@/lib/word-cloud/word-cloud.types";
 
+WordCloudChart(Highcharts);
+
 const props = defineProps<{
 	cloud: Array<Token>;
+	title: string;
 	height: number;
 	width: number;
 }>();
 
 const emit = defineEmits<{
-	(event: "ready", cloud: null): void;
+	(event: "ready", cloud: Chart): void;
 }>();
 
 const context: WordCloudContext = {
@@ -21,11 +27,22 @@ const context: WordCloudContext = {
 const elementRef = ref<HTMLElement | null>(null);
 
 onMounted(() => {
+	if (elementRef.value == null) return;
+
+	context.cloud = Highcharts.chart(elementRef.value, {
+		chart: { width: props.width, height: props.height, backgroundColor: "transparent" },
+		// colors: [],
+		legend: { enabled: false },
+		series: [{ name: "Occurrences", data: props.cloud, type: "wordcloud" }],
+		title: { text: props.title },
+		tooltip: { enabled: false },
+	});
+
 	emit("ready", context.cloud);
 });
 
 onUnmounted(() => {
-	//
+	context.cloud?.destroy();
 });
 
 provide(key, context);
