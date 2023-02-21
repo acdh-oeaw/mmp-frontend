@@ -20,6 +20,7 @@ export function useTokenCloud(searchFilters: ComputedRef<SearchFilters>) {
 
 	return {
 		cloud,
+		cloudQuery,
 		isEmpty,
 		isError,
 		isFetching,

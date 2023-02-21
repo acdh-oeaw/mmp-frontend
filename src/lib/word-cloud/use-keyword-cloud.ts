@@ -28,6 +28,7 @@ export function useKeywordCloud(searchFilters: ComputedRef<SearchFilters>) {
 
 	return {
 		cloud,
+		cloudQuery,
 		isEmpty,
 		isError,
 		isFetching,

@@ -33,6 +33,8 @@ export function useWordClouds(searchFilters: ComputedRef<SearchFilters>) {
 
 	return {
 		clouds,
+		tokenCloudQuery: tokens.cloudQuery,
+		keywordCloudQuery: keywords.cloudQuery,
 		isEmpty,
 		isError,
 		isFetching,

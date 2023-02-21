@@ -7,6 +7,7 @@ import ErrorMessage from "@/components/error-message.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NetworkGraph from "@/components/network-graph.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
+import OverlayPanel from "@/components/overlay-panel.vue";
 import VisualisationContainer from "@/components/visualisation-container.vue";
 import {
 	type NetworkGraphContext,
@@ -170,20 +171,10 @@ function onUnPinNodes() {
 						@node-hover="onNodeHover"
 						@ready="onReady"
 					>
-						<div class="absolute top-0 left-0 p-8">
-							<button
-								class="rounded bg-neutral-900 px-2 py-1 text-sm text-white"
-								@click="onZoomToFit"
-							>
-								<span>Zoom to fit</span>
-							</button>
-							<button
-								class="rounded bg-neutral-900 px-2 py-1 text-sm text-white"
-								@click="onUnPinNodes"
-							>
-								<span>Unpin nodes</span>
-							</button>
-						</div>
+						<OverlayPanel>
+							<OverlayPanelButton label="Zoom to fit" @click="onZoomToFit" />
+							<OverlayPanelButton label="Unpin nodes" @click="onUnPinNodes" />
+						</OverlayPanel>
 					</NetworkGraph>
 				</VisualisationContainer>
 			</ClientOnly>

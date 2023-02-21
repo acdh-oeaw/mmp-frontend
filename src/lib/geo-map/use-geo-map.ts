@@ -40,8 +40,11 @@ export function useGeoMap(searchFilters: ComputedRef<SearchFilters>) {
 
 	return {
 		areas,
+		areasQuery,
 		cones,
+		conesQuery,
 		linesPoints,
+		linesPointsQuery,
 		isEmpty,
 		isError,
 		isFetching,

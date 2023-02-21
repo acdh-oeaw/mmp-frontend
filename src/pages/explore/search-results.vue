@@ -1,14 +1,11 @@
 <script lang="ts" setup>
-import { computed } from "vue";
-
-import { usePassages } from "@/api";
 import ErrorMessage from "@/components/error-message.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import { getAuthorLabel, getDateRangeLabel } from "@/lib/get-label";
 import { createResourceKey } from "@/lib/search/resource-key";
 import { keywordColors } from "@/lib/search/search.config";
-import { usePassagesSearchParams } from "@/lib/search/use-passages-search-params";
+import { usePassagesSearch } from "@/lib/search/use-passages-search";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
 import { useSelection } from "@/lib/search/use-selection";
 import { NuxtLink } from "#components";
@@ -22,15 +19,8 @@ useHead({
 });
 
 const { searchFilters, createSearchFilterParams } = useSearchFilters();
-const searchParams = usePassagesSearchParams(searchFilters);
-const passagesQuery = usePassages(searchParams);
-const isLoading = passagesQuery.isInitialLoading;
-const isFetching = passagesQuery.isFetching;
-const isError = passagesQuery.isError;
-const passages = computed(() => {
-	return passagesQuery.data.value?.results ?? [];
-});
-
+const { passages, passagesQuery, isEmpty, isError, isFetching, isLoading } =
+	usePassagesSearch(searchFilters);
 const { createSelectionParams } = useSelection();
 
 const columns = {
@@ -55,7 +45,7 @@ const columns = {
 			<ErrorMessage>Failed to load search results.</ErrorMessage>
 		</template>
 
-		<template v-else-if="passages.length === 0">
+		<template v-else-if="isEmpty">
 			<NothingFoundMessage></NothingFoundMessage>
 		</template>
 

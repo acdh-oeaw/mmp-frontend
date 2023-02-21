@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { schemeCategory10 } from "d3";
 import { type Chart } from "highcharts";
 import * as Highcharts from "highcharts";
 import WordCloudChart from "highcharts/modules/wordcloud";
@@ -31,7 +32,7 @@ onMounted(() => {
 
 	context.cloud = Highcharts.chart(elementRef.value, {
 		chart: { width: props.width, height: props.height, backgroundColor: "transparent" },
-		// colors: [],
+		colors: [...schemeCategory10],
 		legend: { enabled: false },
 		series: [{ name: "Occurrences", data: props.cloud, type: "wordcloud" }],
 		title: { text: props.title },

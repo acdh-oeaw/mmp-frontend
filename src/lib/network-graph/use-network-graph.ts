@@ -20,6 +20,7 @@ export function useNetworkGraph(searchFilters: ComputedRef<SearchFilters>) {
 
 	return {
 		graph,
+		graphQuery,
 		isEmpty,
 		isError,
 		isFetching,
