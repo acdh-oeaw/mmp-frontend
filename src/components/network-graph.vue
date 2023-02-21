@@ -35,9 +35,7 @@ onMounted(async () => {
 	if (elementRef.value == null) return;
 
 	/** `force-graph` assumes `window` global. */
-	const ForceGraph = await import("force-graph").then((module) => {
-		return module.default;
-	});
+	const { default: ForceGraph } = await import("force-graph");
 
 	context.graph = ForceGraph();
 	context.graph.width(props.width);

@@ -7,6 +7,8 @@ import ErrorMessage from "@/components/error-message.vue";
 import GeoMap from "@/components/geo-map.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
+import OverlayPanel from "@/components/overlay-panel.vue";
+import OverlayPanelButton from "@/components/overlay-panel-button.vue";
 import VisualisationContainer from "@/components/visualisation-container.vue";
 import { type GeoMapContext } from "@/lib/geo-map/geo-map.types";
 import { useGeoMap } from "@/lib/geo-map/use-geo-map";
@@ -80,6 +82,16 @@ const context = ref<GeoMapContext>({
 function onReady(instance: LeafletMap) {
 	context.value.map = instance;
 }
+
+//
+
+function onZoomIn() {
+	context.value.map?.zoomIn();
+}
+
+function onZoomOut() {
+	context.value.map?.zoomOut();
+}
 </script>
 
 <template>
@@ -119,7 +131,12 @@ function onReady(instance: LeafletMap) {
 						:selected-keys="selectedKeys"
 						:width="width"
 						@ready="onReady"
-					/>
+					>
+						<OverlayPanel position="top left">
+							<OverlayPanelButton label="Zoom in" @click="onZoomIn" />
+							<OverlayPanelButton label="Zoom out" @click="onZoomOut" />
+						</OverlayPanel>
+					</GeoMap>
 				</VisualisationContainer>
 			</ClientOnly>
 		</template>
