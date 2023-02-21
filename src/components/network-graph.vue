@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { type ForceCenter, type ForceLink, type ForceManyBody } from "d3";
 import { type ForceGraphInstance, type LinkObject, type NodeObject } from "force-graph";
-import { onMounted, onUnmounted, provide, ref, watch } from "vue";
+import { nextTick, onMounted, onUnmounted, provide, ref, watch } from "vue";
 
 import { debounce } from "@/lib/debounce";
 import { key } from "@/lib/network-graph/network-graph.context";
@@ -42,6 +42,7 @@ onMounted(async () => {
 	context.graph = ForceGraph();
 	context.graph.width(props.width);
 	context.graph.height(props.height);
+	context.graph.backgroundColor("transparent");
 
 	context.graph.minZoom(0.25);
 	context.graph.maxZoom(10);
@@ -176,8 +177,10 @@ onMounted(async () => {
 const resize = debounce((width: number, height: number) => {
 	if (context.graph == null) return;
 
-	context.graph.width(width);
-	context.graph.height(height);
+	nextTick(() => {
+		context.graph?.width(width);
+		context.graph?.height(height);
+	});
 });
 
 watch(

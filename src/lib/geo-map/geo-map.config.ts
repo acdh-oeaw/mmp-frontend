@@ -1,4 +1,4 @@
-import { latLngBounds } from "leaflet";
+import { type LatLngBoundsLiteral } from "leaflet";
 
 export const baseLayers = {
 	dare: {
@@ -59,10 +59,10 @@ export const config = {
 	baseLayer: baseLayers["esri-world-imagery"],
 };
 
-const initialBounds = latLngBounds([
+const initialBounds: LatLngBoundsLiteral = [
 	[34.016242, 5.488281],
 	[71.663663, 34.667969],
-]);
+];
 
 export const initialViewState = {
 	bounds: initialBounds,

@@ -37,6 +37,7 @@
 		"@stefanprobst/assert": "^1.0.3",
 		"@stefanprobst/group-by": "^1.1.0",
 		"@stefanprobst/key-by": "^1.0.1",
+		"@stefanprobst/pick": "^1.0.3",
 		"@stefanprobst/request": "^0.2.1",
 		"d3": "^7.8.2",
 		"estree-util-value-to-estree": "^2.1.0",

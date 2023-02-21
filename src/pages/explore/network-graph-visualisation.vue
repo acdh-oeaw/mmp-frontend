@@ -9,6 +9,7 @@ import NetworkGraph from "@/components/network-graph.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import OverlayPanel from "@/components/overlay-panel.vue";
 import VisualisationContainer from "@/components/visualisation-container.vue";
+import { saveAsCsv, saveAsGexf, saveAsImage, saveAsJson } from "@/lib/network-graph/export-data";
 import {
 	type NetworkGraphContext,
 	type NetworkGraphData,
@@ -149,6 +150,25 @@ function onUnPinNodes() {
 function onClearSelection() {
 	router.push({ query: createSearchFilterParams(searchFilters.value) });
 }
+
+//
+
+function onSaveAsImage() {
+	// UPSTREAM:
+	// saveAsImage(context.value.graph?.getContainer());
+	const container = document.querySelector("[data-network-graph]");
+	if (container != null) {
+		saveAsImage(container as HTMLElement);
+	}
+}
+
+function onSaveAsCsv() {
+	saveAsCsv(filteredGraph.value);
+}
+
+function onSaveAsGexf() {
+	saveAsGexf(filteredGraph.value);
+}
 </script>
 
 <template>
@@ -215,6 +235,11 @@ function onClearSelection() {
 									<span>{{ keywordTypeLabels[key].other }}</span>
 								</label>
 							</form>
+						</OverlayPanel>
+						<OverlayPanel position="bottom right">
+							<OverlayPanelButton label="Save as image" @click="onSaveAsImage" />
+							<OverlayPanelButton label="Save as csv" @click="onSaveAsCsv" />
+							<OverlayPanelButton label="Save as gexf" @click="onSaveAsGexf" />
 						</OverlayPanel>
 					</NetworkGraph>
 				</VisualisationContainer>
