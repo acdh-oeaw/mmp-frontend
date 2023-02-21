@@ -141,7 +141,7 @@ function getColor(key: Item["key"]) {
 		return getResourceColor(item);
 	}
 
-	return undefined;
+	return "bg-neutral-200";
 }
 </script>
 
@@ -170,7 +170,7 @@ function getColor(key: Item["key"]) {
 					<li
 						v-for="selectedKey of selectedKeys"
 						:key="selectedKey"
-						class="relative inline-flex items-center gap-1 overflow-hidden rounded bg-neutral-200 px-2 py-1 font-medium"
+						class="relative inline-flex items-center gap-1 overflow-hidden rounded px-2 py-1 font-medium"
 						:class="getColor(selectedKey)"
 					>
 						<template v-if="cache.has(selectedKey)">

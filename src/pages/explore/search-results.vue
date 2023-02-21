@@ -58,7 +58,7 @@ const columns = {
 				<LoadingIndicator>Updating search results...</LoadingIndicator>
 			</template>
 
-			<table>
+			<table class="text-sm">
 				<thead>
 					<tr>
 						<th v-for="(column, key) of columns" :key="key">{{ column.label }}</th>
@@ -107,7 +107,7 @@ const columns = {
 							{{ passage.display_label }}
 						</td>
 						<td>
-							<ul role="list">
+							<ul class="flex flex-wrap gap-0.5" role="list">
 								<li v-for="keyword of passage.key_word" :key="keyword.id">
 									<NuxtLink
 										:href="{
@@ -119,9 +119,7 @@ const columns = {
 											},
 										}"
 									>
-										<span :class="keywordColors[keyword.art]">
-											{{ keyword.stichwort }}
-										</span>
+										<KeywordTag :keyword="keyword" />
 									</NuxtLink>
 								</li>
 							</ul>

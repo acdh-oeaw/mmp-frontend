@@ -13,8 +13,8 @@ import { createResourceKey, splitResourceKey } from "@/lib/search/resource-key";
 import type { Item } from "@/lib/search/search.types";
 import type { SearchFilters } from "@/lib/search/use-search-filters";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
+import { useSelection } from "@/lib/search/use-selection";
 import { useRouter } from "#imports";
-import { useSelection } from "~~/src/lib/search/use-selection";
 
 const { createSearchFilterParams, searchFilters } = useSearchFilters();
 const selectedKeys = ref<Array<Item["key"]>>([]);
@@ -107,6 +107,7 @@ function onSubmit() {
 }
 
 const debouncedSubmit = debounce(onSubmit);
+// FIXME: this should be triggered in the form's `@change` handler, not in a watcher
 watch(selectedKeys, debouncedSubmit);
 </script>
 

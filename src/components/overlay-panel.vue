@@ -1,5 +1,36 @@
+<script lang="ts" setup>
+const props = withDefaults(
+	defineProps<{
+		position: "bottom left" | "bottom right" | "top left" | "top right";
+	}>(),
+	{ position: "bottom left" },
+);
+</script>
+
 <template>
-	<div class="absolute top-0 left-0 flex items-center gap-2 p-8">
+	<div
+		class="absolute m-2 flex items-center gap-2 rounded-md bg-white py-2 px-4 shadow-lg"
+		data-overlay-panel
+		:data-position="props.position"
+	>
 		<slot />
 	</div>
 </template>
+
+<style>
+[data-position~="top"] {
+	top: 0;
+}
+
+[data-position~="bottom"] {
+	bottom: 0;
+}
+
+[data-position~="left"] {
+	left: 0;
+}
+
+[data-position~="right"] {
+	right: 0;
+}
+</style>

@@ -15,6 +15,7 @@ import {
 	type NetworkGraphNode,
 } from "@/lib/network-graph/network-graph.types";
 import { useNetworkGraph } from "@/lib/network-graph/use-network-graph";
+import { keywordColors, keywordTypeLabels } from "@/lib/search/search.config";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
 import { useSelection } from "@/lib/search/use-selection";
 import { ClientOnly } from "#components";
@@ -60,7 +61,7 @@ function onNodeClick(node: NetworkGraphNode | null) {
 
 const highlightedKeys = ref(new Set<NetworkGraphNode["key"]>());
 
-function onNodeHover(node: NetworkGraphNode | null) {
+function onNodeHover(_node: NetworkGraphNode | null) {
 	//
 }
 
@@ -73,7 +74,7 @@ const resourceKindFilters = ref(
 	]),
 );
 
-const keywordtypeFilters = ref(
+const keywordTypeFilters = ref(
 	new Map<KeywordType, boolean>([
 		["Ethnonym", true],
 		["Keyword", true],
@@ -82,16 +83,22 @@ const keywordtypeFilters = ref(
 	]),
 );
 
-// TODO: toggle nodeVisibility instead?
+function onToggleKeywordTypeFilter(value: KeywordType, event: Event) {
+	const element = event.currentTarget as HTMLInputElement;
+	const isVisible = element.checked;
+	keywordTypeFilters.value.set(value, isVisible);
+}
+
+// TODO: toggle `nodeVisibility` instead?
 /** Filter by selected node types. */
-const filtered = computed<NetworkGraphData>(() => {
+const filteredGraph = computed<NetworkGraphData>(() => {
 	const nodes: NetworkGraphData["nodes"] = new Map();
 	const edges: NetworkGraphData["edges"] = new Map();
 
 	graph.value.nodes.forEach((node) => {
 		if (resourceKindFilters.value.get(node.kind) === true) {
 			if (node.kind === "keyword") {
-				if (keywordtypeFilters.value.get(node.type) === true) {
+				if (keywordTypeFilters.value.get(node.type) === true) {
 					nodes.set(node.key, node);
 				}
 			} else {
@@ -101,7 +108,13 @@ const filtered = computed<NetworkGraphData>(() => {
 	});
 
 	graph.value.edges.forEach((edge) => {
-		if (nodes.has(edge.source) && nodes.has(edge.target)) {
+		// FIXME: there must be a better way
+		/** `d3-force` replaces string ids with object references on init. */
+		// @ts-expect-error Mutated by `d3`.
+		const source = typeof edge.source === "string" ? edge.source : edge.source.key;
+		// @ts-expect-error Mutated by `d3`.
+		const target = typeof edge.target === "string" ? edge.target : edge.target.key;
+		if (nodes.has(source) && nodes.has(target)) {
 			edges.set(edge.key, edge);
 		}
 	});
@@ -131,6 +144,10 @@ function onUnPinNodes() {
 		node.fy = undefined;
 	});
 	context.value.graph?.d3ReheatSimulation();
+}
+
+function onClearSelection() {
+	router.push({ query: createSearchFilterParams(searchFilters.value) });
 }
 </script>
 
@@ -162,7 +179,7 @@ function onUnPinNodes() {
 
 				<VisualisationContainer v-slot="{ width, height }">
 					<NetworkGraph
-						:graph="graph"
+						:graph="filteredGraph"
 						:height="height"
 						:highlighted-keys="highlightedKeys"
 						:selected-keys="selectedKeys"
@@ -171,9 +188,33 @@ function onUnPinNodes() {
 						@node-hover="onNodeHover"
 						@ready="onReady"
 					>
-						<OverlayPanel>
+						<OverlayPanel position="top left">
 							<OverlayPanelButton label="Zoom to fit" @click="onZoomToFit" />
 							<OverlayPanelButton label="Unpin nodes" @click="onUnPinNodes" />
+							<OverlayPanelButton label="Clear selection" @click="onClearSelection" />
+						</OverlayPanel>
+						<OverlayPanel position="bottom left">
+							<form class="flex items-center gap-2 text-xs font-medium" @submit.prevent="">
+								<!-- TODO: should be a checkbox group -->
+								<label
+									v-for="[key, isVisible] of keywordTypeFilters"
+									:key="key"
+									class="flex items-center gap-1"
+								>
+									<input
+										type="checkbox"
+										:checked="isVisible"
+										:value="key"
+										@change="
+											(event) => {
+												onToggleKeywordTypeFilter(key, event);
+											}
+										"
+									/>
+									<span class="h-3 w-3 rounded" :class="keywordColors[key]" />
+									<span>{{ keywordTypeLabels[key].other }}</span>
+								</label>
+							</form>
 						</OverlayPanel>
 					</NetworkGraph>
 				</VisualisationContainer>

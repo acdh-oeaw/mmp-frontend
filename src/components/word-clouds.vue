@@ -13,10 +13,10 @@ const props = defineProps<{
 <template>
 	<div class="absolute inset-0 grid grid-cols-2" data-word-clouds>
 		<VisualisationContainer v-slot="{ width, height }">
-			<WordCloud :cloud="props.clouds.keywords" :height="height" :width="width" />
+			<WordCloud :cloud="props.clouds.keywords" :height="height" title="Keywords" :width="width" />
 		</VisualisationContainer>
 		<VisualisationContainer v-slot="{ width, height }">
-			<WordCloud :cloud="props.clouds.tokens" :height="height" :width="width" />
+			<WordCloud :cloud="props.clouds.tokens" :height="height" title="All tokens" :width="width" />
 		</VisualisationContainer>
 	</div>
 </template>
