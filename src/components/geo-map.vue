@@ -13,6 +13,7 @@ import {
 	type SpatialCoverageGeojson,
 } from "@/api";
 import { debounce } from "@/lib/debounce";
+import { config, initialViewState } from "@/lib/geo-map/geo-map.config";
 import { key } from "@/lib/geo-map/geo-map.context";
 import { type GeoMapContext } from "@/lib/geo-map/geo-map.types";
 
@@ -43,22 +44,24 @@ const elementRef = ref<HTMLElement | null>(null);
 
 onMounted(async () => {
 	/** `leaflet` assumes `window` global. */
-	const createMap = await import("leaflet").then((module) => {
-		return module.map;
-	});
+	const { map: createMap, tileLayer } = await import("leaflet");
 
 	if (elementRef.value == null) return;
 
-	context.map = createMap(elementRef.value);
+	context.map = createMap(elementRef.value, config.options).setView(initialViewState);
+
+	tileLayer(config.baseLayer.url, {
+		attribution: config.baseLayer.attribution,
+		minZoom: 2,
+	}).addTo(context.map);
 
 	emit("ready", context.map);
 });
 
-const resize = debounce((width: number, height: number) => {
+const resize = debounce((_width: number, _height: number) => {
 	if (context.map == null) return;
 
-	// context.map.width(width);
-	// context.map.height(height);
+	context.map.invalidateSize();
 });
 
 watch(
