@@ -2,7 +2,7 @@
 import "leaflet/dist/leaflet.css";
 
 import { type Map as LeafletMap } from "leaflet";
-import { onMounted, onUnmounted, provide, ref, watch } from "vue";
+import { nextTick, onMounted, onUnmounted, provide, ref, watch } from "vue";
 
 import {
 	type ConeGeojson,
@@ -48,7 +48,7 @@ onMounted(async () => {
 
 	if (elementRef.value == null) return;
 
-	context.map = createMap(elementRef.value, config.options).setView(initialViewState);
+	context.map = createMap(elementRef.value, config.options).fitBounds(initialViewState.bounds);
 
 	tileLayer(config.baseLayer.url, {
 		attribution: config.baseLayer.attribution,
@@ -61,7 +61,9 @@ onMounted(async () => {
 const resize = debounce((_width: number, _height: number) => {
 	if (context.map == null) return;
 
-	context.map.invalidateSize();
+	nextTick(() => {
+		context.map?.invalidateSize();
+	});
 });
 
 watch(

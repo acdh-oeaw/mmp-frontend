@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { groupByToMap } from "@stefanprobst/group-by";
 import { type ForceCenter, type ForceLink, type ForceManyBody } from "d3";
 import { type ForceGraphInstance, type LinkObject, type NodeObject } from "force-graph";
 import { nextTick, onMounted, onUnmounted, provide, ref, watch } from "vue";
@@ -31,6 +32,32 @@ const context: NetworkGraphContext = {
 
 const elementRef = ref<HTMLElement | null>(null);
 
+function updateGraph(graph: NetworkGraphData) {
+	const nodes = Array.from(graph.nodes.values()) as Array<NodeObject>;
+	const links = Array.from(graph.edges.values()) as Array<LinkObject>;
+
+	// TODO: pass this in via props? (may make sense to also display node count by kind/keyword type in the legend)
+	// TODO: fixed positions should change when width/height changes
+	/** Use fixed positions for author nodes. */
+	const grouped = groupByToMap(nodes, (node) => {
+		return node.kind;
+	});
+
+	const authorNodes = grouped.get("autor");
+
+	if (authorNodes != null && authorNodes.length > 1) {
+		const radius = Math.min(props.width, props.height) * 0.75;
+		const rad = (2 * Math.PI) / authorNodes.length;
+
+		authorNodes.forEach((node, index) => {
+			node.fx = Math.cos(rad * index) * radius;
+			node.fy = Math.sin(rad * index) * radius;
+		});
+	}
+
+	context.graph?.graphData({ links, nodes });
+}
+
 onMounted(async () => {
 	if (elementRef.value == null) return;
 
@@ -48,10 +75,6 @@ onMounted(async () => {
 	context.graph.nodeId("key");
 	context.graph.nodeLabel("label");
 	context.graph.linkLabel("label");
-
-	const nodes = Array.from(props.graph.nodes.values()) as Array<NodeObject>;
-	const links = Array.from(props.graph.edges.values()) as Array<LinkObject>;
-	context.graph.graphData({ links, nodes });
 
 	// context.graph.nodeVisibility((node) => {
 	// 	if (props.showNeighborsOnly !== true) return true
@@ -167,6 +190,7 @@ onMounted(async () => {
 	// context.graph.d3Force("center", null)
 
 	context.graph.autoPauseRedraw(false);
+	updateGraph(props.graph);
 	context.graph(elementRef.value);
 
 	emit("ready", context.graph);
@@ -199,12 +223,8 @@ watch(
 	() => {
 		return props.graph;
 	},
-	(data) => {
-		if (context.graph == null) return;
-
-		const nodes = Array.from(data.nodes.values()) as Array<NodeObject>;
-		const links = Array.from(data.edges.values()) as Array<LinkObject>;
-		context.graph.graphData({ links, nodes });
+	(graph) => {
+		updateGraph(graph);
 	},
 );
 

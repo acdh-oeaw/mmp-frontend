@@ -19,7 +19,7 @@ export const keywordTypeLabels: Record<KeywordType, Plurals> = {
 
 export const colors: Record<ResourceKind, string> = {
 	autor: "bg-red-300",
-	stelle: "bg-teal-300",
+	stelle: "bg-sky-300",
 	keyword: "bg-blue-300",
 	usecase: "bg-amber-300",
 	ort: "bg-green-300",
@@ -28,7 +28,7 @@ export const colors: Record<ResourceKind, string> = {
 
 export const keywordColors: Record<KeywordType, string> = {
 	Keyword: "bg-blue-300",
-	Ethnonym: "bg-teal-300",
+	Ethnonym: "bg-sky-300",
 	Name: "bg-amber-300",
 	Region: "bg-green-300",
 	unclear: "bg-grey-300",

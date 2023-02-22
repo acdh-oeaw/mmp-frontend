@@ -3,7 +3,7 @@ import { schemeCategory10 } from "d3";
 import { type Chart } from "highcharts";
 import * as Highcharts from "highcharts";
 import WordCloudChart from "highcharts/modules/wordcloud";
-import { onMounted, onUnmounted, provide, ref, watch } from "vue";
+import { nextTick, onMounted, onUnmounted, provide, ref, watch } from "vue";
 
 import { debounce } from "@/lib/debounce";
 import { key } from "@/lib/word-cloud/word-cloud.context";
@@ -34,6 +34,8 @@ onMounted(() => {
 	context.cloud = Highcharts.chart(elementRef.value, {
 		chart: { width: props.width, height: props.height, backgroundColor: "transparent" },
 		colors: [...schemeCategory10],
+		// TODO: check if license allows to hide this
+		// credits: { enabled: false },
 		legend: { enabled: false },
 		series: [{ name: "Occurrences", data: props.cloud, type: "wordcloud" }],
 		title: { text: props.title },
@@ -46,7 +48,9 @@ onMounted(() => {
 const resize = debounce((_width: number, _height: number) => {
 	if (context.cloud == null) return;
 
-	context.cloud.reflow();
+	nextTick(() => {
+		context.cloud?.reflow();
+	});
 });
 
 watch(

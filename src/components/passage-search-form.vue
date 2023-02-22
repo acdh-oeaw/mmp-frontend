@@ -4,6 +4,7 @@ import { computed, ref, watch } from "vue";
 
 import { type GetAutoComplete, useAutoComplete } from "@/api";
 import DatasetSelect from "@/components/dataset-select.vue";
+import DateRangeSlider from "@/components/date-range-slider.vue";
 import QueryModeSelect from "@/components/query-mode-select.vue";
 import SearchAutocomplete from "@/components/search-autocomplete.vue";
 import SearchAutocompleteLoadingItem from "@/components/search-autocomplete-loading-item.vue";
@@ -135,6 +136,7 @@ watch(selectedKeys, debouncedSubmit);
 			<div class="flex items-center gap-4">
 				<DatasetSelect />
 				<QueryModeSelect />
+				<DateRangeSlider />
 			</div>
 		</div>
 

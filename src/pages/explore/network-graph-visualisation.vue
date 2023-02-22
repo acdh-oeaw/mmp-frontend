@@ -17,7 +17,7 @@ import {
 	type NetworkGraphNode,
 } from "@/lib/network-graph/network-graph.types";
 import { useNetworkGraph } from "@/lib/network-graph/use-network-graph";
-import { keywordColors, keywordTypeLabels } from "@/lib/search/search.config";
+import { colors, keywordColors, keywordTypeLabels, kindLabels } from "@/lib/search/search.config";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
 import { useSelection } from "@/lib/search/use-selection";
 import { ClientOnly } from "#components";
@@ -70,11 +70,18 @@ function onNodeHover(_node: NetworkGraphNode | null) {
 //
 
 const resourceKindFilters = ref(
+	// FIXME: @see https://github.com/acdh-oeaw/mmp/pull/204
 	new Map<ResourceKind, boolean>([
 		["autor", true],
 		["keyword", true],
 	]),
 );
+
+function onToggleResourceKindFilter(value: ResourceKind, event: Event) {
+	const element = event.currentTarget as HTMLInputElement;
+	const isVisible = element.checked;
+	resourceKindFilters.value.set(value, isVisible);
+}
 
 const keywordTypeFilters = ref(
 	new Map<KeywordType, boolean>([
@@ -216,6 +223,22 @@ function onSaveAsGexf() {
 						</OverlayPanel>
 						<OverlayPanel position="bottom left">
 							<form class="flex items-center gap-2 text-xs font-medium" @submit.prevent="">
+								<template v-for="[key, isVisible] of resourceKindFilters">
+									<label v-if="key !== 'keyword'" :key="key" class="flex items-center gap-1">
+										<input
+											:checked="isVisible"
+											type="checkbox"
+											:value="key"
+											@change="
+												(event) => {
+													onToggleResourceKindFilter(key, event);
+												}
+											"
+										/>
+										<span class="h-3 w-3 rounded" :class="colors[key]" />
+										<span>{{ kindLabels[key].other }}</span>
+									</label>
+								</template>
 								<!-- TODO: should be a checkbox group -->
 								<label
 									v-for="[key, isVisible] of keywordTypeFilters"
@@ -223,8 +246,8 @@ function onSaveAsGexf() {
 									class="flex items-center gap-1"
 								>
 									<input
-										type="checkbox"
 										:checked="isVisible"
+										type="checkbox"
 										:value="key"
 										@change="
 											(event) => {

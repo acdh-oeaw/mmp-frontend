@@ -4,13 +4,13 @@ import { type Chart } from "highcharts";
 import * as Highcharts from "highcharts";
 import { nextTick, onMounted, onUnmounted, provide, ref, watch } from "vue";
 
-import { key } from "@/lib/charts/pie-chart.context";
-import { type PieChartContext, type Token } from "@/lib/charts/pie-chart.types";
+import { key } from "@/lib/charts/line-chart.context";
+import { type LineChartContext, type Token } from "@/lib/charts/line-chart.types";
 import { debounce } from "@/lib/debounce";
 
 const props = defineProps<{
-	chart: Array<Token>;
 	height: number;
+	series: Array<{ name: string; data: Array<Token> }>;
 	title?: string;
 	width: number;
 }>();
@@ -19,7 +19,7 @@ const emit = defineEmits<{
 	(event: "ready", chart: Chart): void;
 }>();
 
-const context: PieChartContext = {
+const context: LineChartContext = {
 	chart: null,
 };
 
@@ -33,18 +33,28 @@ onMounted(() => {
 		colors: [...schemeCategory10],
 		// TODO: check if license allows to hide this
 		// credits: { enabled: false },
-		legend: { enabled: false },
-		series: [{ name: "Occurrences", data: props.chart, type: "pie" }],
+		legend: { verticalAlign: "top" },
+		series: props.series.map((series) => {
+			return { name: series.name, data: series.data, type: "line" };
+		}),
 		title: { text: props.title },
-		tooltip: { pointFormat: "Occurences: {point.y}" },
-		// plotOptions: {
-		// 	pie: {
-		// 		allowPointSelect: true,
-		// 		cursor: "pointer",
-		// 		dataLabels: {
-		// 			enabled: true,
-		// 			format: "<b>{point.name}</b>: {point.y}",
-		// 		},
+		tooltip: { enabled: false },
+		// tooltip: {
+		//   formatter() {
+		//     const endings = ['st', 'nd', 'rd'];
+		//     return `${this.point.x}${endings[this.point.x - 1] || 'th'} century<br />${
+		//       this.point.y
+		//     } occurences`;
+		//   },
+		// },
+		// yAxis: {
+		// 	title: {
+		// 		text: "",
+		// 	},
+		// },
+		// xAxis: {
+		// 	labels: {
+		// 		formatter: ({ weight }) => weight * 100,
 		// 	},
 		// },
 	});
