@@ -3,6 +3,7 @@ import { computed } from "vue";
 
 import RangeSlider from "@/components/range-slider.vue";
 import Slider from "@/components/slider.vue";
+import { debounce } from "@/lib/debounce";
 import { maxYear, minYear } from "@/lib/search/search.config";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
 
@@ -18,6 +19,8 @@ const dateRange = computed(() => {
 function onChange(value: number | [number, number]) {
 	setSearchFilters({ ...searchFilters.value, "date-range": value, offset: 0 });
 }
+
+const debouncedOnChange = debounce(onChange);
 </script>
 
 <template>
@@ -30,7 +33,7 @@ function onChange(value: number | [number, number]) {
 		:max="maxYear"
 		:name="name"
 		:step="1"
-		@change="onChange"
+		@change="debouncedOnChange"
 	/>
 	<Slider
 		v-else
@@ -41,6 +44,6 @@ function onChange(value: number | [number, number]) {
 		:max="maxYear"
 		:name="name"
 		:step="1"
-		@change="onChange"
+		@change="debouncedOnChange"
 	/>
 </template>
