@@ -9,7 +9,7 @@ const props = withDefaults(
 
 <template>
 	<div
-		class="absolute m-2 flex items-center gap-2 rounded-md bg-white py-2 px-4 shadow-lg"
+		class="absolute m-4 flex items-center gap-2 rounded-md bg-white py-2 px-4 shadow-lg"
 		data-overlay-panel
 		:data-position="props.position"
 	>

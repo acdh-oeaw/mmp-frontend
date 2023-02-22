@@ -133,7 +133,7 @@ watch(selectedKeys, debouncedSubmit);
 				</template>
 			</SearchAutocomplete>
 
-			<div class="flex items-center gap-4">
+			<div class="grid grid-cols-[auto_auto_1fr] items-center gap-4">
 				<DatasetSelect />
 				<QueryModeSelect />
 				<DateRangeSlider />
