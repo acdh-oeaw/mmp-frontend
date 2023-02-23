@@ -2,6 +2,7 @@
 import ErrorMessage from "@/components/error-message.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import MainContent from "@/components/main-content.vue";
+import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import { useImprint } from "@/lib/use-imprint";
 import { useHead } from "#imports";
 

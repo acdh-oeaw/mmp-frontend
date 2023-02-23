@@ -375,6 +375,7 @@ export type SpatialCoverageGeojsonProperties = {
 			place?: PlaceGeojsonProperty | null;
 		}>;
 	}>;
+	kommentar: SpatialCoverage["kommentar"];
 	/**
 	 * Removed from data model.
 	 */

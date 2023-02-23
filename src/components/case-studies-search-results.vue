@@ -2,6 +2,7 @@
 import { computed } from "vue";
 
 import { useCaseStudies } from "@/api";
+import CaseStudyPreviewCard from "@/components/case-study-preview-card.vue";
 import ErrorMessage from "@/components/error-message.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";

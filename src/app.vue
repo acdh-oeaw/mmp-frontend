@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import RouteAnnouncer from "@/components/route-announcer.vue";
 import SkipLink from "@/components/skip-link.vue";
 import { isNotNullable } from "@/lib/is-not-nullable";
 import { NuxtLayout, NuxtPage } from "#components";
@@ -17,4 +18,5 @@ useHead({
 	<NuxtLayout>
 		<NuxtPage />
 	</NuxtLayout>
+	<RouteAnnouncer />
 </template>
