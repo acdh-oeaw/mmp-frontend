@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { computed } from "vue";
 
-import WordClouds from "@/components/word-clouds.vue";
+import TokenWordClouds from "@/components/token-word-clouds.vue";
 import { type SearchFilters } from "@/lib/search/use-search-filters";
 import { useWordClouds } from "@/lib/word-cloud/use-word-clouds";
 
@@ -41,7 +41,7 @@ const { clouds, isEmpty, isError, isFetching, isLoading } = useWordClouds(search
 				</template>
 
 				<VisualisationContainer v-slot="{ width, height }">
-					<WordClouds :height="height" :clouds="clouds" :width="width" />
+					<TokenWordClouds :height="height" :clouds="clouds" :width="width" />
 				</VisualisationContainer>
 			</ClientOnly>
 		</template>

@@ -38,7 +38,7 @@ import { NuxtImg, NuxtLink } from "#components";
 				<div class="grid grid-cols-2 gap-6">
 					<div class="grid gap-1">
 						<NuxtLink
-							class="inline-flex items-center rounded border bg-neutral-900 px-12 py-4 text-sm font-medium uppercase tracking-wider shadow-md transition hover:bg-neutral-700"
+							class="inline-flex items-center justify-center rounded border bg-neutral-900 px-12 py-4 text-sm font-medium uppercase tracking-wider shadow-md transition hover:bg-neutral-700"
 							href="/explore/search-results"
 						>
 							Search our data
@@ -48,7 +48,7 @@ import { NuxtImg, NuxtLink } from "#components";
 
 					<div class="grid gap-1">
 						<NuxtLink
-							class="inline-flex items-center rounded border bg-neutral-900 px-12 py-4 text-sm font-medium uppercase tracking-wider shadow-md transition hover:bg-neutral-700"
+							class="inline-flex items-center justify-center rounded border bg-neutral-900 px-12 py-4 text-sm font-medium uppercase tracking-wider shadow-md transition hover:bg-neutral-700"
 							href="/case-studies/4/timeline"
 						>
 							Read &quot;Carolingian Avaria&quot;

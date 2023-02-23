@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { schemeCategory10 } from "d3";
-import { type Chart } from "highcharts";
+import { type Chart, type SeriesOptionsType } from "highcharts";
 import * as Highcharts from "highcharts";
 import { nextTick, onMounted, onUnmounted, provide, ref, watch } from "vue";
 
@@ -25,6 +25,18 @@ const context: PieChartContext = {
 
 const elementRef = ref<HTMLElement | null>(null);
 
+function createSeries(): Array<SeriesOptionsType> {
+	return [
+		{
+			name: "Occurrences",
+			data: props.chart.map((token) => {
+				return { name: token.name, y: token.weight };
+			}),
+			type: "pie",
+		},
+	];
+}
+
 onMounted(() => {
 	if (elementRef.value == null) return;
 
@@ -34,7 +46,7 @@ onMounted(() => {
 		// TODO: check if license allows to hide this
 		// credits: { enabled: false },
 		legend: { enabled: false },
-		series: [{ name: "Occurrences", data: props.chart, type: "pie" }],
+		series: createSeries(),
 		title: { text: props.title },
 		tooltip: { pointFormat: "Occurences: {point.y}" },
 		// plotOptions: {
@@ -52,11 +64,12 @@ onMounted(() => {
 	emit("ready", context.chart);
 });
 
-const resize = debounce((_width: number, _height: number) => {
+const resize = debounce((width: number, height: number) => {
 	if (context.chart == null) return;
 
 	nextTick(() => {
-		context.chart?.reflow();
+		context.chart?.setSize(width, height);
+		// context.chart?.reflow();
 	});
 });
 
@@ -74,6 +87,15 @@ watch(
 	},
 );
 
+watch(
+	() => {
+		return props.chart;
+	},
+	() => {
+		context.chart?.update({ series: createSeries() });
+	},
+);
+
 onUnmounted(() => {
 	context.chart?.destroy();
 });
@@ -82,6 +104,6 @@ provide(key, context);
 </script>
 
 <template>
-	<div ref="elementRef" class="absolute inset-0 grid" data-word-cloud />
+	<div ref="elementRef" class="absolute inset-0 grid" data-pie-chart />
 	<slot :context="context" />
 </template>

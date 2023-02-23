@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { schemeCategory10 } from "d3";
-import { type Chart } from "highcharts";
+import { type Chart, type SeriesOptionsType } from "highcharts";
 import * as Highcharts from "highcharts";
 import { nextTick, onMounted, onUnmounted, provide, ref, watch } from "vue";
 
@@ -25,6 +25,12 @@ const context: LineChartContext = {
 
 const elementRef = ref<HTMLElement | null>(null);
 
+function createSeries(): Array<SeriesOptionsType> {
+	return props.series.map((series) => {
+		return { name: series.name, data: series.data, type: "line" };
+	});
+}
+
 onMounted(() => {
 	if (elementRef.value == null) return;
 
@@ -34,9 +40,7 @@ onMounted(() => {
 		// TODO: check if license allows to hide this
 		// credits: { enabled: false },
 		legend: { verticalAlign: "top" },
-		series: props.series.map((series) => {
-			return { name: series.name, data: series.data, type: "line" };
-		}),
+		series: createSeries(),
 		title: { text: props.title },
 		tooltip: { enabled: false },
 		// tooltip: {
@@ -62,11 +66,12 @@ onMounted(() => {
 	emit("ready", context.chart);
 });
 
-const resize = debounce((_width: number, _height: number) => {
+const resize = debounce((width: number, height: number) => {
 	if (context.chart == null) return;
 
 	nextTick(() => {
-		context.chart?.reflow();
+		context.chart?.setSize(width, height);
+		// context.chart?.reflow();
 	});
 });
 
@@ -81,6 +86,15 @@ watch(
 	],
 	([width, height]) => {
 		resize(width, height);
+	},
+);
+
+watch(
+	() => {
+		return props.series;
+	},
+	() => {
+		context.chart?.update({ series: createSeries() });
 	},
 );
 

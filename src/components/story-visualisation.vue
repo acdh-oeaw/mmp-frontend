@@ -5,7 +5,7 @@ import StoryEntityDetails from "@/components/story-entity-details.vue";
 import StoryGeoMap from "@/components/story-geo-map.vue";
 import StoryNetworkGraph from "@/components/story-network-graph.vue";
 import StorySearchResults from "@/components/story-search-results.vue";
-import StoryWordCloud from "@/components/story-word-cloud.vue";
+import StoryTokenWordClouds from "@/components/story-token-word-clouds.vue";
 import { type SearchFilters, useSearchFilters } from "@/lib/search/use-search-filters";
 
 const storyComponentTypes = ["map", "graph", "cloud", "list", "detail"] as const;
@@ -32,7 +32,7 @@ const searchFilters = computed<SearchFilters>(() => {
 		<div class="relative h-96 w-full">
 			<StoryNetworkGraph v-if="props.type === 'graph'" :search-filters="searchFilters" />
 			<StoryGeoMap v-if="props.type === 'map'" :search-filters="searchFilters" />
-			<StoryWordCloud v-if="props.type === 'cloud'" :search-filters="searchFilters" />
+			<StoryTokenWordClouds v-if="props.type === 'cloud'" :search-filters="searchFilters" />
 			<StorySearchResults v-if="props.type === 'list'" :search-filters="searchFilters" />
 			<StoryEntityDetails v-if="props.type === 'detail'" :search-filters="searchFilters" />
 		</div>

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { schemeCategory10 } from "d3";
-import { type Chart } from "highcharts";
+import { type Chart, type SeriesOptionsType } from "highcharts";
 import * as Highcharts from "highcharts";
 import WordCloudChart from "highcharts/modules/wordcloud";
 import { nextTick, onMounted, onUnmounted, provide, ref, watch } from "vue";
@@ -28,6 +28,10 @@ const context: WordCloudContext = {
 
 const elementRef = ref<HTMLElement | null>(null);
 
+function createSeries(): Array<SeriesOptionsType> {
+	return [{ name: "Occurrences", data: props.cloud, type: "wordcloud" }];
+}
+
 onMounted(() => {
 	if (elementRef.value == null) return;
 
@@ -37,7 +41,7 @@ onMounted(() => {
 		// TODO: check if license allows to hide this
 		// credits: { enabled: false },
 		legend: { enabled: false },
-		series: [{ name: "Occurrences", data: props.cloud, type: "wordcloud" }],
+		series: createSeries(),
 		title: { text: props.title },
 		tooltip: { enabled: false },
 	});
@@ -45,11 +49,12 @@ onMounted(() => {
 	emit("ready", context.cloud);
 });
 
-const resize = debounce((_width: number, _height: number) => {
+const resize = debounce((width: number, height: number) => {
 	if (context.cloud == null) return;
 
 	nextTick(() => {
-		context.cloud?.reflow();
+		context.cloud?.setSize(width, height);
+		// context.cloud?.reflow();
 	});
 });
 
@@ -64,6 +69,15 @@ watch(
 	],
 	([width, height]) => {
 		resize(width, height);
+	},
+);
+
+watch(
+	() => {
+		return props.cloud;
+	},
+	() => {
+		context.cloud?.update({ series: createSeries() });
 	},
 );
 

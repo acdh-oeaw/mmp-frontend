@@ -1,9 +1,14 @@
 <script lang="ts" setup>
+import { ref } from "vue";
+
 import ErrorMessage from "@/components/error-message.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
+import OverlayPanel from "@/components/overlay-panel.vue";
+import OverlayPanelButton from "@/components/overlay-panel-button.vue";
+import TokenPieCharts from "@/components/token-pie-charts.vue";
+import TokenWordClouds from "@/components/token-word-clouds.vue";
 import VisualisationContainer from "@/components/visualisation-container.vue";
-import WordClouds from "@/components/word-clouds.vue";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
 import { useWordClouds } from "@/lib/word-cloud/use-word-clouds";
 import { ClientOnly } from "#components";
@@ -18,6 +23,8 @@ useHead({
 
 const { searchFilters } = useSearchFilters();
 const { clouds, isEmpty, isError, isFetching, isLoading } = useWordClouds(searchFilters);
+
+const type = ref<"pie-chart" | "word-cloud">("word-cloud");
 </script>
 
 <template>
@@ -47,7 +54,30 @@ const { clouds, isEmpty, isError, isFetching, isLoading } = useWordClouds(search
 				</template>
 
 				<VisualisationContainer v-slot="{ width, height }">
-					<WordClouds :height="height" :clouds="clouds" :width="width" />
+					<TokenPieCharts
+						v-if="type === 'pie-chart'"
+						:height="height"
+						:charts="clouds"
+						:width="width"
+					/>
+					<TokenWordClouds
+						v-else-if="type === 'word-cloud'"
+						:height="height"
+						:clouds="clouds"
+						:width="width"
+					/>
+					<OverlayPanel position="top left">
+						<OverlayPanelButton
+							v-if="type === 'pie-chart'"
+							label="Display word-cloud"
+							@click="type = 'word-cloud'"
+						/>
+						<OverlayPanelButton
+							v-else-if="type === 'word-cloud'"
+							label="Display pie-chart"
+							@click="type = 'pie-chart'"
+						/>
+					</OverlayPanel>
 				</VisualisationContainer>
 			</ClientOnly>
 		</template>
