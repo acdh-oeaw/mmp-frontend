@@ -1,11 +1,16 @@
 <script lang="ts" setup>
-import { computed } from "vue";
+import {
+	BookOpenIcon as TextIcon,
+	CalendarDaysIcon as EventIcon,
+	PencilIcon as AuthorIcon,
+} from "@heroicons/vue/24/outline";
 
-import { type GetCaseStudyTimetableById, useCaseStudyTimeTableById } from "@/api";
+import { type GetCaseStudyTimetableById } from "@/api";
 import ErrorMessage from "@/components/error-message.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import { useCaseStudyIdParam } from "@/lib/case-studies/use-case-study-id-param";
+import { useCaseStudyTimeline } from "@/lib/case-studies/use-case-study-timeline";
 import { getDateRangeLabel } from "@/lib/get-label";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
 import { NuxtLink } from "#components";
@@ -19,22 +24,11 @@ useHead({
 });
 
 const id = useCaseStudyIdParam();
-
-const caseStudyTimelineQuery = useCaseStudyTimeTableById({ id });
-const isFetching = caseStudyTimelineQuery.isFetching;
-const isLoading = caseStudyTimelineQuery.isInitialLoading;
-const isError = caseStudyTimelineQuery.isError;
-const caseStudyTimeline = computed(() => {
-	return caseStudyTimelineQuery.data.value ?? [];
-});
-const isEmpty = computed(() => {
-	return caseStudyTimeline.value.length === 0;
-});
-
+const { caseStudyTimeline, isEmpty, isError, isFetching, isLoading } = useCaseStudyTimeline(id);
 const { createSearchFilterParams, defaultSearchFilters } = useSearchFilters();
 
-function getEventColor(event: GetCaseStudyTimetableById.Response[number]) {
-	switch (event.ent_type) {
+function getEventColor(type: GetCaseStudyTimetableById.Response[number]["ent_type"]) {
+	switch (type) {
 		case "autor":
 			return "bg-red-500";
 		case "event":
@@ -43,17 +37,6 @@ function getEventColor(event: GetCaseStudyTimetableById.Response[number]) {
 			return "bg-blue-500";
 	}
 }
-
-// function getEventIcon(event: GetCaseStudyTimetableById.Response[number]) {
-//   switch (event.ent_type) {
-//     case 'autor':
-//       return mdiPencil
-//     case 'event':
-//       return mdiCalendar
-//     case 'text':
-//       return mdiBookOpenVariant
-//   }
-// }
 </script>
 
 <template>
@@ -82,10 +65,19 @@ function getEventColor(event: GetCaseStudyTimetableById.Response[number]) {
 					<div>
 						<span>{{ getDateRangeLabel(event.start_date, event.end_date) }}</span>
 
+						<span
+							class="inline-grid place-items-center rounded-full border-4 border-white p-2 text-white shadow"
+							:class="getEventColor(event.ent_type)"
+						>
+							<EventIcon v-if="event.ent_type === 'event'" class="h-6 w-6" />
+							<AuthorIcon v-if="event.ent_type === 'autor'" class="h-6 w-6" />
+							<TextIcon v-if="event.ent_type === 'text'" class="h-6 w-6" />
+						</span>
+
 						<NuxtLink
 							v-if="event.ent_type === 'autor'"
-							:to="{
-								name: '/explore/search-results',
+							:href="{
+								path: '/explore/search-results',
 								query: createSearchFilterParams({ ...defaultSearchFilters, author: [event.id] }),
 							}"
 						>

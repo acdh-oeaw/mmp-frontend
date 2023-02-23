@@ -8,9 +8,9 @@ import { type SearchFilters } from "@/lib/search/use-search-filters";
 export function useNetworkGraph(searchFilters: ComputedRef<SearchFilters>) {
 	const searchParams = useNetworkGraphSearchParams(searchFilters);
 	const graphQuery = useKeywordByAuthorGraph(searchParams);
-	const isLoading = graphQuery.isInitialLoading;
-	const isFetching = graphQuery.isFetching;
 	const isError = graphQuery.isError;
+	const isFetching = graphQuery.isFetching;
+	const isLoading = graphQuery.isInitialLoading;
 	const graph = computed(() => {
 		return createGraph(graphQuery.data.value ?? { edges: [], nodes: [] });
 	});

@@ -2,6 +2,7 @@
 import { computed } from "vue";
 
 import MainContent from "@/components/main-content.vue";
+import SidePanel from "@/components/side-panel.vue";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
 import { NuxtLink, NuxtPage } from "#components";
 import { useHead } from "#imports";
@@ -43,5 +44,7 @@ const links = {
 		<MainContent>
 			<NuxtPage />
 		</MainContent>
+
+		<SidePanel />
 	</div>
 </template>
