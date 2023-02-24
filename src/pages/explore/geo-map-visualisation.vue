@@ -2,7 +2,7 @@
 import { type Map as LeafletMap } from "leaflet";
 import { computed, ref } from "vue";
 
-import { type ResourceKey, type SpatialCoverageGeojson } from "@/api";
+import { type LinesPointsGeojson, type ResourceKey, type SpatialCoverageGeojson } from "@/api";
 import ErrorMessage from "@/components/error-message.vue";
 import GeoMap from "@/components/geo-map.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
@@ -49,11 +49,15 @@ const selectedKeys = computed<Set<ResourceKey>>(() => {
 });
 
 function onAreaClick(area: SpatialCoverageGeojson | null) {
-	//
+	console.log({ area });
 }
 
 function onPointClick(point: ConeOriginGeojson | null) {
-	//
+	console.log({ point });
+}
+
+function onLinesPointsClick(collection: LinesPointsGeojson | null) {
+	console.log({ collection });
 }
 
 //
@@ -61,11 +65,15 @@ function onPointClick(point: ConeOriginGeojson | null) {
 const highlightedKeys = ref(new Set<ResourceKey>());
 
 function onAreaHover(area: SpatialCoverageGeojson | null) {
-	//
+	console.log({ area });
 }
 
 function onPointHover(point: ConeOriginGeojson | null) {
-	//
+	console.log({ point });
+}
+
+function onLinesPointsHover(collection: LinesPointsGeojson | null) {
+	console.log({ collection });
 }
 
 //
@@ -88,11 +96,11 @@ function onZoomOut() {
 	context.value.map?.zoomOut();
 }
 
-function onResetZoom() {
+function _onResetZoom() {
 	context.value.map?.fitBounds(initialViewState.bounds);
 }
 
-function onFitWorld() {
+function _onFitWorld() {
 	context.value.map?.fitWorld();
 }
 </script>
@@ -140,6 +148,8 @@ function onFitWorld() {
 						@area-hover="onAreaHover"
 						@point-click="onPointClick"
 						@point-hover="onPointHover"
+						@lines-points-click="onLinesPointsClick"
+						@lines-points-hover="onLinesPointsHover"
 					>
 						<OverlayPanel position="top left">
 							<OverlayPanelButton label="Zoom in" @click="onZoomIn" />

@@ -21,7 +21,7 @@ import {
 import { debounce } from "@/lib/debounce";
 import { createAreaTooltipContent } from "@/lib/geo-map/create-area-tooltip-content";
 import { createConeOriginTooltipContent } from "@/lib/geo-map/create-cone-origin-tooltip-content";
-import { config, initialViewState } from "@/lib/geo-map/geo-map.config";
+import { colors, config, initialViewState, keywordColors } from "@/lib/geo-map/geo-map.config";
 import { key } from "@/lib/geo-map/geo-map.context";
 import {
 	type ConeOriginGeojson,
@@ -29,7 +29,6 @@ import {
 	type GeoMapContext,
 	type SpatialCoverageCenterPoint,
 } from "@/lib/geo-map/geo-map.types";
-import { keywordColors } from "@/lib/search/search.config";
 
 const props = defineProps<{
 	areas: Array<SpatialCoverageGeojson>;
@@ -49,6 +48,8 @@ const emit = defineEmits<{
 	(event: "area-hover", area: SpatialCoverageGeojson | null): void;
 	(event: "point-click", point: ConeOriginGeojson | null): void;
 	(event: "point-hover", point: ConeOriginGeojson | null): void;
+	(event: "lines-points-click", point: LinesPointsGeojson | null): void;
+	(event: "lines-points-hover", point: LinesPointsGeojson | null): void;
 	(event: "ready", map: LeafletMap): void;
 }>();
 
@@ -83,6 +84,201 @@ const overlayCones = ref<Array<ConeOriginGeojson>>([]);
 
 //
 
+async function updateLayers() {
+	const layers = props.layers;
+
+	Object.values(context.layers).forEach((layer) => {
+		layer?.remove();
+	});
+
+	/** `leaflet` assumes `window` global. */
+	const { geoJSON } = await import("leaflet");
+
+	const map = context.map;
+	if (map == null) return;
+
+	layers.forEach((layer) => {
+		if (visibleLayers.value.has(layer.id)) {
+			// TODO:
+			context.layers[layer.id] = geoJSON(layer.data).addTo(map);
+		}
+	});
+}
+
+function updateLinesPoints() {
+	const linesPoints = props.linesPoints;
+	const isVisible = visibleFeatureGroups.value.has("linesPoints");
+
+	const featureGroup = context.featureGroups.linesPoints;
+
+	featureGroup?.clearLayers();
+
+	if (isVisible) {
+		linesPoints.forEach((polygon) => {
+			featureGroup?.addData(polygon);
+		});
+	}
+}
+
+function updateCones() {
+	const cones = props.cones;
+	const isVisible = visibleFeatureGroups.value.has("cones");
+
+	const featureGroup = context.featureGroups.cones;
+
+	featureGroup?.clearLayers();
+
+	if (isVisible) {
+		cones.forEach((polygon) => {
+			featureGroup?.addData(polygon);
+		});
+	}
+}
+
+function updateAreas() {
+	const areas = props.areas;
+	const isVisible = visibleFeatureGroups.value.has("areas");
+
+	const featureGroup = context.featureGroups.areas;
+
+	featureGroup?.clearLayers();
+
+	if (isVisible) {
+		areas.forEach((polygon) => {
+			featureGroup?.addData(polygon);
+		});
+	}
+}
+
+function updateOverlayAreas() {
+	const isVisible = visibleFeatureGroups.value.has("areas");
+
+	const featureGroup = context.highlights.areas;
+
+	featureGroup?.clearLayers();
+
+	if (isVisible) {
+		overlayAreas.value.forEach((polygon) => {
+			featureGroup?.addData(polygon);
+		});
+	}
+}
+
+function updateOverlayCones() {
+	const isVisible = visibleFeatureGroups.value.has("cones");
+
+	const featureGroup = context.highlights.cones;
+
+	featureGroup?.clearLayers();
+
+	if (isVisible) {
+		overlayCones.value.forEach((polygon) => {
+			featureGroup?.addData(polygon);
+		});
+	}
+}
+
+function updateConeOrigins() {
+	const coneOrigins = props.coneOrigins;
+	const isVisible = visibleFeatureGroups.value.has("coneOrigins");
+
+	const featureGroup = context.featureGroups.coneOrigins;
+
+	featureGroup?.clearLayers();
+
+	if (isVisible) {
+		coneOrigins.forEach((point) => {
+			featureGroup?.addData(point);
+		});
+	}
+}
+
+function updateAreaLabels() {
+	const areaCenterPoints = props.areaCenterPoints;
+	const isVisible = visibleFeatureGroups.value.has("areaLabels");
+
+	const featureGroup = context.featureGroups.areaLabels;
+
+	featureGroup?.clearLayers();
+
+	if (isVisible) {
+		areaCenterPoints.forEach((point) => {
+			featureGroup?.addData(point);
+		});
+	}
+}
+
+function updateStackingOrder() {
+	nextTick(() => {
+		Object.values(context.layers).forEach((layer) => {
+			layer?.bringToFront();
+		});
+		context.featureGroups.linesPoints?.bringToFront();
+		context.featureGroups.cones?.bringToFront();
+		context.featureGroups.areas?.bringToFront();
+		context.highlights.areas?.bringToFront();
+		context.highlights.cones?.bringToFront();
+		context.featureGroups.coneOrigins?.bringToFront();
+		context.featureGroups.areaLabels?.bringToFront();
+	});
+}
+
+function updateBounds() {
+	const areas = props.areas;
+	const coneOrigins = props.coneOrigins;
+
+	if (
+		[areas, coneOrigins].every((features) => {
+			return features.length === 0;
+		})
+	) {
+		const bounds = initialViewState.bounds;
+
+		nextTick(() => {
+			context.map?.flyToBounds(bounds, { duration: 0.25 });
+		});
+	} else if (areas.length) {
+		const lng: Array<number> = [];
+		const lat: Array<number> = [];
+
+		areas.forEach((area) => {
+			const [x1, y1, x2, y2] = area.bbox as [number, number, number, number];
+			lng.push(x1, x2);
+			lat.push(y1, y2);
+		});
+
+		coneOrigins.forEach((place) => {
+			const [x, y] = place.geometry.coordinates as [number, number];
+			lng.push(x);
+			lat.push(y);
+		});
+
+		const bounds: LatLngBoundsLiteral = [
+			[Math.min(...lat), Math.min(...lng)],
+			[Math.max(...lat), Math.max(...lng)],
+		];
+
+		nextTick(() => {
+			/**
+			 * Note that leaflet currently does not properly cancel previous `fitBounds` animations,
+			 * which means that when cone origins load quickly after spatial coverage areas,
+			 * two `fitBounds` events are triggered, but the last, correct one is swallowed.
+			 *
+			 * Seems to work with `flyToBounds`.
+			 * Alternatively, disable animation on `fitBounds`:
+			 * ```ts
+			 * geoMap?.map?.fitBounds(bounds, { animate: false });
+			 * ```
+			 *
+			 * @see https://github.com/Leaflet/Leaflet/issues/3249
+			 */
+			context.map?.flyToBounds(bounds, { duration: 0.25 });
+		});
+	}
+}
+
+//
+
 const elementRef = ref<HTMLElement | null>(null);
 
 onMounted(async () => {
@@ -113,14 +309,13 @@ onMounted(async () => {
 		style(feature) {
 			if (feature == null) return {};
 
-			const color = "hsl(50deg 100% 75%)";
+			const color = colors.cones;
 
 			return {
 				color,
-				dashOffset: "10",
-				dashArray: "5",
+				dashArray: "4",
 				fill: true,
-				fillOpacity: 0.15,
+				fillOpacity: 0.18,
 				opacity: 0.75,
 				stroke: true,
 				weight: 1,
@@ -150,10 +345,9 @@ onMounted(async () => {
 
 			return {
 				color,
-				dashOffset: "15",
-				dashArray: "15",
+				dashArray: "12 6",
 				fill: true,
-				fillOpacity: 0.15,
+				fillOpacity: 0.18,
 				opacity: 0.75,
 				stroke: true,
 				weight: 2,
@@ -164,16 +358,22 @@ onMounted(async () => {
 	//
 
 	context.featureGroups.linesPoints = geoJSON<LinesPointsGeojson["properties"]>(undefined, {
-		onEachFeature(_feature: LinesPointsGeojson, _layer: CircleMarker) {
+		onEachFeature(feature: LinesPointsGeojson, layer: CircleMarker) {
 			// TODO: tooltips for geometry collection?
+
+			layer.on({
+				click() {
+					emit("lines-points-click", feature);
+				},
+			});
 		},
 		pointToLayer(feature, latlng) {
-			const color = "hsl(320deg 75% 75%)";
+			const color = colors.linesPoints;
 
 			const point = circleMarker(latlng, {
 				color,
 				fill: true,
-				fillOpacity: 0.15,
+				fillOpacity: 0.18,
 				opacity: 0.75,
 				radius: 3,
 				stroke: true,
@@ -185,7 +385,7 @@ onMounted(async () => {
 		style(feature) {
 			if (feature == null) return {};
 
-			const color = "hsl(320deg 75% 75%)";
+			const color = colors.linesPoints;
 
 			return {
 				color,
@@ -212,12 +412,12 @@ onMounted(async () => {
 			});
 		},
 		pointToLayer(feature, latlng) {
-			const color = "hsl(0deg 0% 0%)";
+			const color = colors.coneOrigins;
 
 			const point = circleMarker(latlng, {
 				color,
 				fill: true,
-				fillOpacity: 0.15,
+				fillOpacity: 0.18,
 				opacity: 0.75,
 				radius: 3,
 				stroke: true,
@@ -243,7 +443,7 @@ onMounted(async () => {
 			const color = keywordColors[keyword.art];
 
 			const element = divIcon({
-				html: `<div class="geo-map-area-label" style="--geo-map-label-bg-color: ${color}">${keyword}</div>`,
+				html: `<div class="geo-map-area-label" style="--geo-map-label-bg-color: ${color}">${keyword.stichwort}</div>`,
 				// @ts-expect-error Missing in upstream types.
 				iconSize: "auto",
 				/** Ensure the default `leaflet-div-icon` class is not added, which has white background. */
@@ -266,7 +466,7 @@ onMounted(async () => {
 		style(feature) {
 			if (feature == null) return {};
 
-			const color = "hsl(0deg 75% 75%)";
+			const color = colors.areaHighlights;
 
 			return {
 				color,
@@ -281,7 +481,7 @@ onMounted(async () => {
 		style(feature) {
 			if (feature == null) return {};
 
-			const color = "hsl(0deg 75% 75%)";
+			const color = colors.coneHighlights;
 
 			return {
 				color,
@@ -305,6 +505,21 @@ onMounted(async () => {
 			visibleFeatureGroups.value.add("areaLabels");
 		}
 	});
+
+	//
+
+	updateLayers();
+	updateLinesPoints();
+	updateCones();
+	updateAreas();
+	updateOverlayAreas();
+	updateOverlayCones();
+	updateConeOrigins();
+	updateAreaLabels();
+	updateStackingOrder();
+	updateBounds();
+
+	//
 
 	emit("ready", context.map);
 });
@@ -342,27 +557,7 @@ watch(
 		},
 		visibleLayers,
 	],
-	([layers, visibleLayers]) => {
-		Object.values(context.layers).forEach((layer) => {
-			layer?.remove();
-		});
-
-		nextTick(async () => {
-			/** `leaflet` assumes `window` global. */
-			const { geoJSON } = await import("leaflet");
-
-			const map = context.map;
-			if (map == null) return;
-
-			layers.forEach((layer) => {
-				if (visibleLayers.has(layer.id)) {
-					// TODO:
-					context.layers[layer.id] = geoJSON(layer.data).addTo(map);
-				}
-			});
-		});
-	},
-	{ immediate: true },
+	updateLayers,
 );
 
 watch(
@@ -374,21 +569,7 @@ watch(
 			return visibleFeatureGroups.value.has("cones");
 		},
 	],
-	([cones, isVisible]) => {
-		/** Update on next tick to ensure feature group is initialised. */
-		nextTick(() => {
-			const featureGroup = context.featureGroups.cones;
-
-			featureGroup?.clearLayers();
-
-			if (isVisible) {
-				cones.forEach((polygon) => {
-					featureGroup?.addData(polygon);
-				});
-			}
-		});
-	},
-	{ immediate: true },
+	updateCones,
 );
 
 watch(
@@ -400,21 +581,7 @@ watch(
 			return visibleFeatureGroups.value.has("areas");
 		},
 	],
-	([areas, isVisible]) => {
-		/** Update on next tick to ensure feature group is initialised. */
-		nextTick(() => {
-			const featureGroup = context.featureGroups.areas;
-
-			featureGroup?.clearLayers();
-
-			if (isVisible) {
-				areas.forEach((polygon) => {
-					featureGroup?.addData(polygon);
-				});
-			}
-		});
-	},
-	{ immediate: true },
+	updateAreas,
 );
 
 watch(
@@ -426,21 +593,7 @@ watch(
 			return visibleFeatureGroups.value.has("linesPoints");
 		},
 	],
-	([linesPoints, isVisible]) => {
-		/** Update on next tick to ensure feature group is initialised. */
-		nextTick(() => {
-			const featureGroup = context.featureGroups.linesPoints;
-
-			featureGroup?.clearLayers();
-
-			if (isVisible) {
-				linesPoints.forEach((polygon) => {
-					featureGroup?.addData(polygon);
-				});
-			}
-		});
-	},
-	{ immediate: true },
+	updateLinesPoints,
 );
 
 watch(
@@ -450,20 +603,7 @@ watch(
 			return visibleFeatureGroups.value.has("areas");
 		},
 	],
-	([areas, isVisible]) => {
-		/** Update on next tick to ensure feature group is initialised. */
-		nextTick(() => {
-			const featureGroup = context.highlights.areas;
-
-			featureGroup?.clearLayers();
-
-			if (isVisible) {
-				areas.forEach((polygon) => {
-					featureGroup?.addData(polygon);
-				});
-			}
-		});
-	},
+	updateOverlayAreas,
 	{ immediate: true },
 );
 
@@ -474,21 +614,7 @@ watch(
 			return visibleFeatureGroups.value.has("cones");
 		},
 	],
-	([cones, isVisible]) => {
-		/** Update on next tick to ensure feature group is initialised. */
-		nextTick(() => {
-			const featureGroup = context.highlights.cones;
-
-			featureGroup?.clearLayers();
-
-			if (isVisible) {
-				cones.forEach((polygon) => {
-					featureGroup?.addData(polygon);
-				});
-			}
-		});
-	},
-	{ immediate: true },
+	updateOverlayCones,
 );
 
 watch(
@@ -500,21 +626,7 @@ watch(
 			return visibleFeatureGroups.value.has("coneOrigins");
 		},
 	],
-	([coneOrigins, isVisible]) => {
-		/** Update on next tick to ensure feature group is initialised. */
-		nextTick(() => {
-			const featureGroup = context.featureGroups.coneOrigins;
-
-			featureGroup?.clearLayers();
-
-			if (isVisible) {
-				coneOrigins.forEach((point) => {
-					featureGroup?.addData(point);
-				});
-			}
-		});
-	},
-	{ immediate: true },
+	updateConeOrigins,
 );
 
 watch(
@@ -526,21 +638,19 @@ watch(
 			return visibleFeatureGroups.value.has("areaLabels");
 		},
 	],
-	([areaCenterPoints, isVisible]) => {
-		/** Update on next tick to ensure feature group is initialised. */
-		nextTick(() => {
-			const featureGroup = context.featureGroups.areaLabels;
+	updateAreaLabels,
+);
 
-			featureGroup?.clearLayers();
-
-			if (isVisible) {
-				areaCenterPoints.forEach((point) => {
-					featureGroup?.addData(point);
-				});
-			}
-		});
-	},
-	{ immediate: true },
+watch(
+	[
+		() => {
+			return props.areas;
+		},
+		() => {
+			return props.coneOrigins;
+		},
+	],
+	updateBounds,
 );
 
 watch(
@@ -568,84 +678,7 @@ watch(
 		visibleLayers,
 		visibleFeatureGroups,
 	],
-	() => {
-		nextTick(() => {
-			/** Ensure correct layer stacking order. */
-			Object.values(context.layers).forEach((layer) => {
-				layer?.bringToFront();
-			});
-			context.featureGroups.cones?.bringToFront();
-			context.featureGroups.areas?.bringToFront();
-			context.featureGroups.linesPoints?.bringToFront();
-			context.highlights.areas?.bringToFront();
-			context.highlights.cones?.bringToFront();
-			context.featureGroups.coneOrigins?.bringToFront();
-			context.featureGroups.areaLabels?.bringToFront();
-		});
-	},
-	{ immediate: true },
-);
-
-watch(
-	[
-		() => {
-			return props.areas;
-		},
-		() => {
-			return props.coneOrigins;
-		},
-	],
-	([areas, coneOrigins]) => {
-		if (
-			[areas, coneOrigins].every((features) => {
-				return features.length === 0;
-			})
-		) {
-			const bounds = initialViewState.bounds;
-
-			nextTick(() => {
-				context.map?.flyToBounds(bounds, { duration: 0.25 });
-			});
-		} else if (areas.length) {
-			const lng: Array<number> = [];
-			const lat: Array<number> = [];
-
-			areas.forEach((area) => {
-				const [x1, y1, x2, y2] = area.bbox as [number, number, number, number];
-				lng.push(x1, x2);
-				lat.push(y1, y2);
-			});
-
-			coneOrigins.forEach((place) => {
-				const [x, y] = place.geometry.coordinates as [number, number];
-				lng.push(x);
-				lat.push(y);
-			});
-
-			const bounds: LatLngBoundsLiteral = [
-				[Math.min(...lat), Math.min(...lng)],
-				[Math.max(...lat), Math.max(...lng)],
-			];
-
-			nextTick(() => {
-				/**
-				 * Note that leaflet currently does not properly cancel previous `fitBounds` animations,
-				 * which means that when cone origins load quickly after spatial coverage areas,
-				 * two `fitBounds` events are triggered, but the last, correct one is swallowed.
-				 *
-				 * Seems to work with `flyToBounds`.
-				 * Alternatively, disable animation on `fitBounds`:
-				 * ```ts
-				 * geoMap?.map?.fitBounds(bounds, { animate: false });
-				 * ```
-				 *
-				 * @see https://github.com/Leaflet/Leaflet/issues/3249
-				 */
-				context.map?.flyToBounds(bounds, { duration: 0.25 });
-			});
-		}
-	},
-	{ immediate: true },
+	updateStackingOrder,
 );
 
 //
@@ -677,13 +710,16 @@ provide(key, context);
 
 .geo-map-area-label {
 	position: absolute;
+	padding-block: 3px;
 	padding-inline: 8px;
 	border-radius: 4px;
 	background-color: var(--geo-map-label-bg-color, "hsl(0deg 0% 0%)");
 	color: hsl(0deg 0% 100%);
 	font-weight: 500;
-	font-size: 14px;
-	font-family: ui-sans-serif, system-ui, sans-serif;
+	font-size: 12px;
+	font-family: "Roboto FlexVariable", ui-sans-serif, system-ui, sans-serif;
+	line-height: 1.25;
+	text-align: center;
 	opacity: 75%;
 	pointer-events: auto;
 	transform: translate(-50%, -50%);
@@ -698,10 +734,12 @@ provide(key, context);
 .geo-map-tooltip {
 	display: grid;
 	gap: 4px;
+	overflow: auto;
 	width: max-content;
 	max-width: 256px;
+	max-height: 256px;
 	font-size: 12px;
-	font-family: ui-sans-serif, system-ui, sans-serif;
+	font-family: "Roboto FlexVariable", ui-sans-serif, system-ui, sans-serif;
 	white-space: unset;
 	overflow-wrap: unset;
 }

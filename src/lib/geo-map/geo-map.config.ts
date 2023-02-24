@@ -1,5 +1,7 @@
 import { type LatLngBoundsLiteral } from "leaflet";
 
+import type { KeywordType } from "@/api";
+
 export const baseLayers = {
 	dare: {
 		id: "dare",
@@ -66,4 +68,21 @@ const initialBounds: LatLngBoundsLiteral = [
 
 export const initialViewState = {
 	bounds: initialBounds,
+};
+
+export const colors = {
+	cones: "hsl(50deg 100% 75%)",
+	coneOrigins: "hsl(50deg 100% 75%)",
+	linesPoints: "hsl(180deg 75% 50%)",
+	areaHighlights: "hsl(0deg 75% 75%)",
+	coneHighlights: "hsl(0deg 75% 75%)",
+};
+
+/** Area colors. */
+export const keywordColors: Record<KeywordType, string> = {
+	Keyword: "#039be5" /** blue darken-1 */,
+	Ethnonym: "#00897b" /** teal darken-1 */,
+	Name: "#ffb300" /** amber darken-1 */,
+	Region: "#43a047" /** green darken-1 */,
+	unclear: "#9e9e9e" /** grey */,
 };
