@@ -2,10 +2,11 @@
 import { computed } from "vue";
 
 import { type Author, useAuthorById } from "@/api";
+import AuthorDetailsList from "@/components/author-details-list.vue";
 import ErrorMessage from "@/components/error-message.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
-import { getAuthorLabel } from "@/lib/get-label";
+import { getAuthorLabel, getPlaceLabel } from "@/lib/get-label";
 
 const props = defineProps<{
 	ids: Set<Author["id"]>;
@@ -47,7 +48,24 @@ const isEmpty = computed(() => {
 
 			<h2>{{ getAuthorLabel(author) }}</h2>
 
-			<pre>{{ author }}</pre>
+			<dl v-if="author">
+				<div>
+					<dt class="sr-only">Century</dt>
+					<dd>{{ author.jahrhundert || "Unknown century" }}</dd>
+				</div>
+				<div>
+					<dt class="sr-only">Place</dt>
+					<dd>{{ getPlaceLabel(author.ort) }}</dd>
+				</div>
+				<div>
+					<dt class="sr-only">GND</dt>
+					<dd>
+						<a :href="author?.gnd_id" target="_blank">{{ author.gnd_id }}</a>
+					</dd>
+				</div>
+			</dl>
+
+			<AuthorDetailsList :id="id" />
 		</template>
 	</div>
 </template>

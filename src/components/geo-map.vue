@@ -435,6 +435,12 @@ onMounted(async () => {
 			// TODO: on click highlight area by either (i) adding to separate overlay feature group, or (ii) simply setStyle() on the area layer
 			// if (highlightedAreas.value.has(feature.id))
 			// if (overlayAreas.value.has(feature.id))
+			//
+			// layer.on({
+			// 	click() {
+			// 		emit("area-click", feature);
+			// 	},
+			// });
 		},
 		pointToLayer(feature, latlng) {
 			const keyword = feature.properties.key_word;
