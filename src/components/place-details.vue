@@ -5,6 +5,9 @@ import { type Place, usePlaceById } from "@/api";
 import ErrorMessage from "@/components/error-message.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
+import PlaceDetailsList from "@/components/place-details-list.vue";
+import PlaceMap from "@/components/place-map.vue";
+import VisualisationContainer from "@/components/visualisation-container.vue";
 import { getPlaceLabel } from "@/lib/get-label";
 
 const props = defineProps<{
@@ -47,7 +50,29 @@ const isEmpty = computed(() => {
 
 			<h2>{{ getPlaceLabel(place) }}</h2>
 
-			<pre>{{ place }}</pre>
+			<dl v-if="place">
+				<div>
+					<dt class="sr-only">Ancient name</dt>
+					<dd>{{ place.name_antik }}</dd>
+				</div>
+				<div>
+					<dt class="sr-only">Coordinates</dt>
+					<dd>{{ [place.lat, place.long].join(", ") }}</dd>
+				</div>
+			</dl>
+
+			<div class="grid h-96 w-full">
+				<VisualisationContainer v-slot="{ width, height }">
+					<PlaceMap
+						v-if="place && place.lat && place.long"
+						:height="height"
+						:points="[{ lat: place.lat, lng: place.long, label: getPlaceLabel(place) }]"
+						:width="width"
+					/>
+				</VisualisationContainer>
+			</div>
+
+			<PlaceDetailsList :id="id" />
 		</template>
 	</div>
 </template>

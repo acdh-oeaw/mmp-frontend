@@ -7,6 +7,7 @@ import KeywordTag from "@/components/keyword-tag.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import { useAuthorDetails } from "@/lib/details/use-author-details";
+import { getAuthorLabel, getPassageLabel } from "@/lib/get-label";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
 import { NuxtLink } from "#components";
 
@@ -58,12 +59,43 @@ const { caseStudies, keywords, passages, isLoading, isFetching, isEmpty, isError
 
 			<section v-if="caseStudies.length > 0">
 				<h3>Case studies</h3>
-				<pre>{{ caseStudies.length }}</pre>
+				<ul role="list">
+					<li v-for="caseStudy of caseStudies" :key="caseStudy.id">
+						<articlce>
+							<div>
+								<NuxtLink :href="{ path: `/case-studies/${caseStudy.id}/timeline` }">
+									{{ caseStudy.title }}
+								</NuxtLink>
+							</div>
+							<div>{{ caseStudy.principal_investigator }}</div>
+							<div>{{ caseStudy.description }}</div>
+						</articlce>
+					</li>
+				</ul>
 			</section>
 
-			<section>
+			<section v-if="passages.length > 0">
 				<h3>Passages</h3>
-				<pre>{{ passages.length }}</pre>
+				<ul role="list">
+					<li v-for="passage of passages" :key="passage.id">
+						<article>
+							<div>
+								<NuxtLink
+									:href="{
+										query: createSearchFilterParams({ ...searchFilters, passage: [passage.id] }),
+									}"
+								>
+									{{ getPassageLabel(passage) }}
+								</NuxtLink>
+							</div>
+							<div v-if="passage.text">
+								<div>{{ passage.text.title }}</div>
+								<div>{{ passage.text.autor.map(getAuthorLabel).join(", ") }}</div>
+								<div>{{ passage.text.jahrhundert }}</div>
+							</div>
+						</article>
+					</li>
+				</ul>
 			</section>
 		</template>
 	</div>

@@ -2,6 +2,9 @@
 import { computed } from "vue";
 
 import { type GeojsonLayer, type ResourceKey } from "@/api";
+import ErrorMessage from "@/components/error-message.vue";
+import LoadingIndicator from "@/components/loading-indicator.vue";
+import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import { useGeoMap } from "@/lib/geo-map/use-geo-map";
 import { type SearchFilters } from "@/lib/search/use-search-filters";
 

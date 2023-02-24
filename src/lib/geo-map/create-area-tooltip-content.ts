@@ -1,4 +1,5 @@
 import { type ConeGeojson, type SpatialCoverageGeojson } from "@/api";
+import { getPassageLabel } from "@/lib/get-label";
 
 export function createAreaTooltipContent(feature: ConeGeojson | SpatialCoverageGeojson): string {
 	const label = feature.properties.key_word?.stichwort;
@@ -11,7 +12,7 @@ export function createAreaTooltipContent(feature: ConeGeojson | SpatialCoverageG
       ${passages
 				.map((passage) => {
 					return `<li>
-          <span>${passage.display_label}</span>
+          <span>${getPassageLabel(passage)}</span>
         </li>`;
 				})
 				.join("\n")}

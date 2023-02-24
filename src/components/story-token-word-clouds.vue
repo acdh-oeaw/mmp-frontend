@@ -1,6 +1,9 @@
 <script lang="ts" setup>
 import { computed } from "vue";
 
+import ErrorMessage from "@/components/error-message.vue";
+import LoadingIndicator from "@/components/loading-indicator.vue";
+import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import TokenWordClouds from "@/components/token-word-clouds.vue";
 import { type SearchFilters } from "@/lib/search/use-search-filters";
 import { useWordClouds } from "@/lib/word-cloud/use-word-clouds";

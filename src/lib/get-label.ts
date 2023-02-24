@@ -1,4 +1,4 @@
-import type { Author, Place } from "@/api";
+import type { Author, Passage, Place } from "@/api";
 import { isNotNullable } from "@/lib/is-not-nullable";
 
 export function getAuthorLabel(
@@ -42,4 +42,16 @@ export function getDateRangeLabel(
 			return value < 0 ? `${value} BC` : `${value} AD`;
 		})
 		.join(" - ");
+}
+
+export function getPassageLabel(
+	passage: Pick<Passage, "display_label" | "text"> | null | undefined,
+) {
+	const label = passage?.display_label;
+
+	if (label == null) return "Unknown title";
+
+	return label;
+	// FIXME:
+	// .replace(/ \(\d+ - \d+\), /, "");
 }

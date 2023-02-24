@@ -6,9 +6,12 @@ import { nextTick, onMounted, onUnmounted, provide, ref, watch } from "vue";
 import { config, initialViewState } from "@/lib/geo-map/geo-map.config";
 import { key } from "@/lib/geo-map/place-map.context";
 import { type PlaceMapContext } from "@/lib/geo-map/place-map.types";
+import { debounce } from "~~/src/lib/debounce";
 
 const props = defineProps<{
+	height: number;
 	points: Array<{ lat: number; lng: number; label: string }>;
+	width: number;
 }>();
 
 const context: PlaceMapContext = {
@@ -45,9 +48,27 @@ onMounted(async () => {
 	});
 });
 
-onUnmounted(() => {
-	context.map?.remove();
+const resize = debounce((_width: number, _height: number) => {
+	if (context.map == null) return;
+
+	nextTick(() => {
+		context.map?.invalidateSize();
+	});
 });
+
+watch(
+	[
+		() => {
+			return props.width;
+		},
+		() => {
+			return props.height;
+		},
+	],
+	([width, height]) => {
+		resize(width, height);
+	},
+);
 
 watch(
 	() => {
@@ -79,6 +100,10 @@ watch(
 		});
 	},
 );
+
+onUnmounted(() => {
+	context.map?.remove();
+});
 
 provide(key, context);
 </script>

@@ -2,6 +2,9 @@
 import { computed } from "vue";
 
 import { type ResourceKey } from "@/api";
+import ErrorMessage from "@/components/error-message.vue";
+import LoadingIndicator from "@/components/loading-indicator.vue";
+import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import { useNetworkGraph } from "@/lib/network-graph/use-network-graph";
 import { type SearchFilters } from "@/lib/search/use-search-filters";
 

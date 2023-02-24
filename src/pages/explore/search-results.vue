@@ -3,7 +3,7 @@ import ErrorMessage from "@/components/error-message.vue";
 import KeywordTag from "@/components/keyword-tag.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
-import { getAuthorLabel, getDateRangeLabel } from "@/lib/get-label";
+import { getAuthorLabel, getDateRangeLabel, getPassageLabel } from "@/lib/get-label";
 import { createResourceKey } from "@/lib/search/resource-key";
 import { usePassagesSearch } from "@/lib/search/use-passages-search";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
@@ -88,6 +88,11 @@ const columns = {
 						</td>
 						<td>
 							<template v-if="passage.text != null">
+								{{ passage.text.title }}
+							</template>
+						</td>
+						<td>
+							<template v-if="passage.display_label">
 								<NuxtLink
 									:href="{
 										query: {
@@ -98,13 +103,9 @@ const columns = {
 										},
 									}"
 								>
-									{{ passage.text.title }}
+									{{ getPassageLabel(passage) }}
 								</NuxtLink>
 							</template>
-						</td>
-						<td>
-							<!-- {{ passage.display_label.replace(passage.text.title, "").replace(/ \(\d+ - \d+\), /, "") }} -->
-							{{ passage.display_label }}
 						</td>
 						<td>
 							<ul class="flex flex-wrap gap-0.5" role="list">
