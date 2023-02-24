@@ -15,28 +15,34 @@ const message = ref("");
 function onChangeMessaqge(to: RouteLocationNormalized) {
 	if (typeof to.meta["title"] === "string") {
 		message.value = to.meta["title"];
-	} else if (document.title) {
-		message.value = document.title;
 	} else {
-		const h1 = document.querySelector("h1")?.textContent;
+		/**
+		 * The `afterEach` callback runs *before* dom updates, so we need to wait a render
+		 * pass for `document.title` and `h1` to be updated.
+		 *
+		 * Looks like there is no lifecycle hook which runs *after* dom updates:
+		 *
+		 * @see https://router.vuejs.org/guide/advanced/navigation-guards.html#the-full-navigation-resolution-flow
+		 */
+		setTimeout(() => {
+			if (document.title) {
+				message.value = document.title;
+			} else {
+				const h1 = document.querySelector("h1")?.textContent;
 
-		if (isNonEmptyString(h1)) {
-			message.value = h1;
-		} else {
-			message.value = to.path;
-		}
+				if (isNonEmptyString(h1)) {
+					message.value = h1;
+				} else {
+					message.value = to.path;
+				}
+			}
+		}, 500);
 	}
 }
 
-/**
- * FIXME: Figure out when it is safe to read `document.title`. In the `afterEach`
- * callback, it has *not* yet been updated. Wrapping in `nextTick` does not help either.
- * See the router lifecycle:
- * @see https://router.vuejs.org/guide/advanced/navigation-guards.html#the-full-navigation-resolution-flow
- */
 router.afterEach((to, from) => {
 	if (to.path !== from.path) {
-		// onChangeMessaqge(to);
+		onChangeMessaqge(to);
 	}
 });
 </script>

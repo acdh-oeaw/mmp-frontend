@@ -2,7 +2,7 @@
 import { type Map as LeafletMap } from "leaflet";
 import { computed, ref } from "vue";
 
-import { type GeojsonLayer, type ResourceKey, useCaseStudies } from "@/api";
+import { type ResourceKey, type SpatialCoverage } from "@/api";
 import ErrorMessage from "@/components/error-message.vue";
 import GeoMap from "@/components/geo-map.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
@@ -12,6 +12,7 @@ import OverlayPanelButton from "@/components/overlay-panel-button.vue";
 import VisualisationContainer from "@/components/visualisation-container.vue";
 import { type GeoMapContext } from "@/lib/geo-map/geo-map.types";
 import { useGeoMap } from "@/lib/geo-map/use-geo-map";
+import { useGeoJsonLayers } from "@/lib/geo-map/use-geojson-layers";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
 import { useSelection } from "@/lib/search/use-selection";
 import { ClientOnly } from "#components";
@@ -27,24 +28,8 @@ useHead({
 const { searchFilters } = useSearchFilters();
 const { areas, cones, linesPoints, isFetching, isEmpty, isError, isLoading } =
 	useGeoMap(searchFilters);
-
-const caseStudiesSearchParams = computed(() => {
-	return { ids: searchFilters.value["case-study"].join(",") };
-});
-const isEnabled = computed(() => {
-	return searchFilters.value["case-study"].length > 0;
-});
-// TODO: useQueries
-const caseStudiesQuery = useCaseStudies(caseStudiesSearchParams, { isEnabled });
-const layers = computed(() => {
-	const layers = new Map<GeojsonLayer["id"], GeojsonLayer>();
-	caseStudiesQuery.data.value?.results.forEach((caseStudy) => {
-		caseStudy.layer.forEach((layer) => {
-			layers.set(layer.id, layer);
-		});
-	});
-	return layers;
-});
+// TODO: move into useGeoMap
+const { layers } = useGeoJsonLayers(searchFilters);
 
 //
 
@@ -53,11 +38,11 @@ const selectedKeys = computed<Set<ResourceKey>>(() => {
 	return new Set(selection.value.selection);
 });
 
-function onAreaClick(node: ResourceKey | null) {
+function onAreaClick(area: SpatialCoverage | null) {
 	//
 }
 
-function onPointClick(node: ResourceKey | null) {
+function onPointClick(point: SpatialCoverage | null) {
 	//
 }
 
@@ -65,11 +50,11 @@ function onPointClick(node: ResourceKey | null) {
 
 const highlightedKeys = ref(new Set<ResourceKey>());
 
-function onAreaHover(node: ResourceKey | null) {
+function onAreaHover(area: SpatialCoverage | null) {
 	//
 }
 
-function onPointHover(node: ResourceKey | null) {
+function onPointHover(point: SpatialCoverage | null) {
 	//
 }
 
@@ -131,6 +116,10 @@ function onZoomOut() {
 						:selected-keys="selectedKeys"
 						:width="width"
 						@ready="onReady"
+						@area-click="onAreaClick"
+						@area-hover="onAreaHover"
+						@point-click="onPointClick"
+						@point-hover="onPointHover"
 					>
 						<OverlayPanel position="top left">
 							<OverlayPanelButton label="Zoom in" @click="onZoomIn" />
