@@ -34,6 +34,7 @@ onMounted(async () => {
 
 	props.points.forEach((point) => {
 		context.points.push(
+			// TODO: do we want to `bindTooltip` instead of html `title`?
 			marker([point.lat, point.lng], {
 				autoPanOnFocus: false,
 				riseOnHover: true,
@@ -67,6 +68,7 @@ watch(
 
 			points.forEach((point) => {
 				context.points.push(
+					// TODO: do we want to `bindTooltip` instead of html `title`?
 					marker([point.lat, point.lng], {
 						autoPanOnFocus: false,
 						riseOnHover: true,
