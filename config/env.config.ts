@@ -1,18 +1,21 @@
-import { z } from "zod";
+import { assert } from "@stefanprobst/assert";
 
-const schema = z.object({
-	VITE_APP_API_BASE_URL: z.string(),
-	VITE_APP_BASE_URL: z.string(),
-	VITE_APP_MATOMO_BASE_URL: z.string().optional(),
-	VITE_APP_MATOMO_ID: z.string().optional(),
-	VITE_APP_REDMINE_ID: z.string(),
-});
-
-const result = schema.safeParse(import.meta.env);
-
-if (!result.success) {
-	const message = ["Missing environment variables.\n", result.error.flatten()].join("\n");
-	throw new Error(message);
+interface Env {
+	VITE_APP_API_BASE_URL: string;
+	VITE_APP_BASE_URL: string;
+	VITE_APP_MATOMO_BASE_URL?: string;
+	VITE_APP_MATOMO_ID?: string;
+	VITE_APP_REDMINE_ID: string;
 }
 
-export const env = result.data;
+assert(import.meta.env.VITE_APP_API_BASE_URL);
+assert(import.meta.env.VITE_APP_BASE_URL);
+assert(import.meta.env.VITE_APP_REDMINE_ID);
+
+export const env: Env = {
+	VITE_APP_API_BASE_URL: import.meta.env.VITE_APP_API_BASE_URL,
+	VITE_APP_BASE_URL: import.meta.env.VITE_APP_BASE_URL,
+	VITE_APP_MATOMO_BASE_URL: import.meta.env.VITE_APP_MATOMO_BASE_URL,
+	VITE_APP_MATOMO_ID: import.meta.env.VITE_APP_MATOMO_ID,
+	VITE_APP_REDMINE_ID: import.meta.env.VITE_APP_REDMINE_ID,
+};

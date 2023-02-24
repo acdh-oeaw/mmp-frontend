@@ -1,7 +1,14 @@
 <script lang="ts" setup>
 import "leaflet/dist/leaflet.css";
 
-import { type Map as LeafletMap } from "leaflet";
+import { assert } from "@stefanprobst/assert";
+import {
+	type CircleMarker,
+	type LatLngBoundsLiteral,
+	type Map as LeafletMap,
+	type Marker,
+	type Polygon,
+} from "leaflet";
 import { nextTick, onMounted, onUnmounted, provide, ref, watch } from "vue";
 
 import {
@@ -9,17 +16,26 @@ import {
 	type GeojsonLayer,
 	type LinesPointsGeojson,
 	type ResourceKey,
-	type SpatialCoverage,
 	type SpatialCoverageGeojson,
 } from "@/api";
 import { debounce } from "@/lib/debounce";
+import { createAreaTooltipContent } from "@/lib/geo-map/create-area-tooltip-content";
+import { createConeOriginTooltipContent } from "@/lib/geo-map/create-cone-origin-tooltip-content";
 import { config, initialViewState } from "@/lib/geo-map/geo-map.config";
 import { key } from "@/lib/geo-map/geo-map.context";
-import { type GeoMapContext } from "@/lib/geo-map/geo-map.types";
+import {
+	type ConeOriginGeojson,
+	type FeatureLayers,
+	type GeoMapContext,
+	type SpatialCoverageCenterPoint,
+} from "@/lib/geo-map/geo-map.types";
+import { keywordColors } from "~~/src/lib/search/search.config";
 
 const props = defineProps<{
 	areas: Array<SpatialCoverageGeojson>;
+	areaCenterPoints: Array<SpatialCoverageCenterPoint>;
 	cones: Array<ConeGeojson>;
+	coneOrigins: Array<ConeOriginGeojson>;
 	height: number;
 	highlightedKeys: Set<ResourceKey>;
 	layers: Map<GeojsonLayer["id"], GeojsonLayer>;
@@ -29,34 +45,271 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-	(event: "area-click", area: SpatialCoverage | null): void;
-	(event: "area-hover", area: SpatialCoverage | null): void;
-	(event: "point-click", point: SpatialCoverage | null): void;
-	(event: "point-hover", point: SpatialCoverage | null): void;
+	(event: "area-click", area: SpatialCoverageGeojson | null): void;
+	(event: "area-hover", area: SpatialCoverageGeojson | null): void;
+	(event: "point-click", point: ConeOriginGeojson | null): void;
+	(event: "point-hover", point: ConeOriginGeojson | null): void;
 	(event: "ready", map: LeafletMap): void;
 }>();
 
 const context: GeoMapContext = {
 	map: null,
+	baseLayer: null,
+	layers: {},
+	featureGroups: {
+		areas: null,
+		areaLabels: null,
+		cones: null,
+		coneOrigins: null,
+		linesPoints: null,
+	},
+	highlights: {
+		areas: null,
+		cones: null,
+	},
 };
+
+//
+
+const visibleFeatureGroups = ref(
+	new Set<keyof FeatureLayers>(["areas", "areaLabels", "cones", "coneOrigins", "linesPoints"]),
+);
+const visibleLayers = ref(new Set<GeojsonLayer["id"]>([...props.layers.keys()]));
+
+//
+
+const overlayAreas = ref<Array<SpatialCoverageGeojson>>([]);
+const overlayCones = ref<Array<ConeOriginGeojson>>([]);
+
+//
 
 const elementRef = ref<HTMLElement | null>(null);
 
 onMounted(async () => {
 	/** `leaflet` assumes `window` global. */
-	const { map: createMap, tileLayer } = await import("leaflet");
+	const {
+		map: createMap,
+		tileLayer,
+		geoJSON,
+		circleMarker,
+		divIcon,
+		marker,
+	} = await import("leaflet");
 
 	if (elementRef.value == null) return;
 
 	context.map = createMap(elementRef.value, config.options).fitBounds(initialViewState.bounds);
 
-	tileLayer(config.baseLayer.url, {
+	//
+
+	context.baseLayer = tileLayer(config.baseLayer.url, {
 		attribution: config.baseLayer.attribution,
 		minZoom: 2,
 	}).addTo(context.map);
 
+	//
+
+	context.featureGroups.cones = geoJSON<ConeGeojson["properties"]>(undefined, {
+		style(feature) {
+			if (feature == null) return {};
+
+			const color = "hsl(50deg 100% 75%)";
+
+			return {
+				color,
+				dashOffset: "10",
+				dashArray: "5",
+				fill: true,
+				fillOpacity: 0.15,
+				opacity: 0.75,
+				stroke: true,
+				weight: 1,
+			};
+		},
+	}).addTo(context.map);
+
+	//
+
+	context.featureGroups.areas = geoJSON<SpatialCoverageGeojson["properties"]>(undefined, {
+		onEachFeature(feature: SpatialCoverageGeojson, layer: Polygon) {
+			layer.bindTooltip(createAreaTooltipContent(feature), { permanent: false, sticky: true });
+
+			layer.on({
+				click() {
+					emit("area-click", feature);
+				},
+			});
+		},
+		style(feature) {
+			if (feature == null) return {};
+
+			const keyword = feature.properties.key_word;
+			assert(keyword != null, "Spatial Coverage is missing a keyword.");
+
+			const color = keywordColors[keyword.art];
+
+			return {
+				color,
+				dashOffset: "15",
+				dashArray: "15",
+				fill: true,
+				fillOpacity: 0.15,
+				opacity: 0.75,
+				stroke: true,
+				weight: 2,
+			};
+		},
+	}).addTo(context.map);
+
+	//
+
+	context.featureGroups.linesPoints = geoJSON<LinesPointsGeojson["properties"]>(undefined, {
+		onEachFeature(_feature: LinesPointsGeojson, _layer: CircleMarker) {
+			// TODO: tooltips for geometry collection?
+		},
+		pointToLayer(feature, latlng) {
+			const color = "hsl(320deg 75% 75%)";
+
+			const point = circleMarker(latlng, {
+				color,
+				fill: true,
+				fillOpacity: 0.15,
+				opacity: 0.75,
+				radius: 3,
+				stroke: true,
+				weight: 2,
+			});
+
+			return point;
+		},
+		style(feature) {
+			if (feature == null) return {};
+
+			const color = "hsl(320deg 75% 75%)";
+
+			return {
+				color,
+				fill: false,
+				stroke: true,
+				weight: 2,
+			};
+		},
+	}).addTo(context.map);
+
+	//
+
+	context.featureGroups.coneOrigins = geoJSON<ConeOriginGeojson["properties"]>(undefined, {
+		onEachFeature(feature: ConeOriginGeojson, layer: CircleMarker) {
+			layer.bindTooltip(createConeOriginTooltipContent(feature), {
+				permanent: false,
+				sticky: true,
+			});
+
+			layer.on({
+				click() {
+					emit("point-click", feature);
+				},
+			});
+		},
+		pointToLayer(feature, latlng) {
+			const color = "hsl(0deg 0% 0%)";
+
+			const point = circleMarker(latlng, {
+				color,
+				fill: true,
+				fillOpacity: 0.15,
+				opacity: 0.75,
+				radius: 3,
+				stroke: true,
+				weight: 2,
+			});
+
+			return point;
+		},
+	}).addTo(context.map);
+
+	//
+
+	context.featureGroups.areaLabels = geoJSON<SpatialCoverageCenterPoint["properties"]>(undefined, {
+		onEachFeature(_feature: SpatialCoverageCenterPoint, _layer: Marker) {
+			// TODO: on click highlight area by either (i) adding to separate overlay feature group, or (ii) simply setStyle() on the area layer
+			// if (highlightedAreas.value.has(feature.id))
+			// if (overlayAreas.value.has(feature.id))
+		},
+		pointToLayer(feature, latlng) {
+			const keyword = feature.properties.key_word;
+			assert(keyword != null, "Spatial Coverage is missing a keyword.");
+
+			const color = keywordColors[keyword.art];
+
+			const element = divIcon({
+				html: `<div class="geo-map-area-label" style="--geo-map-label-bg-color: ${color}">${keyword}</div>`,
+				// @ts-expect-error Missing in upstream types.
+				iconSize: "auto",
+				/** Ensure the default `leaflet-div-icon` class is not added, which has white background. */
+				className: "geo-map-area-label-container",
+			});
+
+			const label = marker(latlng, {
+				icon: element,
+				autoPanOnFocus: false,
+				riseOnHover: true,
+			});
+
+			return label;
+		},
+	}).addTo(context.map);
+
+	//
+
+	context.highlights.areas = geoJSON<SpatialCoverageGeojson["properties"]>(undefined, {
+		style(feature) {
+			if (feature == null) return {};
+
+			const color = "hsl(0deg 75% 75%)";
+
+			return {
+				color,
+				fill: false,
+				stroke: true,
+				weight: 2,
+			};
+		},
+	});
+
+	context.highlights.cones = geoJSON<ConeGeojson["properties"]>(undefined, {
+		style(feature) {
+			if (feature == null) return {};
+
+			const color = "hsl(0deg 75% 75%)";
+
+			return {
+				color,
+				fill: false,
+				stroke: true,
+				weight: 2,
+			};
+		},
+	});
+
+	//
+
+	context.map.on("zoomend", () => {
+		if (context.map == null) return;
+
+		const zoomLevel = context.map.getZoom();
+
+		if (zoomLevel <= 4 && visibleFeatureGroups.value.has("areaLabels")) {
+			visibleFeatureGroups.value.delete("areaLabels");
+		} else if (zoomLevel > 4 && !visibleFeatureGroups.value.has("areaLabels")) {
+			visibleFeatureGroups.value.add("areaLabels");
+		}
+	});
+
 	emit("ready", context.map);
 });
+
+//
 
 const resize = debounce((_width: number, _height: number) => {
 	if (context.map == null) return;
@@ -80,6 +333,322 @@ watch(
 	},
 );
 
+//
+
+watch(
+	[
+		() => {
+			return props.layers;
+		},
+		visibleLayers,
+	],
+	([layers, visibleLayers]) => {
+		nextTick(async () => {
+			Object.values(context.layers).forEach((layer) => {
+				layer?.remove();
+			});
+
+			const { geoJSON } = await import("leaflet");
+
+			const map = context.map;
+			if (map == null) return;
+
+			layers.forEach((layer) => {
+				if (visibleLayers.has(layer.id)) {
+					// TODO:
+					context.layers[layer.id] = geoJSON(layer.data).addTo(map);
+				}
+			});
+		});
+	},
+	{ immediate: true },
+);
+
+watch(
+	[
+		() => {
+			return props.cones;
+		},
+		() => {
+			return visibleFeatureGroups.value.has("cones");
+		},
+	],
+	([cones, isVisible]) => {
+		/** Update on next tick to ensure feature group is initialised. */
+		nextTick(() => {
+			const featureGroup = context.featureGroups.cones;
+
+			featureGroup?.clearLayers();
+
+			if (isVisible) {
+				cones.forEach((polygon) => {
+					featureGroup?.addData(polygon);
+				});
+			}
+		});
+	},
+	{ immediate: true },
+);
+
+watch(
+	[
+		() => {
+			return props.areas;
+		},
+		() => {
+			return visibleFeatureGroups.value.has("areas");
+		},
+	],
+	([areas, isVisible]) => {
+		/** Update on next tick to ensure feature group is initialised. */
+		nextTick(() => {
+			const featureGroup = context.featureGroups.areas;
+
+			featureGroup?.clearLayers();
+
+			if (isVisible) {
+				areas.forEach((polygon) => {
+					featureGroup?.addData(polygon);
+				});
+			}
+		});
+	},
+	{ immediate: true },
+);
+
+watch(
+	[
+		() => {
+			return props.linesPoints;
+		},
+		() => {
+			return visibleFeatureGroups.value.has("linesPoints");
+		},
+	],
+	([linesPoints, isVisible]) => {
+		/** Update on next tick to ensure feature group is initialised. */
+		nextTick(() => {
+			const featureGroup = context.featureGroups.linesPoints;
+
+			featureGroup?.clearLayers();
+
+			if (isVisible) {
+				linesPoints.forEach((polygon) => {
+					featureGroup?.addData(polygon);
+				});
+			}
+		});
+	},
+	{ immediate: true },
+);
+
+watch(
+	[
+		overlayAreas,
+		() => {
+			return visibleFeatureGroups.value.has("areas");
+		},
+	],
+	([areas, isVisible]) => {
+		/** Update on next tick to ensure feature group is initialised. */
+		nextTick(() => {
+			const featureGroup = context.highlights.areas;
+
+			featureGroup?.clearLayers();
+
+			if (isVisible) {
+				areas.forEach((polygon) => {
+					featureGroup?.addData(polygon);
+				});
+			}
+		});
+	},
+	{ immediate: true },
+);
+
+watch(
+	[
+		overlayCones,
+		() => {
+			return visibleFeatureGroups.value.has("cones");
+		},
+	],
+	([cones, isVisible]) => {
+		/** Update on next tick to ensure feature group is initialised. */
+		nextTick(() => {
+			const featureGroup = context.highlights.cones;
+
+			featureGroup?.clearLayers();
+
+			if (isVisible) {
+				cones.forEach((polygon) => {
+					featureGroup?.addData(polygon);
+				});
+			}
+		});
+	},
+	{ immediate: true },
+);
+
+watch(
+	[
+		() => {
+			return props.coneOrigins;
+		},
+		() => {
+			return visibleFeatureGroups.value.has("coneOrigins");
+		},
+	],
+	([coneOrigins, isVisible]) => {
+		/** Update on next tick to ensure feature group is initialised. */
+		nextTick(() => {
+			const featureGroup = context.featureGroups.coneOrigins;
+
+			featureGroup?.clearLayers();
+
+			if (isVisible) {
+				coneOrigins.forEach((point) => {
+					featureGroup?.addData(point);
+				});
+			}
+		});
+	},
+	{ immediate: true },
+);
+
+watch(
+	[
+		() => {
+			return props.areaCenterPoints;
+		},
+		() => {
+			return visibleFeatureGroups.value.has("areaLabels");
+		},
+	],
+	([areaCenterPoints, isVisible]) => {
+		/** Update on next tick to ensure feature group is initialised. */
+		nextTick(() => {
+			const featureGroup = context.featureGroups.areaLabels;
+
+			featureGroup?.clearLayers();
+
+			if (isVisible) {
+				areaCenterPoints.forEach((point) => {
+					featureGroup?.addData(point);
+				});
+			}
+		});
+	},
+	{ immediate: true },
+);
+
+watch(
+	[
+		() => {
+			return props.areas;
+		},
+		() => {
+			return props.areaCenterPoints;
+		},
+		() => {
+			return props.cones;
+		},
+		() => {
+			return props.coneOrigins;
+		},
+		() => {
+			return props.linesPoints;
+		},
+		() => {
+			return props.layers;
+		},
+		overlayAreas,
+		overlayCones,
+		visibleLayers,
+		visibleFeatureGroups,
+	],
+	() => {
+		nextTick(() => {
+			/** Ensure correct layer stacking order. */
+			Object.values(context.layers).forEach((layer) => {
+				layer?.bringToFront();
+			});
+			context.featureGroups.cones?.bringToFront();
+			context.featureGroups.areas?.bringToFront();
+			context.featureGroups.linesPoints?.bringToFront();
+			context.highlights.areas?.bringToFront();
+			context.highlights.cones?.bringToFront();
+			context.featureGroups.coneOrigins?.bringToFront();
+			context.featureGroups.areaLabels?.bringToFront();
+		});
+	},
+	{ immediate: true },
+);
+
+watch(
+	[
+		() => {
+			return props.areas;
+		},
+		() => {
+			return props.coneOrigins;
+		},
+	],
+	([areas, coneOrigins]) => {
+		if (
+			[areas, coneOrigins].every((features) => {
+				return features.length === 0;
+			})
+		) {
+			const bounds = initialViewState.bounds;
+
+			nextTick(() => {
+				context.map?.flyToBounds(bounds, { duration: 0.25 });
+			});
+		} else if (areas.length) {
+			const lng: Array<number> = [];
+			const lat: Array<number> = [];
+
+			areas.forEach((area) => {
+				const [x1, y1, x2, y2] = area.bbox as [number, number, number, number];
+				lng.push(x1, x2);
+				lat.push(y1, y2);
+			});
+
+			coneOrigins.forEach((place) => {
+				const [x, y] = place.geometry.coordinates as [number, number];
+				lng.push(x);
+				lat.push(y);
+			});
+
+			const bounds: LatLngBoundsLiteral = [
+				[Math.min(...lat), Math.min(...lng)],
+				[Math.max(...lat), Math.max(...lng)],
+			];
+
+			nextTick(() => {
+				/**
+				 * Note that leaflet currently does not properly cancel previous `fitBounds` animations,
+				 * which means that when cone origins load quickly after spatial coverage areas,
+				 * two `fitBounds` events are triggered, but the last, correct one is swallowed.
+				 *
+				 * Seems to work with `flyToBounds`.
+				 * Alternatively, disable animation on `fitBounds`:
+				 * ```ts
+				 * geoMap?.map?.fitBounds(bounds, { animate: false });
+				 * ```
+				 *
+				 * @see https://github.com/Leaflet/Leaflet/issues/3249
+				 */
+				context.map?.flyToBounds(bounds, { duration: 0.25 });
+			});
+		}
+	},
+	{ immediate: true },
+);
+
+//
+
 onUnmounted(() => {
 	context.map?.remove();
 });
@@ -91,3 +660,60 @@ provide(key, context);
 	<div ref="elementRef" class="absolute inset-0 grid" data-geo-map />
 	<slot :context="context" />
 </template>
+
+<style>
+.leaflet-container {
+	isolation: isolate;
+}
+
+.leaflet-container:focus {
+	outline: none;
+}
+
+.leaflet-tooltip {
+	white-space: unset;
+}
+
+.geo-map-area-label {
+	position: absolute;
+	padding-inline: 8px;
+	border-radius: 4px;
+	background-color: var(--geo-map-label-bg-color, "hsl(0deg 0% 0%)");
+	color: hsl(0deg 0% 100%);
+	font-weight: 500;
+	font-size: 14px;
+	font-family: ui-sans-serif, system-ui, sans-serif;
+	opacity: 75%;
+	pointer-events: auto;
+	transform: translate(-50%, -50%);
+}
+
+.geo-map-area-label-container {
+	border: none;
+	background: transparent;
+	pointer-events: none;
+}
+
+.geo-map-tooltip {
+	display: grid;
+	gap: 4px;
+	width: max-content;
+	max-width: 256px;
+	font-size: 12px;
+	font-family: ui-sans-serif, system-ui, sans-serif;
+	white-space: unset;
+	overflow-wrap: unset;
+}
+
+.geo-map-tooltip strong {
+	font-weight: 500;
+}
+
+.geo-map-tooltip ul {
+	display: grid;
+	gap: 4px;
+	padding: 0;
+	list-style: none;
+	font-size: 10px;
+}
+</style>
