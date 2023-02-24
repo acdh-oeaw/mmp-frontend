@@ -29,7 +29,7 @@ import {
 	type GeoMapContext,
 	type SpatialCoverageCenterPoint,
 } from "@/lib/geo-map/geo-map.types";
-import { keywordColors } from "~~/src/lib/search/search.config";
+import { keywordColors } from "@/lib/search/search.config";
 
 const props = defineProps<{
 	areas: Array<SpatialCoverageGeojson>;
@@ -343,11 +343,12 @@ watch(
 		visibleLayers,
 	],
 	([layers, visibleLayers]) => {
-		nextTick(async () => {
-			Object.values(context.layers).forEach((layer) => {
-				layer?.remove();
-			});
+		Object.values(context.layers).forEach((layer) => {
+			layer?.remove();
+		});
 
+		nextTick(async () => {
+			/** `leaflet` assumes `window` global. */
 			const { geoJSON } = await import("leaflet");
 
 			const map = context.map;

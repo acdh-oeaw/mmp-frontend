@@ -8,12 +8,12 @@ import {
 	useLinesPointsGeojson,
 	useSpatialCoveragesGeojson,
 } from "@/api";
-import { useGeoMapSearchParams } from "@/lib/search/use-geo-map-search-params";
-import { type SearchFilters } from "@/lib/search/use-search-filters";
 import {
 	type ConeOriginGeojson,
 	type SpatialCoverageCenterPoint,
-} from "~~/src/lib/geo-map/geo-map.types";
+} from "@/lib/geo-map/geo-map.types";
+import { useGeoMapSearchParams } from "@/lib/search/use-geo-map-search-params";
+import { type SearchFilters } from "@/lib/search/use-search-filters";
 
 export function useGeoMap(searchFilters: ComputedRef<SearchFilters>) {
 	const searchParams = useGeoMapSearchParams(searchFilters);

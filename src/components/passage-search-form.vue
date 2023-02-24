@@ -4,6 +4,7 @@ import { computed, ref, watch } from "vue";
 
 import { type GetAutoComplete, useAutoComplete } from "@/api";
 import DatasetSelect from "@/components/dataset-select.vue";
+import DateFilterSelect from "@/components/date-filter-select.vue";
 import DateRangeSlider from "@/components/date-range-slider.vue";
 import QueryModeSelect from "@/components/query-mode-select.vue";
 import SearchAutocomplete from "@/components/search-autocomplete.vue";
@@ -133,9 +134,12 @@ watch(selectedKeys, debouncedSubmit);
 				</template>
 			</SearchAutocomplete>
 
-			<div class="grid grid-cols-[auto_auto_1fr] items-center gap-4">
-				<DatasetSelect />
-				<QueryModeSelect />
+			<div class="grid items-center gap-4 lg:grid-cols-[auto_1fr]">
+				<div class="grid grid-cols-3 items-center gap-4">
+					<DatasetSelect />
+					<QueryModeSelect />
+					<DateFilterSelect />
+				</div>
 				<DateRangeSlider />
 			</div>
 		</div>

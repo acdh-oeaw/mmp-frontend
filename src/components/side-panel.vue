@@ -7,9 +7,9 @@ import KeywordDetails from "@/components/keyword-details.vue";
 import PassageDetails from "@/components/passage-details.vue";
 import PlaceDetails from "@/components/place-details.vue";
 import { splitResourceKey } from "@/lib/search/resource-key";
+import { useSearchFilters } from "@/lib/search/use-search-filters";
 import { useSelection } from "@/lib/search/use-selection";
 import { NuxtLink } from "#components";
-import { useSearchFilters } from "~~/src/lib/search/use-search-filters";
 
 const { createSearchFilterParams, searchFilters } = useSearchFilters();
 const { selection } = useSelection();

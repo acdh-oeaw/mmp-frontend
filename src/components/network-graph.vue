@@ -76,15 +76,25 @@ onMounted(async () => {
 	context.graph.nodeLabel("label");
 	context.graph.linkLabel("label");
 
-	// context.graph.nodeVisibility((node) => {
-	// 	if (props.showNeighborsOnly !== true) return true
-	// 	if (props.selectedKeys.size === 0) return true;
-	// 	if (props.selectedKeys.has(node.key)) return true;
-	// 	for (const key of node.neighbors) {
-	// 		if (props.selectedKeys.has(key)) return true;
-	// 	}
-	// 	return false;
-	// });
+	context.graph.nodeVisibility((node) => {
+		// if (props.showNeighborsOnly !== true) return true
+		if (props.selectedKeys.size === 0) return true;
+		if (props.selectedKeys.has(node.key)) return true;
+		for (const key of node.neighbors) {
+			if (props.selectedKeys.has(key)) return true;
+		}
+		return false;
+	});
+	context.graph.linkVisibility((edge) => {
+		if (props.selectedKeys.size === 0) return true;
+		// @ts-expect-error At this point `d3` has replaced `source` with `NodeObject`.
+		const source = edge.source.key;
+		// @ts-expect-error At this point `d3` has replaced `target` with `NodeObject`.
+		const target = edge.target.key;
+		if (props.selectedKeys.has(source)) return true;
+		if (props.selectedKeys.has(target)) return true;
+		return false;
+	});
 
 	context.graph.nodeColor("color");
 	context.graph.linkColor("color");
