@@ -2,6 +2,7 @@
 import { computed } from "vue";
 
 import ErrorMessage from "@/components/error-message.vue";
+import KeywordTag from "@/components/keyword-tag.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import { getAuthorLabel, getDateRangeLabel, getPassageLabel } from "@/lib/get-label";
@@ -47,53 +48,58 @@ const columns = {
 				<LoadingIndicator>Updating search results...</LoadingIndicator>
 			</template>
 
-			<table class="text-sm transition" :class="{ 'grayscale opacity-50': isFetching }">
-				<thead>
-					<tr>
-						<th v-for="(column, key) of columns" :key="key">{{ column.label }}</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr v-for="passage of passages" :key="passage.id">
-						<td>
-							<template v-if="passage.text != null">
-								<ul role="list">
-									<li v-for="author of passage.text.autor" :key="author.id">
-										{{ getAuthorLabel(author) }}
+			<div class="overflow-x-auto transition" :class="{ 'grayscale opacity-50': isFetching }">
+				<table class="min-w-full divide-y divide-neutral-200 text-sm">
+					<thead>
+						<tr>
+							<th
+								v-for="(column, key) of columns"
+								:key="key"
+								scope="col"
+								class="px-6 py-3 text-left text-xs font-medium uppercase text-neutral-500"
+							>
+								{{ column.label }}
+							</th>
+						</tr>
+					</thead>
+					<tbody class="divide-y divide-neutral-200">
+						<tr v-for="passage of passages" :key="passage.id">
+							<td class="px-6 py-4 text-neutral-800">
+								<template v-if="passage.text != null">
+									<ul role="list">
+										<li v-for="author of passage.text.autor" :key="author.id">
+											{{ getAuthorLabel(author) }}
+										</li>
+									</ul>
+								</template>
+							</td>
+							<td class="px-6 py-4 text-neutral-800">
+								<template v-if="passage.text != null">
+									{{ passage.text.title }}
+								</template>
+							</td>
+							<td class="px-6 py-4 text-neutral-800">
+								<template v-if="passage.display_label">
+									{{ getPassageLabel(passage) }}
+								</template>
+							</td>
+							<td class="px-6 py-4 text-neutral-800">
+								<ul class="flex flex-wrap gap-0.5" role="list">
+									<li v-for="keyword of passage.key_word" :key="keyword.id">
+										<KeywordTag :keyword="keyword" />
 									</li>
 								</ul>
-							</template>
-						</td>
-						<td>
-							<template v-if="passage.text != null">
-								{{ passage.text.title }}
-							</template>
-						</td>
-						<td>
-							<template v-if="passage.display_label">
-								{{ getPassageLabel(passage) }}
-							</template>
-						</td>
-						<td>
-							<ul class="flex flex-wrap gap-0.5" role="list">
-								<li v-for="keyword of passage.key_word" :key="keyword.id">
-									<KeywordTag :keyword="keyword" />
-								</li>
-							</ul>
-						</td>
-						<td>
-							<span class="text-xs">
+							</td>
+							<td class="whitespace-nowrap px-6 py-4 text-xs text-neutral-800">
 								{{ getDateRangeLabel(passage.text?.not_before, passage.text?.not_after) }}
-							</span>
-						</td>
-						<td>
-							<span class="text-xs">
+							</td>
+							<td class="whitespace-nowrap px-6 py-4 text-xs text-neutral-800">
 								{{ getDateRangeLabel(passage.start_date, passage.end_date) }}
-							</span>
-						</td>
-					</tr>
-				</tbody>
-			</table>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
 		</template>
 	</div>
 </template>

@@ -33,8 +33,8 @@ const links = {
 	<div class="grid h-full grid-rows-[auto_auto_1fr]">
 		<h1 class="sr-only">Case study</h1>
 
-		<nav aria-label="Case study">
-			<ul class="flex flex-wrap justify-center gap-8" role="list">
+		<nav aria-label="Case study" class="p-8">
+			<ul class="flex flex-wrap items-center justify-center gap-8" role="list">
 				<li v-for="(link, key) of links" :key="key">
 					<NuxtLink :href="{ path: link.path, query }">{{ link.label }}</NuxtLink>
 				</li>

@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/vue/20/solid";
+
 import ErrorMessage from "@/components/error-message.vue";
 import KeywordTag from "@/components/keyword-tag.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
@@ -49,99 +51,101 @@ const columns = {
 			<NothingFoundMessage></NothingFoundMessage>
 		</template>
 
-		<!--
-			FIXME: why is the navigation behavior different for author and passages vs. keyword?
-			FIXME: why does the Text column open Passage details?
-		-->
+		<!-- FIXME: why is the navigation behavior different for author and passages vs. keyword? -->
 		<template v-else>
 			<template v-if="isFetching">
 				<LoadingIndicator>Updating search results...</LoadingIndicator>
 			</template>
 
-			<table class="text-sm transition" :class="{ 'grayscale opacity-50': isFetching }">
-				<thead>
-					<tr>
-						<th v-for="(column, key) of columns" :key="key">{{ column.label }}</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr v-for="passage of passages" :key="passage.id">
-						<td>
-							<template v-if="passage.text != null">
-								<ul role="list">
-									<li v-for="author of passage.text.autor" :key="author.id">
-										<NuxtLink
-											:href="{
-												query: {
-													...createSearchFilterParams(searchFilters),
-													...createSelectionParams({
-														selection: [createResourceKey({ kind: 'autor', id: author.id })],
-													}),
-												},
-											}"
-										>
-											{{ getAuthorLabel(author) }}
-										</NuxtLink>
-									</li>
-								</ul>
-							</template>
-						</td>
-						<td>
-							<template v-if="passage.text != null">
-								{{ passage.text.title }}
-							</template>
-						</td>
-						<td>
-							<template v-if="passage.display_label">
-								<NuxtLink
-									:href="{
-										query: {
-											...createSearchFilterParams(searchFilters),
-											...createSelectionParams({
-												selection: [createResourceKey({ kind: 'stelle', id: passage.id })],
-											}),
-										},
-									}"
-								>
-									{{ getPassageLabel(passage) }}
-								</NuxtLink>
-							</template>
-						</td>
-						<td>
-							<ul class="flex flex-wrap gap-0.5" role="list">
-								<li v-for="keyword of passage.key_word" :key="keyword.id">
+			<div class="overflow-x-auto transition" :class="{ 'grayscale opacity-50': isFetching }">
+				<table class="min-w-full divide-y divide-neutral-200 text-sm">
+					<thead>
+						<tr>
+							<th
+								v-for="(column, key) of columns"
+								:key="key"
+								scope="col"
+								class="px-6 py-3 text-left text-xs font-medium uppercase text-neutral-500"
+							>
+								{{ column.label }}
+							</th>
+						</tr>
+					</thead>
+					<tbody class="divide-y divide-neutral-200">
+						<tr v-for="passage of passages" :key="passage.id">
+							<td class="px-6 py-4 text-neutral-800">
+								<template v-if="passage.text != null">
+									<ul role="list">
+										<li v-for="author of passage.text.autor" :key="author.id">
+											<NuxtLink
+												:href="{
+													query: {
+														...createSearchFilterParams(searchFilters),
+														...createSelectionParams({
+															selection: [createResourceKey({ kind: 'autor', id: author.id })],
+														}),
+													},
+												}"
+											>
+												{{ getAuthorLabel(author) }}
+											</NuxtLink>
+										</li>
+									</ul>
+								</template>
+							</td>
+							<td class="px-6 py-4 text-neutral-800">
+								<template v-if="passage.text != null">
+									{{ passage.text.title }}
+								</template>
+							</td>
+							<td class="px-6 py-4 text-neutral-800">
+								<template v-if="passage.display_label">
 									<NuxtLink
 										:href="{
 											query: {
-												...createSearchFilterParams({
-													...searchFilters,
-													keyword: [...searchFilters.keyword, keyword.id],
+												...createSearchFilterParams(searchFilters),
+												...createSelectionParams({
+													selection: [createResourceKey({ kind: 'stelle', id: passage.id })],
 												}),
 											},
 										}"
 									>
-										<KeywordTag :keyword="keyword" />
+										{{ getPassageLabel(passage) }}
 									</NuxtLink>
-								</li>
-							</ul>
-						</td>
-						<td>
-							<span class="text-xs">
+								</template>
+							</td>
+							<td class="px-6 py-4 text-neutral-800">
+								<ul class="flex flex-wrap gap-0.5" role="list">
+									<li v-for="keyword of passage.key_word" :key="keyword.id">
+										<NuxtLink
+											:href="{
+												query: {
+													...createSearchFilterParams({
+														...searchFilters,
+														keyword: [...searchFilters.keyword, keyword.id],
+													}),
+												},
+											}"
+										>
+											<KeywordTag :keyword="keyword" />
+										</NuxtLink>
+									</li>
+								</ul>
+							</td>
+							<td class="whitespace-nowrap px-6 py-4 text-xs text-neutral-800">
 								{{ getDateRangeLabel(passage.text?.not_before, passage.text?.not_after) }}
-							</span>
-						</td>
-						<td>
-							<span class="text-xs">
+							</td>
+							<td class="whitespace-nowrap px-6 py-4 text-xs text-neutral-800">
 								{{ getDateRangeLabel(passage.start_date, passage.end_date) }}
-							</span>
-						</td>
-					</tr>
-				</tbody>
-			</table>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
 
-			<!-- TODO: disabled links -->
+			<!-- FIXME: disabled links -->
 			<template v-if="passagesQuery.data.value?.count">
-				<nav aria-label="Pagination">
+				<nav aria-label="Pagination" class="flex items-center justify-center gap-8 p-8 text-sm">
 					<NuxtLink
 						:aria-disabled="searchFilters.offset <= searchFilters.limit"
 						:href="{
@@ -153,7 +157,9 @@ const columns = {
 							},
 						}"
 						rel="prev"
+						class="inline-flex items-center gap-1"
 					>
+						<ChevronLeftIcon class="h-5 w-5" />
 						<span>Previous page</span>
 					</NuxtLink>
 					<NuxtLink
@@ -169,8 +175,10 @@ const columns = {
 							},
 						}"
 						rel="next"
+						class="inline-flex items-center gap-1"
 					>
 						<span>Next page</span>
+						<ChevronRightIcon class="h-5 w-5" />
 					</NuxtLink>
 				</nav>
 			</template>

@@ -91,7 +91,7 @@ const isEmpty = computed(() => {
 					</div>
 					<div v-if="passage.text && passage.text.ort">
 						<dt>Places</dt>
-						<dd>{{ passage.text.ort.map(getPlaceLabel) }}</dd>
+						<dd>{{ passage.text.ort.map(getPlaceLabel).join(", ") }}</dd>
 					</div>
 					<div v-if="passage.text && passage.text.edition">
 						<dt>Edition</dt>

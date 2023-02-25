@@ -38,8 +38,8 @@ const links = {
 			</div>
 		</aside>
 
-		<nav aria-label="Passages">
-			<ul class="flex flex-wrap justify-center gap-8" role="list">
+		<nav aria-label="Passages" class="p-8">
+			<ul class="flex flex-wrap items-center justify-center gap-8" role="list">
 				<li v-for="(link, key) of links" :key="key">
 					<NuxtLink :href="{ path: link.path, query }">{{ link.label }}</NuxtLink>
 				</li>

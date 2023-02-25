@@ -60,7 +60,7 @@ const isEmpty = computed(() => {
 				<div>
 					<dt class="sr-only">GND</dt>
 					<dd>
-						<a :href="author?.gnd_id" target="_blank">{{ author.gnd_id }}</a>
+						<a :href="author.gnd_id" target="_blank">{{ author.gnd_id }}</a>
 					</dd>
 				</div>
 			</dl>

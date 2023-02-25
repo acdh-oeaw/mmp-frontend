@@ -29,7 +29,7 @@ const searchFilters = computed<SearchFilters>(() => {
 
 <template>
 	<figure v-if="isStoryComponentType(props.type)">
-		<div class="relative h-96 w-full">
+		<div class="not-prose relative h-96 w-full">
 			<StoryNetworkGraph v-if="props.type === 'graph'" :search-filters="searchFilters" />
 			<StoryGeoMap v-if="props.type === 'map'" :search-filters="searchFilters" />
 			<StoryTokenWordClouds v-if="props.type === 'cloud'" :search-filters="searchFilters" />

@@ -70,7 +70,6 @@ function onNodeHover(_node: NetworkGraphNode | null) {
 //
 
 const resourceKindFilters = ref(
-	// FIXME: @see https://github.com/acdh-oeaw/mmp/pull/204
 	new Map<ResourceKind, boolean>([
 		["autor", true],
 		["keyword", true],

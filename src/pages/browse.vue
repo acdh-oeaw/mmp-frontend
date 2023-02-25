@@ -22,8 +22,8 @@ const links = {
 	<div class="grid h-full grid-rows-[auto_1fr]">
 		<h1 class="sr-only">Browse the data</h1>
 
-		<nav aria-label="Content types">
-			<ul class="flex flex-wrap justify-center gap-8" role="list">
+		<nav aria-label="Content types" class="p-8">
+			<ul class="flex flex-wrap items-center justify-center gap-8" role="list">
 				<li v-for="(link, key) of links" :key="key">
 					<NuxtLink :href="{ path: link.path }">{{ link.label }}</NuxtLink>
 				</li>
