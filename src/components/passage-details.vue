@@ -5,6 +5,8 @@ import { type Passage, usePassageById } from "@/api";
 import ErrorMessage from "@/components/error-message.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
+import PassageDetailsList from "@/components/passage-details-list.vue";
+import { getAuthorLabel, getDateRangeLabel, getPassageLabel } from "@/lib/get-label";
 
 const props = defineProps<{
 	ids: Set<Passage["id"]>;
@@ -44,9 +46,20 @@ const isEmpty = computed(() => {
 				<LoadingIndicator>Updating passage...</LoadingIndicator>
 			</template>
 
-			<h2>{{ passage?.display_label }}</h2>
+			<h2>{{ getPassageLabel(passage) }}</h2>
 
-			<pre>{{ passage }}</pre>
+			<dl v-if="passage">
+				<div>
+					<dt class="sr-only">Date</dt>
+					<dd>{{ getDateRangeLabel(passage.start_date, passage.end_date) }}</dd>
+				</div>
+				<div v-if="passage.text">
+					<dt class="sr-only">Author</dt>
+					<dd>{{ passage.text.autor.map(getAuthorLabel).join(", ") }}</dd>
+				</div>
+			</dl>
+
+			<PassageDetailsList :id="id" />
 		</template>
 	</div>
 </template>

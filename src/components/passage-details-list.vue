@@ -99,7 +99,7 @@ const isEmpty = computed(() => {
 					</div>
 					<div v-if="passage.text">
 						<dt>Date</dt>
-						<dd>{{ getDateRangeLabel(passage.text.start_date, passage.text.end_date) }}</dd>
+						<dd>{{ getDateRangeLabel(passage.text.not_before, passage.text.not_after) }}</dd>
 					</div>
 					<div v-if="passage.kommentar">
 						<dt>Comment</dt>
