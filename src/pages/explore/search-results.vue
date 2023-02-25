@@ -58,7 +58,7 @@ const columns = {
 				<LoadingIndicator>Updating search results...</LoadingIndicator>
 			</template>
 
-			<table class="text-sm">
+			<table class="text-sm transition" :class="{ 'grayscale opacity-50': isFetching }">
 				<thead>
 					<tr>
 						<th v-for="(column, key) of columns" :key="key">{{ column.label }}</th>
@@ -125,8 +125,16 @@ const columns = {
 								</li>
 							</ul>
 						</td>
-						<td>{{ getDateRangeLabel(passage.text?.not_before, passage.text?.not_after) }}</td>
-						<td>{{ getDateRangeLabel(passage.start_date, passage.end_date) }}</td>
+						<td>
+							<span class="text-xs">
+								{{ getDateRangeLabel(passage.text?.not_before, passage.text?.not_after) }}
+							</span>
+						</td>
+						<td>
+							<span class="text-xs">
+								{{ getDateRangeLabel(passage.start_date, passage.end_date) }}
+							</span>
+						</td>
 					</tr>
 				</tbody>
 			</table>

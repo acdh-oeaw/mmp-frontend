@@ -11,7 +11,7 @@ const labels: Record<DateFilter, { label: string; description?: string }> = {
 		label: "Date of composition",
 	},
 	content: {
-		label: "Date of content",
+		label: "Temporal coverage",
 	},
 };
 

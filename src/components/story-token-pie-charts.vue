@@ -5,8 +5,10 @@ import ErrorMessage from "@/components/error-message.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import TokenPieCharts from "@/components/token-pie-charts.vue";
+import VisualisationContainer from "@/components/visualisation-container.vue";
 import { type SearchFilters } from "@/lib/search/use-search-filters";
 import { useWordClouds } from "@/lib/word-cloud/use-word-clouds";
+import { ClientOnly } from "#components";
 
 const props = defineProps<{
 	searchFilters: SearchFilters;

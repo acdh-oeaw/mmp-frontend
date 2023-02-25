@@ -2,11 +2,14 @@
 import { schemeCategory10 } from "d3";
 import { type Chart, type SeriesOptionsType } from "highcharts";
 import * as Highcharts from "highcharts";
+import ChartAccessibility from "highcharts/modules/accessibility";
 import { nextTick, onMounted, onUnmounted, provide, ref, watch } from "vue";
 
 import { key } from "@/lib/charts/pie-chart.context";
 import { type PieChartContext, type Token } from "@/lib/charts/pie-chart.types";
 import { debounce } from "@/lib/debounce";
+
+ChartAccessibility(Highcharts);
 
 const props = defineProps<{
 	chart: Array<Token>;

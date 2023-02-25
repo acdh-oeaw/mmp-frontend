@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { XMarkIcon } from "@heroicons/vue/24/outline";
 import { computed } from "vue";
 
 import { type Resource, type ResourceKind } from "@/api";
@@ -37,14 +38,16 @@ const isVisible = computed(() => {
 </script>
 
 <template>
+	<!-- TODO: <transition> avoid unmounting old content before transitionend. currently, clicking close updates search params and this immediarely removes panel content -->
 	<div
-		class="fixed inset-y-0 left-0 w-full max-w-md overflow-hidden rounded-r-md bg-white py-8 shadow-lg transition"
+		class="fixed inset-y-0 left-0 w-full max-w-md overflow-hidden bg-white py-8 shadow-lg transition"
 		:class="isVisible ? 'visible translate-x-0' : 'invisible -translate-x-full'"
 	>
 		<aside class="grid h-full grid-rows-[auto_1fr]">
-			<header class="relative px-8">
+			<header class="relative flex justify-end px-8">
 				<NuxtLink :href="{ query: createSearchFilterParams(searchFilters) }">
-					<span>Close</span>
+					<span class="sr-only">Close</span>
+					<XMarkIcon class="h-6 w-6 transition hover:text-neutral-700" />
 				</NuxtLink>
 			</header>
 			<div class="overflow-auto">

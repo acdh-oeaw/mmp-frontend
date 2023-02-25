@@ -155,6 +155,12 @@ function _onFitWorld() {
 							<OverlayPanelButton label="Zoom in" @click="onZoomIn" />
 							<OverlayPanelButton label="Zoom out" @click="onZoomOut" />
 						</OverlayPanel>
+						<OverlayPanel position="top right">
+							<pre>
+								{{ layers }}
+							</pre
+							>
+						</OverlayPanel>
 					</GeoMap>
 				</VisualisationContainer>
 			</ClientOnly>

@@ -1,5 +1,6 @@
 import type { Feature, Point } from "geojson";
 import { type GeoJSON, type Map as LeafletMap, type TileLayer } from "leaflet";
+import { type Ref } from "vue";
 
 import type {
 	ConeGeojson,
@@ -42,4 +43,13 @@ export interface GeoMapContext {
 	layers: Record<GeojsonLayer["id"], GeoJSON | null>;
 	featureGroups: FeatureLayers;
 	highlights: HighlightFeatureLayers;
+
+	visibility: {
+		featureGroups: Ref<Set<keyof FeatureLayers>>;
+		layers: Ref<Set<GeojsonLayer["id"]>>;
+	};
+	overlays: {
+		areas: Ref<Array<SpatialCoverageGeojson>>;
+		cones: Ref<Array<ConeOriginGeojson>>;
+	};
 }

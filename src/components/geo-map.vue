@@ -68,19 +68,18 @@ const context: GeoMapContext = {
 		areas: null,
 		cones: null,
 	},
+
+	visibility: {
+		featureGroups: ref(
+			new Set<keyof FeatureLayers>(["areas", "areaLabels", "cones", "coneOrigins", "linesPoints"]),
+		),
+		layers: ref(new Set<GeojsonLayer["id"]>([...props.layers.keys()])),
+	},
+	overlays: {
+		areas: ref<Array<SpatialCoverageGeojson>>([]),
+		cones: ref<Array<ConeOriginGeojson>>([]),
+	},
 };
-
-//
-
-const visibleFeatureGroups = ref(
-	new Set<keyof FeatureLayers>(["areas", "areaLabels", "cones", "coneOrigins", "linesPoints"]),
-);
-const visibleLayers = ref(new Set<GeojsonLayer["id"]>([...props.layers.keys()]));
-
-//
-
-const overlayAreas = ref<Array<SpatialCoverageGeojson>>([]);
-const overlayCones = ref<Array<ConeOriginGeojson>>([]);
 
 //
 
@@ -98,7 +97,7 @@ async function updateLayers() {
 	if (map == null) return;
 
 	layers.forEach((layer) => {
-		if (visibleLayers.value.has(layer.id)) {
+		if (context.visibility.layers.value.has(layer.id)) {
 			// TODO:
 			context.layers[layer.id] = geoJSON(layer.data).addTo(map);
 		}
@@ -107,7 +106,7 @@ async function updateLayers() {
 
 function updateLinesPoints() {
 	const linesPoints = props.linesPoints;
-	const isVisible = visibleFeatureGroups.value.has("linesPoints");
+	const isVisible = context.visibility.featureGroups.value.has("linesPoints");
 
 	const featureGroup = context.featureGroups.linesPoints;
 
@@ -122,7 +121,7 @@ function updateLinesPoints() {
 
 function updateCones() {
 	const cones = props.cones;
-	const isVisible = visibleFeatureGroups.value.has("cones");
+	const isVisible = context.visibility.featureGroups.value.has("cones");
 
 	const featureGroup = context.featureGroups.cones;
 
@@ -137,7 +136,7 @@ function updateCones() {
 
 function updateAreas() {
 	const areas = props.areas;
-	const isVisible = visibleFeatureGroups.value.has("areas");
+	const isVisible = context.visibility.featureGroups.value.has("areas");
 
 	const featureGroup = context.featureGroups.areas;
 
@@ -151,28 +150,28 @@ function updateAreas() {
 }
 
 function updateOverlayAreas() {
-	const isVisible = visibleFeatureGroups.value.has("areas");
+	const isVisible = context.visibility.featureGroups.value.has("areas");
 
 	const featureGroup = context.highlights.areas;
 
 	featureGroup?.clearLayers();
 
 	if (isVisible) {
-		overlayAreas.value.forEach((polygon) => {
+		context.overlays.areas.value.forEach((polygon) => {
 			featureGroup?.addData(polygon);
 		});
 	}
 }
 
 function updateOverlayCones() {
-	const isVisible = visibleFeatureGroups.value.has("cones");
+	const isVisible = context.visibility.featureGroups.value.has("cones");
 
 	const featureGroup = context.highlights.cones;
 
 	featureGroup?.clearLayers();
 
 	if (isVisible) {
-		overlayCones.value.forEach((polygon) => {
+		context.overlays.cones.value.forEach((polygon) => {
 			featureGroup?.addData(polygon);
 		});
 	}
@@ -180,7 +179,7 @@ function updateOverlayCones() {
 
 function updateConeOrigins() {
 	const coneOrigins = props.coneOrigins;
-	const isVisible = visibleFeatureGroups.value.has("coneOrigins");
+	const isVisible = context.visibility.featureGroups.value.has("coneOrigins");
 
 	const featureGroup = context.featureGroups.coneOrigins;
 
@@ -195,7 +194,7 @@ function updateConeOrigins() {
 
 function updateAreaLabels() {
 	const areaCenterPoints = props.areaCenterPoints;
-	const isVisible = visibleFeatureGroups.value.has("areaLabels");
+	const isVisible = context.visibility.featureGroups.value.has("areaLabels");
 
 	const featureGroup = context.featureGroups.areaLabels;
 
@@ -434,7 +433,7 @@ onMounted(async () => {
 		onEachFeature(_feature: SpatialCoverageCenterPoint, _layer: Marker) {
 			// TODO: on click highlight area by either (i) adding to separate overlay feature group, or (ii) simply setStyle() on the area layer
 			// if (highlightedAreas.value.has(feature.id))
-			// if (overlayAreas.value.has(feature.id))
+			// if (context.overlays.areas.value.has(feature.id))
 			//
 			// layer.on({
 			// 	click() {
@@ -505,10 +504,10 @@ onMounted(async () => {
 
 		const zoomLevel = context.map.getZoom();
 
-		if (zoomLevel <= 4 && visibleFeatureGroups.value.has("areaLabels")) {
-			visibleFeatureGroups.value.delete("areaLabels");
-		} else if (zoomLevel > 4 && !visibleFeatureGroups.value.has("areaLabels")) {
-			visibleFeatureGroups.value.add("areaLabels");
+		if (zoomLevel <= 4 && context.visibility.featureGroups.value.has("areaLabels")) {
+			context.visibility.featureGroups.value.delete("areaLabels");
+		} else if (zoomLevel > 4 && !context.visibility.featureGroups.value.has("areaLabels")) {
+			context.visibility.featureGroups.value.add("areaLabels");
 		}
 	});
 
@@ -561,7 +560,7 @@ watch(
 		() => {
 			return props.layers;
 		},
-		visibleLayers,
+		context.visibility.layers,
 	],
 	updateLayers,
 );
@@ -572,7 +571,7 @@ watch(
 			return props.cones;
 		},
 		() => {
-			return visibleFeatureGroups.value.has("cones");
+			return context.visibility.featureGroups.value.has("cones");
 		},
 	],
 	updateCones,
@@ -584,7 +583,7 @@ watch(
 			return props.areas;
 		},
 		() => {
-			return visibleFeatureGroups.value.has("areas");
+			return context.visibility.featureGroups.value.has("areas");
 		},
 	],
 	updateAreas,
@@ -596,7 +595,7 @@ watch(
 			return props.linesPoints;
 		},
 		() => {
-			return visibleFeatureGroups.value.has("linesPoints");
+			return context.visibility.featureGroups.value.has("linesPoints");
 		},
 	],
 	updateLinesPoints,
@@ -604,9 +603,9 @@ watch(
 
 watch(
 	[
-		overlayAreas,
+		context.overlays.areas,
 		() => {
-			return visibleFeatureGroups.value.has("areas");
+			return context.visibility.featureGroups.value.has("areas");
 		},
 	],
 	updateOverlayAreas,
@@ -615,9 +614,9 @@ watch(
 
 watch(
 	[
-		overlayCones,
+		context.overlays.cones,
 		() => {
-			return visibleFeatureGroups.value.has("cones");
+			return context.visibility.featureGroups.value.has("cones");
 		},
 	],
 	updateOverlayCones,
@@ -629,7 +628,7 @@ watch(
 			return props.coneOrigins;
 		},
 		() => {
-			return visibleFeatureGroups.value.has("coneOrigins");
+			return context.visibility.featureGroups.value.has("coneOrigins");
 		},
 	],
 	updateConeOrigins,
@@ -641,7 +640,7 @@ watch(
 			return props.areaCenterPoints;
 		},
 		() => {
-			return visibleFeatureGroups.value.has("areaLabels");
+			return context.visibility.featureGroups.value.has("areaLabels");
 		},
 	],
 	updateAreaLabels,
@@ -679,10 +678,10 @@ watch(
 		() => {
 			return props.layers;
 		},
-		overlayAreas,
-		overlayCones,
-		visibleLayers,
-		visibleFeatureGroups,
+		context.overlays.areas,
+		context.overlays.cones,
+		context.visibility.layers,
+		context.visibility.featureGroups,
 	],
 	updateStackingOrder,
 );

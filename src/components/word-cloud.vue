@@ -2,6 +2,7 @@
 import { schemeCategory10 } from "d3";
 import { type Chart, type SeriesOptionsType } from "highcharts";
 import * as Highcharts from "highcharts";
+import ChartAccessibility from "highcharts/modules/accessibility";
 import WordCloudChart from "highcharts/modules/wordcloud";
 import { nextTick, onMounted, onUnmounted, provide, ref, watch } from "vue";
 
@@ -9,6 +10,7 @@ import { debounce } from "@/lib/debounce";
 import { key } from "@/lib/word-cloud/word-cloud.context";
 import { type Token, type WordCloudContext } from "@/lib/word-cloud/word-cloud.types";
 
+ChartAccessibility(Highcharts);
 WordCloudChart(Highcharts);
 
 const props = defineProps<{

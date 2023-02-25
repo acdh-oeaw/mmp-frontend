@@ -32,12 +32,8 @@ const context: NetworkGraphContext = {
 
 const elementRef = ref<HTMLElement | null>(null);
 
-function updateGraph(graph: NetworkGraphData) {
-	const nodes = Array.from(graph.nodes.values()) as Array<NodeObject>;
-	const links = Array.from(graph.edges.values()) as Array<LinkObject>;
-
+function updateAuthorNodePositions(nodes: Array<NodeObject>) {
 	// TODO: pass this in via props? (may make sense to also display node count by kind/keyword type in the legend)
-	// TODO: fixed positions should change when width/height changes
 	/** Use fixed positions for author nodes. */
 	const grouped = groupByToMap(nodes, (node) => {
 		return node.kind;
@@ -46,7 +42,7 @@ function updateGraph(graph: NetworkGraphData) {
 	const authorNodes = grouped.get("autor");
 
 	if (authorNodes != null && authorNodes.length > 1) {
-		const radius = Math.min(props.width, props.height) * 0.75;
+		const radius = Math.min(props.width, props.height) * 0.3;
 		const rad = (2 * Math.PI) / authorNodes.length;
 
 		authorNodes.forEach((node, index) => {
@@ -54,6 +50,13 @@ function updateGraph(graph: NetworkGraphData) {
 			node.fy = Math.sin(rad * index) * radius;
 		});
 	}
+}
+
+function updateGraph() {
+	const nodes = Array.from(props.graph.nodes.values()) as Array<NodeObject>;
+	const links = Array.from(props.graph.edges.values()) as Array<LinkObject>;
+
+	updateAuthorNodePositions(nodes);
 
 	context.graph?.graphData({ links, nodes });
 }
@@ -197,10 +200,10 @@ onMounted(async () => {
 	// chargeForce?.strength(-100);
 
 	const _centerForce = context.graph.d3Force("center") as ForceCenter<NodeObject> | null;
-	// context.graph.d3Force("center", null)
+	// context.graph.d3Force("center", null);
 
 	context.graph.autoPauseRedraw(false);
-	updateGraph(props.graph);
+	updateGraph();
 	context.graph(elementRef.value);
 
 	emit("ready", context.graph);
@@ -210,6 +213,8 @@ const resize = debounce((width: number, height: number) => {
 	if (context.graph == null) return;
 
 	nextTick(() => {
+		updateAuthorNodePositions(Array.from(props.graph.nodes.values()) as Array<NodeObject>);
+
 		context.graph?.width(width);
 		context.graph?.height(height);
 	});
@@ -229,14 +234,9 @@ watch(
 	},
 );
 
-watch(
-	() => {
-		return props.graph;
-	},
-	(graph) => {
-		updateGraph(graph);
-	},
-);
+watch(() => {
+	return props.graph;
+}, updateGraph);
 
 onUnmounted(() => {
 	context.graph?._destructor();
