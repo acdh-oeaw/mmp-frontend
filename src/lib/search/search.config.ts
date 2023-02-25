@@ -31,7 +31,7 @@ export const keywordColors: Record<KeywordType, string> = {
 	Ethnonym: "bg-sky-300",
 	Name: "bg-amber-300",
 	Region: "bg-green-300",
-	unclear: "bg-grey-300",
+	unclear: "bg-neutral-300",
 };
 
 // https://github.com/acdh-oeaw/mmp/blob/master/archiv/endpoint_views.py#L17

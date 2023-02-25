@@ -3,10 +3,10 @@ import "leaflet/dist/leaflet.css";
 
 import { nextTick, onMounted, onUnmounted, provide, ref, watch } from "vue";
 
+import { debounce } from "@/lib/debounce";
 import { config, initialViewState } from "@/lib/geo-map/geo-map.config";
 import { key } from "@/lib/geo-map/place-map.context";
 import { type PlaceMapContext } from "@/lib/geo-map/place-map.types";
-import { debounce } from "~~/src/lib/debounce";
 
 const props = defineProps<{
 	height: number;

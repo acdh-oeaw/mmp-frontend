@@ -12,13 +12,14 @@ import OverlayPanelButton from "@/components/overlay-panel-button.vue";
 import VisualisationContainer from "@/components/visualisation-container.vue";
 import { useCaseStudyIdParam } from "@/lib/case-studies/use-case-study-id-param";
 import { saveAsCsv, saveAsGexf, saveAsImage } from "@/lib/network-graph/export-data";
+import { keywordNodeColors, nodeColors } from "@/lib/network-graph/network-graph.config";
 import {
 	type NetworkGraphContext,
 	type NetworkGraphData,
 	type NetworkGraphNode,
 } from "@/lib/network-graph/network-graph.types";
 import { useNetworkGraph } from "@/lib/network-graph/use-network-graph";
-import { colors, keywordColors, keywordTypeLabels, kindLabels } from "@/lib/search/search.config";
+import { keywordTypeLabels, kindLabels } from "@/lib/search/search.config";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
 import { useSelection } from "@/lib/search/use-selection";
 import { ClientOnly } from "#components";
@@ -237,7 +238,7 @@ function onSaveAsGexf() {
 												}
 											"
 										/>
-										<span class="h-3 w-3 rounded" :class="colors[key]" />
+										<span class="h-3 w-3 rounded" :style="{ background: nodeColors[key] }" />
 										<span>{{ kindLabels[key].other }}</span>
 									</label>
 								</template>
@@ -257,7 +258,7 @@ function onSaveAsGexf() {
 											}
 										"
 									/>
-									<span class="h-3 w-3 rounded" :class="keywordColors[key]" />
+									<span class="h-3 w-3 rounded" :style="{ background: keywordNodeColors[key] }" />
 									<span>{{ keywordTypeLabels[key].other }}</span>
 								</label>
 							</form>

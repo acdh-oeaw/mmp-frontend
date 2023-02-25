@@ -19,29 +19,29 @@ function onToggleNavigationMenu() {
 </script>
 
 <template>
-	<header class="bg-neutral-900 text-white">
+	<header>
 		<nav
 			aria-label="Main"
-			class="mx-auto flex w-full max-w-7xl items-center justify-between gap-8 px-8 py-6"
+			class="mx-auto flex w-full max-w-7xl items-center justify-between gap-8 border-b border-neutral-200 px-8 py-4"
 		>
 			<div class="flex items-center gap-2">
 				<button
-					class="flex items-center gap-2 rounded-full p-1 transition hover:text-neutral-300 md:hidden"
+					class="flex items-center gap-2 rounded-full p-1 transition hover:text-neutral-700 md:hidden"
 					@click="onToggleNavigationMenu"
 				>
 					<span class="sr-only">Toggle navigation menu</span>
 					<Bars3Icon class="h-6 w-6" />
 				</button>
 
-				<NuxtLink class="text-3xl font-bold transition hover:text-neutral-300 md:text-4xl" href="/">
+				<NuxtLink class="text-3xl font-bold transition hover:text-neutral-700 md:text-4xl" href="/">
 					MMP
 				</NuxtLink>
 			</div>
 
-			<ul class="hidden flex-wrap justify-end md:flex lg:text-xl" role="list">
+			<ul class="hidden flex-wrap justify-end font-medium md:flex lg:text-xl" role="list">
 				<li v-for="(link, key, index) of links" :key="key">
 					<span v-if="index !== 0" aria-hidden class="mx-4 select-none">&bull;</span>
-					<NuxtLink class="transition hover:text-neutral-300" :href="{ path: link.path }">
+					<NuxtLink class="transition hover:text-neutral-700" :href="{ path: link.path }">
 						{{ link.label }}
 					</NuxtLink>
 				</li>

@@ -23,7 +23,7 @@ const links = {
 		<h1 class="sr-only">Browse the data</h1>
 
 		<nav aria-label="Content types" class="p-8">
-			<ul class="flex flex-wrap items-center justify-center gap-8" role="list">
+			<ul class="flex flex-wrap items-center justify-center gap-x-8 gap-y-2" role="list">
 				<li v-for="(link, key) of links" :key="key">
 					<NuxtLink :href="{ path: link.path }">{{ link.label }}</NuxtLink>
 				</li>

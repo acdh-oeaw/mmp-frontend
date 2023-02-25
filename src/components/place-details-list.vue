@@ -6,8 +6,8 @@ import ErrorMessage from "@/components/error-message.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import { usePlaceDetails } from "@/lib/details/use-place-details";
+import { getAuthorLabel } from "@/lib/get-label";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
-import { getAuthorLabel } from "~~/src/lib/get-label";
 
 const props = defineProps<{
 	id: Place["id"];

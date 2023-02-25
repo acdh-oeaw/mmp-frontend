@@ -29,12 +29,22 @@ const searchFilters = computed<SearchFilters>(() => {
 
 <template>
 	<figure v-if="isStoryComponentType(props.type)">
-		<div class="not-prose relative h-96 w-full">
-			<StoryNetworkGraph v-if="props.type === 'graph'" :search-filters="searchFilters" />
-			<StoryGeoMap v-if="props.type === 'map'" :search-filters="searchFilters" />
-			<StoryTokenWordClouds v-if="props.type === 'cloud'" :search-filters="searchFilters" />
-			<StorySearchResults v-if="props.type === 'list'" :search-filters="searchFilters" />
-			<StoryEntityDetails v-if="props.type === 'detail'" :search-filters="searchFilters" />
+		<div class="not-prose">
+			<div v-if="props.type === 'graph'" class="relative h-96 w-full">
+				<StoryNetworkGraph :search-filters="searchFilters" />
+			</div>
+			<div v-if="props.type === 'map'" class="relative h-96 w-full">
+				<StoryGeoMap :search-filters="searchFilters" />
+			</div>
+			<div v-if="props.type === 'cloud'" class="relative h-96 w-full">
+				<StoryTokenWordClouds :search-filters="searchFilters" />
+			</div>
+			<div v-if="props.type === 'list'" class="relative max-h-96 w-full">
+				<StorySearchResults :search-filters="searchFilters" />
+			</div>
+			<div v-if="props.type === 'detail'" class="relative max-h-96 w-full">
+				<StoryEntityDetails :search-filters="searchFilters" />
+			</div>
 		</div>
 		<figcaption v-if="props.caption">{{ props.caption }}</figcaption>
 	</figure>

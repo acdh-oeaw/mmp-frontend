@@ -1,27 +1,44 @@
+import { useQueries } from "@tanstack/vue-query";
 import { type ComputedRef, computed } from "vue";
 
-import { type GeojsonLayer, useCaseStudies } from "@/api";
+import { type GeojsonLayer, createKey } from "@/api";
+import * as api from "@/api/client";
 import { type SearchFilters } from "@/lib/search/use-search-filters";
 
 export function useGeoJsonLayers(searchFilters: ComputedRef<SearchFilters>) {
-	const isEnabled = computed(() => {
-		return searchFilters.value["case-study"].length > 0;
-	});
+	const queries = computed(() => {
+		return searchFilters.value["case-study"].map((id) => {
+			const params = { id };
 
-	const caseStudiesSearchParams = computed(() => {
-		return { ids: searchFilters.value["case-study"].join(",") };
+			return {
+				queryKey: createKey("case-study", "by-id", params),
+				queryFn() {
+					return api.getCaseStudyById(params);
+				},
+			};
+		});
 	});
-
-	// TODO: useQueries
-	const caseStudiesQuery = useCaseStudies(caseStudiesSearchParams, { isEnabled });
-	const isLoading = caseStudiesQuery.isInitialLoading;
-	const isError = caseStudiesQuery.isError;
-	const isFetching = caseStudiesQuery.isFetching;
+	const caseStudiesQueries = useQueries({ queries });
+	const isLoading = computed(() => {
+		return caseStudiesQueries.some((query) => {
+			return query.isInitialLoading;
+		});
+	});
+	const isFetching = computed(() => {
+		return caseStudiesQueries.some((query) => {
+			return query.isFetching;
+		});
+	});
+	const isError = computed(() => {
+		return caseStudiesQueries.some((query) => {
+			return query.isError;
+		});
+	});
 	const layers = computed(() => {
 		const layers = new Map<GeojsonLayer["id"], GeojsonLayer>();
 
-		caseStudiesQuery.data.value?.results.forEach((caseStudy) => {
-			caseStudy.layer.forEach((layer) => {
+		caseStudiesQueries.forEach((query) => {
+			query.data?.layer.forEach((layer) => {
 				layers.set(layer.id, layer);
 			});
 		});
@@ -34,7 +51,7 @@ export function useGeoJsonLayers(searchFilters: ComputedRef<SearchFilters>) {
 
 	return {
 		layers,
-		caseStudiesQuery,
+		caseStudiesQueries,
 		isLoading,
 		isFetching,
 		isError,
