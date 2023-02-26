@@ -41,4 +41,4 @@ ENV NODE_ENV=production
 
 EXPOSE 3000
 
-CMD ["node", ".output/server/index.mjs"]
+CMD ["node", "./server/index.mjs"]
