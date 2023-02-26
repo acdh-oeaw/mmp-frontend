@@ -1,10 +1,11 @@
 <script lang="ts" setup>
-import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/vue/20/solid";
+import { computed } from "vue";
 
 import ErrorMessage from "@/components/error-message.vue";
 import KeywordTag from "@/components/keyword-tag.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
+import PaginationLinks from "@/components/pagination-links.vue";
 import { getAuthorLabel, getDateRangeLabel, getPassageLabel } from "@/lib/get-label";
 import { createResourceKey } from "@/lib/search/resource-key";
 import { usePassagesSearch } from "@/lib/search/use-passages-search";
@@ -24,6 +25,23 @@ const { searchFilters, createSearchFilterParams } = useSearchFilters();
 const { passages, passagesQuery, isEmpty, isError, isFetching, isLoading } =
 	usePassagesSearch(searchFilters);
 const { createSelectionParams } = useSelection();
+
+const previous = computed(() => {
+	if (passagesQuery.data.value?.previous == null) return null;
+
+	const limit = searchFilters.value["limit"];
+	const offset = searchFilters.value["offset"];
+
+	return { query: createSearchFilterParams({ ...searchFilters.value, offset: offset - limit }) };
+});
+const next = computed(() => {
+	if (passagesQuery.data.value?.next == null) return null;
+
+	const limit = searchFilters.value["limit"];
+	const offset = searchFilters.value["offset"];
+
+	return { query: createSearchFilterParams({ ...searchFilters.value, offset: offset + limit }) };
+});
 
 const columns = {
 	authors: { label: "Authors" },
@@ -143,45 +161,7 @@ const columns = {
 				</table>
 			</div>
 
-			<!-- FIXME: disabled links -->
-			<template v-if="passagesQuery.data.value?.count">
-				<nav aria-label="Pagination" class="flex items-center justify-center gap-8 p-8 text-sm">
-					<NuxtLink
-						:aria-disabled="searchFilters.offset <= searchFilters.limit"
-						:href="{
-							query: {
-								...createSearchFilterParams({
-									...searchFilters,
-									offset: searchFilters.offset - searchFilters.limit,
-								}),
-							},
-						}"
-						rel="prev"
-						class="inline-flex items-center gap-1"
-					>
-						<ChevronLeftIcon class="h-5 w-5" />
-						<span>Previous page</span>
-					</NuxtLink>
-					<NuxtLink
-						:aria-disabled="
-							searchFilters.offset + searchFilters.limit >= passagesQuery.data.value.count
-						"
-						:href="{
-							query: {
-								...createSearchFilterParams({
-									...searchFilters,
-									offset: searchFilters.offset + searchFilters.limit,
-								}),
-							},
-						}"
-						rel="next"
-						class="inline-flex items-center gap-1"
-					>
-						<span>Next page</span>
-						<ChevronRightIcon class="h-5 w-5" />
-					</NuxtLink>
-				</nav>
-			</template>
+			<PaginationLinks :previous="previous" :next="next" />
 		</template>
 	</div>
 </template>

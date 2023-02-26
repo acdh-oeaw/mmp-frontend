@@ -5,6 +5,7 @@ import { useKeywords } from "@/api";
 import ErrorMessage from "@/components/error-message.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
+import PaginationLinks from "@/components/pagination-links.vue";
 import { useKeywordsBrowseSearchParams } from "@/lib/browse/use-browse-keywords-search-params";
 import { useBrowseSearchFilters } from "@/lib/browse/use-browse-search-filters";
 import { useHead } from "#imports";
@@ -16,7 +17,7 @@ useHead({
 	meta: [{ property: "og:title", content: title }],
 });
 
-const { searchFilters } = useBrowseSearchFilters();
+const { createSearchFilterParams, searchFilters } = useBrowseSearchFilters();
 const searchParams = useKeywordsBrowseSearchParams(searchFilters);
 const keywordsQuery = useKeywords(searchParams);
 const isLoading = keywordsQuery.isInitialLoading;
@@ -27,6 +28,23 @@ const keywords = computed(() => {
 });
 const isEmpty = computed(() => {
 	return keywords.value.length === 0;
+});
+
+const previous = computed(() => {
+	if (keywordsQuery.data.value?.previous == null) return null;
+
+	const limit = searchFilters.value["limit"];
+	const offset = searchFilters.value["offset"];
+
+	return { query: createSearchFilterParams({ ...searchFilters.value, offset: offset - limit }) };
+});
+const next = computed(() => {
+	if (keywordsQuery.data.value?.next == null) return null;
+
+	const limit = searchFilters.value["limit"];
+	const offset = searchFilters.value["offset"];
+
+	return { query: createSearchFilterParams({ ...searchFilters.value, offset: offset + limit }) };
 });
 
 const columns = {
@@ -82,6 +100,8 @@ const columns = {
 					</tbody>
 				</table>
 			</div>
+
+			<PaginationLinks :previous="previous" :next="next" />
 		</template>
 	</div>
 </template>

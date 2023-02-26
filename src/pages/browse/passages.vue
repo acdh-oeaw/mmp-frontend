@@ -5,6 +5,7 @@ import { usePassages } from "@/api";
 import ErrorMessage from "@/components/error-message.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
+import PaginationLinks from "@/components/pagination-links.vue";
 import { usePassagesBrowseSearchParams } from "@/lib/browse/use-browse-passages-search-params";
 import { useBrowseSearchFilters } from "@/lib/browse/use-browse-search-filters";
 import { getPassageLabel } from "@/lib/get-label";
@@ -17,7 +18,7 @@ useHead({
 	meta: [{ property: "og:title", content: title }],
 });
 
-const { searchFilters } = useBrowseSearchFilters();
+const { createSearchFilterParams, searchFilters } = useBrowseSearchFilters();
 const searchParams = usePassagesBrowseSearchParams(searchFilters);
 const passagesQuery = usePassages(searchParams);
 const isLoading = passagesQuery.isInitialLoading;
@@ -28,6 +29,23 @@ const passages = computed(() => {
 });
 const isEmpty = computed(() => {
 	return passages.value.length === 0;
+});
+
+const previous = computed(() => {
+	if (passagesQuery.data.value?.previous == null) return null;
+
+	const limit = searchFilters.value["limit"];
+	const offset = searchFilters.value["offset"];
+
+	return { query: createSearchFilterParams({ ...searchFilters.value, offset: offset - limit }) };
+});
+const next = computed(() => {
+	if (passagesQuery.data.value?.next == null) return null;
+
+	const limit = searchFilters.value["limit"];
+	const offset = searchFilters.value["offset"];
+
+	return { query: createSearchFilterParams({ ...searchFilters.value, offset: offset + limit }) };
 });
 
 const columns = {
@@ -83,6 +101,8 @@ const columns = {
 					</tbody>
 				</table>
 			</div>
+
+			<PaginationLinks :previous="previous" :next="next" />
 		</template>
 	</div>
 </template>
