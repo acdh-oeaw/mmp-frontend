@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { MagnifyingGlassIcon } from "@heroicons/vue/24/outline";
 import { ref } from "vue";
 
 import { useBrowseSearchFilters } from "@/lib/browse/use-browse-search-filters";
