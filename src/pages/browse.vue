@@ -19,8 +19,14 @@ const links = {
 </script>
 
 <template>
-	<div class="grid h-full grid-rows-[auto_1fr]">
+	<div class="grid h-full grid-rows-[auto_auto_1fr]">
 		<h1 class="sr-only">Browse the data</h1>
+
+		<aside>
+			<div class="mx-auto w-full max-w-7xl px-8 py-4">
+				<BrowseSearchForm />
+			</div>
+		</aside>
 
 		<nav aria-label="Content types" class="p-8">
 			<ul class="flex flex-wrap items-center justify-center gap-x-8 gap-y-2" role="list">

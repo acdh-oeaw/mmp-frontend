@@ -1,27 +1,55 @@
 <script lang="ts" setup>
+import { useQueries } from "@tanstack/vue-query";
 import { computed } from "vue";
 
-import { type Keyword, useKeywordById } from "@/api";
+import { type Keyword, createKey } from "@/api";
+import * as api from "@/api/client";
 import ErrorMessage from "@/components/error-message.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
+import { createList } from "@/lib/create-list";
 
 const props = defineProps<{
 	ids: Set<Keyword["id"]>;
 }>();
 
-const id = computed(() => {
-	const id = props.ids.values().next().value;
-	return id;
-});
+const queries = computed(() => {
+	return Array.from(props.ids).map((id) => {
+		const params = { id };
 
-const keywordQuery = useKeywordById({ id });
-const isLoading = keywordQuery.isInitialLoading;
-const isFetching = keywordQuery.isFetching;
-const isError = keywordQuery.isError;
-const keyword = keywordQuery.data;
+		return {
+			queryKey: createKey("keyword", "by-id", params),
+			queryFn() {
+				return api.getKeywordById(params);
+			},
+		};
+	});
+});
+const keywordsQueries = useQueries({ queries });
+const isLoading = computed(() => {
+	return keywordsQueries.some((query) => {
+		return query.isInitialLoading;
+	});
+});
+const isFetching = computed(() => {
+	return keywordsQueries.some((query) => {
+		return query.isFetching;
+	});
+});
+const isError = computed(() => {
+	return keywordsQueries.some((query) => {
+		return query.isError;
+	});
+});
+const keywords = computed(() => {
+	return keywordsQueries
+		.map((query) => {
+			return query.data;
+		})
+		.filter(Boolean);
+});
 const isEmpty = computed(() => {
-	return keyword.value == null;
+	return keywords.value.length === 0;
 });
 </script>
 
@@ -44,9 +72,9 @@ const isEmpty = computed(() => {
 				<LoadingIndicator>Updating keyword...</LoadingIndicator>
 			</template>
 
-			<h2>{{ keyword?.stichwort }}</h2>
+			<h2>{{ createList(keywords.map((keyword) => keyword?.stichwort)) }}</h2>
 
-			<pre>{{ keyword }}</pre>
+			<pre>{{ keywords }}</pre>
 		</template>
 	</div>
 </template>

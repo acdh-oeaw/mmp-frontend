@@ -1,16 +1,12 @@
 import { type ComputedRef, computed } from "vue";
 import type { LocationQuery } from "vue-router";
 
-import type { Author, Keyword } from "@/api";
-import { getResourceIds } from "@/lib/search/get-resource-ids";
 import { getLimit, getOffset } from "@/lib/search/pagination";
 import { defaultLimit } from "@/lib/search/pagination.config";
-import { unique } from "@/lib/unique";
 import { useRoute, useRouter } from "#imports";
 
 export type SearchFilters = {
-	author: Array<Author["id"]>;
-	keyword: Array<Keyword["id"]>;
+	searchTerm: string;
 	limit: number;
 	offset: number;
 };
@@ -23,20 +19,18 @@ type UseSearchFiltersResult = {
 };
 
 export const defaultSearchFilters = Object.freeze({
-	author: [],
-	keyword: [],
+	searchTerm: "",
 	limit: defaultLimit,
 	offset: 0,
 } satisfies SearchFilters);
 
-export function useCaseStudiesSearchFilters(): UseSearchFiltersResult {
+export function useBrowseSearchFilters(): UseSearchFiltersResult {
 	const router = useRouter();
 	const route = useRoute();
 
 	const searchFilters = computed<SearchFilters>(() => {
 		const searchFilters: SearchFilters = {
-			author: getResourceIds(route.query["author"]),
-			keyword: getResourceIds(route.query["keyword"]),
+			searchTerm: getSearchTerm(route.query["q"]),
 			limit: getLimit(route.query["limit"]),
 			offset: getOffset(route.query["offset"]),
 		};
@@ -57,15 +51,17 @@ export function useCaseStudiesSearchFilters(): UseSearchFiltersResult {
 	};
 }
 
+function getSearchTerm(param: LocationQuery[string] | undefined) {
+	const value = Array.isArray(param) ? param[0] : param;
+	if (value == null) return defaultSearchFilters.searchTerm;
+	return value.trim();
+}
+
 function createSearchFilterParams(searchFilters: SearchFilters): LocationQuery {
 	const searchParams: LocationQuery = {};
 
-	if (searchFilters["author"].length > 0) {
-		searchParams["author"] = unique(searchFilters["author"]).map(String);
-	}
-
-	if (searchFilters["keyword"].length > 0) {
-		searchParams["keyword"] = unique(searchFilters["keyword"]).map(String);
+	if (searchFilters["searchTerm"] !== defaultSearchFilters["searchTerm"]) {
+		searchParams["q"] = searchFilters["searchTerm"].trim();
 	}
 
 	if (searchFilters["limit"] !== defaultSearchFilters["limit"]) {

@@ -5,6 +5,7 @@ import { type Place } from "@/api";
 import ErrorMessage from "@/components/error-message.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
+import { createList } from "@/lib/create-list";
 import { usePlaceDetails } from "@/lib/details/use-place-details";
 import { getAuthorLabel } from "@/lib/get-label";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
@@ -61,7 +62,7 @@ const { authors, texts, isLoading, isFetching, isEmpty, isError } = usePlaceDeta
 					<li v-for="text of texts" :key="text.id">
 						<article>
 							<div>{{ text.title }}</div>
-							<div>{{ text.autor.map(getAuthorLabel).join(", ") }}</div>
+							<div>{{ createList(text.autor.map(getAuthorLabel)) }}</div>
 							<div>{{ text.jahrhundert }}</div>
 						</article>
 					</li>

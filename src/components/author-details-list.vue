@@ -6,6 +6,7 @@ import ErrorMessage from "@/components/error-message.vue";
 import KeywordTag from "@/components/keyword-tag.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
+import { createList } from "@/lib/create-list";
 import { useAuthorDetails } from "@/lib/details/use-author-details";
 import { getAuthorLabel, getPassageLabel } from "@/lib/get-label";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
@@ -90,7 +91,7 @@ const { caseStudies, keywords, passages, isLoading, isFetching, isEmpty, isError
 							</div>
 							<div v-if="passage.text">
 								<div>{{ passage.text.title }}</div>
-								<div>{{ passage.text.autor.map(getAuthorLabel).join(", ") }}</div>
+								<div>{{ createList(passage.text.autor.map(getAuthorLabel)) }}</div>
 								<div>{{ passage.text.jahrhundert }}</div>
 							</div>
 						</article>

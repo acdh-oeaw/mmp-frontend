@@ -57,7 +57,7 @@ const columns = {
 				<LoadingIndicator>Updating search results...</LoadingIndicator>
 			</template>
 
-			<div class="overflow-x-auto transition" :class="{ 'grayscale opacity-50': isFetching }">
+			<div class="overflow-x-auto transition" :class="{ 'opacity-50 grayscale': isFetching }">
 				<table class="min-w-full divide-y divide-neutral-200 text-sm">
 					<thead>
 						<tr>

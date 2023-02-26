@@ -6,6 +6,7 @@ import ErrorMessage from "@/components/error-message.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import PassageDetailsList from "@/components/passage-details-list.vue";
+import { createList } from "@/lib/create-list";
 import { getAuthorLabel, getDateRangeLabel, getPassageLabel } from "@/lib/get-label";
 
 const props = defineProps<{
@@ -55,7 +56,7 @@ const isEmpty = computed(() => {
 				</div>
 				<div v-if="passage.text">
 					<dt class="sr-only">Author</dt>
-					<dd>{{ passage.text.autor.map(getAuthorLabel).join(", ") }}</dd>
+					<dd>{{ createList(passage.text.autor.map(getAuthorLabel)) }}</dd>
 				</div>
 			</dl>
 

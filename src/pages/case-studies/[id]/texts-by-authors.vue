@@ -47,7 +47,7 @@ const { data, isLoading, isError, isEmpty, isFetching } = useTextsByAuthors(sear
 				<LoadingIndicator>Updating passages...</LoadingIndicator>
 			</template>
 
-			<div class="overflow-x-auto transition" :class="{ 'grayscale opacity-50': isFetching }">
+			<div class="overflow-x-auto transition" :class="{ 'opacity-50 grayscale': isFetching }">
 				<!-- TODO: some of those nested unordered lists could be definition lists. -->
 				<ul rol="list" class="min-w-full divide-y divide-neutral-200 text-sm">
 					<li

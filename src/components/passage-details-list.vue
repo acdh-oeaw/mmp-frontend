@@ -6,6 +6,7 @@ import ErrorMessage from "@/components/error-message.vue";
 import KeywordTag from "@/components/keyword-tag.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
+import { createList } from "@/lib/create-list";
 import { getAuthorLabel, getDateRangeLabel, getPlaceLabel } from "@/lib/get-label";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
 import { NuxtLink } from "#components";
@@ -87,11 +88,11 @@ const isEmpty = computed(() => {
 					</div>
 					<div v-if="passage.text && passage.text.autor">
 						<dt>Authors</dt>
-						<dd>{{ passage.text.autor.map(getAuthorLabel).join(", ") }}</dd>
+						<dd>{{ createList(passage.text.autor.map(getAuthorLabel)) }}</dd>
 					</div>
 					<div v-if="passage.text && passage.text.ort">
 						<dt>Places</dt>
-						<dd>{{ passage.text.ort.map(getPlaceLabel).join(", ") }}</dd>
+						<dd>{{ createList(passage.text.ort.map(getPlaceLabel)) }}</dd>
 					</div>
 					<div v-if="passage.text && passage.text.edition">
 						<dt>Edition</dt>
