@@ -2,6 +2,9 @@
 import { computed } from "vue";
 
 import { usePlaces } from "@/api";
+import ErrorMessage from "@/components/error-message.vue";
+import LoadingIndicator from "@/components/loading-indicator.vue";
+import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import { usePlacesBrowseSearchParams } from "@/lib/browse/use-browse-places-search-params";
 import { useBrowseSearchFilters } from "@/lib/browse/use-browse-search-filters";
 import { getPlaceLabel } from "@/lib/get-label";

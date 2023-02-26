@@ -2,6 +2,9 @@
 import { computed } from "vue";
 
 import { usePassages } from "@/api";
+import ErrorMessage from "@/components/error-message.vue";
+import LoadingIndicator from "@/components/loading-indicator.vue";
+import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import { usePassagesBrowseSearchParams } from "@/lib/browse/use-browse-passages-search-params";
 import { useBrowseSearchFilters } from "@/lib/browse/use-browse-search-filters";
 import { getPassageLabel } from "@/lib/get-label";

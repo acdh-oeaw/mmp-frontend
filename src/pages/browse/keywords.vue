@@ -2,6 +2,9 @@
 import { computed } from "vue";
 
 import { useKeywords } from "@/api";
+import ErrorMessage from "@/components/error-message.vue";
+import LoadingIndicator from "@/components/loading-indicator.vue";
+import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import { useKeywordsBrowseSearchParams } from "@/lib/browse/use-browse-keywords-search-params";
 import { useBrowseSearchFilters } from "@/lib/browse/use-browse-search-filters";
 import { useHead } from "#imports";
