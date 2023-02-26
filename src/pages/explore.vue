@@ -1,50 +1,55 @@
 <script lang="ts" setup>
+import { computed } from "vue";
+
 import MainContent from "@/components/main-content.vue";
 import PassageSearchForm from "@/components/passage-search-form.vue";
+import SidePanel from "@/components/side-panel.vue";
+import { useSearchFilters } from "@/lib/search/use-search-filters";
 import { NuxtLink, NuxtPage } from "#components";
+import { useHead } from "#imports";
+
+const title = "Explore";
+
+useHead({
+	title,
+	meta: [{ property: "og:title", content: title }],
+});
+
+const { createSearchFilterParams, searchFilters } = useSearchFilters();
+const query = computed(() => {
+	return createSearchFilterParams(searchFilters.value);
+});
 
 const links = {
-	"search-results": {
-		href: "/explore/search-results",
-		label: "Search results",
-	},
-	"network-graph-visualisation": {
-		href: "/explore/network-graph-visualisation",
-		label: "Network graph",
-	},
-	"geo-visualisation": {
-		href: "/explore/geo-visualisation",
-		label: "Map",
-	},
-	"word-cloud-visualisation": {
-		href: "/explore/word-cloud-visualisation",
-		label: "Word cloud",
-	},
+	"search-results": { path: "search-results", label: "Search results" },
+	"network-graph-visualisation": { path: "network-graph-visualisation", label: "Network graph" },
+	"geo-map-visualisation": { path: "geo-map-visualisation", label: "Map" },
+	"word-cloud-visualisation": { path: "word-cloud-visualisation", label: "Word cloud" },
 };
 </script>
 
 <template>
-	<div>
+	<div class="grid h-full grid-rows-[auto_auto_1fr]">
 		<h1 class="sr-only">Explore the data</h1>
 
 		<aside>
-			<div class="max-w-7xl px-8 py-4">
+			<div class="mx-auto w-full max-w-7xl px-8 py-4">
 				<PassageSearchForm />
 			</div>
 		</aside>
 
-		<nav aria-label="Passages">
-			<ul role="list">
+		<nav aria-label="Passages" class="p-8">
+			<ul class="flex flex-wrap items-center justify-center gap-x-8 gap-y-2" role="list">
 				<li v-for="(link, key) of links" :key="key">
-					<NuxtLink :href="link.href">{{ link.label }}</NuxtLink>
+					<NuxtLink :href="{ path: link.path, query }">{{ link.label }}</NuxtLink>
 				</li>
 			</ul>
 		</nav>
 
 		<MainContent>
-			<div class="max-w-7xl px-8 py-4">
-				<NuxtPage />
-			</div>
+			<NuxtPage />
 		</MainContent>
+
+		<SidePanel />
 	</div>
 </template>

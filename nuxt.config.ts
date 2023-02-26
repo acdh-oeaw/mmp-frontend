@@ -12,7 +12,7 @@ export default defineNuxtConfig({
 	app: {
 		head: {
 			link: [
-				{ href: "/favicons.ico", rel: "icon", sizes: "any" },
+				{ href: "/favicon.ico", rel: "icon", sizes: "any" },
 				{ href: "/apple-touch-icon.png", rel: "apple-touch-icon" },
 				{ href: "/" + manifestFileName, rel: "manifest" },
 			],
@@ -20,25 +20,26 @@ export default defineNuxtConfig({
 				{ name: "description", content: metadata.description },
 				{ property: "og:type", content: "website" },
 				{ property: "og:title", content: metadata.title },
+				{ property: "og:site_name", content: metadata.title },
 				{ property: "og:description", content: metadata.description },
 				{ property: "og:image", content: "/" + openGraphImageName },
 				{ property: "og:locale", content: metadata.locale },
 			],
-			title: metadata.title,
-			titleTemplate(title) {
-				return [title, metadata.title].join(" - ");
-			},
 		},
 	},
+	components: false,
 	css: [
 		"@fontsource/roboto-flex/variable-full.css",
 		"tailwindcss/tailwind.css",
 		"@/styles/index.css",
 	],
+	dir: {
+		public: "../public",
+	},
 	imports: {
 		autoImport: false,
 	},
-	// modules: ["@nuxtjs/tailwindcss"],
+	modules: ["@nuxt/image-edge"],
 	postcss: {
 		plugins: {
 			"postcss-custom-media": {},
@@ -47,9 +48,22 @@ export default defineNuxtConfig({
 			autoprefixer: {},
 		},
 	},
+	routeRules: {
+		"/": { static: true },
+		"/about": { static: true },
+		"/imprint": { static: true },
+	},
 	srcDir: "./src/",
 	typescript: {
 		shim: false,
 		strict: true,
+	},
+	vite: {
+		esbuild: {
+			define: {
+				/** Statically replace `process.env.NODE_ENV` in `@stefanprobst/assert`. */
+				"process.env.NODE_ENV": JSON.stringify(process.env["NODE_ENV"]),
+			},
+		},
 	},
 });

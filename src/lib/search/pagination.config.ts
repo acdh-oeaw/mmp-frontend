@@ -1,2 +1,2 @@
-export const defaultLimit = 50
-export const maxLimit = 500
+export const defaultLimit = 50;
+export const maxLimit = 500;

@@ -1,0 +1,64 @@
+<script lang="ts" setup>
+import { computed } from "vue";
+
+import { type ResourceKey } from "@/api";
+import ErrorMessage from "@/components/error-message.vue";
+import LoadingIndicator from "@/components/loading-indicator.vue";
+import NetworkGraph from "@/components/network-graph.vue";
+import NothingFoundMessage from "@/components/nothing-found-message.vue";
+import VisualisationContainer from "@/components/visualisation-container.vue";
+import { useNetworkGraph } from "@/lib/network-graph/use-network-graph";
+import { type SearchFilters } from "@/lib/search/use-search-filters";
+import { ClientOnly } from "#components";
+
+const props = defineProps<{
+	searchFilters: SearchFilters;
+}>();
+
+const searchFilters = computed(() => {
+	return props.searchFilters;
+});
+
+const { graph, isEmpty, isError, isFetching, isLoading } = useNetworkGraph(searchFilters);
+
+const selectedKeys = new Set<ResourceKey>();
+const highlightedKeys = new Set<ResourceKey>();
+</script>
+
+<template>
+	<div class="relative h-full w-full">
+		<template v-if="isLoading">
+			<LoadingIndicator>Loading network graph...</LoadingIndicator>
+		</template>
+
+		<template v-else-if="isError">
+			<ErrorMessage>Failed to load network graph.</ErrorMessage>
+		</template>
+
+		<template v-else-if="isEmpty">
+			<NothingFoundMessage></NothingFoundMessage>
+		</template>
+
+		<template v-else>
+			<ClientOnly>
+				<template #fallback>
+					<LoadingIndicator>Loading network visualisation...</LoadingIndicator>
+				</template>
+
+				<template v-if="isFetching">
+					<LoadingIndicator>Updating network graph...</LoadingIndicator>
+				</template>
+
+				<VisualisationContainer v-slot="{ width, height }">
+					<NetworkGraph
+						:graph="graph"
+						:height="height"
+						:highlighted-keys="highlightedKeys"
+						:selected-keys="selectedKeys"
+						:width="width"
+					/>
+				</VisualisationContainer>
+			</ClientOnly>
+		</template>
+	</div>
+</template>

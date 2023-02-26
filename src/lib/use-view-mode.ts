@@ -5,53 +5,53 @@ import { useRoute, useRouter } from "#imports";
 
 type ViewMode = "fullscreen" | "normal";
 
-type SearchFilters = {
+type ViewModes = {
 	"view-mode": ViewMode;
 };
 
-type UseSearchFiltersResult = {
-	searchFilters: ComputedRef<SearchFilters>;
-	setSearchFilters: (searchFilters: SearchFilters) => void;
-	createSearchFilterParams: (searchFilters: SearchFilters) => LocationQuery;
-	defaultSearchFilters: SearchFilters;
+type UseViewModesResult = {
+	viewMode: ComputedRef<ViewModes>;
+	setViewModes: (viewMode: ViewModes) => void;
+	createViewModeParams: (viewMode: ViewModes) => LocationQuery;
+	defaultViewModes: ViewModes;
 };
 
-export const defaultSearchFilters = Object.freeze({
+export const defaultViewModes = Object.freeze({
 	"view-mode": "normal",
-} satisfies SearchFilters);
+} satisfies ViewModes);
 
-export function useViewMode(): UseSearchFiltersResult {
+export function useViewMode(): UseViewModesResult {
 	const router = useRouter();
 	const route = useRoute();
 
-	const searchFilters = computed(() => {
-		const searchFilters: SearchFilters = {
+	const viewMode = computed(() => {
+		const viewMode: ViewModes = {
 			"view-mode": route.query["view-mode"] === "fullscreen" ? "fullscreen" : "normal",
 		};
 
-		return searchFilters;
+		return viewMode;
 	});
 
-	function setSearchFilters(searchFilters: SearchFilters) {
-		const query = createSearchFilterParams(searchFilters);
+	function setViewModes(viewMode: ViewModes) {
+		const query = createViewModeParams(viewMode);
 		router.push({ query });
 	}
 
 	return {
-		searchFilters,
-		setSearchFilters,
-		createSearchFilterParams,
-		defaultSearchFilters,
+		viewMode,
+		setViewModes,
+		createViewModeParams,
+		defaultViewModes,
 	};
 }
 
 //
 
-function createSearchFilterParams(searchFilters: SearchFilters): LocationQuery {
+function createViewModeParams(viewMode: ViewModes): LocationQuery {
 	const searchParams: LocationQuery = {};
 
-	if (searchFilters["view-mode"] === "fullscreen") {
-		searchParams["view-mode"] = searchFilters["view-mode"];
+	if (viewMode["view-mode"] === "fullscreen") {
+		searchParams["view-mode"] = viewMode["view-mode"];
 	}
 
 	return searchParams;

@@ -1,4 +1,4 @@
-import type { Route } from "#imports";
+import type { Route } from "vue-router";
 
 export function trackPageView(to: Route, from?: Route): void {
 	const url = to.fullPath;

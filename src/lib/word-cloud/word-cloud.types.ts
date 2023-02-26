@@ -1,3 +1,7 @@
-export type Token = [string, number];
+import { type Chart } from "highcharts";
 
-export type TokenData = { words: Array<Token>; keywords: Array<Token> };
+export type Token = { name: string; weight: number };
+
+export interface WordCloudContext {
+	cloud: Chart | null;
+}

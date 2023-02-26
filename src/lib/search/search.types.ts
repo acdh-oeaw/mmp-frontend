@@ -1,3 +1,3 @@
-import type { AutoCompleteItem } from '@/api';
+import type { AutoCompleteItem } from "@/api";
 
-export type Item = DistributiveOmit<AutoCompleteItem, 'app_name' | 'url'>;
+export type Item = DistributiveOmit<AutoCompleteItem, "app_name" | "url">;

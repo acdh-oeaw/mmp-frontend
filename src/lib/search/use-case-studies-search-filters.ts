@@ -68,5 +68,13 @@ function createSearchFilterParams(searchFilters: SearchFilters): LocationQuery {
 		searchParams["keyword"] = unique(searchFilters["keyword"]).map(String);
 	}
 
+	if (searchFilters["limit"] !== defaultSearchFilters["limit"]) {
+		searchParams["limit"] = String(searchFilters["limit"]);
+	}
+
+	if (searchFilters["offset"] !== defaultSearchFilters["offset"]) {
+		searchParams["offset"] = String(searchFilters["offset"]);
+	}
+
 	return searchParams;
 }

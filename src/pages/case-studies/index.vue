@@ -1,23 +1,29 @@
 <script lang="ts" setup>
 import CaseStudiesSearchForm from "@/components/case-studies-search-form.vue";
+import CaseStudiesSearchResults from "@/components/case-studies-search-results.vue";
 import MainContent from "@/components/main-content.vue";
-import { NuxtPage } from "#components";
+import { useHead } from "#imports";
+
+const title = "Case studies";
+
+useHead({
+	title,
+	meta: [{ property: "og:title", content: title }],
+});
 </script>
 
 <template>
-	<div>
-		<h1>Case studies</h1>
+	<div class="grid h-full grid-rows-[auto_auto_1fr]">
+		<h1 class="sr-only">Case studies</h1>
 
 		<aside>
-			<div class="max-w-7xl px-8 py-4">
+			<div class="mx-auto w-full max-w-7xl px-8 py-4">
 				<CaseStudiesSearchForm />
 			</div>
 		</aside>
 
 		<MainContent>
-			<div class="max-w-7xl px-8 py-4">
-				<NuxtPage />
-			</div>
+			<CaseStudiesSearchResults />
 		</MainContent>
 	</div>
 </template>
