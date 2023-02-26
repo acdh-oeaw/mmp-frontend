@@ -48,66 +48,71 @@ const isEmpty = computed(() => {
 				<LoadingIndicator>Updating details...</LoadingIndicator>
 			</template>
 
-			<section>
-				<dl v-if="passage">
-					<div>
-						<dt>Keywords</dt>
-						<dd>
-							<ul class="flex flex-wrap gap-0.5" role="list">
-								<li v-for="keyword of passage.key_word" :key="keyword.id">
-									<NuxtLink
-										:href="{
-											query: createSearchFilterParams({ ...searchFilters, keyword: [keyword.id] }),
-										}"
-									>
-										<KeywordTag :keyword="keyword" />
-									</NuxtLink>
-								</li>
-							</ul>
-						</dd>
-					</div>
-					<div v-if="passage.translation">
-						<dt>Translation</dt>
-						<dd>{{ passage.translation }}</dd>
-					</div>
-					<div v-if="passage.zitat">
-						<dt>Original quote</dt>
-						<dd>{{ passage.zitat }}</dd>
-					</div>
-					<div v-if="passage.text && passage.text.title">
-						<dt>Ttile</dt>
-						<dd>{{ passage.text.title }}</dd>
-					</div>
-					<div v-if="passage.zitat_stelle">
-						<dt>Cited</dt>
-						<dd>{{ passage.zitat_stelle }}</dd>
-					</div>
-					<div v-if="passage.summary">
-						<dt>Summary</dt>
-						<dd>{{ passage.summary }}</dd>
-					</div>
-					<div v-if="passage.text && passage.text.autor">
-						<dt>Authors</dt>
-						<dd>{{ createList(passage.text.autor.map(getAuthorLabel)) }}</dd>
-					</div>
-					<div v-if="passage.text && passage.text.ort">
-						<dt>Places</dt>
-						<dd>{{ createList(passage.text.ort.map(getPlaceLabel)) }}</dd>
-					</div>
-					<div v-if="passage.text && passage.text.edition">
-						<dt>Edition</dt>
-						<dd>{{ passage.text.edition }}</dd>
-					</div>
-					<div v-if="passage.text">
-						<dt>Date</dt>
-						<dd>{{ getDateRangeLabel(passage.text.not_before, passage.text.not_after) }}</dd>
-					</div>
-					<div v-if="passage.kommentar">
-						<dt>Comment</dt>
-						<dd>{{ passage.kommentar }}</dd>
-					</div>
-				</dl>
-			</section>
+			<div class="grid gap-6">
+				<section class="grid gap-1">
+					<dl v-if="passage" class="grid gap-6">
+						<div class="grid gap-1">
+							<dt class="text-xs font-medium uppercase text-neutral-500">Keywords</dt>
+							<dd>
+								<ul class="flex flex-wrap gap-0.5" role="list">
+									<li v-for="keyword of passage.key_word" :key="keyword.id">
+										<NuxtLink
+											:href="{
+												query: createSearchFilterParams({
+													...searchFilters,
+													keyword: [keyword.id],
+												}),
+											}"
+										>
+											<KeywordTag :keyword="keyword" />
+										</NuxtLink>
+									</li>
+								</ul>
+							</dd>
+						</div>
+						<div v-if="passage.translation" class="grid gap-1">
+							<dt class="text-xs font-medium uppercase text-neutral-500">Translation</dt>
+							<dd>{{ passage.translation }}</dd>
+						</div>
+						<div v-if="passage.zitat" class="grid gap-1">
+							<dt class="text-xs font-medium uppercase text-neutral-500">Original quote</dt>
+							<dd>{{ passage.zitat }}</dd>
+						</div>
+						<div v-if="passage.text && passage.text.title" class="grid gap-1">
+							<dt class="text-xs font-medium uppercase text-neutral-500">Ttile</dt>
+							<dd>{{ passage.text.title }}</dd>
+						</div>
+						<div v-if="passage.zitat_stelle" class="grid gap-1">
+							<dt class="text-xs font-medium uppercase text-neutral-500">Cited</dt>
+							<dd>{{ passage.zitat_stelle }}</dd>
+						</div>
+						<div v-if="passage.summary" class="grid gap-1">
+							<dt class="text-xs font-medium uppercase text-neutral-500">Summary</dt>
+							<dd>{{ passage.summary }}</dd>
+						</div>
+						<div v-if="passage.text && passage.text.autor" class="grid gap-1">
+							<dt class="text-xs font-medium uppercase text-neutral-500">Authors</dt>
+							<dd>{{ createList(passage.text.autor.map(getAuthorLabel)) }}</dd>
+						</div>
+						<div v-if="passage.text && passage.text.ort" class="grid gap-1">
+							<dt class="text-xs font-medium uppercase text-neutral-500">Places</dt>
+							<dd>{{ createList(passage.text.ort.map(getPlaceLabel)) }}</dd>
+						</div>
+						<div v-if="passage.text && passage.text.edition" class="grid gap-1">
+							<dt class="text-xs font-medium uppercase text-neutral-500">Edition</dt>
+							<dd>{{ passage.text.edition }}</dd>
+						</div>
+						<div v-if="passage.text" class="grid gap-1">
+							<dt class="text-xs font-medium uppercase text-neutral-500">Date</dt>
+							<dd>{{ getDateRangeLabel(passage.text.not_before, passage.text.not_after) }}</dd>
+						</div>
+						<div v-if="passage.kommentar" class="grid gap-1">
+							<dt class="text-xs font-medium uppercase text-neutral-500">Comment</dt>
+							<dd>{{ passage.kommentar }}</dd>
+						</div>
+					</dl>
+				</section>
+			</div>
 		</template>
 	</div>
 </template>

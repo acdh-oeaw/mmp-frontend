@@ -48,31 +48,33 @@ const isEmpty = computed(() => {
 				<LoadingIndicator>Updating place...</LoadingIndicator>
 			</template>
 
-			<h2>{{ getPlaceLabel(place) }}</h2>
+			<div class="grid gap-4 p-4 text-neutral-800">
+				<h2 class="text-lg font-medium">{{ getPlaceLabel(place) }}</h2>
 
-			<dl v-if="place">
-				<div>
-					<dt class="sr-only">Ancient name</dt>
-					<dd>{{ place.name_antik }}</dd>
-				</div>
-				<div>
-					<dt class="sr-only">Coordinates</dt>
-					<dd>{{ [place.lat, place.long].join(", ") }}</dd>
-				</div>
-			</dl>
+				<dl v-if="place" class="text-sm font-medium text-neutral-500">
+					<div>
+						<dt class="sr-only">Ancient name</dt>
+						<dd>{{ place.name_antik }}</dd>
+					</div>
+					<div>
+						<dt class="sr-only">Coordinates</dt>
+						<dd>{{ [place.lat, place.long].join(", ") }}</dd>
+					</div>
+				</dl>
 
-			<div class="grid h-96 w-full">
-				<VisualisationContainer v-slot="{ width, height }">
-					<PlaceMap
-						v-if="place && place.lat && place.long"
-						:height="height"
-						:points="[{ lat: place.lat, lng: place.long, label: getPlaceLabel(place) }]"
-						:width="width"
-					/>
-				</VisualisationContainer>
+				<div class="grid h-96 w-full">
+					<VisualisationContainer v-slot="{ width, height }">
+						<PlaceMap
+							v-if="place && place.lat && place.long"
+							:height="height"
+							:points="[{ lat: place.lat, lng: place.long, label: getPlaceLabel(place) }]"
+							:width="width"
+						/>
+					</VisualisationContainer>
+				</div>
+
+				<PlaceDetailsList :id="id" />
 			</div>
-
-			<PlaceDetailsList :id="id" />
 		</template>
 	</div>
 </template>

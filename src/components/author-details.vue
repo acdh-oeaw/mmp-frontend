@@ -46,26 +46,30 @@ const isEmpty = computed(() => {
 				<LoadingIndicator>Updating author...</LoadingIndicator>
 			</template>
 
-			<h2>{{ getAuthorLabel(author) }}</h2>
+			<div class="grid gap-4 p-4 text-neutral-800">
+				<h2 class="text-lg font-medium">{{ getAuthorLabel(author) }}</h2>
 
-			<dl v-if="author">
-				<div>
-					<dt class="sr-only">Century</dt>
-					<dd>{{ author.jahrhundert || "Unknown century" }}</dd>
-				</div>
-				<div>
-					<dt class="sr-only">Place</dt>
-					<dd>{{ getPlaceLabel(author.ort) }}</dd>
-				</div>
-				<div>
-					<dt class="sr-only">GND</dt>
-					<dd>
-						<a :href="author.gnd_id" target="_blank">{{ author.gnd_id }}</a>
-					</dd>
-				</div>
-			</dl>
+				<dl v-if="author" class="text-sm font-medium text-neutral-500">
+					<div>
+						<dt class="sr-only">Century</dt>
+						<dd>{{ author.jahrhundert || "Unknown century" }}</dd>
+					</div>
+					<div>
+						<dt class="sr-only">Place</dt>
+						<dd>{{ getPlaceLabel(author.ort) }}</dd>
+					</div>
+					<div>
+						<dt class="sr-only">GND</dt>
+						<dd>
+							<a class="transition hover:text-neutral-700" :href="author.gnd_id" target="_blank">
+								{{ author.gnd_id }}
+							</a>
+						</dd>
+					</div>
+				</dl>
 
-			<AuthorDetailsList :id="id" />
+				<AuthorDetailsList :id="id" />
+			</div>
 		</template>
 	</div>
 </template>

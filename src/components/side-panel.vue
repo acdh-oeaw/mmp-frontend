@@ -40,7 +40,7 @@ const isVisible = computed(() => {
 <template>
 	<!-- TODO: <transition> avoid unmounting old content before transitionend. currently, clicking close updates search params and this immediarely removes panel content -->
 	<div
-		class="fixed inset-y-0 left-0 w-full max-w-md overflow-hidden bg-white py-8 shadow-lg transition"
+		class="fixed inset-y-0 left-0 w-full max-w-md overflow-hidden bg-neutral-50 py-8 shadow-lg transition"
 		:class="isVisible ? 'visible translate-x-0' : 'invisible -translate-x-full'"
 	>
 		<aside class="grid h-full grid-rows-[auto_1fr]">

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { Bars3Icon } from "@heroicons/vue/24/outline";
+import { Bars3Icon as MenuIcon } from "@heroicons/vue/24/outline";
 import { ref } from "vue";
 
 import { NuxtLink } from "#components";
@@ -19,10 +19,10 @@ function onToggleNavigationMenu() {
 </script>
 
 <template>
-	<header>
+	<header class="border-b border-neutral-200">
 		<nav
 			aria-label="Main"
-			class="mx-auto flex w-full max-w-7xl items-center justify-between gap-8 border-b border-neutral-200 px-8 py-4"
+			class="mx-auto flex w-full max-w-7xl items-center justify-between gap-8 px-8 py-4"
 		>
 			<div class="flex items-center gap-2">
 				<button
@@ -30,7 +30,7 @@ function onToggleNavigationMenu() {
 					@click="onToggleNavigationMenu"
 				>
 					<span class="sr-only">Toggle navigation menu</span>
-					<Bars3Icon class="h-6 w-6" />
+					<MenuIcon class="h-6 w-6" />
 				</button>
 
 				<NuxtLink class="text-3xl font-bold transition hover:text-neutral-700 md:text-4xl" href="/">
@@ -38,7 +38,7 @@ function onToggleNavigationMenu() {
 				</NuxtLink>
 			</div>
 
-			<ul class="hidden flex-wrap justify-end font-medium md:flex lg:text-xl" role="list">
+			<ul class="hidden flex-wrap justify-end font-medium md:flex" role="list">
 				<li v-for="(link, key, index) of links" :key="key">
 					<span v-if="index !== 0" aria-hidden class="mx-4 select-none">&bull;</span>
 					<NuxtLink class="transition hover:text-neutral-700" :href="{ path: link.path }">

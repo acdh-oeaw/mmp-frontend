@@ -8,6 +8,7 @@ import ErrorMessage from "@/components/error-message.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import { createList } from "@/lib/create-list";
+import { isNotNullable } from "@/lib/is-not-nullable";
 
 const props = defineProps<{
 	ids: Set<Keyword["id"]>;
@@ -46,7 +47,7 @@ const keywords = computed(() => {
 		.map((query) => {
 			return query.data;
 		})
-		.filter(Boolean);
+		.filter(isNotNullable);
 });
 const isEmpty = computed(() => {
 	return keywords.value.length === 0;
@@ -72,7 +73,7 @@ const isEmpty = computed(() => {
 				<LoadingIndicator>Updating keyword...</LoadingIndicator>
 			</template>
 
-			<h2>{{ createList(keywords.map((keyword) => keyword?.stichwort)) }}</h2>
+			<h2>{{ createList(keywords.map((keyword) => keyword.stichwort)) }}</h2>
 
 			<pre>{{ keywords }}</pre>
 		</template>

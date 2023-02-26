@@ -43,31 +43,33 @@ const { authors, texts, isLoading, isFetching, isEmpty, isError } = usePlaceDeta
 				<LoadingIndicator>Updating details...</LoadingIndicator>
 			</template>
 
-			<section v-if="authors.length > 0">
-				<h3>Authors</h3>
-				<ul role="list">
-					<li v-for="author of authors" :key="author.id">
-						<article>
-							<div>{{ getAuthorLabel(author) }}</div>
-							<div v-if="author.kommentar">{{ author.kommentar }}</div>
-							<div>{{ author.jahrhundert }}</div>
-						</article>
-					</li>
-				</ul>
-			</section>
+			<div class="grid gap-6">
+				<section v-if="authors.length > 0" class="grid gap-1">
+					<h3 class="text-xs font-medium uppercase text-neutral-500">Authors</h3>
+					<ul role="list">
+						<li v-for="author of authors" :key="author.id">
+							<article>
+								<div>{{ getAuthorLabel(author) }}</div>
+								<div v-if="author.kommentar">{{ author.kommentar }}</div>
+								<div>{{ author.jahrhundert }}</div>
+							</article>
+						</li>
+					</ul>
+				</section>
 
-			<section v-if="texts.length > 0">
-				<h3>Case studies</h3>
-				<ul role="list">
-					<li v-for="text of texts" :key="text.id">
-						<article>
-							<div>{{ text.title }}</div>
-							<div>{{ createList(text.autor.map(getAuthorLabel)) }}</div>
-							<div>{{ text.jahrhundert }}</div>
-						</article>
-					</li>
-				</ul>
-			</section>
+				<section v-if="texts.length > 0" class="grid gap-1">
+					<h3 class="text-xs font-medium uppercase text-neutral-500">Case studies</h3>
+					<ul role="list">
+						<li v-for="text of texts" :key="text.id">
+							<article>
+								<div>{{ text.title }}</div>
+								<div>{{ createList(text.autor.map(getAuthorLabel)) }}</div>
+								<div>{{ text.jahrhundert }}</div>
+							</article>
+						</li>
+					</ul>
+				</section>
+			</div>
 		</template>
 	</div>
 </template>

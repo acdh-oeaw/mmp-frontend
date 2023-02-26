@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import "leaflet/dist/leaflet.css";
 
-import { assert } from "@stefanprobst/assert";
+// import { assert } from "@stefanprobst/assert";
 import {
 	type CircleMarker,
 	type LatLngBoundsLiteral,
@@ -338,9 +338,11 @@ onMounted(async () => {
 			if (feature == null) return {};
 
 			const keyword = feature.properties.key_word;
-			assert(keyword != null, "Spatial Coverage is missing a keyword.");
+			// FIXME: @see https://github.com/acdh-oeaw/mmp/issues/211
+			// assert(keyword != null, "Spatial Coverage is missing a keyword.");
 
-			const color = keywordColors[keyword.art];
+			// const color = keywordColors[keyword.art];
+			const color = keyword ? keywordColors[keyword.art] : "#0f172a";
 
 			return {
 				color,
@@ -443,25 +445,30 @@ onMounted(async () => {
 		},
 		pointToLayer(feature, latlng) {
 			const keyword = feature.properties.key_word;
-			assert(keyword != null, "Spatial Coverage is missing a keyword.");
+			// FIXME: @see https://github.com/acdh-oeaw/mmp/issues/211
+			// assert(keyword != null, "Spatial Coverage is missing a keyword.");
 
-			const color = keywordColors[keyword.art];
+			// const color = keywordColors[keyword.art];
+			const color = keyword ? keywordColors[keyword.art] : "#0f172a";
+
+			// const label = keyword.stichwort
+			const label = keyword ? keyword.stichwort : "Unknown";
 
 			const element = divIcon({
-				html: `<div class="geo-map-area-label" style="--geo-map-label-bg-color: ${color}">${keyword.stichwort}</div>`,
+				html: `<div class="geo-map-area-label" style="--geo-map-label-bg-color: ${color}">${label}</div>`,
 				// @ts-expect-error Missing in upstream types.
 				iconSize: "auto",
 				/** Ensure the default `leaflet-div-icon` class is not added, which has white background. */
 				className: "geo-map-area-label-container",
 			});
 
-			const label = marker(latlng, {
+			const areaLabel = marker(latlng, {
 				icon: element,
 				autoPanOnFocus: false,
 				riseOnHover: true,
 			});
 
-			return label;
+			return areaLabel;
 		},
 	}).addTo(context.map);
 

@@ -43,61 +43,67 @@ const { caseStudies, keywords, passages, isLoading, isFetching, isEmpty, isError
 				<LoadingIndicator>Updating details...</LoadingIndicator>
 			</template>
 
-			<section v-if="keywords.length > 0">
-				<h3>Keywords</h3>
-				<ul class="flex flex-wrap gap-0.5" role="list">
-					<li v-for="keyword of keywords" :key="keyword.id">
-						<NuxtLink
-							:href="{
-								query: createSearchFilterParams({ ...searchFilters, keyword: [keyword.id] }),
-							}"
-						>
-							<KeywordTag :keyword="keyword" />
-						</NuxtLink>
-					</li>
-				</ul>
-			</section>
+			<div class="grid gap-6">
+				<section v-if="keywords.length > 0" class="grid gap-1">
+					<h3 class="text-xs font-medium uppercase text-neutral-500">Keywords</h3>
+					<ul class="flex flex-wrap gap-0.5" role="list">
+						<li v-for="keyword of keywords" :key="keyword.id">
+							<NuxtLink
+								:href="{
+									query: createSearchFilterParams({ ...searchFilters, keyword: [keyword.id] }),
+								}"
+							>
+								<KeywordTag :keyword="keyword" />
+							</NuxtLink>
+						</li>
+					</ul>
+				</section>
 
-			<section v-if="caseStudies.length > 0">
-				<h3>Case studies</h3>
-				<ul role="list">
-					<li v-for="caseStudy of caseStudies" :key="caseStudy.id">
-						<articlce>
-							<div>
-								<NuxtLink :href="{ path: `/case-studies/${caseStudy.id}/timeline` }">
-									{{ caseStudy.title }}
-								</NuxtLink>
-							</div>
-							<div>{{ caseStudy.principal_investigator }}</div>
-							<div>{{ caseStudy.description }}</div>
-						</articlce>
-					</li>
-				</ul>
-			</section>
+				<section v-if="caseStudies.length > 0" class="grid gap-1">
+					<h3 class="text-xs font-medium uppercase text-neutral-500">Case studies</h3>
+					<ul role="list">
+						<li v-for="caseStudy of caseStudies" :key="caseStudy.id">
+							<articlce>
+								<div>
+									<NuxtLink
+										class="transition hover:text-neutral-700"
+										:href="{ path: `/case-studies/${caseStudy.id}/timeline` }"
+									>
+										{{ caseStudy.title }}
+									</NuxtLink>
+								</div>
+								<div>{{ caseStudy.principal_investigator }}</div>
+								<div>{{ caseStudy.description }}</div>
+							</articlce>
+						</li>
+					</ul>
+				</section>
 
-			<section v-if="passages.length > 0">
-				<h3>Passages</h3>
-				<ul role="list">
-					<li v-for="passage of passages" :key="passage.id">
-						<article>
-							<div>
-								<NuxtLink
-									:href="{
-										query: createSearchFilterParams({ ...searchFilters, passage: [passage.id] }),
-									}"
-								>
-									{{ getPassageLabel(passage) }}
-								</NuxtLink>
-							</div>
-							<div v-if="passage.text">
-								<div>{{ passage.text.title }}</div>
-								<div>{{ createList(passage.text.autor.map(getAuthorLabel)) }}</div>
-								<div>{{ passage.text.jahrhundert }}</div>
-							</div>
-						</article>
-					</li>
-				</ul>
-			</section>
+				<section v-if="passages.length > 0" class="grid gap-1">
+					<h3 class="text-xs font-medium uppercase text-neutral-500">Passages</h3>
+					<ul role="list">
+						<li v-for="passage of passages" :key="passage.id">
+							<article>
+								<div>
+									<NuxtLink
+										class="transition hover:text-neutral-700"
+										:href="{
+											query: createSearchFilterParams({ ...searchFilters, passage: [passage.id] }),
+										}"
+									>
+										{{ getPassageLabel(passage) }}
+									</NuxtLink>
+								</div>
+								<div v-if="passage.text">
+									<div>{{ passage.text.title }}</div>
+									<div>{{ createList(passage.text.autor.map(getAuthorLabel)) }}</div>
+									<div>{{ passage.text.jahrhundert }}</div>
+								</div>
+							</article>
+						</li>
+					</ul>
+				</section>
+			</div>
 		</template>
 	</div>
 </template>

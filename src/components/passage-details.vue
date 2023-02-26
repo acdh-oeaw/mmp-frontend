@@ -47,20 +47,22 @@ const isEmpty = computed(() => {
 				<LoadingIndicator>Updating passage...</LoadingIndicator>
 			</template>
 
-			<h2>{{ getPassageLabel(passage) }}</h2>
+			<div class="grid gap-4 p-4 text-neutral-800">
+				<h2 class="text-lg font-medium">{{ getPassageLabel(passage) }}</h2>
 
-			<dl v-if="passage">
-				<div>
-					<dt class="sr-only">Date</dt>
-					<dd>{{ getDateRangeLabel(passage.start_date, passage.end_date) }}</dd>
-				</div>
-				<div v-if="passage.text">
-					<dt class="sr-only">Author</dt>
-					<dd>{{ createList(passage.text.autor.map(getAuthorLabel)) }}</dd>
-				</div>
-			</dl>
+				<dl v-if="passage" class="text-sm font-medium text-neutral-500">
+					<div>
+						<dt class="sr-only">Date</dt>
+						<dd>{{ getDateRangeLabel(passage.start_date, passage.end_date) }}</dd>
+					</div>
+					<div v-if="passage.text">
+						<dt class="sr-only">Author</dt>
+						<dd>{{ createList(passage.text.autor.map(getAuthorLabel)) }}</dd>
+					</div>
+				</dl>
 
-			<PassageDetailsList :id="id" />
+				<PassageDetailsList :id="id" />
+			</div>
 		</template>
 	</div>
 </template>

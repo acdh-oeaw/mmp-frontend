@@ -4,7 +4,7 @@ import { NuxtImg, NuxtLink } from "#components";
 
 <template>
 	<section>
-		<div class="relative grid place-items-center border-b bg-neutral-900 px-8 py-32 text-white">
+		<div class="relative grid place-items-center border-b bg-neutral-900 px-8 py-48 text-white">
 			<NuxtImg
 				alt=""
 				class="absolute inset-0 h-full w-full object-cover"
@@ -15,7 +15,7 @@ import { NuxtImg, NuxtLink } from "#components";
 			<div class="relative grid justify-items-center gap-12 text-center">
 				<div class="grid gap-4">
 					<h1 class="text-7xl font-extrabold uppercase">Mapping Medieval Peoples</h1>
-					<h2 class="text-4xl font-extrabold uppercase">
+					<h2 class="text-4xl font-extrabold">
 						Visualizing Semantic Landscapes in Early Medieval Europe
 					</h2>
 				</div>
