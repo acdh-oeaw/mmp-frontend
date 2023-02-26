@@ -25,7 +25,7 @@ const props = defineProps<{
 			<ChevronLeftIcon class="h-5 w-5" />
 			<span>Previous page</span>
 		</NuxtLink>
-		<span v-else>
+		<span v-else class="inline-flex items-center gap-1 text-neutral-500">
 			<ChevronLeftIcon class="h-5 w-5" />
 			<span>Previous page</span>
 		</span>
@@ -39,7 +39,7 @@ const props = defineProps<{
 			<span>Next page</span>
 			<ChevronRightIcon class="h-5 w-5" />
 		</NuxtLink>
-		<span v-else>
+		<span v-else class="inline-flex items-center gap-1 text-neutral-500">
 			<span>Next page</span>
 			<ChevronRightIcon class="h-5 w-5" />
 		</span>
