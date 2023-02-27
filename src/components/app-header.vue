@@ -40,7 +40,7 @@ function onToggleNavigationMenu() {
 
 			<ul class="hidden flex-wrap justify-end font-medium md:flex" role="list">
 				<li v-for="(link, key, index) of links" :key="key">
-					<span v-if="index !== 0" aria-hidden class="mx-4 select-none">&bull;</span>
+					<span v-if="index !== 0" aria-hidden="true" class="mx-4 select-none">&bull;</span>
 					<NuxtLink class="transition hover:text-neutral-700" :href="{ path: link.path }">
 						{{ link.label }}
 					</NuxtLink>
