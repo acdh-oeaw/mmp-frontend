@@ -12,7 +12,11 @@ export function usePassagesBrowseSearchParams(
 			zitat_lookup: "icontains",
 			limit: searchFilters.value["limit"],
 			offset: searchFilters.value["offset"],
-			ordering: "zitat",
+			/**
+			 * TODO: Would be better to sort on `text__start_date` (date of composition).
+			 * How to sort on nested fields?
+			 */
+			ordering: "start_date",
 		};
 
 		return searchParams;

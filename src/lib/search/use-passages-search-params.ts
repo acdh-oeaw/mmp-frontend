@@ -46,6 +46,9 @@ export function usePassagesSearchParams(
 			...getDateFilters(),
 			limit: searchFilters.value["limit"],
 			offset: searchFilters.value["offset"],
+			/** TODO: How to sort on nested fields? */
+			// ordering:
+			// 	searchFilters.value["date-filter"] === "content" ? "start_date" : "text__start_date",
 			ordering: "start_date",
 		};
 
