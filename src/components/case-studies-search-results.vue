@@ -6,8 +6,8 @@ import CaseStudyPreviewCard from "@/components/case-study-preview-card.vue";
 import ErrorMessage from "@/components/error-message.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
-import { useCaseStudiesSearchFilters } from "@/lib/search/use-case-studies-search-filters";
-import { useCaseStudiesSearchParams } from "@/lib/search/use-case-studies-search-params";
+import { useCaseStudiesSearchFilters } from "@/lib/case-studies/use-case-studies-search-filters";
+import { useCaseStudiesSearchParams } from "@/lib/case-studies/use-case-studies-search-params";
 
 const { searchFilters } = useCaseStudiesSearchFilters();
 const searchParams = useCaseStudiesSearchParams(searchFilters);

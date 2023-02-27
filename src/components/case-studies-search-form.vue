@@ -5,12 +5,12 @@ import { computed, ref, watch } from "vue";
 import { type GetAutoComplete, useAutoComplete } from "@/api";
 import SearchAutocomplete from "@/components/search-autocomplete.vue";
 import SearchAutocompleteLoadingItem from "@/components/search-autocomplete-loading-item.vue";
+import type { SearchFilters } from "@/lib/case-studies/use-case-studies-search-filters";
+import { useCaseStudiesSearchFilters } from "@/lib/case-studies/use-case-studies-search-filters";
 import { debounce } from "@/lib/debounce";
 import { createSearchFilterKey } from "@/lib/search/create-case-studies-search-filter-key";
 import { createResourceKey, splitResourceKey } from "@/lib/search/resource-key";
 import type { Item } from "@/lib/search/search.types";
-import type { SearchFilters } from "@/lib/search/use-case-studies-search-filters";
-import { useCaseStudiesSearchFilters } from "@/lib/search/use-case-studies-search-filters";
 import { useRouter } from "#imports";
 
 const { createSearchFilterParams, searchFilters } = useCaseStudiesSearchFilters();

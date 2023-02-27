@@ -1,7 +1,7 @@
 import { type ComputedRef, computed } from "vue";
 
 import type { GetCaseStudies } from "@/api";
-import { type SearchFilters } from "@/lib/search/use-case-studies-search-filters";
+import { type SearchFilters } from "@/lib/case-studies/use-case-studies-search-filters";
 
 export function useCaseStudiesSearchParams(
 	searchFilters: ComputedRef<SearchFilters>,
