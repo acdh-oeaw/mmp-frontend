@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { ref } from "vue";
 
+import Centered from "@/components/centered.vue";
 import ErrorMessage from "@/components/error-message.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
@@ -32,25 +33,35 @@ const type = ref<"pie-chart" | "word-cloud">("word-cloud");
 		<h2 class="sr-only">Word-clouds visualisation</h2>
 
 		<template v-if="isLoading">
-			<LoadingIndicator>Loading word clouds...</LoadingIndicator>
+			<Centered>
+				<LoadingIndicator>Loading word clouds...</LoadingIndicator>
+			</Centered>
 		</template>
 
 		<template v-else-if="isError">
-			<ErrorMessage>Failed to load word clouds.</ErrorMessage>
+			<Centered>
+				<ErrorMessage>Failed to load word clouds.</ErrorMessage>
+			</Centered>
 		</template>
 
 		<template v-else-if="isEmpty">
-			<NothingFoundMessage></NothingFoundMessage>
+			<Centered>
+				<NothingFoundMessage></NothingFoundMessage>
+			</Centered>
 		</template>
 
 		<template v-else>
 			<ClientOnly>
 				<template #fallback>
-					<LoadingIndicator>Loading word clouds...</LoadingIndicator>
+					<Centered>
+						<LoadingIndicator>Loading word clouds...</LoadingIndicator>
+					</Centered>
 				</template>
 
 				<template v-if="isFetching">
-					<LoadingIndicator>Updating word clouds...</LoadingIndicator>
+					<Centered>
+						<LoadingIndicator>Updating word clouds...</LoadingIndicator>
+					</Centered>
 				</template>
 
 				<VisualisationContainer v-slot="{ width, height }">

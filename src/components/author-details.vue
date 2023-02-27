@@ -3,6 +3,7 @@ import { computed } from "vue";
 
 import { type Author, useAuthorById } from "@/api";
 import AuthorDetailsList from "@/components/author-details-list.vue";
+import Centered from "@/components/centered.vue";
 import ErrorMessage from "@/components/error-message.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
@@ -30,20 +31,28 @@ const isEmpty = computed(() => {
 <template>
 	<div class="relative mx-auto h-full w-full max-w-7xl px-8 py-4">
 		<template v-if="isLoading">
-			<LoadingIndicator>Loading author...</LoadingIndicator>
+			<Centered>
+				<LoadingIndicator>Loading author...</LoadingIndicator>
+			</Centered>
 		</template>
 
 		<template v-else-if="isError">
-			<ErrorMessage>Failed to load author.</ErrorMessage>
+			<Centered>
+				<ErrorMessage>Failed to load author.</ErrorMessage>
+			</Centered>
 		</template>
 
 		<template v-else-if="isEmpty">
-			<NothingFoundMessage></NothingFoundMessage>
+			<Centered>
+				<NothingFoundMessage></NothingFoundMessage>
+			</Centered>
 		</template>
 
 		<template v-else>
 			<template v-if="isFetching">
-				<LoadingIndicator>Updating author...</LoadingIndicator>
+				<Centered>
+					<LoadingIndicator>Updating author...</LoadingIndicator>
+				</Centered>
 			</template>
 
 			<div class="grid gap-4 p-4 text-neutral-800">

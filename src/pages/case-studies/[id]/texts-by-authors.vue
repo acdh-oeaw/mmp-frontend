@@ -2,6 +2,7 @@
 import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/vue";
 import { ChevronDownIcon } from "@heroicons/vue/20/solid";
 
+import Centered from "@/components/centered.vue";
 import ErrorMessage from "@/components/error-message.vue";
 import KeywordTag from "@/components/keyword-tag.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
@@ -31,20 +32,28 @@ const { data, isLoading, isError, isEmpty, isFetching } = useTextsByAuthors(sear
 		<h2 class="sr-only">Texts by authors</h2>
 
 		<template v-if="isLoading">
-			<LoadingIndicator>Loading passages...</LoadingIndicator>
+			<Centered>
+				<LoadingIndicator>Loading passages...</LoadingIndicator>
+			</Centered>
 		</template>
 
 		<template v-else-if="isError">
-			<ErrorMessage>Failed to load passages.</ErrorMessage>
+			<Centered>
+				<ErrorMessage>Failed to load passages.</ErrorMessage>
+			</Centered>
 		</template>
 
 		<template v-else-if="isEmpty">
-			<NothingFoundMessage></NothingFoundMessage>
+			<Centered>
+				<NothingFoundMessage></NothingFoundMessage>
+			</Centered>
 		</template>
 
 		<template v-else>
 			<template v-if="isFetching">
-				<LoadingIndicator>Updating passages...</LoadingIndicator>
+				<Centered>
+					<LoadingIndicator>Updating passages...</LoadingIndicator>
+				</Centered>
 			</template>
 
 			<div class="overflow-x-auto transition-all" :class="{ 'opacity-50 grayscale': isFetching }">

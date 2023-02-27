@@ -2,6 +2,7 @@
 import { computed } from "vue";
 
 import { useAuthors } from "@/api";
+import Centered from "@/components/centered.vue";
 import ErrorMessage from "@/components/error-message.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
@@ -59,20 +60,28 @@ const columns = {
 		<h2 class="sr-only">Browse authors</h2>
 
 		<template v-if="isLoading">
-			<LoadingIndicator>Loading authors...</LoadingIndicator>
+			<Centered>
+				<LoadingIndicator>Loading authors...</LoadingIndicator>
+			</Centered>
 		</template>
 
 		<template v-else-if="isError">
-			<ErrorMessage>Failed to load authors.</ErrorMessage>
+			<Centered>
+				<ErrorMessage>Failed to load authors.</ErrorMessage>
+			</Centered>
 		</template>
 
 		<template v-else-if="isEmpty">
-			<NothingFoundMessage></NothingFoundMessage>
+			<Centered>
+				<NothingFoundMessage></NothingFoundMessage>
+			</Centered>
 		</template>
 
 		<template v-else>
 			<template v-if="isFetching">
-				<LoadingIndicator>Updating authors...</LoadingIndicator>
+				<Centered>
+					<LoadingIndicator>Updating authors...</LoadingIndicator>
+				</Centered>
 			</template>
 
 			<div class="overflow-x-auto transition-all" :class="{ 'opacity-50 grayscale': isFetching }">

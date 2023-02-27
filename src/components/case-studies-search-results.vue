@@ -3,6 +3,7 @@ import { computed } from "vue";
 
 import { useCaseStudies } from "@/api";
 import CaseStudyPreviewCard from "@/components/case-study-preview-card.vue";
+import Centered from "@/components/centered.vue";
 import ErrorMessage from "@/components/error-message.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
@@ -25,20 +26,28 @@ const caseStudies = computed(() => {
 		<h2 class="sr-only">Search results</h2>
 
 		<template v-if="isLoading">
-			<LoadingIndicator>Loading search results...</LoadingIndicator>
+			<Centered>
+				<LoadingIndicator>Loading search results...</LoadingIndicator>
+			</Centered>
 		</template>
 
 		<template v-else-if="isError">
-			<ErrorMessage>Failed to load search results.</ErrorMessage>
+			<Centered>
+				<ErrorMessage>Failed to load search results.</ErrorMessage>
+			</Centered>
 		</template>
 
 		<template v-else-if="caseStudies.length === 0">
-			<NothingFoundMessage></NothingFoundMessage>
+			<Centered>
+				<NothingFoundMessage></NothingFoundMessage>
+			</Centered>
 		</template>
 
 		<template v-else>
 			<template v-if="isFetching">
-				<LoadingIndicator>Updating search results...</LoadingIndicator>
+				<Centered>
+					<LoadingIndicator>Updating search results...</LoadingIndicator>
+				</Centered>
 			</template>
 
 			<ul class="grid gap-8 lg:grid-cols-2" role="list">

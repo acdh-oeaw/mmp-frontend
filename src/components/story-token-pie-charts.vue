@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { computed } from "vue";
 
+import Centered from "@/components/centered.vue";
 import ErrorMessage from "@/components/error-message.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
@@ -24,25 +25,35 @@ const { clouds, isEmpty, isError, isFetching, isLoading } = useWordClouds(search
 <template>
 	<div class="relative h-full w-full">
 		<template v-if="isLoading">
-			<LoadingIndicator>Loading pie charts...</LoadingIndicator>
+			<Centered>
+				<LoadingIndicator>Loading pie charts...</LoadingIndicator>
+			</Centered>
 		</template>
 
 		<template v-else-if="isError">
-			<ErrorMessage>Failed to load pie charts.</ErrorMessage>
+			<Centered>
+				<ErrorMessage>Failed to load pie charts.</ErrorMessage>
+			</Centered>
 		</template>
 
 		<template v-else-if="isEmpty">
-			<NothingFoundMessage></NothingFoundMessage>
+			<Centered>
+				<NothingFoundMessage></NothingFoundMessage>
+			</Centered>
 		</template>
 
 		<template v-else>
 			<ClientOnly>
 				<template #fallback>
-					<LoadingIndicator>Loading pie charts...</LoadingIndicator>
+					<Centered>
+						<LoadingIndicator>Loading pie charts...</LoadingIndicator>
+					</Centered>
 				</template>
 
 				<template v-if="isFetching">
-					<LoadingIndicator>Updating pie charts...</LoadingIndicator>
+					<Centered>
+						<LoadingIndicator>Updating pie charts...</LoadingIndicator>
+					</Centered>
 				</template>
 
 				<VisualisationContainer v-slot="{ width, height }">

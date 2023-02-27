@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { computed } from "vue";
 
+import Centered from "@/components/centered.vue";
 import ErrorMessage from "@/components/error-message.vue";
 import KeywordTag from "@/components/keyword-tag.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
@@ -32,20 +33,28 @@ const columns = {
 <template>
 	<div class="relative h-full w-full">
 		<template v-if="isLoading">
-			<LoadingIndicator>Loading search results...</LoadingIndicator>
+			<Centered>
+				<LoadingIndicator>Loading search results...</LoadingIndicator>
+			</Centered>
 		</template>
 
 		<template v-else-if="isError">
-			<ErrorMessage>Failed to load search results.</ErrorMessage>
+			<Centered>
+				<ErrorMessage>Failed to load search results.</ErrorMessage>
+			</Centered>
 		</template>
 
 		<template v-else-if="isEmpty">
-			<NothingFoundMessage></NothingFoundMessage>
+			<Centered>
+				<NothingFoundMessage></NothingFoundMessage>
+			</Centered>
 		</template>
 
 		<template v-else>
 			<template v-if="isFetching">
-				<LoadingIndicator>Updating search results...</LoadingIndicator>
+				<Centered>
+					<LoadingIndicator>Updating search results...</LoadingIndicator>
+				</Centered>
 			</template>
 
 			<div class="overflow-x-auto transition-all" :class="{ 'opacity-50 grayscale': isFetching }">

@@ -3,6 +3,7 @@ import { runSync } from "@mdx-js/mdx";
 import { computed } from "vue";
 import * as runtime from "vue-jsx-runtime";
 
+import Centered from "@/components/centered.vue";
 import ErrorMessage from "@/components/error-message.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
@@ -50,15 +51,21 @@ const StoryContent = code.value?.default;
 		<h2 class="sr-only">Story</h2>
 
 		<template v-if="isLoading">
-			<LoadingIndicator>Loading story...</LoadingIndicator>
+			<Centered>
+				<LoadingIndicator>Loading story...</LoadingIndicator>
+			</Centered>
 		</template>
 
 		<template v-else-if="isError">
-			<ErrorMessage>Failed to load story.</ErrorMessage>
+			<Centered>
+				<ErrorMessage>Failed to load story.</ErrorMessage>
+			</Centered>
 		</template>
 
 		<template v-else-if="code == null">
-			<NothingFoundMessage></NothingFoundMessage>
+			<Centered>
+				<NothingFoundMessage></NothingFoundMessage>
+			</Centered>
 		</template>
 
 		<template v-else>

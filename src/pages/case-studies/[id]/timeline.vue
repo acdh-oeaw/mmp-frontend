@@ -6,6 +6,7 @@ import {
 } from "@heroicons/vue/24/outline";
 
 import { type GetCaseStudyTimetableById } from "@/api";
+import Centered from "@/components/centered.vue";
 import ErrorMessage from "@/components/error-message.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
@@ -44,20 +45,28 @@ function getEventColor(type: GetCaseStudyTimetableById.Response[number]["ent_typ
 		<h2 class="sr-only">Timeline</h2>
 
 		<template v-if="isLoading">
-			<LoadingIndicator>Loading timeline...</LoadingIndicator>
+			<Centered>
+				<LoadingIndicator>Loading timeline...</LoadingIndicator>
+			</Centered>
 		</template>
 
 		<template v-else-if="isError">
-			<ErrorMessage>Failed to load timeline.</ErrorMessage>
+			<Centered>
+				<ErrorMessage>Failed to load timeline.</ErrorMessage>
+			</Centered>
 		</template>
 
 		<template v-else-if="isEmpty">
-			<NothingFoundMessage></NothingFoundMessage>
+			<Centered>
+				<NothingFoundMessage></NothingFoundMessage>
+			</Centered>
 		</template>
 
 		<template v-else>
 			<template v-if="isFetching">
-				<LoadingIndicator>Updating timeline...</LoadingIndicator>
+				<Centered>
+					<LoadingIndicator>Updating timeline...</LoadingIndicator>
+				</Centered>
 			</template>
 
 			<ol role="list">

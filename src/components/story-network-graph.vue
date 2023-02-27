@@ -2,6 +2,7 @@
 import { computed } from "vue";
 
 import { type ResourceKey } from "@/api";
+import Centered from "@/components/centered.vue";
 import ErrorMessage from "@/components/error-message.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NetworkGraph from "@/components/network-graph.vue";
@@ -28,25 +29,35 @@ const highlightedKeys = new Set<ResourceKey>();
 <template>
 	<div class="relative h-full w-full">
 		<template v-if="isLoading">
-			<LoadingIndicator>Loading network graph...</LoadingIndicator>
+			<Centered>
+				<LoadingIndicator>Loading network graph...</LoadingIndicator>
+			</Centered>
 		</template>
 
 		<template v-else-if="isError">
-			<ErrorMessage>Failed to load network graph.</ErrorMessage>
+			<Centered>
+				<ErrorMessage>Failed to load network graph.</ErrorMessage>
+			</Centered>
 		</template>
 
 		<template v-else-if="isEmpty">
-			<NothingFoundMessage></NothingFoundMessage>
+			<Centered>
+				<NothingFoundMessage></NothingFoundMessage>
+			</Centered>
 		</template>
 
 		<template v-else>
 			<ClientOnly>
 				<template #fallback>
-					<LoadingIndicator>Loading network visualisation...</LoadingIndicator>
+					<Centered>
+						<LoadingIndicator>Loading network visualisation...</LoadingIndicator>
+					</Centered>
 				</template>
 
 				<template v-if="isFetching">
-					<LoadingIndicator>Updating network graph...</LoadingIndicator>
+					<Centered>
+						<LoadingIndicator>Updating network graph...</LoadingIndicator>
+					</Centered>
 				</template>
 
 				<VisualisationContainer v-slot="{ width, height }">

@@ -2,6 +2,7 @@
 import { computed } from "vue";
 
 import { useKeywords } from "@/api";
+import Centered from "@/components/centered.vue";
 import ErrorMessage from "@/components/error-message.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
@@ -58,20 +59,28 @@ const columns = {
 		<h2 class="sr-only">Browse keywords</h2>
 
 		<template v-if="isLoading">
-			<LoadingIndicator>Loading keywords...</LoadingIndicator>
+			<Centered>
+				<LoadingIndicator>Loading keywords...</LoadingIndicator>
+			</Centered>
 		</template>
 
 		<template v-else-if="isError">
-			<ErrorMessage>Failed to load keywords.</ErrorMessage>
+			<Centered>
+				<ErrorMessage>Failed to load keywords.</ErrorMessage>
+			</Centered>
 		</template>
 
 		<template v-else-if="isEmpty">
-			<NothingFoundMessage></NothingFoundMessage>
+			<Centered>
+				<NothingFoundMessage></NothingFoundMessage>
+			</Centered>
 		</template>
 
 		<template v-else>
 			<template v-if="isFetching">
-				<LoadingIndicator>Updating keywords...</LoadingIndicator>
+				<Centered>
+					<LoadingIndicator>Updating keywords...</LoadingIndicator>
+				</Centered>
 			</template>
 
 			<div class="overflow-x-auto transition-all" :class="{ 'opacity-50 grayscale': isFetching }">

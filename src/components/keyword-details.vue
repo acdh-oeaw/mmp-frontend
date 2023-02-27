@@ -4,6 +4,7 @@ import { computed } from "vue";
 
 import { type Keyword, createKey } from "@/api";
 import * as api from "@/api/client";
+import Centered from "@/components/centered.vue";
 import ErrorMessage from "@/components/error-message.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
@@ -57,20 +58,28 @@ const isEmpty = computed(() => {
 <template>
 	<div class="relative mx-auto h-full w-full max-w-7xl px-8 py-4">
 		<template v-if="isLoading">
-			<LoadingIndicator>Loading keyword...</LoadingIndicator>
+			<Centered>
+				<LoadingIndicator>Loading keyword...</LoadingIndicator>
+			</Centered>
 		</template>
 
 		<template v-else-if="isError">
-			<ErrorMessage>Failed to load keyword.</ErrorMessage>
+			<Centered>
+				<ErrorMessage>Failed to load keyword.</ErrorMessage>
+			</Centered>
 		</template>
 
 		<template v-else-if="isEmpty">
-			<NothingFoundMessage></NothingFoundMessage>
+			<Centered>
+				<NothingFoundMessage></NothingFoundMessage>
+			</Centered>
 		</template>
 
 		<template v-else>
 			<template v-if="isFetching">
-				<LoadingIndicator>Updating keyword...</LoadingIndicator>
+				<Centered>
+					<LoadingIndicator>Updating keyword...</LoadingIndicator>
+				</Centered>
 			</template>
 
 			<h2>{{ createList(keywords.map((keyword) => keyword.stichwort)) }}</h2>

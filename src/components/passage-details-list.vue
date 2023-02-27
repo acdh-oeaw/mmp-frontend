@@ -2,6 +2,7 @@
 import { computed } from "vue";
 
 import { type Passage, usePassageById } from "@/api";
+import Centered from "@/components/centered.vue";
 import ErrorMessage from "@/components/error-message.vue";
 import KeywordTag from "@/components/keyword-tag.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
@@ -30,22 +31,30 @@ const isEmpty = computed(() => {
 </script>
 
 <template>
-	<div>
+	<div class="relative h-full w-full">
 		<template v-if="isLoading">
-			<LoadingIndicator>Loading details...</LoadingIndicator>
+			<Centered>
+				<LoadingIndicator>Loading details...</LoadingIndicator>
+			</Centered>
 		</template>
 
 		<template v-else-if="isError">
-			<ErrorMessage>Failed to load details.</ErrorMessage>
+			<Centered>
+				<ErrorMessage>Failed to load details.</ErrorMessage>
+			</Centered>
 		</template>
 
 		<template v-else-if="isEmpty">
-			<NothingFoundMessage></NothingFoundMessage>
+			<Centered>
+				<NothingFoundMessage></NothingFoundMessage>
+			</Centered>
 		</template>
 
 		<template v-else>
 			<template v-if="isFetching">
-				<LoadingIndicator>Updating details...</LoadingIndicator>
+				<Centered>
+					<LoadingIndicator>Updating details...</LoadingIndicator>
+				</Centered>
 			</template>
 
 			<div class="grid gap-6">

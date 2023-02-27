@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import Centered from "@/components/centered.vue";
 import ErrorMessage from "@/components/error-message.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import MainContent from "@/components/main-content.vue";
@@ -27,15 +28,21 @@ await imprintQuery.suspense();
 			<h1 class="sr-only">Imprint</h1>
 
 			<template v-if="isLoading">
-				<LoadingIndicator>Loading imprint...</LoadingIndicator>
+				<Centered>
+					<LoadingIndicator>Loading imprint...</LoadingIndicator>
+				</Centered>
 			</template>
 
 			<template v-else-if="isError">
-				<ErrorMessage>Failed to load imprint.</ErrorMessage>
+				<Centered>
+					<ErrorMessage>Failed to load imprint.</ErrorMessage>
+				</Centered>
 			</template>
 
 			<template v-else-if="imprint == null">
-				<NothingFoundMessage></NothingFoundMessage>
+				<Centered>
+					<NothingFoundMessage></NothingFoundMessage>
+				</Centered>
 			</template>
 
 			<template v-else>

@@ -3,6 +3,7 @@ import { type Map as LeafletMap } from "leaflet";
 import { computed, ref } from "vue";
 
 import { type LinesPointsGeojson, type ResourceKey, type SpatialCoverageGeojson } from "@/api";
+import Centered from "@/components/centered.vue";
 import ErrorMessage from "@/components/error-message.vue";
 import GeoMap from "@/components/geo-map.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
@@ -113,25 +114,35 @@ function _onFitWorld() {
 		<h2 class="sr-only">Geo visualisation</h2>
 
 		<template v-if="isLoading">
-			<LoadingIndicator>Loading map...</LoadingIndicator>
+			<Centered>
+				<LoadingIndicator>Loading map...</LoadingIndicator>
+			</Centered>
 		</template>
 
 		<template v-else-if="isError">
-			<ErrorMessage>Failed to load map.</ErrorMessage>
+			<Centered>
+				<ErrorMessage>Failed to load map.</ErrorMessage>
+			</Centered>
 		</template>
 
 		<template v-else-if="isEmpty">
-			<NothingFoundMessage></NothingFoundMessage>
+			<Centered>
+				<NothingFoundMessage></NothingFoundMessage>
+			</Centered>
 		</template>
 
 		<template v-else>
 			<ClientOnly>
 				<template #fallback>
-					<LoadingIndicator>Loading geo visualisation...</LoadingIndicator>
+					<Centered>
+						<LoadingIndicator>Loading geo visualisation...</LoadingIndicator>
+					</Centered>
 				</template>
 
 				<template v-if="isFetching">
-					<LoadingIndicator>Updating map...</LoadingIndicator>
+					<Centered>
+						<LoadingIndicator>Updating map...</LoadingIndicator>
+					</Centered>
 				</template>
 
 				<VisualisationContainer v-slot="{ width, height }">
