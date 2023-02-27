@@ -12,6 +12,7 @@ export function useCaseStudiesSearchParams(
 			has_stelle__key_word: searchFilters.value.keyword,
 			limit: searchFilters.value["limit"],
 			offset: searchFilters.value["offset"],
+			ordering: "title",
 		};
 
 		return searchParams;

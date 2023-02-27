@@ -12,6 +12,7 @@ export function usePlacesBrowseSearchParams(
 			name_lookup: "icontains",
 			limit: searchFilters.value["limit"],
 			offset: searchFilters.value["offset"],
+			ordering: "name",
 		};
 
 		return searchParams;

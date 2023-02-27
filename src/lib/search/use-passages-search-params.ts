@@ -46,6 +46,7 @@ export function usePassagesSearchParams(
 			...getDateFilters(),
 			limit: searchFilters.value["limit"],
 			offset: searchFilters.value["offset"],
+			ordering: "start_date",
 		};
 
 		return searchParams;

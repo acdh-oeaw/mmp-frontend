@@ -12,6 +12,7 @@ export function usePassagesBrowseSearchParams(
 			zitat_lookup: "icontains",
 			limit: searchFilters.value["limit"],
 			offset: searchFilters.value["offset"],
+			ordering: "zitat",
 		};
 
 		return searchParams;
