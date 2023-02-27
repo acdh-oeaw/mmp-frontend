@@ -11,6 +11,9 @@ export default defineNuxtConfig({
 	},
 	app: {
 		head: {
+			htmlAttrs: {
+				lang: "en",
+			},
 			link: [
 				{ href: "/favicon.ico", rel: "icon", sizes: "any" },
 				{ href: "/apple-touch-icon.png", rel: "apple-touch-icon" },
