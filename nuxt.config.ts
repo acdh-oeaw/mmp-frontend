@@ -40,6 +40,9 @@ export default defineNuxtConfig({
 		autoImport: false,
 	},
 	modules: ["@nuxt/image-edge"],
+	nitro: {
+		compressPublicAssets: true,
+	},
 	postcss: {
 		plugins: {
 			"postcss-custom-media": {},
