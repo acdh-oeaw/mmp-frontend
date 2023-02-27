@@ -3,6 +3,7 @@ import { ref } from "vue";
 import { type RouteLocationNormalized } from "vue-router";
 
 import { isNonEmptyString } from "@/lib/is-nonempty-string";
+import { trackPageView } from "@/lib/matomo-analytics";
 import { useRouter } from "#imports";
 
 const router = useRouter();
@@ -44,6 +45,8 @@ router.afterEach((to, from) => {
 	if (to.path !== from.path) {
 		onChangeMessaqge(to);
 	}
+
+	trackPageView(to, from);
 });
 </script>
 
