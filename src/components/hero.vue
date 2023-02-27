@@ -3,11 +3,14 @@ import { NuxtImg, NuxtLink } from "#components";
 </script>
 
 <template>
-	<section>
-		<div class="relative grid place-items-center border-b bg-neutral-900 px-8 py-32 text-white">
+	<section class="h-full max-h-[min(100%,1280px)]">
+		<div
+			class="relative grid h-full place-items-center border-b bg-neutral-900 px-8 py-32 text-white"
+		>
 			<NuxtImg
 				alt=""
 				class="absolute inset-0 h-full w-full object-cover opacity-75"
+				:height="1280"
 				loading="eager"
 				src="/assets/images/hero.jpg"
 				sizes="2xl:100vw xl:100vw lg:100vw md:100vw sm:100vw xs:100vw"
@@ -15,8 +18,10 @@ import { NuxtImg, NuxtLink } from "#components";
 
 			<div class="relative grid justify-items-center gap-12 text-center">
 				<div class="grid gap-4">
-					<h1 class="text-7xl font-extrabold uppercase">Mapping Medieval Peoples</h1>
-					<h2 class="text-4xl font-extrabold">
+					<h1 class="text-4xl font-extrabold uppercase sm:text-5xl lg:text-6xl xl:text-7xl">
+						Mapping Medieval Peoples
+					</h1>
+					<h2 class="text-xl font-extrabold sm:text-2xl lg:text-3xl xl:text-4xl">
 						Visualizing Semantic Landscapes in Early Medieval Europe
 					</h2>
 				</div>
@@ -38,25 +43,23 @@ import { NuxtImg, NuxtLink } from "#components";
 					</p>
 				</div>
 
-				<div class="grid grid-cols-2 gap-6">
+				<div class="grid gap-6 sm:grid-cols-2">
 					<div class="grid gap-1">
 						<NuxtLink
-							class="inline-flex items-center justify-center rounded border bg-neutral-100 px-12 py-4 text-sm font-medium uppercase text-neutral-900 shadow-md transition hover:bg-neutral-900 hover:text-white"
+							class="inline-flex items-center justify-center rounded border bg-neutral-100 px-12 py-4 text-sm font-medium uppercase text-neutral-900 shadow-md transition hover:bg-white"
 							href="/explore/search-results"
 						>
 							Search our data
 						</NuxtLink>
-						<span>For interactive analyses</span>
 					</div>
 
 					<div class="grid gap-1">
 						<NuxtLink
-							class="inline-flex items-center justify-center rounded border bg-neutral-100 px-12 py-4 text-sm font-medium uppercase text-neutral-900 shadow-md transition hover:bg-neutral-900 hover:text-white"
-							href="/case-studies/4/timeline"
+							class="inline-flex items-center justify-center rounded border bg-neutral-100 px-12 py-4 text-sm font-medium uppercase text-neutral-900 shadow-md transition hover:bg-white"
+							href="/case-studies"
 						>
-							Read &quot;Carolingian Avaria&quot;
+							Read case studies
 						</NuxtLink>
-						<span>A case study</span>
 					</div>
 				</div>
 			</div>
