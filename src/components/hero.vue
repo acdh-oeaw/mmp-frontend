@@ -10,6 +10,7 @@ import { NuxtImg, NuxtLink } from "#components";
 				class="absolute inset-0 h-full w-full object-cover opacity-75"
 				loading="eager"
 				src="/assets/images/hero.jpg"
+				sizes="2xl:100vw xl:100vw lg:100vw md:100vw sm:100vw xs:100vw"
 			/>
 
 			<div class="relative grid justify-items-center gap-12 text-center">
