@@ -112,7 +112,7 @@ watch(selectedKeys, debouncedSubmit);
 		</div>
 
 		<button class="flex items-center gap-2 p-4" type="submit">
-			<span class="md:hidden">Search</span>
+			<span class="sr-only">Search</span>
 			<MagnifyingGlassIcon class="h-6 w-6" />
 		</button>
 	</form>
