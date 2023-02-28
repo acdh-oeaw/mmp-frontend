@@ -135,7 +135,7 @@ watch(selectedKeys, debouncedSubmit);
 			</SearchAutocomplete>
 
 			<div class="grid items-center gap-4 lg:grid-cols-[auto_1fr]">
-				<div class="grid grid-cols-3 items-center gap-4">
+				<div class="grid items-center gap-4 md:grid-cols-3">
 					<DatasetSelect />
 					<QueryModeSelect />
 					<DateFilterSelect />

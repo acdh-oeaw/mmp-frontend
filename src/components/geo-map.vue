@@ -324,6 +324,25 @@ onMounted(async () => {
 
 	//
 
+	function getAreaStyles(feature: SpatialCoverageGeojson) {
+		const keyword = feature.properties.key_word;
+		// FIXME: @see https://github.com/acdh-oeaw/mmp/issues/211
+		// assert(keyword != null, "Spatial Coverage is missing a keyword.");
+
+		// const color = keywordColors[keyword.art];
+		const color = keyword ? keywordColors[keyword.art] : "#0f172a";
+
+		return {
+			color,
+			dashArray: "12 6",
+			fill: true,
+			fillOpacity: 0.18,
+			opacity: 0.75,
+			stroke: true,
+			weight: 2,
+		};
+	}
+
 	context.featureGroups.areas = geoJSON<SpatialCoverageGeojson["properties"]>(undefined, {
 		onEachFeature(feature: SpatialCoverageGeojson, layer: Polygon) {
 			layer.bindTooltip(createAreaTooltipContent(feature), { permanent: false, sticky: true });
@@ -333,26 +352,22 @@ onMounted(async () => {
 					emit("area-click", feature);
 				},
 			});
+
+			layer.on("mouseover", () => {
+				const styles = getAreaStyles(feature);
+				layer.setStyle({ ...styles, color: "#ef4444", fillOpacity: 0.5 });
+			});
+			layer.on("mouseout", () => {
+				const styles = getAreaStyles(feature);
+				layer.setStyle(styles);
+			});
 		},
 		style(feature) {
 			if (feature == null) return {};
 
-			const keyword = feature.properties.key_word;
-			// FIXME: @see https://github.com/acdh-oeaw/mmp/issues/211
-			// assert(keyword != null, "Spatial Coverage is missing a keyword.");
+			const styles = getAreaStyles(feature as SpatialCoverageGeojson);
 
-			// const color = keywordColors[keyword.art];
-			const color = keyword ? keywordColors[keyword.art] : "#0f172a";
-
-			return {
-				color,
-				dashArray: "12 6",
-				fill: true,
-				fillOpacity: 0.18,
-				opacity: 0.75,
-				stroke: true,
-				weight: 2,
-			};
+			return styles;
 		},
 	}).addTo(context.map);
 
@@ -431,25 +446,48 @@ onMounted(async () => {
 
 	//
 
+	function getAreaLabelColor(feature: SpatialCoverageCenterPoint) {
+		const keyword = feature.properties.key_word;
+		// FIXME: @see https://github.com/acdh-oeaw/mmp/issues/211
+		// assert(keyword != null, "Spatial Coverage is missing a keyword.");
+
+		// const color = keywordColors[keyword.art];
+		const color = keyword ? keywordColors[keyword.art] : "#0f172a";
+
+		return color;
+	}
+
 	context.featureGroups.areaLabels = geoJSON<SpatialCoverageCenterPoint["properties"]>(undefined, {
-		onEachFeature(_feature: SpatialCoverageCenterPoint, _layer: Marker) {
-			// TODO: on click highlight area by either (i) adding to separate overlay feature group, or (ii) simply setStyle() on the area layer
-			// if (highlightedAreas.value.has(feature.id))
-			// if (context.overlays.areas.value.has(feature.id))
-			//
+		onEachFeature(feature: SpatialCoverageCenterPoint, layer: Marker) {
 			// layer.on({
 			// 	click() {
-			// 		emit("area-click", feature);
+			// 		emit("area-label-click", feature);
 			// 	},
 			// });
+
+			layer.on("mouseover", () => {
+				context.featureGroups.areas?.eachLayer((_area) => {
+					const area = _area as Polygon;
+					if (area.feature?.id === feature.id) {
+						const styles = getAreaStyles(area.feature as SpatialCoverageGeojson);
+						area.setStyle({ ...styles, color: "#ef4444", fillOpacity: 0.5 });
+					}
+				});
+			});
+
+			layer.on("mouseout", () => {
+				context.featureGroups.areas?.eachLayer((_area) => {
+					const area = _area as Polygon;
+					if (area.feature?.id === feature.id) {
+						const styles = getAreaStyles(area.feature as SpatialCoverageGeojson);
+						area.setStyle(styles);
+					}
+				});
+			});
 		},
 		pointToLayer(feature, latlng) {
 			const keyword = feature.properties.key_word;
-			// FIXME: @see https://github.com/acdh-oeaw/mmp/issues/211
-			// assert(keyword != null, "Spatial Coverage is missing a keyword.");
-
-			// const color = keywordColors[keyword.art];
-			const color = keyword ? keywordColors[keyword.art] : "#0f172a";
+			const color = getAreaLabelColor(feature as SpatialCoverageCenterPoint);
 
 			// const label = keyword.stichwort
 			const label = keyword ? keyword.stichwort : "Unknown";
