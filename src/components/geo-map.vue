@@ -44,8 +44,8 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-	(event: "area-click", area: SpatialCoverageGeojson | null): void;
-	(event: "area-hover", area: SpatialCoverageGeojson | null): void;
+	(event: "area-click", area: SpatialCoverageCenterPoint | SpatialCoverageGeojson | null): void;
+	(event: "area-hover", area: SpatialCoverageCenterPoint | SpatialCoverageGeojson | null): void;
 	(event: "point-click", point: ConeOriginGeojson | null): void;
 	(event: "point-hover", point: ConeOriginGeojson | null): void;
 	(event: "lines-points-click", point: LinesPointsGeojson | null): void;
@@ -459,11 +459,11 @@ onMounted(async () => {
 
 	context.featureGroups.areaLabels = geoJSON<SpatialCoverageCenterPoint["properties"]>(undefined, {
 		onEachFeature(feature: SpatialCoverageCenterPoint, layer: Marker) {
-			// layer.on({
-			// 	click() {
-			// 		emit("area-label-click", feature);
-			// 	},
-			// });
+			layer.on({
+				click() {
+					emit("area-click", feature);
+				},
+			});
 
 			layer.on("mouseover", () => {
 				context.featureGroups.areas?.eachLayer((_area) => {

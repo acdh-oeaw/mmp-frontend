@@ -12,7 +12,11 @@ import OverlayPanel from "@/components/overlay-panel.vue";
 import OverlayPanelButton from "@/components/overlay-panel-button.vue";
 import VisualisationContainer from "@/components/visualisation-container.vue";
 import { initialViewState } from "@/lib/geo-map/geo-map.config";
-import { type ConeOriginGeojson, type GeoMapContext } from "@/lib/geo-map/geo-map.types";
+import {
+	type ConeOriginGeojson,
+	type GeoMapContext,
+	type SpatialCoverageCenterPoint,
+} from "@/lib/geo-map/geo-map.types";
 import { useGeoMap } from "@/lib/geo-map/use-geo-map";
 import { useGeoJsonLayers } from "@/lib/geo-map/use-geojson-layers";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
@@ -49,7 +53,7 @@ const selectedKeys = computed<Set<ResourceKey>>(() => {
 	return new Set(selection.value.selection);
 });
 
-function onAreaClick(area: SpatialCoverageGeojson | null) {
+function onAreaClick(area: SpatialCoverageCenterPoint | SpatialCoverageGeojson | null) {
 	console.log({ area });
 }
 
@@ -65,7 +69,7 @@ function onLinesPointsClick(collection: LinesPointsGeojson | null) {
 
 const highlightedKeys = ref(new Set<ResourceKey>());
 
-function onAreaHover(area: SpatialCoverageGeojson | null) {
+function onAreaHover(area: SpatialCoverageCenterPoint | SpatialCoverageGeojson | null) {
 	console.log({ area });
 }
 
