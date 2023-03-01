@@ -60,7 +60,7 @@
 		"@nuxt/image-edge": "^1.0.0-27954023.4cee565",
 		"@stefanprobst/eslint-config": "^1.0.10",
 		"@stefanprobst/eslint-config-vue": "^1.0.2",
-		"@stefanprobst/favicons": "^2.2.1",
+		"@stefanprobst/favicons": "^2.2.2",
 		"@stefanprobst/log": "^1.0.3",
 		"@stefanprobst/prettier-config": "^3.0.0",
 		"@stefanprobst/stylelint-config": "^3.0.1",
