@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/vue";
+import { ChevronRightIcon, ChevronUpIcon } from "@heroicons/vue/24/outline";
 import { computed } from "vue";
 
 import { type Author } from "@/api";
@@ -53,11 +55,28 @@ const { caseStudies, keywords, passages, isLoading, isFetching, isEmpty, isError
 			</template>
 
 			<div class="grid gap-6">
-				<section v-if="keywords.length > 0" class="grid gap-1">
-					<h3 class="text-xs font-medium uppercase text-neutral-500">Keywords</h3>
-					<ul class="flex flex-wrap gap-0.5" role="list">
+				<Disclosure
+					v-if="keywords.length > 0"
+					v-slot="{ open }"
+					as="section"
+					default-open
+					class="grid gap-1"
+				>
+					<DisclosureButton
+						class="cursor-pointer text-left text-sm font-medium uppercase text-neutral-500"
+					>
+						<div class="flex w-full justify-between rounded p-2 hover:bg-black/10">
+							<span>Keywords</span>
+							<ChevronUpIcon
+								:class="open ? '' : 'rotate-180 transform'"
+								class="inline-block h-5 w-5"
+							/>
+						</div>
+					</DisclosureButton>
+					<DisclosurePanel as="ul" class="flex flex-wrap gap-0.5" role="list">
 						<li v-for="keyword of keywords" :key="keyword.id">
 							<NuxtLink
+								class="hover:bg-black/10"
 								:href="{
 									query: createSearchFilterParams({ ...searchFilters, keyword: [keyword.id] }),
 								}"
@@ -65,35 +84,72 @@ const { caseStudies, keywords, passages, isLoading, isFetching, isEmpty, isError
 								<KeywordTag :keyword="keyword" />
 							</NuxtLink>
 						</li>
-					</ul>
-				</section>
+					</DisclosurePanel>
+				</Disclosure>
 
-				<section v-if="caseStudies.length > 0" class="grid gap-1">
-					<h3 class="text-xs font-medium uppercase text-neutral-500">Case studies</h3>
-					<ul role="list">
+				<Disclosure
+					v-if="caseStudies.length > 0"
+					v-slot="{ open }"
+					as="section"
+					default-open
+					class="grid gap-1"
+				>
+					<DisclosureButton
+						as="h3"
+						class="cursor-pointer text-left text-sm font-medium uppercase text-neutral-500"
+					>
+						<div class="flex justify-between rounded p-2 hover:bg-black/10">
+							<span>Case Studies</span>
+							<ChevronUpIcon
+								:class="open ? '' : 'rotate-180 transform'"
+								class="inline-block h-5 w-5"
+							/>
+						</div>
+					</DisclosureButton>
+					<DisclosurePanel as="ul" role="list" class="space-y-4 divide-solid divide-gray-300">
 						<li v-for="caseStudy of caseStudies" :key="caseStudy.id">
-							<articlce>
+							<articlce class="divide-y divide-dotted">
 								<div>
 									<NuxtLink
-										class="transition hover:text-neutral-700"
+										class="flex items-center justify-between rounded p-2 transition hover:bg-black/10"
 										:href="{ path: `/case-studies/${caseStudy.id}/timeline` }"
 									>
-										{{ caseStudy.title }}
+										<strong>
+											{{ caseStudy.title }}
+										</strong>
+										<ChevronRightIcon class="h-5 w-5 shrink-0" />
 									</NuxtLink>
 								</div>
-								<div>{{ caseStudy.principal_investigator }}</div>
-								<div>{{ caseStudy.description }}</div>
+								<div class="p-2">{{ caseStudy.principal_investigator }}</div>
+								<div class="p-2">{{ caseStudy.description }}</div>
 							</articlce>
 						</li>
-					</ul>
-				</section>
+					</DisclosurePanel>
+				</Disclosure>
 
-				<section v-if="passages.length > 0" class="grid gap-1">
-					<h3 class="text-xs font-medium uppercase text-neutral-500">Passages</h3>
-					<ul role="list">
+				<Disclosure
+					v-if="passages.length > 0"
+					v-slot="{ open }"
+					as="section"
+					default-open
+					class="grid gap-1"
+				>
+					<DisclosureButton
+						as="h3"
+						class="cursor-pointer text-left text-sm font-medium uppercase text-neutral-500"
+					>
+						<div class="flex w-full justify-between rounded p-2 hover:bg-black/10">
+							<span>Passages</span>
+							<ChevronUpIcon
+								:class="open ? '' : 'rotate-180 transform'"
+								class="inline-block h-5 w-5"
+							/>
+						</div>
+					</DisclosureButton>
+					<DisclosurePanel as="ul" role="list" class="space-y-4">
 						<li v-for="passage of passages" :key="passage.id">
-							<article>
-								<div>
+							<article class="divide-y divide-dotted">
+								<div class="flex items-center justify-between rounded p-2 hover:bg-black/10">
 									<NuxtLink
 										class="transition hover:text-neutral-700"
 										:href="{
@@ -102,16 +158,17 @@ const { caseStudies, keywords, passages, isLoading, isFetching, isEmpty, isError
 									>
 										{{ getPassageLabel(passage) }}
 									</NuxtLink>
+									<ChevronRightIcon class="h-5 w-5 shrink-0" />
 								</div>
-								<div v-if="passage.text">
+								<div v-if="passage.text" class="p-2 pb-0">
 									<div>{{ passage.text.title }}</div>
 									<div>{{ createList(passage.text.autor.map(getAuthorLabel)) }}</div>
 									<div>{{ passage.text.jahrhundert }}</div>
 								</div>
 							</article>
 						</li>
-					</ul>
-				</section>
+					</DisclosurePanel>
+				</Disclosure>
 			</div>
 		</template>
 	</div>

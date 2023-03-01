@@ -58,7 +58,7 @@ const isEmpty = computed(() => {
 			<div class="grid gap-4 p-4 text-neutral-800">
 				<h2 class="text-lg font-medium">{{ getAuthorLabel(author) }}</h2>
 
-				<dl v-if="author" class="text-sm font-medium text-neutral-500">
+				<dl v-if="author" class="px-2 text-sm font-medium text-neutral-500">
 					<div>
 						<dt class="sr-only">Century</dt>
 						<dd>{{ author.jahrhundert || "Unknown century" }}</dd>
