@@ -181,7 +181,7 @@ function onSaveAsGexf() {
 </script>
 
 <template>
-	<div class="relative mx-auto h-full w-full max-w-7xl px-8 py-4">
+	<div class="relative mx-auto h-full w-full py-4">
 		<h2 class="sr-only">Network-graph visualisation</h2>
 
 		<template v-if="isLoading">
