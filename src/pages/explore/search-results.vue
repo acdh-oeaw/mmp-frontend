@@ -7,7 +7,7 @@ import KeywordTag from "@/components/keyword-tag.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import PaginationLinks from "@/components/pagination-links.vue";
-import { getAuthorLabel, getDateRangeLabel, getPassageLabel } from "@/lib/get-label";
+import { getAuthorLabel, getDateRangeLabel } from "@/lib/get-label";
 import { createResourceKey } from "@/lib/search/resource-key";
 import { usePassagesSearch } from "@/lib/search/use-passages-search";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
@@ -105,6 +105,7 @@ const columns = {
 									<ul role="list">
 										<li v-for="author of passage.text.autor" :key="author.id">
 											<NuxtLink
+												class="font-semibold"
 												:href="{
 													query: {
 														...createSearchFilterParams(searchFilters),
@@ -126,8 +127,9 @@ const columns = {
 								</template>
 							</td>
 							<td class="px-6 py-4 text-neutral-800">
-								<template v-if="passage.display_label">
+								<template v-if="passage.zitat">
 									<NuxtLink
+										class="font-semibold line-clamp-4"
 										:href="{
 											query: {
 												...createSearchFilterParams(searchFilters),
@@ -137,7 +139,7 @@ const columns = {
 											},
 										}"
 									>
-										{{ getPassageLabel(passage) }}
+										{{ passage.zitat }}
 									</NuxtLink>
 								</template>
 							</td>
