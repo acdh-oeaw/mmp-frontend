@@ -55,3 +55,13 @@ export function getPassageLabel(
 	// FIXME:
 	// .replace(/ \(\d+ - \d+\), /, "");
 }
+
+// My personal choice for what the passage panel should display as title
+export function getPassagePanelLabel(
+	passage: Pick<Passage, "display_label" | "text" | "zitat_stelle"> | null | undefined,
+) {
+	if (passage?.text?.title == null || passage.zitat_stelle == null)
+		return passage?.display_label != null || "Unknown title";
+
+	return `${passage.text.title}, ${passage.zitat_stelle}`;
+}

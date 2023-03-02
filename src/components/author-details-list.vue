@@ -3,10 +3,10 @@ import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/vue";
 import { ChevronRightIcon, ChevronUpIcon } from "@heroicons/vue/24/outline";
 import { computed } from "vue";
 
-import { type Author } from "@/api";
+import { type Author, Keyword } from "@/api";
 import Centered from "@/components/centered.vue";
 import ErrorMessage from "@/components/error-message.vue";
-import KeywordTag from "@/components/keyword-tag.vue";
+import KeywordDisclosure from "@/components/keyword-disclosure.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import { createList } from "@/lib/create-list";
@@ -55,39 +55,7 @@ const { caseStudies, keywords, passages, isLoading, isFetching, isEmpty, isError
 			</template>
 
 			<div class="grid gap-6">
-				<Disclosure v-if="keywords.length > 0" v-slot="{ open }" as="section" class="grid gap-1">
-					<DisclosureButton
-						class="cursor-pointer text-left text-sm font-medium uppercase text-neutral-500"
-					>
-						<div class="flex w-full justify-between rounded p-2 hover:bg-black/10">
-							<span>Keywords</span>
-							<ChevronUpIcon
-								v-if="keywords.length > 15"
-								:class="open ? '' : 'rotate-180 transform'"
-								class="inline-block h-5 w-5"
-							/>
-						</div>
-					</DisclosureButton>
-					<ul class="flex flex-wrap gap-0.5" role="list">
-						<li v-for="keyword of open ? keywords : keywords.slice(0, 15)" :key="keyword.id">
-							<NuxtLink
-								class="hover:bg-black/10"
-								:href="{
-									query: createSearchFilterParams({ ...searchFilters, keyword: [keyword.id] }),
-								}"
-							>
-								<KeywordTag :keyword="keyword" />
-							</NuxtLink>
-						</li>
-						<DisclosureButton v-if="!open && keywords.length > 15" as="li">
-							<span
-								class="relative inline-flex cursor-pointer items-center gap-1 overflow-hidden rounded bg-gray-200 px-2 py-1 text-xs font-medium transition"
-							>
-								<span class="block">show more...</span>
-							</span>
-						</DisclosureButton>
-					</ul>
-				</Disclosure>
+				<KeywordDisclosure :keywords="keywords as unknown as Array<Keyword>" />
 				<Disclosure
 					v-if="caseStudies.length > 0"
 					v-slot="{ open }"

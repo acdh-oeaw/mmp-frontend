@@ -8,7 +8,7 @@ import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import PassageDetailsList from "@/components/passage-details-list.vue";
 import { createList } from "@/lib/create-list";
-import { getAuthorLabel, getDateRangeLabel, getPassageLabel } from "@/lib/get-label";
+import { getAuthorLabel, getDateRangeLabel, getPassagePanelLabel } from "@/lib/get-label";
 
 const props = defineProps<{
 	ids: Set<Passage["id"]>;
@@ -56,8 +56,8 @@ const isEmpty = computed(() => {
 				</Centered>
 			</template>
 
-			<div class="grid gap-4 p-4 text-neutral-800">
-				<h2 class="text-lg font-medium">{{ getPassageLabel(passage) }}</h2>
+			<div class="grid gap-4 p-4 px-2 text-neutral-800">
+				<h2 class="text-lg font-medium">{{ getPassagePanelLabel(passage) }}</h2>
 
 				<dl v-if="passage" class="text-sm font-medium text-neutral-500">
 					<div>
