@@ -45,9 +45,9 @@ const next = computed(() => {
 });
 
 const columns = {
-	authors: { label: "Authors" },
-	text: { label: "Text" },
 	passage: { label: "Passage" },
+	text: { label: "Text" },
+	authors: { label: "Author" },
 	keywords: { label: "Keywords" },
 	dateOfComposition: { label: "Date of composition" },
 	temporalCoverage: { label: "Temporal coverage" },
@@ -101,6 +101,28 @@ const columns = {
 					<tbody class="divide-y divide-neutral-200">
 						<tr v-for="passage of passages" :key="passage.id">
 							<td class="px-6 py-4 text-neutral-800">
+								<template v-if="passage.zitat">
+									<NuxtLink
+										class="font-semibold line-clamp-4"
+										:href="{
+											query: {
+												...createSearchFilterParams(searchFilters),
+												...createSelectionParams({
+													selection: [createResourceKey({ kind: 'stelle', id: passage.id })],
+												}),
+											},
+										}"
+									>
+										{{ passage.zitat }}
+									</NuxtLink>
+								</template>
+							</td>
+							<td class="px-6 py-4 text-neutral-800">
+								<template v-if="passage.text != null">
+									{{ passage.text.title }}
+								</template>
+							</td>
+							<td class="px-6 py-4 text-neutral-800">
 								<template v-if="passage.text != null">
 									<ul role="list">
 										<li v-for="author of passage.text.autor" :key="author.id">
@@ -119,28 +141,6 @@ const columns = {
 											</NuxtLink>
 										</li>
 									</ul>
-								</template>
-							</td>
-							<td class="px-6 py-4 text-neutral-800">
-								<template v-if="passage.text != null">
-									{{ passage.text.title }}
-								</template>
-							</td>
-							<td class="px-6 py-4 text-neutral-800">
-								<template v-if="passage.zitat">
-									<NuxtLink
-										class="font-semibold line-clamp-4"
-										:href="{
-											query: {
-												...createSearchFilterParams(searchFilters),
-												...createSelectionParams({
-													selection: [createResourceKey({ kind: 'stelle', id: passage.id })],
-												}),
-											},
-										}"
-									>
-										{{ passage.zitat }}
-									</NuxtLink>
 								</template>
 							</td>
 							<td class="px-6 py-4 text-neutral-800">

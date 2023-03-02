@@ -59,7 +59,7 @@ const isEmpty = computed(() => {
 			<div class="grid gap-4 p-4 px-2 text-neutral-800">
 				<h2 class="text-lg font-medium">{{ getPassagePanelLabel(passage) }}</h2>
 
-				<dl v-if="passage" class="text-sm font-medium text-neutral-500">
+				<dl v-if="passage" class="pl-2 text-sm font-medium text-neutral-500">
 					<div>
 						<dt class="sr-only">Date</dt>
 						<dd>{{ getDateRangeLabel(passage.start_date, passage.end_date) }}</dd>
