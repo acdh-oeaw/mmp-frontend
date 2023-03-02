@@ -3,12 +3,12 @@ import { Disclosure, DisclosureButton } from "@headlessui/vue";
 import { ChevronUpIcon } from "@heroicons/vue/24/outline";
 import { computed } from "vue";
 
-import { type Keyword } from "@/api";
+import { type GetPassageById, type Keyword, type KeywordNormalized } from "@/api";
 import KeywordTag from "@/components/keyword-tag.vue";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
 
 const props = defineProps<{
-	keywords: Array<Keyword>;
+	keywords: Array<Keyword> | Array<KeywordNormalized> | GetPassageById.Response["key_word"];
 }>();
 const keywords = computed(() => {
 	return props.keywords;

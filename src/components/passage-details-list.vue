@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { computed } from "vue";
 
-import { type Passage, Keyword, usePassageById } from "@/api";
+import { type Passage, usePassageById } from "@/api";
 import Centered from "@/components/centered.vue";
 import ErrorMessage from "@/components/error-message.vue";
 import KeywordDisclosure from "@/components/keyword-disclosure.vue";
@@ -57,7 +57,7 @@ const isEmpty = computed(() => {
 			<div class="grid gap-6">
 				<section class="grid gap-1">
 					<dl v-if="passage" class="grid gap-6">
-						<KeywordDisclosure :keywords="passage.key_word as unknown as Array<Keyword>" />
+						<KeywordDisclosure :keywords="passage.key_word" />
 						<div v-if="passage.translation" class="grid gap-1 px-2">
 							<dt class="text-sm font-medium uppercase text-neutral-500">Translation</dt>
 							<dd>{{ passage.translation }}</dd>

@@ -3,7 +3,7 @@ import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/vue";
 import { ChevronRightIcon, ChevronUpIcon } from "@heroicons/vue/24/outline";
 import { computed } from "vue";
 
-import { type Author, Keyword } from "@/api";
+import { type Author } from "@/api";
 import Centered from "@/components/centered.vue";
 import ErrorMessage from "@/components/error-message.vue";
 import KeywordDisclosure from "@/components/keyword-disclosure.vue";
@@ -55,7 +55,7 @@ const { caseStudies, keywords, passages, isLoading, isFetching, isEmpty, isError
 			</template>
 
 			<div class="grid gap-6">
-				<KeywordDisclosure :keywords="keywords as unknown as Array<Keyword>" />
+				<KeywordDisclosure :keywords="keywords" />
 				<Disclosure
 					v-if="caseStudies.length > 0"
 					v-slot="{ open }"
