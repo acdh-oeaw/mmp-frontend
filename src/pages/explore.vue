@@ -38,18 +38,16 @@ const links = {
 			</div>
 		</aside>
 
-		<nav aria-label="Passages" class="p-8">
+		<nav aria-label="Passages" class="border-b border-neutral-200">
 			<ul
-				class="mx-auto grid max-w-7xl grid-cols-2 flex-wrap justify-center gap-x-8 gap-y-2 md:grid-cols-4"
+				class="mx-auto grid max-w-7xl grid-cols-2 gap-x-8 gap-y-2 px-8 pt-4 font-medium md:grid-cols-4"
 				role="list"
 			>
-				<li
-					v-for="(link, key) of links"
-					:key="key"
-					class="block rounded p-2 text-center transition"
-					:class="{ 'bg-black/10': $route.path.replace('/explore/', '') === link.path }"
-				>
-					<NuxtLink :href="{ path: link.path, query }">
+				<li v-for="(link, key) of links" :key="key">
+					<NuxtLink
+						class="flex justify-center rounded-t p-2 transition hover:bg-neutral-100 aria-[current]:bg-neutral-200"
+						:href="{ path: link.path, query }"
+					>
 						{{ link.label }}
 					</NuxtLink>
 				</li>
