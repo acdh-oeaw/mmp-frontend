@@ -29,10 +29,18 @@ const links = {
 			</div>
 		</aside>
 
-		<nav aria-label="Content types" class="p-8">
-			<ul class="flex flex-wrap items-center justify-center gap-x-8 gap-y-2" role="list">
+		<nav aria-label="Content types" class="border-b border-neutral-200">
+			<ul
+				class="mx-auto grid max-w-7xl grid-cols-2 gap-x-8 gap-y-2 px-8 pt-4 font-medium md:grid-cols-4"
+				role="list"
+			>
 				<li v-for="(link, key) of links" :key="key">
-					<NuxtLink :href="{ path: link.path }">{{ link.label }}</NuxtLink>
+					<NuxtLink
+						class="flex justify-center rounded-t p-2 transition hover:bg-neutral-100 aria-[current]:bg-neutral-200"
+						:href="{ path: link.path }"
+					>
+						{{ link.label }}
+					</NuxtLink>
 				</li>
 			</ul>
 		</nav>
