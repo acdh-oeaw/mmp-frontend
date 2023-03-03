@@ -82,10 +82,18 @@ const type = ref<"pie-chart" | "word-cloud">("word-cloud");
 						:width="width"
 					/>
 					<OverlayPanel position="top left">
-						<OverlayPanelButton v-if="type === 'pie-chart'" @click="type = 'word-cloud'">
+						<OverlayPanelButton
+							v-if="type === 'pie-chart'"
+							aria-label="Word Cloud"
+							@click="type = 'word-cloud'"
+						>
 							<CloudIcon class="h-5 w-5" />
 						</OverlayPanelButton>
-						<OverlayPanelButton v-else-if="type === 'word-cloud'" @click="type = 'pie-chart'">
+						<OverlayPanelButton
+							v-else-if="type === 'word-cloud'"
+							aria-label="Pie Chart"
+							@click="type = 'pie-chart'"
+						>
 							<ChartPieIcon class="h-5 w-5" />
 						</OverlayPanelButton>
 					</OverlayPanel>

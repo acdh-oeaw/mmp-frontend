@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { ChartPieIcon, CloudIcon } from "@heroicons/vue/24/outline";
 import { ref } from "vue";
 
 import Centered from "@/components/centered.vue";
@@ -78,16 +79,12 @@ const type = ref<"pie-chart" | "word-cloud">("word-cloud");
 						:width="width"
 					/>
 					<OverlayPanel position="top left">
-						<OverlayPanelButton
-							v-if="type === 'pie-chart'"
-							label="Display word-cloud"
-							@click="type = 'word-cloud'"
-						/>
-						<OverlayPanelButton
-							v-else-if="type === 'word-cloud'"
-							label="Display pie-chart"
-							@click="type = 'pie-chart'"
-						/>
+						<OverlayPanelButton v-if="type === 'pie-chart'" @click="type = 'word-cloud'">
+							<CloudIcon class="h-5 w-5" />
+						</OverlayPanelButton>
+						<OverlayPanelButton v-else-if="type === 'word-cloud'" @click="type = 'pie-chart'">
+							<ChartPieIcon class="h-5 w-5" />
+						</OverlayPanelButton>
 					</OverlayPanel>
 				</VisualisationContainer>
 			</ClientOnly>

@@ -166,8 +166,8 @@ function _onFitWorld() {
 						@lines-points-hover="onLinesPointsHover"
 					>
 						<OverlayPanel position="top left">
-							<OverlayPanelButton label="Zoom in" @click="onZoomIn" />
-							<OverlayPanelButton label="Zoom out" @click="onZoomOut" />
+							<OverlayPanelButton @click="onZoomIn">Zoom in</OverlayPanelButton>
+							<OverlayPanelButton @click="onZoomOut">Zoom out</OverlayPanelButton>
 						</OverlayPanel>
 						<OverlayPanel position="top right">
 							<pre>

@@ -44,7 +44,7 @@ import { NuxtImg, NuxtLink } from "#components";
 					</p>
 				</div>
 
-				<div class="grid gap-6 sm:grid-cols-2">
+				<div class="grid gap-6 sm:grid-cols-2" style="text-shadow: none">
 					<div class="grid gap-1">
 						<NuxtLink
 							class="inline-flex items-center justify-center rounded border bg-neutral-100 px-12 py-4 text-sm font-medium uppercase text-neutral-900 shadow-md transition hover:bg-white"

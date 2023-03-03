@@ -227,55 +227,58 @@ function onSaveAsGexf() {
 						@node-hover="onNodeHover"
 						@ready="onReady"
 					>
-						<OverlayPanel position="top left">
-							<OverlayPanelButton label="Zoom to fit" @click="onZoomToFit" />
-							<OverlayPanelButton label="Unpin nodes" @click="onUnPinNodes" />
-							<OverlayPanelButton label="Clear selection" @click="onClearSelection" />
-						</OverlayPanel>
-						<OverlayPanel position="bottom left">
-							<form class="flex items-center gap-2 text-xs font-medium" @submit.prevent="">
-								<template v-for="[key, isVisible] of resourceKindFilters">
-									<label v-if="key !== 'keyword'" :key="key" class="flex items-center gap-1">
+						<!-- pointer event classes make it possible to click thorugh the layout div and use the graph, while still being able to click the overlay buttons-->
+						<div class="pointer-events-none relative mx-auto w-full max-w-7xl px-8">
+							<OverlayPanel position="top left" class="pointer-events-auto">
+								<OverlayPanelButton @click="onZoomToFit">Zoom to fit</OverlayPanelButton>
+								<OverlayPanelButton @click="onUnPinNodes">Unpin nodes</OverlayPanelButton>
+								<OverlayPanelButton @click="onClearSelection">Clear selection</OverlayPanelButton>
+							</OverlayPanel>
+							<OverlayPanel position="bottom left" class="pointer-events-auto">
+								<form class="flex items-center gap-2 text-xs font-medium" @submit.prevent="">
+									<template v-for="[key, isVisible] of resourceKindFilters">
+										<label v-if="key !== 'keyword'" :key="key" class="flex items-center gap-1">
+											<input
+												:checked="isVisible"
+												type="checkbox"
+												:value="key"
+												@change="
+													(event) => {
+														onToggleResourceKindFilter(key, event);
+													}
+												"
+											/>
+											<span class="h-3 w-3 rounded" :style="{ background: nodeColors[key] }" />
+											<span>{{ kindLabels[key].other }}</span>
+										</label>
+									</template>
+									<!-- TODO: should be a checkbox group -->
+									<label
+										v-for="[key, isVisible] of keywordTypeFilters"
+										:key="key"
+										class="flex items-center gap-1"
+									>
 										<input
 											:checked="isVisible"
 											type="checkbox"
 											:value="key"
 											@change="
 												(event) => {
-													onToggleResourceKindFilter(key, event);
+													onToggleKeywordTypeFilter(key, event);
 												}
 											"
 										/>
-										<span class="h-3 w-3 rounded" :style="{ background: nodeColors[key] }" />
-										<span>{{ kindLabels[key].other }}</span>
+										<span class="h-3 w-3 rounded" :style="{ background: keywordNodeColors[key] }" />
+										<span>{{ keywordTypeLabels[key].other }}</span>
 									</label>
-								</template>
-								<!-- TODO: should be a checkbox group -->
-								<label
-									v-for="[key, isVisible] of keywordTypeFilters"
-									:key="key"
-									class="flex items-center gap-1"
-								>
-									<input
-										:checked="isVisible"
-										type="checkbox"
-										:value="key"
-										@change="
-											(event) => {
-												onToggleKeywordTypeFilter(key, event);
-											}
-										"
-									/>
-									<span class="h-3 w-3 rounded" :style="{ background: keywordNodeColors[key] }" />
-									<span>{{ keywordTypeLabels[key].other }}</span>
-								</label>
-							</form>
-						</OverlayPanel>
-						<OverlayPanel position="bottom right">
-							<OverlayPanelButton label="Save as image" @click="onSaveAsImage" />
-							<OverlayPanelButton label="Save as csv" @click="onSaveAsCsv" />
-							<OverlayPanelButton label="Save as gexf" @click="onSaveAsGexf" />
-						</OverlayPanel>
+								</form>
+							</OverlayPanel>
+							<OverlayPanel position="bottom right" class="pointer-events-auto">
+								<OverlayPanelButton @click="onSaveAsImage">Save as image</OverlayPanelButton>
+								<OverlayPanelButton @click="onSaveAsCsv">Save as csv</OverlayPanelButton>
+								<OverlayPanelButton @click="onSaveAsGexf">Save as gexf</OverlayPanelButton>
+							</OverlayPanel>
+						</div>
 					</NetworkGraph>
 				</VisualisationContainer>
 			</ClientOnly>

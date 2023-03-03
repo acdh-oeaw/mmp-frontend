@@ -231,9 +231,9 @@ function onSaveAsGexf() {
 						@ready="onReady"
 					>
 						<OverlayPanel position="top left">
-							<OverlayPanelButton label="Zoom to fit" @click="onZoomToFit" />
-							<OverlayPanelButton label="Unpin nodes" @click="onUnPinNodes" />
-							<OverlayPanelButton label="Clear selection" @click="onClearSelection" />
+							<OverlayPanelButton @click="onZoomToFit">Zoom to fit</OverlayPanelButton>
+							<OverlayPanelButton @click="onUnPinNodes">Unpin nodes</OverlayPanelButton>
+							<OverlayPanelButton @click="onClearSelection">Clear selection</OverlayPanelButton>
 						</OverlayPanel>
 						<OverlayPanel position="bottom left">
 							<form class="flex items-center gap-2 text-xs font-medium" @submit.prevent="">
@@ -275,9 +275,15 @@ function onSaveAsGexf() {
 							</form>
 						</OverlayPanel>
 						<OverlayPanel position="bottom right">
-							<OverlayPanelButton label="Save as image" @click="onSaveAsImage" />
-							<OverlayPanelButton label="Save as csv" @click="onSaveAsCsv" />
-							<OverlayPanelButton label="Save as gexf" @click="onSaveAsGexf" />
+							<OverlayPanelButton label="Save as image" @click="onSaveAsImage">
+								Save as image
+							</OverlayPanelButton>
+							<OverlayPanelButton label="Save as csv" @click="onSaveAsCsv">
+								Save as csv
+							</OverlayPanelButton>
+							<OverlayPanelButton label="Save as gexf" @click="onSaveAsGexf">
+								Save as gexf
+							</OverlayPanelButton>
 						</OverlayPanel>
 					</NetworkGraph>
 				</VisualisationContainer>
