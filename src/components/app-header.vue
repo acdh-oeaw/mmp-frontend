@@ -1,8 +1,11 @@
 <script lang="ts" setup>
+import { DialogTitle } from "@headlessui/vue";
 import { Bars3Icon as MenuIcon } from "@heroicons/vue/24/outline";
 import { ref } from "vue";
 
+import SideDialog from "@/components/side-dialog.vue";
 import { NuxtLink } from "#components";
+import { useRouter } from "#imports";
 
 const links = {
 	explore: { path: "/explore/search-results", label: "Explore the data" },
@@ -11,11 +14,17 @@ const links = {
 	about: { path: "/about", label: "About the project" },
 };
 
+const router = useRouter();
+
 const isNavigationMenuOpen = ref(false);
 
 function onToggleNavigationMenu() {
 	isNavigationMenuOpen.value = !isNavigationMenuOpen.value;
 }
+
+router.beforeEach(() => {
+	isNavigationMenuOpen.value = false;
+});
 </script>
 
 <template>
@@ -46,6 +55,21 @@ function onToggleNavigationMenu() {
 					</NuxtLink>
 				</li>
 			</ul>
+
+			<SideDialog :open="isNavigationMenuOpen" @toggle="onToggleNavigationMenu">
+				<DialogTitle as="h2" class="sr-only">Navigation menu</DialogTitle>
+
+				<ul class="grid gap-4 font-medium" role="list">
+					<li>
+						<NuxtLink class="transition hover:text-neutral-700" href="/">Home</NuxtLink>
+					</li>
+					<li v-for="(link, key) of links" :key="key">
+						<NuxtLink class="transition hover:text-neutral-700" :href="{ path: link.path }">
+							{{ link.label }}
+						</NuxtLink>
+					</li>
+				</ul>
+			</SideDialog>
 		</nav>
 	</header>
 </template>
