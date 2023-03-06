@@ -18,7 +18,39 @@ import { useSearchFilters } from "@/lib/search/use-search-filters";
 import { useSelection } from "@/lib/search/use-selection";
 import { useRouter } from "#imports";
 
+const router = useRouter();
 const { createSearchFilterParams, searchFilters } = useSearchFilters();
+const { createSelectionParams, selection } = useSelection();
+
+function onSubmit() {
+	const nextSearchFilters: SearchFilters = {
+		...searchFilters.value,
+		author: [],
+		"case-study": [],
+		keyword: [],
+		passage: [],
+		place: [],
+		offset: 0,
+	};
+
+	selectedKeys.value.forEach((key) => {
+		const { kind, id } = splitResourceKey(key);
+		const filter = createSearchFilterKey(kind);
+		nextSearchFilters[filter].push(id);
+	});
+
+	router.push({
+		query: {
+			...createSearchFilterParams(nextSearchFilters),
+			...createSelectionParams(selection.value),
+		},
+	});
+}
+
+const onDebouncedSubmit = debounce(onSubmit);
+
+//
+
 const selectedKeys = ref<Array<Item["key"]>>([]);
 const searchTerm = ref("");
 
@@ -48,6 +80,11 @@ watch(
 
 function onChangeSelection(value: Array<Item["key"]>) {
 	selectedKeys.value = value;
+	/**
+	 * We cannot use `<form @change>` because `headlessui` uses `<input type="hidden">`,
+	 * which don't fire change events.
+	 */
+	onDebouncedSubmit();
 }
 
 function onChangeSearchTerm(value: string) {
@@ -77,40 +114,6 @@ const isLoading = computed(() => {
 const items = computed(() => {
 	return autoCompleteQuery.data.value?.results ?? [];
 });
-
-//
-
-const router = useRouter();
-const { createSelectionParams, selection } = useSelection();
-
-function onSubmit() {
-	const nextSearchFilters: SearchFilters = {
-		...searchFilters.value,
-		author: [],
-		"case-study": [],
-		keyword: [],
-		passage: [],
-		place: [],
-		offset: 0,
-	};
-
-	selectedKeys.value.forEach((key) => {
-		const { kind, id } = splitResourceKey(key);
-		const filter = createSearchFilterKey(kind);
-		nextSearchFilters[filter].push(id);
-	});
-
-	router.push({
-		query: {
-			...createSearchFilterParams(nextSearchFilters),
-			...createSelectionParams(selection.value),
-		},
-	});
-}
-
-const debouncedSubmit = debounce(onSubmit);
-// FIXME: this should be triggered in the form's `@change` handler, not in a watcher
-watch(selectedKeys, debouncedSubmit);
 </script>
 
 <template>
@@ -123,6 +126,7 @@ watch(selectedKeys, debouncedSubmit);
 		<div class="grid items-center gap-4">
 			<SearchAutocomplete
 				:items="items"
+				name="passage-search-autocomplete"
 				:search-term="searchTerm"
 				:selected-keys="selectedKeys"
 				:status="isFetching ? 'fetching' : isLoading ? 'loading' : 'idle'"

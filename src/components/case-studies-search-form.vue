@@ -13,7 +13,30 @@ import { createResourceKey, splitResourceKey } from "@/lib/search/resource-key";
 import type { Item } from "@/lib/search/search.types";
 import { useRouter } from "#imports";
 
+const router = useRouter();
 const { createSearchFilterParams, searchFilters } = useCaseStudiesSearchFilters();
+
+function onSubmit() {
+	const nextSearchFilters: SearchFilters = {
+		...searchFilters.value,
+		author: [],
+		keyword: [],
+		offset: 0,
+	};
+
+	selectedKeys.value.forEach((key) => {
+		const { kind, id } = splitResourceKey(key);
+		const filter = createSearchFilterKey(kind);
+		nextSearchFilters[filter].push(id);
+	});
+
+	router.push({ query: createSearchFilterParams(nextSearchFilters) });
+}
+
+const onDebouncedSubmit = debounce(onSubmit);
+
+//
+
 const selectedKeys = ref<Array<Item["key"]>>([]);
 const searchTerm = ref("");
 
@@ -34,6 +57,11 @@ watch(
 
 function onChangeSelection(value: Array<Item["key"]>) {
 	selectedKeys.value = value;
+	/**
+	 * We cannot use `<form @change>` because `headlessui` uses `<input type="hidden">`,
+	 * which don't fire change events.
+	 */
+	onDebouncedSubmit();
 }
 
 function onChangeSearchTerm(value: string) {
@@ -65,28 +93,6 @@ const items = computed(() => {
 });
 
 //
-
-const router = useRouter();
-
-function onSubmit() {
-	const nextSearchFilters: SearchFilters = {
-		...searchFilters.value,
-		author: [],
-		keyword: [],
-		offset: 0,
-	};
-
-	selectedKeys.value.forEach((key) => {
-		const { kind, id } = splitResourceKey(key);
-		const filter = createSearchFilterKey(kind);
-		nextSearchFilters[filter].push(id);
-	});
-
-	router.push({ query: createSearchFilterParams(nextSearchFilters) });
-}
-
-const debouncedSubmit = debounce(onSubmit);
-watch(selectedKeys, debouncedSubmit);
 </script>
 
 <template>
@@ -99,6 +105,7 @@ watch(selectedKeys, debouncedSubmit);
 		<div class="grid items-center gap-4">
 			<SearchAutocomplete
 				:items="items"
+				name="case-studies-search-autocomplete"
 				:search-term="searchTerm"
 				:selected-keys="selectedKeys"
 				:status="isFetching ? 'fetching' : isLoading ? 'loading' : 'idle'"

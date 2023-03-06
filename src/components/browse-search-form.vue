@@ -25,7 +25,11 @@ const router = useRouter();
 
 function onSubmit() {
 	router.push({
-		query: createSearchFilterParams({ ...searchFilters.value, searchTerm: searchTerm.value }),
+		query: createSearchFilterParams({
+			...searchFilters.value,
+			searchTerm: searchTerm.value,
+			offset: 0,
+		}),
 	});
 }
 </script>
@@ -43,6 +47,7 @@ function onSubmit() {
 				<input
 					autocomplete="off"
 					class="w-full border-none py-2 pl-3 pr-10 text-sm leading-5 text-neutral-900 focus-visible:outline-none"
+					name="browse-search-autocomplete"
 					:placeholder="placeholder"
 					type="search"
 					:value="searchTerm"

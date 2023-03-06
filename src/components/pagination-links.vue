@@ -18,28 +18,34 @@ const props = defineProps<{
 	>
 		<NuxtLink
 			v-if="props.previous != null"
-			class="inline-flex items-center gap-1 transition hover:text-neutral-700"
+			class="inline-flex select-none items-center gap-1 transition hover:text-neutral-700"
 			:href="props.previous"
 			rel="prev"
 		>
 			<ChevronLeftIcon class="h-5 w-5" />
 			<span>Previous page</span>
 		</NuxtLink>
-		<span v-else class="inline-flex items-center gap-1 text-neutral-500">
+		<span
+			v-else
+			class="inline-flex cursor-not-allowed select-none items-center gap-1 text-neutral-500"
+		>
 			<ChevronLeftIcon class="h-5 w-5" />
 			<span>Previous page</span>
 		</span>
 
 		<NuxtLink
 			v-if="props.next != null"
-			class="inline-flex items-center gap-1 transition hover:text-neutral-700"
+			class="inline-flex select-none items-center gap-1 transition hover:text-neutral-700"
 			:href="props.next"
 			rel="next"
 		>
 			<span>Next page</span>
 			<ChevronRightIcon class="h-5 w-5" />
 		</NuxtLink>
-		<span v-else class="inline-flex items-center gap-1 text-neutral-500">
+		<span
+			v-else
+			class="inline-flex cursor-not-allowed select-none items-center gap-1 text-neutral-500"
+		>
 			<span>Next page</span>
 			<ChevronRightIcon class="h-5 w-5" />
 		</span>
