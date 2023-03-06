@@ -6,8 +6,8 @@ const options: RouterConfig = {
 
 		if (to.hash) return { el: to.hash };
 
-		// FIXME: Avoid scrolling to top when sidepanel opens, i.e. when only `selection` search param changes.
-		// Can we pass `meta` via `NuxtLink`?
+		/** Avoid scrolling to top when sidepanel is toggled, i.e. when `selection` search param changes. */
+		if ("selection" in to.query || "selection" in from.query) return undefined;
 
 		return { top: 0, left: 0 };
 	},

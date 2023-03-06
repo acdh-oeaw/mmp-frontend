@@ -45,7 +45,7 @@ function onToggle() {
 							leave-from="translate-x-0"
 							leave-to="-translate-x-full"
 						>
-							<DialogPanel class="grid w-full max-w-sm content-start gap-8 rounded bg-white p-8">
+							<DialogPanel class="grid w-full max-w-sm content-start gap-8 rounded bg-white py-8">
 								<div class="justify-self-end">
 									<button class="flex gap-1" @click="onToggle">
 										<XMarkIcon
