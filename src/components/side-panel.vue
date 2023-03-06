@@ -39,6 +39,7 @@ const isVisible = computed(() => {
 });
 
 function onToggle() {
+	// TODO: only update search params after transitionend
 	router.push({ query: createSearchFilterParams(searchFilters.value) });
 }
 </script>
