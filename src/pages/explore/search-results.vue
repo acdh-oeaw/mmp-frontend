@@ -152,6 +152,7 @@ const columns = {
 													...createSearchFilterParams({
 														...searchFilters,
 														keyword: [...searchFilters.keyword, keyword.id],
+														offset: 0,
 													}),
 												},
 											}"

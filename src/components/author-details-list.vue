@@ -124,7 +124,11 @@ const { caseStudies, keywords, passages, isLoading, isFetching, isEmpty, isError
 									<NuxtLink
 										class="transition line-clamp-3 hover:text-neutral-700"
 										:href="{
-											query: createSearchFilterParams({ ...searchFilters, passage: [passage.id] }),
+											query: createSearchFilterParams({
+												...searchFilters,
+												passage: [passage.id],
+												offset: 0,
+											}),
 										}"
 									>
 										{{ passage.zitat }}

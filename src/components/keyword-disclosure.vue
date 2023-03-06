@@ -39,7 +39,7 @@ const { createSearchFilterParams, searchFilters } = useSearchFilters();
 				<NuxtLink
 					class="hover:bg-black/10"
 					:href="{
-						query: createSearchFilterParams({ ...searchFilters, keyword: [keyword.id] }),
+						query: createSearchFilterParams({ ...searchFilters, keyword: [keyword.id], offset: 0 }),
 					}"
 				>
 					<KeywordTag :keyword="keyword" />
