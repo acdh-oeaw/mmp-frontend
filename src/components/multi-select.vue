@@ -24,17 +24,17 @@ const props = defineProps<{
 	label: string;
 	name?: string;
 	placeholder?: string;
-	selectedKey: Item["key"];
+	selectedKeys: Array<Item["key"]>;
 }>();
 
 const emit = defineEmits<{
-	(event: "change-selection", selectedKey: Item["key"]): void;
+	(event: "change-selection", selectedKeys: Array<Item["key"]>): void;
 }>();
 
 //
 
-function onChangeSelection(selectedKey: Item["key"]) {
-	emit("change-selection", selectedKey);
+function onChangeSelection(selectedKeys: Array<Item["key"]>) {
+	emit("change-selection", selectedKeys);
 }
 
 //
@@ -62,7 +62,8 @@ function getDisplayLabel(selectedKey: Item["key"]) {
 	<Listbox
 		as="div"
 		class="relative"
-		:model-value="props.selectedKey"
+		:model-value="props.selectedKeys"
+		multiple
 		:name="props.name"
 		@update:model-value="onChangeSelection"
 	>
@@ -74,7 +75,11 @@ function getDisplayLabel(selectedKey: Item["key"]) {
 			<ListboxButton
 				class="relative w-full min-w-[12rem] cursor-default rounded-lg bg-white py-2 pl-3 pr-10 text-left text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/75 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-300"
 			>
-				<span v-if="selectedKey" class="block truncate">{{ getDisplayLabel(selectedKey) }}</span>
+				<span v-if="selectedKeys.length > 0" class="flex flex-wrap gap-2">
+					<span v-for="selectedKey of selectedKeys" :key="selectedKey" class="block truncate">
+						{{ getDisplayLabel(selectedKey) }}
+					</span>
+				</span>
 				<span v-else class="block truncate text-neutral-500">
 					{{ props.placeholder ?? "Select a value" }}
 				</span>

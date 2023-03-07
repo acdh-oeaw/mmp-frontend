@@ -96,9 +96,9 @@ async function updateLayers() {
 	const map = context.map;
 	if (map == null) return;
 
+	context.layers = {};
 	layers.forEach((layer) => {
 		if (context.visibility.layers.value.has(layer.id)) {
-			// TODO:
 			context.layers[layer.id] = geoJSON(layer.data).addTo(map);
 		}
 	});
