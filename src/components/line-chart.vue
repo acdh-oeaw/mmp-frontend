@@ -52,6 +52,29 @@ onMounted(() => {
 		series: createSeries(),
 		title: { text: props.title },
 		tooltip: { enabled: false },
+		xAxis: {
+			categories: [
+				"-300",
+				"-200",
+				"-100",
+				"0",
+				"100",
+				"200",
+				"300",
+				"400",
+				"500",
+				"600",
+				"700",
+				"800",
+				"900",
+				"1000",
+				"1100",
+				"1200",
+				"1300",
+				"1400",
+				"1500",
+			],
+		},
 		// tooltip: {
 		//   formatter() {
 		//     const endings = ['st', 'nd', 'rd'];
