@@ -148,40 +148,42 @@ const isEmpty = computed(() => {
 					</Tab>
 				</TabList>
 				<TabPanels>
-					<VisualisationContainer v-slot="{ width, height }" class="h-80">
-						<TabPanel>
-							<LineChart
-								:width="width"
-								:height="height"
-								:series="
-									centuryKeywords.map((century) => ({
-										name: century.title,
-										data: century.data.map(([centuryName, weight]) => ({
-											name: String(centuryName),
-											weight,
-										})),
-									}))
-								"
-							/>
-						</TabPanel>
-						<TabPanel>
-							<PlaceMap
-								v-if="texts"
-								:width="width"
-								:height="height"
-								:points="
-									texts.results
-										.map((text) => text.ort)
-										.flat(1)
-										.map((place) => ({
-											label: getPlaceLabel(place),
-											lat: Number(place.lat),
-											lng: Number(place.long),
+					<div class="h-80">
+						<VisualisationContainer v-slot="{ width, height }">
+							<TabPanel>
+								<LineChart
+									:width="width"
+									:height="height"
+									:series="
+										centuryKeywords.map((century) => ({
+											name: century.title,
+											data: century.data.map(([centuryName, weight]) => ({
+												name: String(centuryName),
+												weight,
+											})),
 										}))
-								"
-							/>
-						</TabPanel>
-					</VisualisationContainer>
+									"
+								/>
+							</TabPanel>
+							<TabPanel>
+								<PlaceMap
+									v-if="texts"
+									:width="width"
+									:height="height"
+									:points="
+										texts.results
+											.map((text) => text.ort)
+											.flat(1)
+											.map((place) => ({
+												label: getPlaceLabel(place),
+												lat: Number(place.lat),
+												lng: Number(place.long),
+											}))
+									"
+								/>
+							</TabPanel>
+						</VisualisationContainer>
+					</div>
 				</TabPanels>
 			</TabGroup>
 			<KeywordDetailsTextsByAuthors :ids="props.ids" />
