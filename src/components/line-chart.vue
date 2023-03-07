@@ -30,7 +30,13 @@ const elementRef = ref<HTMLElement | null>(null);
 
 function createSeries(): Array<SeriesOptionsType> {
 	return props.series.map((series) => {
-		return { name: series.name, data: series.data, type: "line" };
+		return {
+			name: series.name,
+			data: series.data.map((data) => {
+				return data.weight;
+			}),
+			type: "line",
+		};
 	});
 }
 

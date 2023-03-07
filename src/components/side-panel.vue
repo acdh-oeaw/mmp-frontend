@@ -47,8 +47,8 @@ function onToggle() {
 <template>
 	<SideDialog :open="isVisible" @toggle="onToggle">
 		<AuthorDetails v-if="idsByKind.has('autor')" :ids="idsByKind.get('autor')!" />
-		<KeywordDetails v-if="idsByKind.has('keyword')" :ids="idsByKind.get('keyword')!" />
-		<PassageDetails v-if="idsByKind.has('stelle')" :ids="idsByKind.get('stelle')!" />
-		<PlaceDetails v-if="idsByKind.has('ort')" :ids="idsByKind.get('ort')!" />
+		<KeywordDetails v-else-if="idsByKind.has('keyword')" :ids="idsByKind.get('keyword')!" />
+		<PassageDetails v-else-if="idsByKind.has('stelle')" :ids="idsByKind.get('stelle')!" />
+		<PlaceDetails v-else-if="idsByKind.has('ort')" :ids="idsByKind.get('ort')!" />
 	</SideDialog>
 </template>
