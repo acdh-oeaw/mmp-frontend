@@ -69,7 +69,7 @@ const StoryContent = code.value?.default;
 		</template>
 
 		<template v-else>
-			<div class="prose max-w-none">
+			<div class="prose max-w-none py-8">
 				<StoryContent :components="components" />
 			</div>
 		</template>
