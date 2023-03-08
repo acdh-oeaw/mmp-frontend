@@ -33,16 +33,16 @@ const searchFilters = computed<SearchFilters>(() => {
 			<div v-if="props.type === 'graph'" class="relative h-96 w-full">
 				<StoryNetworkGraph :search-filters="searchFilters" />
 			</div>
-			<div v-if="props.type === 'map'" class="relative h-96 w-full">
+			<div v-else-if="props.type === 'map'" class="relative h-96 w-full">
 				<StoryGeoMap :search-filters="searchFilters" />
 			</div>
-			<div v-if="props.type === 'cloud'" class="relative h-96 w-full">
+			<div v-else-if="props.type === 'cloud'" class="relative h-96 w-full">
 				<StoryTokenWordClouds :search-filters="searchFilters" />
 			</div>
-			<div v-if="props.type === 'list'" class="relative max-h-96 w-full">
+			<div v-else-if="props.type === 'list'" class="relative max-h-96 w-full overflow-auto">
 				<StorySearchResults :search-filters="searchFilters" />
 			</div>
-			<div v-if="props.type === 'detail'" class="relative max-h-96 w-full">
+			<div v-else-if="props.type === 'detail'" class="relative max-h-96 w-full overflow-auto">
 				<StoryEntityDetails :search-filters="searchFilters" />
 			</div>
 		</div>
