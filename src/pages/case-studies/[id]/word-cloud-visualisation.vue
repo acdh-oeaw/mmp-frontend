@@ -1,16 +1,14 @@
 <script lang="ts" setup>
-import { ChartPieIcon, CloudIcon } from "@heroicons/vue/24/outline";
 import { ref } from "vue";
 
 import Centered from "@/components/centered.vue";
 import ErrorMessage from "@/components/error-message.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
-import OverlayPanel from "@/components/overlay-panel.vue";
-import OverlayPanelButton from "@/components/overlay-panel-button.vue";
 import TokenPieCharts from "@/components/token-pie-charts.vue";
 import TokenWordClouds from "@/components/token-word-clouds.vue";
 import VisualisationContainer from "@/components/visualisation-container.vue";
+import WordCloudToolbar from "@/components/word-cloud-toolbar.vue";
 import { useCaseStudyIdParam } from "@/lib/case-studies/use-case-study-id-param";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
 import { useWordClouds } from "@/lib/word-cloud/use-word-clouds";
@@ -30,6 +28,10 @@ const { searchFilters } = useSearchFilters();
 const { clouds, isEmpty, isError, isFetching, isLoading } = useWordClouds(searchFilters);
 
 const type = ref<"pie-chart" | "word-cloud">("word-cloud");
+
+function onToggle(chart: "pie-chart" | "word-cloud") {
+	type.value = chart;
+}
 </script>
 
 <template>
@@ -81,22 +83,7 @@ const type = ref<"pie-chart" | "word-cloud">("word-cloud");
 						:clouds="clouds"
 						:width="width"
 					/>
-					<OverlayPanel position="top left">
-						<OverlayPanelButton
-							v-if="type === 'pie-chart'"
-							aria-label="Word Cloud"
-							@click="type = 'word-cloud'"
-						>
-							<CloudIcon class="h-5 w-5" />
-						</OverlayPanelButton>
-						<OverlayPanelButton
-							v-else-if="type === 'word-cloud'"
-							aria-label="Pie Chart"
-							@click="type = 'pie-chart'"
-						>
-							<ChartPieIcon class="h-5 w-5" />
-						</OverlayPanelButton>
-					</OverlayPanel>
+					<WordCloudToolbar :type="type" @toggle="onToggle" />
 				</VisualisationContainer>
 			</ClientOnly>
 		</template>

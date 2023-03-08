@@ -202,7 +202,7 @@ onMounted(async () => {
 	const _centerForce = context.graph.d3Force("center") as ForceCenter<NodeObject> | null;
 	// context.graph.d3Force("center", null);
 
-	context.graph.autoPauseRedraw(false);
+	// context.graph.autoPauseRedraw(false);
 	updateGraph();
 	context.graph(elementRef.value);
 
