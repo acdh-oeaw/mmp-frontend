@@ -9,6 +9,12 @@ import { initialViewState } from "@/lib/geo-map/geo-map.config";
 import { key } from "@/lib/geo-map/geo-map.context";
 import { isNotNullable } from "@/lib/is-not-nullable";
 
+interface Item {
+	key: string;
+	label: string;
+	description?: string;
+}
+
 const props = defineProps<{
 	layers: Map<GeojsonLayer["id"], GeojsonLayer>;
 }>();
@@ -57,24 +63,26 @@ function _onFitWorld() {
 </script>
 
 <template>
-	<div class="absolute inset-x-0 flex items-center gap-2 bg-neutral-50 py-2 px-4 shadow-lg">
-		<div class="flex gap-2">
-			<IconButton label="Zoom in" @click="onZoomIn">
-				<MagnifyingGlassPlusIcon class="h-5 w-5 shrink-0" />
-			</IconButton>
-			<IconButton label="Zoom out" @click="onZoomOut">
-				<MagnifyingGlassMinusIcon class="h-5 w-5 shrink-0" />
-			</IconButton>
-		</div>
-		<div>
-			<SingleSelect
-				v-if="items.length > 0"
-				:items="items"
-				:label="label"
-				name="custom-layers"
-				:selected-key="selectedKey"
-				@change-selection="onChangeSelection"
-			/>
-		</div>
+	<div class="absolute inset-x-0 bg-neutral-50 shadow-lg">
+		<aside class="mx-auto flex w-full max-w-7xl items-center gap-2 px-8 py-2">
+			<div class="flex gap-2">
+				<IconButton label="Zoom in" @click="onZoomIn">
+					<MagnifyingGlassPlusIcon class="h-5 w-5 shrink-0" />
+				</IconButton>
+				<IconButton label="Zoom out" @click="onZoomOut">
+					<MagnifyingGlassMinusIcon class="h-5 w-5 shrink-0" />
+				</IconButton>
+			</div>
+			<div>
+				<SingleSelect
+					v-if="items.length > 0"
+					:items="items"
+					:label="label"
+					name="custom-layers"
+					:selected-key="selectedKey"
+					@change-selection="onChangeSelection"
+				/>
+			</div>
+		</aside>
 	</div>
 </template>
