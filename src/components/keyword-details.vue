@@ -133,13 +133,13 @@ const isEmpty = computed(() => {
 			<TabGroup>
 				<TabList
 					as="ul"
-					class="mx-auto grid max-w-7xl grid-cols-2 gap-x-8 gap-y-2 px-8 pt-4 font-medium md:grid-cols-2"
+					class="mx-auto grid max-w-7xl grid-cols-2 gap-x-8 gap-y-2 border-b border-neutral-200 px-8 pt-4 font-medium md:grid-cols-2"
 					role="list"
 				>
 					<Tab v-for="label in ['Usage', 'Occurences']" :key="label" v-slot="{ selected }" as="li">
 						<div
 							class="flex cursor-pointer justify-center rounded-t p-2 transition hover:bg-neutral-100 aria-[current]:bg-neutral-200"
-							:class="{ 'bg-gray-200': selected }"
+							:class="{ 'bg-neutral-200': selected }"
 						>
 							<span>
 								{{ label }}
@@ -149,7 +149,7 @@ const isEmpty = computed(() => {
 				</TabList>
 				<TabPanels>
 					<div class="h-80">
-						<VisualisationContainer v-slot="{ width, height }">
+						<VisualisationContainer v-slot="{ width, height }" class="rounded-b">
 							<TabPanel>
 								<PlaceMap
 									v-if="texts"
@@ -189,7 +189,7 @@ const isEmpty = computed(() => {
 			<TabGroup>
 				<TabList
 					as="ul"
-					class="mx-auto grid max-w-7xl grid-cols-2 gap-x-8 gap-y-2 px-8 pt-4 font-medium md:grid-cols-2"
+					class="mx-auto grid max-w-7xl grid-cols-2 gap-x-8 gap-y-2 border-b border-neutral-200 px-8 pt-4 font-medium md:grid-cols-2"
 					role="list"
 				>
 					<Tab
@@ -200,7 +200,7 @@ const isEmpty = computed(() => {
 					>
 						<div
 							class="flex cursor-pointer justify-center rounded-t p-2 transition hover:bg-neutral-100 aria-[current]:bg-neutral-200"
-							:class="{ 'bg-gray-200': selected }"
+							:class="{ 'bg-neutral-200': selected }"
 						>
 							<span>
 								{{ label }}

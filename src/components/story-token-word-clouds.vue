@@ -56,7 +56,7 @@ const { clouds, isEmpty, isError, isFetching, isLoading } = useWordClouds(search
 					</Centered>
 				</template>
 
-				<VisualisationContainer v-slot="{ width, height }">
+				<VisualisationContainer v-slot="{ width, height }" class="rounded">
 					<TokenWordClouds :height="height" :clouds="clouds" :width="width" />
 				</VisualisationContainer>
 			</ClientOnly>

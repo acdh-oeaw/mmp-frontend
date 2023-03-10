@@ -146,7 +146,7 @@ function _onFitWorld() {
 					</Centered>
 				</template>
 
-				<VisualisationContainer v-slot="{ width, height }">
+				<VisualisationContainer v-slot="{ width, height }" class="rounded">
 					<GeoMap
 						:areas="areas"
 						:area-center-points="areaCenterPoints"

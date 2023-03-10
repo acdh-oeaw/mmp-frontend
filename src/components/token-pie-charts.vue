@@ -12,10 +12,10 @@ const props = defineProps<{
 
 <template>
 	<div class="absolute inset-0 grid grid-cols-2" data-pie-charts>
-		<VisualisationContainer v-slot="{ width, height }">
+		<VisualisationContainer v-slot="{ width, height }" class="rounded">
 			<PieChart :chart="props.charts.keywords" :height="height" :width="width" />
 		</VisualisationContainer>
-		<VisualisationContainer v-slot="{ width, height }">
+		<VisualisationContainer v-slot="{ width, height }" class="rounded">
 			<PieChart :chart="props.charts.tokens" :height="height" :width="width" />
 		</VisualisationContainer>
 	</div>

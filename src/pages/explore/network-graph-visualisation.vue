@@ -216,7 +216,7 @@ function onSaveAsGexf() {
 					</Centered>
 				</template>
 
-				<VisualisationContainer v-slot="{ width, height }">
+				<VisualisationContainer v-slot="{ width, height }" class="rounded">
 					<NetworkGraph
 						:graph="filteredGraph"
 						:height="height"
