@@ -74,12 +74,10 @@ const { selection } = useSelection();
 						>
 							<div>
 								{{ graph.nodes.get(conn.source)?.label }}
-								&nbsp;
 								<ChevronUpDownIcon class="inline h-5 w-5 rotate-90" />
-								&nbsp;
 								{{ graph.nodes.get(conn.target)?.label }}
 							</div>
-							<div>
+							<div class="flex min-w-fit items-center justify-center pl-1">
 								{{ conn.count }}
 								<ChevronRightIcon class="inline h-5 w-5" />
 							</div>
