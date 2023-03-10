@@ -68,7 +68,7 @@ const type = ref<"pie-chart" | "word-cloud">("word-cloud");
 					</Centered>
 				</template>
 
-				<VisualisationContainer v-slot="{ width, height }">
+				<VisualisationContainer v-slot="{ width, height }" class="rounded">
 					<TokenPieCharts
 						v-if="type === 'pie-chart'"
 						:height="height"

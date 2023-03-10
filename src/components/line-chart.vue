@@ -53,6 +53,7 @@ onMounted(() => {
 		title: { text: props.title },
 		tooltip: { enabled: false },
 		xAxis: {
+			tickInterval: 3,
 			categories: [
 				"-300",
 				"-200",
@@ -83,16 +84,12 @@ onMounted(() => {
 		//     } occurences`;
 		//   },
 		// },
-		// yAxis: {
-		// 	title: {
-		// 		text: "",
-		// 	},
-		// },
-		// xAxis: {
-		// 	labels: {
-		// 		formatter: ({ weight }) => weight * 100,
-		// 	},
-		// },
+		yAxis: {
+			title: {
+				text: "",
+			},
+			tickInterval: 1,
+		},
 	});
 
 	emit("ready", context.chart);

@@ -7,6 +7,7 @@ import { type Keyword, createKey, useTexts } from "@/api";
 import * as api from "@/api/client";
 import Centered from "@/components/centered.vue";
 import ErrorMessage from "@/components/error-message.vue";
+import KeywordDetailsConnections from "@/components/keyword-details-connections.vue";
 import KeywordDetailsTextsByAuthors from "@/components/keyword-details-texts-by-authors.vue";
 import LineChart from "@/components/line-chart.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
@@ -132,39 +133,23 @@ const isEmpty = computed(() => {
 			<TabGroup>
 				<TabList
 					as="ul"
-					class="mx-auto grid max-w-7xl grid-cols-2 gap-x-8 gap-y-2 px-8 pt-4 font-medium md:grid-cols-2"
+					class="mx-auto grid max-w-7xl grid-cols-2 gap-x-8 gap-y-2 border-b border-neutral-200 px-8 pt-4 font-medium md:grid-cols-2"
 					role="list"
 				>
-					<Tab
-						v-for="label in ['Usage', 'Places']"
-						:key="label"
-						v-slot="{ selected }"
-						as="li"
-						class="flex cursor-pointer justify-center rounded-t p-2 transition hover:bg-neutral-100 aria-[current]:bg-neutral-200"
-					>
-						<span :class="{ underline: selected }">
-							{{ label }}
-						</span>
+					<Tab v-for="label in ['Usage', 'Occurences']" :key="label" v-slot="{ selected }" as="li">
+						<div
+							class="flex cursor-pointer justify-center rounded-t p-2 transition hover:bg-neutral-100 aria-[current]:bg-neutral-200"
+							:class="{ 'bg-neutral-200': selected }"
+						>
+							<span>
+								{{ label }}
+							</span>
+						</div>
 					</Tab>
 				</TabList>
 				<TabPanels>
 					<div class="h-80">
-						<VisualisationContainer v-slot="{ width, height }">
-							<TabPanel>
-								<LineChart
-									:width="width"
-									:height="height"
-									:series="
-										centuryKeywords.map((century) => ({
-											name: century.title,
-											data: century.data.map(([centuryName, weight]) => ({
-												name: String(centuryName),
-												weight,
-											})),
-										}))
-									"
-								/>
-							</TabPanel>
+						<VisualisationContainer v-slot="{ width, height }" class="rounded-b">
 							<TabPanel>
 								<PlaceMap
 									v-if="texts"
@@ -182,11 +167,56 @@ const isEmpty = computed(() => {
 									"
 								/>
 							</TabPanel>
+							<TabPanel>
+								<LineChart
+									:width="width"
+									:height="height"
+									:series="
+										centuryKeywords.map((century) => ({
+											name: century.title,
+											data: century.data.map(([centuryName, weight]) => ({
+												name: String(centuryName),
+												weight,
+											})),
+										}))
+									"
+								/>
+							</TabPanel>
 						</VisualisationContainer>
 					</div>
 				</TabPanels>
 			</TabGroup>
-			<KeywordDetailsTextsByAuthors :ids="props.ids" />
+			<TabGroup>
+				<TabList
+					as="ul"
+					class="mx-auto grid max-w-7xl grid-cols-2 gap-x-8 gap-y-2 border-b border-neutral-200 px-8 pt-4 font-medium md:grid-cols-2"
+					role="list"
+				>
+					<Tab
+						v-for="label in ['Texts & Authors', 'Connections']"
+						:key="label"
+						v-slot="{ selected }"
+						as="li"
+					>
+						<div
+							class="flex cursor-pointer justify-center rounded-t p-2 transition hover:bg-neutral-100 aria-[current]:bg-neutral-200"
+							:class="{ 'bg-neutral-200': selected }"
+						>
+							<span>
+								{{ label }}
+							</span>
+						</div>
+					</Tab>
+				</TabList>
+				<TabPanels>
+					<TabPanel>
+						<KeywordDetailsTextsByAuthors :ids="props.ids" />
+					</TabPanel>
+					<TabPanel>
+						<KeywordDetailsConnections />
+					</TabPanel>
+				</TabPanels>
+			</TabGroup>
 		</template>
 	</div>
 </template>

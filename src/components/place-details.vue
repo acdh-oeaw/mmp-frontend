@@ -72,7 +72,7 @@ const isEmpty = computed(() => {
 				</dl>
 
 				<div class="grid h-96 w-full">
-					<VisualisationContainer v-slot="{ width, height }">
+					<VisualisationContainer v-slot="{ width, height }" class="rounded">
 						<PlaceMap
 							v-if="place && place.lat && place.long"
 							:height="height"
