@@ -12,8 +12,8 @@ export const kindLabels: Record<ResourceKind, Plurals> = {
 export const keywordTypeLabels: Record<KeywordType, Plurals> = {
 	Ethnonym: { one: "Ethnonym", other: "Ethnonyms" },
 	Keyword: { one: "Keyword", other: "Keywords" },
-	Name: { one: "Name", other: "Names" },
-	Region: { one: "Region", other: "Regions" },
+	Name: { one: "Personal Name", other: "Personal Names" },
+	Region: { one: "Place Name", other: "Place Names" },
 	unclear: { one: "unclear", other: "unclear" },
 };
 

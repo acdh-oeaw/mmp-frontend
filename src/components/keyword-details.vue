@@ -130,13 +130,19 @@ const isEmpty = computed(() => {
 					{{ createList(keywords.map((keyword) => keyword.stichwort)) }}
 				</h2>
 			</div>
+			<h1 class="text-center">Distribution</h1>
 			<TabGroup>
 				<TabList
 					as="ul"
-					class="mx-auto grid max-w-7xl grid-cols-2 gap-x-8 gap-y-2 border-b border-neutral-200 px-8 pt-4 font-medium md:grid-cols-2"
+					class="mx-auto grid max-w-7xl grid-cols-2 gap-x-8 gap-y-2 border-b border-neutral-200 px-8 pt-2 font-medium md:grid-cols-2"
 					role="list"
 				>
-					<Tab v-for="label in ['Usage', 'Occurences']" :key="label" v-slot="{ selected }" as="li">
+					<Tab
+						v-for="label in ['Geographic', 'Temporal']"
+						:key="label"
+						v-slot="{ selected }"
+						as="li"
+					>
 						<div
 							class="flex cursor-pointer justify-center rounded-t p-2 transition hover:bg-neutral-100 aria-[current]:bg-neutral-200"
 							:class="{ 'bg-neutral-200': selected }"

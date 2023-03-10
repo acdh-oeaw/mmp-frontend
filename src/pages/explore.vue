@@ -30,7 +30,7 @@ const links = {
 
 <template>
 	<div class="grid h-full grid-rows-[auto_auto_1fr]">
-		<h1 class="sr-only">Explore the data</h1>
+		<h1 class="sr-only">Search the data</h1>
 
 		<aside>
 			<div class="mx-auto w-full max-w-7xl px-8 py-4">
