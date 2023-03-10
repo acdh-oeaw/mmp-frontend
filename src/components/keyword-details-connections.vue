@@ -83,6 +83,9 @@ const { selection } = useSelection();
 							</div>
 						</NuxtLink>
 					</li>
+					<span class="text-sm italic text-gray-500">
+						Note: These are only connections that are shown in the graph right now.
+					</span>
 				</ul>
 			</div>
 		</template>
