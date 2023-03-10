@@ -8,11 +8,11 @@ const label = "Query mode";
 
 const labels: Record<QueryMode, { label: string; description?: string }> = {
 	intersection: {
-		label: "Intersection",
+		label: "Intersection (AND)",
 		description: "Show results which contain all search terms",
 	},
 	union: {
-		label: "Union",
+		label: "Union (OR)",
 		description: "Show results which contain any search term",
 	},
 };

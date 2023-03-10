@@ -8,7 +8,7 @@ import { NuxtLink } from "#components";
 import { useRouter } from "#imports";
 
 const links = {
-	explore: { path: "/explore/search-results", label: "Explore the data" },
+	explore: { path: "/explore/search-results", label: "Search the data" },
 	browse: { path: "/browse/authors", label: "Browse the data" },
 	"case-studies": { path: "/case-studies", label: "Case studies" },
 	about: { path: "/about", label: "About the project" },

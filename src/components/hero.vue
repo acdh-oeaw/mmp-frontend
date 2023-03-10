@@ -50,7 +50,7 @@ import { NuxtImg, NuxtLink } from "#components";
 							class="inline-flex items-center justify-center rounded border bg-neutral-100 px-12 py-4 text-sm font-medium uppercase text-neutral-900 shadow-md transition hover:bg-white"
 							href="/explore/search-results"
 						>
-							Search our data
+							Search the data
 						</NuxtLink>
 					</div>
 
