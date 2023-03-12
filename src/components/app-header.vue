@@ -59,12 +59,12 @@ router.beforeEach(() => {
 			<SideDialog :open="isNavigationMenuOpen" @toggle="onToggleNavigationMenu">
 				<DialogTitle as="h2" class="sr-only">Navigation menu</DialogTitle>
 
-				<ul class="grid gap-4 font-medium" role="list">
+				<ul class="grid divide-y px-4 font-medium" role="list">
 					<li>
-						<NuxtLink class="transition hover:text-neutral-700" href="/">Home</NuxtLink>
+						<NuxtLink class="flex p-4 transition hover:bg-neutral-50" href="/">Home</NuxtLink>
 					</li>
 					<li v-for="(link, key) of links" :key="key">
-						<NuxtLink class="transition hover:text-neutral-700" :href="{ path: link.path }">
+						<NuxtLink class="flex p-4 transition hover:bg-neutral-50" :href="{ path: link.path }">
 							{{ link.label }}
 						</NuxtLink>
 					</li>
