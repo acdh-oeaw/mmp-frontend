@@ -46,7 +46,7 @@ function onToggle() {
 							leave-to="-translate-x-full"
 						>
 							<DialogPanel
-								class="pointer-events-auto grid w-full max-w-md content-start gap-8 rounded bg-white py-8 shadow-xl"
+								class="pointer-events-auto grid w-full max-w-md content-start rounded bg-white py-8 shadow-xl"
 							>
 								<div class="justify-self-end px-8">
 									<button class="flex gap-1" @click="onToggle">
