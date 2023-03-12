@@ -69,7 +69,11 @@ function getEventColor(type: GetCaseStudyTimetableById.Response[number]["ent_typ
 				</Centered>
 			</template>
 
-			<ol role="list">
+			<ol
+				role="list"
+				class="overflow-x-auto transition-all"
+				:class="{ 'opacity-50 grayscale': isFetching }"
+			>
 				<li v-for="event of caseStudyTimeline" :key="event.id">
 					<div>
 						<span>{{ getDateRangeLabel(event.start_date, event.end_date) }}</span>
