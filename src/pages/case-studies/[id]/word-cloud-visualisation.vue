@@ -63,14 +63,14 @@ const type = ref<"pie-chart" | "word-cloud">("word-cloud");
 				</template>
 
 				<template v-if="isFetching">
-					<Centered>
+					<Centered class="z-10">
 						<LoadingIndicator>Updating word clouds...</LoadingIndicator>
 					</Centered>
 				</template>
 
 				<VisualisationContainer
 					v-slot="{ width, height }"
-					class="rounded transition-all"
+					class="min-h-[800px] rounded transition-all"
 					:class="{ 'opacity-50 grayscale': isFetching }"
 				>
 					<TokenPieCharts
