@@ -147,7 +147,7 @@ function _onFitWorld() {
 
 				<VisualisationContainer
 					v-slot="{ width, height }"
-					class="min-h-[800px] rounded transition-all"
+					class="min-h-[600px] rounded transition-all"
 					:class="{ 'opacity-50 grayscale': isFetching }"
 				>
 					<GeoMap

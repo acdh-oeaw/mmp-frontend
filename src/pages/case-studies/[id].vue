@@ -35,7 +35,7 @@ const links = {
 
 		<nav aria-label="Case study" class="border-b border-neutral-200">
 			<ul
-				class="mx-auto grid max-w-7xl grid-cols-3 items-center gap-x-8 gap-y-2 px-8 pt-4 font-medium lg:grid-cols-6"
+				class="mx-auto grid max-w-7xl grid-cols-3 items-center gap-x-8 gap-y-2 px-8 pt-4 text-sm font-medium lg:grid-cols-6"
 				role="list"
 			>
 				<li v-for="(link, key) of links" :key="key">

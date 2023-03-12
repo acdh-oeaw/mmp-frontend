@@ -35,8 +35,14 @@ const idsByKind = computed(() => {
 	return grouped;
 });
 
-const isVisible = computed(() => {
-	return idsByKind.value.size > 0;
+const isSideDisclosureVisible = computed(() => {
+	return idsByKind.value.has("keyword");
+});
+
+const isSidePanelVisible = computed(() => {
+	return (
+		idsByKind.value.has("autor") || idsByKind.value.has("stelle") || idsByKind.value.has("ort")
+	);
 });
 
 function onToggle() {
@@ -46,10 +52,10 @@ function onToggle() {
 </script>
 
 <template>
-	<SideDisclosure v-if="idsByKind.has('keyword')" :open="isVisible" @toggle="onToggle">
-		<KeywordDetails :ids="idsByKind.get('keyword')!" />
+	<SideDisclosure :open="isSideDisclosureVisible" @toggle="onToggle">
+		<KeywordDetails v-if="idsByKind.has('keyword')" :ids="idsByKind.get('keyword')!" />
 	</SideDisclosure>
-	<SideDialog v-else :open="isVisible" @toggle="onToggle">
+	<SideDialog :open="isSidePanelVisible" @toggle="onToggle">
 		<AuthorDetails v-if="idsByKind.has('autor')" :ids="idsByKind.get('autor')!" />
 		<PassageDetails v-else-if="idsByKind.has('stelle')" :ids="idsByKind.get('stelle')!" />
 		<PlaceDetails v-else-if="idsByKind.has('ort')" :ids="idsByKind.get('ort')!" />

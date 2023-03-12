@@ -40,7 +40,7 @@ const links = {
 
 		<nav aria-label="Passages" class="border-b border-neutral-200">
 			<ul
-				class="mx-auto grid max-w-7xl grid-cols-2 items-center gap-x-8 gap-y-2 px-8 pt-4 font-medium md:grid-cols-4"
+				class="mx-auto grid max-w-7xl grid-cols-2 items-center gap-x-8 gap-y-2 px-8 pt-4 text-sm font-medium md:grid-cols-4"
 				role="list"
 			>
 				<li v-for="(link, key) of links" :key="key">
