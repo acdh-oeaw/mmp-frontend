@@ -56,6 +56,7 @@ function onRemoveSelectedKey(key: Item["key"]) {
 
 function onChangeSelection(selectedKeys: Array<Item["key"]>) {
 	emit("change-selection", selectedKeys);
+	emit("change-search-term", "");
 }
 
 function onChangeSearchTerm(event: Event) {
