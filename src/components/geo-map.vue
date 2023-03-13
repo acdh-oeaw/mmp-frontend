@@ -21,6 +21,7 @@ import {
 import { debounce } from "@/lib/debounce";
 import { createAreaTooltipContent } from "@/lib/geo-map/create-area-tooltip-content";
 import { createConeOriginTooltipContent } from "@/lib/geo-map/create-cone-origin-tooltip-content";
+import { createLinesPointsTooltipContent } from "@/lib/geo-map/create-lines-points-tooltip-content";
 import { colors, config, initialViewState, keywordColors } from "@/lib/geo-map/geo-map.config";
 import { key } from "@/lib/geo-map/geo-map.context";
 import {
@@ -375,7 +376,10 @@ onMounted(async () => {
 
 	context.featureGroups.linesPoints = geoJSON<LinesPointsGeojson["properties"]>(undefined, {
 		onEachFeature(feature: LinesPointsGeojson, layer: CircleMarker) {
-			// TODO: tooltips for geometry collection?
+			layer.bindTooltip(createLinesPointsTooltipContent(feature), {
+				permanent: false,
+				sticky: true,
+			});
 
 			layer.on({
 				click() {
