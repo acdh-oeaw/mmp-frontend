@@ -24,7 +24,10 @@ const elementRef = ref<HTMLElement | null>(null);
 
 onMounted(async () => {
 	/** `leaflet` assumes `window` global. */
-	const { map: createMap, tileLayer, marker } = await import("leaflet");
+	const { map: createMap, tileLayer, marker, icon } = await import("leaflet");
+	const { default: iconUrl } = await import("leaflet/dist/images/marker-icon.png");
+	const { default: iconRetinaUrl } = await import("leaflet/dist/images/marker-icon-2x.png");
+	const { default: shadowUrl } = await import("leaflet/dist/images/marker-shadow.png");
 
 	if (elementRef.value == null) return;
 
@@ -39,6 +42,7 @@ onMounted(async () => {
 		context.points.push(
 			// TODO: do we want to `bindTooltip` instead of html `title`?
 			marker([point.lat, point.lng], {
+				icon: icon({ iconUrl, iconRetinaUrl, shadowUrl }),
 				autoPanOnFocus: false,
 				riseOnHover: true,
 				title: point.label,

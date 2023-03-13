@@ -155,7 +155,7 @@ function deselect<T>(selection: Array<T>, value: T): Array<T> {
 						<li v-for="area of areas" :key="area.id">
 							<article class="relative my-8 grid gap-2">
 								<NuxtLink
-									class="absolute right-0 flex items-center gap-1"
+									class="absolute right-2.5 flex items-center gap-1"
 									:href="{
 										query: {
 											...createSearchFilterParams(searchFilters),
@@ -201,7 +201,7 @@ function deselect<T>(selection: Array<T>, value: T): Array<T> {
 						<li v-for="point of points" :key="point.id">
 							<article class="relative my-8 grid gap-2">
 								<NuxtLink
-									class="absolute right-0 flex items-center gap-1"
+									class="absolute right-2.5 flex items-center gap-1"
 									:href="{
 										query: {
 											...createSearchFilterParams(searchFilters),
@@ -232,7 +232,7 @@ function deselect<T>(selection: Array<T>, value: T): Array<T> {
 						<li v-for="collection of collections" :key="collection.id">
 							<article class="relative my-8 grid gap-2">
 								<NuxtLink
-									class="absolute right-0 flex items-center gap-1"
+									class="absolute right-2.5 flex items-center gap-1"
 									:href="{
 										query: {
 											...createSearchFilterParams(searchFilters),
