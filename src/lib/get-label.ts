@@ -39,7 +39,7 @@ export function getDateRangeLabel(
 	return [start, end]
 		.filter(isNotNullable)
 		.map((value) => {
-			return value < 0 ? `${value} BC` : `${value} AD`;
+			return value < 0 ? `${-value} BC` : `${value} AD`;
 		})
 		.join(" - ");
 }
