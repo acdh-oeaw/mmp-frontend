@@ -6,13 +6,11 @@ import { type LinesPointsGeojson, type ResourceKey, type SpatialCoverageGeojson 
 import Centered from "@/components/centered.vue";
 import ErrorMessage from "@/components/error-message.vue";
 import GeoMap from "@/components/geo-map.vue";
+import GeoMapToolbar from "@/components/geo-map-toolbar.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
-import OverlayPanel from "@/components/overlay-panel.vue";
-import OverlayPanelButton from "@/components/overlay-panel-button.vue";
 import VisualisationContainer from "@/components/visualisation-container.vue";
 import { useCaseStudyIdParam } from "@/lib/case-studies/use-case-study-id-param";
-import { initialViewState } from "@/lib/geo-map/geo-map.config";
 import { type ConeOriginGeojson, type GeoMapContext } from "@/lib/geo-map/geo-map.types";
 import { useGeoMap } from "@/lib/geo-map/use-geo-map";
 import { useGeoJsonLayers } from "@/lib/geo-map/use-geojson-layers";
@@ -89,28 +87,10 @@ const context = ref<Pick<GeoMapContext, "map">>({
 function onReady(instance: LeafletMap) {
 	context.value.map = instance;
 }
-
-//
-
-function onZoomIn() {
-	context.value.map?.zoomIn();
-}
-
-function onZoomOut() {
-	context.value.map?.zoomOut();
-}
-
-function _onResetZoom() {
-	context.value.map?.fitBounds(initialViewState.bounds);
-}
-
-function _onFitWorld() {
-	context.value.map?.fitWorld();
-}
 </script>
 
 <template>
-	<div class="relative mx-auto h-full w-full py-4">
+	<div class="relative mx-auto h-full w-full">
 		<h2 class="sr-only">Geo visualisation</h2>
 
 		<template v-if="isLoading">
@@ -169,16 +149,7 @@ function _onFitWorld() {
 						@lines-points-click="onLinesPointsClick"
 						@lines-points-hover="onLinesPointsHover"
 					>
-						<OverlayPanel position="top left">
-							<OverlayPanelButton @click="onZoomIn">Zoom in</OverlayPanelButton>
-							<OverlayPanelButton @click="onZoomOut">Zoom out</OverlayPanelButton>
-						</OverlayPanel>
-						<OverlayPanel position="top right">
-							<pre>
-								{{ layers }}
-							</pre
-							>
-						</OverlayPanel>
+						<GeoMapToolbar :layers="layers" />
 					</GeoMap>
 				</VisualisationContainer>
 			</ClientOnly>

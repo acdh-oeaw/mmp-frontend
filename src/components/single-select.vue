@@ -21,8 +21,9 @@ interface Item {
 
 const props = defineProps<{
 	items: Array<Item>;
-	name?: string;
 	label: string;
+	name?: string;
+	placeholder?: string;
 	selectedKey: Item["key"];
 }>();
 
@@ -73,7 +74,10 @@ function getDisplayLabel(selectedKey: Item["key"]) {
 			<ListboxButton
 				class="relative w-full min-w-[12rem] cursor-default rounded-lg bg-white py-2 pl-3 pr-10 text-left text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/75 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-300"
 			>
-				<span class="block truncate">{{ getDisplayLabel(selectedKey) }}</span>
+				<span v-if="selectedKey" class="block truncate">{{ getDisplayLabel(selectedKey) }}</span>
+				<span v-else class="block truncate text-neutral-500">
+					{{ props.placeholder ?? "Select a value" }}
+				</span>
 				<span
 					class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2 text-neutral-400"
 				>

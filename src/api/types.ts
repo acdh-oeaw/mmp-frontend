@@ -111,7 +111,7 @@ export type Resource = Author | CaseStudy | Keyword | Passage | Place | Text;
 
 export type ResourceKind = "autor" | "keyword" | "ort" | "stelle" | "text" | "usecase";
 
-export type ResourceKey = `${ResourceKind}__${Resource["id"]}`;
+export type ResourceKey = `${ResourceKind}_${Resource["id"]}`;
 
 export type GraphNode = {
 	id: Resource["id"];
