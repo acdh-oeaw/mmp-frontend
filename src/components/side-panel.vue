@@ -8,6 +8,7 @@ import PassageDetails from "@/components/passage-details.vue";
 import PlaceDetails from "@/components/place-details.vue";
 import SideDialog from "@/components/side-dialog.vue";
 import SideDisclosure from "@/components/side-disclosure.vue";
+import TextDetails from "@/components/text-details.vue";
 import {
 	type SelectionKind,
 	type SelectionResource,
@@ -50,7 +51,10 @@ const isSideDisclosureVisible = computed(() => {
 
 const isSidePanelVisible = computed(() => {
 	return (
-		idsByKind.value.has("autor") || idsByKind.value.has("stelle") || idsByKind.value.has("ort")
+		idsByKind.value.has("autor") ||
+		idsByKind.value.has("stelle") ||
+		idsByKind.value.has("ort") ||
+		idsByKind.value.has("text")
 	);
 });
 
@@ -77,5 +81,6 @@ function onToggle() {
 		<AuthorDetails v-if="idsByKind.has('autor')" :ids="idsByKind.get('autor')!" />
 		<PassageDetails v-else-if="idsByKind.has('stelle')" :ids="idsByKind.get('stelle')!" />
 		<PlaceDetails v-else-if="idsByKind.has('ort')" :ids="idsByKind.get('ort')!" />
+		<TextDetails v-else-if="idsByKind.has('text')" :ids="idsByKind.get('text')!" />
 	</SideDialog>
 </template>
