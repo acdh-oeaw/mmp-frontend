@@ -48,6 +48,18 @@ const next = computed(() => {
 
 	return { query: createSearchFilterParams({ ...searchFilters.value, offset: offset + limit }) };
 });
+const page = computed(() => {
+	const limit = searchFilters.value["limit"];
+	const offset = searchFilters.value["offset"];
+
+	return Math.ceil(offset / limit) + 1;
+});
+const pages = computed(() => {
+	const limit = searchFilters.value["limit"];
+	const count = passagesQuery.data.value?.count ?? 0;
+
+	return Math.ceil(count / limit);
+});
 
 const columns = {
 	quote: { label: "Quote" },
@@ -111,7 +123,7 @@ const columns = {
 				</table>
 			</div>
 
-			<PaginationLinks :previous="previous" :next="next" />
+			<PaginationLinks :previous="previous" :next="next" :pages="pages" :page="page" />
 		</template>
 	</div>
 </template>

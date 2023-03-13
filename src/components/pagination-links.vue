@@ -7,6 +7,8 @@ import { NuxtLink } from "#components";
 const props = defineProps<{
 	previous: RouteLocationRaw | null;
 	next: RouteLocationRaw | null;
+	pages: number;
+	page: number;
 }>();
 </script>
 
@@ -32,6 +34,8 @@ const props = defineProps<{
 			<ChevronLeftIcon class="h-5 w-5" />
 			<span>Previous page</span>
 		</span>
+
+		<div>{{ props.page }} of {{ props.pages }} pages</div>
 
 		<NuxtLink
 			v-if="props.next != null"
