@@ -16,6 +16,7 @@ const links = {
 	keywords: { path: "keywords", label: "Keywords" },
 	passages: { path: "passages", label: "Passages" },
 	places: { path: "places", label: "Places" },
+	texts: { path: "texts", label: "Texts" },
 };
 </script>
 
