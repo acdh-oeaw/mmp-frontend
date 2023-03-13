@@ -21,34 +21,29 @@ function onToggle() {
 	<ClientOnly>
 		<TransitionRoot :show="props.open" as="template">
 			<div class="relative z-50">
-				<div class="pointer-events-none fixed inset-0 overflow-y-auto">
-					<div class="flex min-h-full">
-						<TransitionChild
-							as="template"
-							enter="duration-300 ease-out"
-							enter-from="-translate-x-full"
-							enter-to="translate-x-0"
-							leave="duration-200 ease-in"
-							leave-from="translate-x-0"
-							leave-to="-translate-x-full"
+				<div class="pointer-events-none fixed inset-0 flex">
+					<TransitionChild
+						as="template"
+						enter="duration-300 ease-out"
+						enter-from="-translate-x-full"
+						enter-to="translate-x-0"
+						leave="duration-200 ease-in"
+						leave-from="translate-x-0"
+						leave-to="-translate-x-full"
+					>
+						<aside
+							class="pointer-events-auto grid h-full w-full max-w-md content-start overflow-y-auto rounded bg-white py-8 shadow-xl"
 						>
-							<aside
-								class="pointer-events-auto grid w-full max-w-md content-start rounded bg-white py-8 shadow-xl"
-							>
-								<div class="justify-self-end px-8">
-									<button class="flex gap-1" @click="onToggle">
-										<XMarkIcon
-											aria-hidden="true"
-											class="h-6 w-6 transition hover:text-neutral-700"
-										/>
-										<span class="sr-only">Close</span>
-									</button>
-								</div>
+							<div class="justify-self-end px-8">
+								<button class="flex gap-1" @click="onToggle">
+									<XMarkIcon aria-hidden="true" class="h-6 w-6 transition hover:text-neutral-700" />
+									<span class="sr-only">Close</span>
+								</button>
+							</div>
 
-								<slot />
-							</aside>
-						</TransitionChild>
-					</div>
+							<slot />
+						</aside>
+					</TransitionChild>
 				</div>
 			</div>
 		</TransitionRoot>
