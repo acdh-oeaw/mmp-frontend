@@ -166,7 +166,7 @@ const columns = {
 								{{ getDateRangeLabel(passage.text?.not_before, passage.text?.not_after) }}
 							</td>
 							<td class="whitespace-nowrap px-6 py-4 text-xs text-neutral-800">
-								{{ getDateRangeLabel(passage.start_date, passage.end_date) }}
+								{{ getDateRangeLabel(passage.start_date, passage.end_date) || "non-defined" }}
 							</td>
 						</tr>
 					</tbody>
