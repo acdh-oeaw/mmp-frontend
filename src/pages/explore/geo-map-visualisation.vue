@@ -2,7 +2,7 @@
 import { type Map as LeafletMap } from "leaflet";
 import { computed, ref } from "vue";
 
-import { type LinesPointsGeojson, type ResourceKey, type SpatialCoverageGeojson } from "@/api";
+import { type LinesPointsGeojson, type SpatialCoverageGeojson } from "@/api";
 import Centered from "@/components/centered.vue";
 import ErrorMessage from "@/components/error-message.vue";
 import GeoMap from "@/components/geo-map.vue";
@@ -17,10 +17,11 @@ import {
 } from "@/lib/geo-map/geo-map.types";
 import { useGeoMap } from "@/lib/geo-map/use-geo-map";
 import { useGeoJsonLayers } from "@/lib/geo-map/use-geojson-layers";
+import { type SelectionKey, createSelectionKey } from "@/lib/search/selection-key";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
 import { useSelection } from "@/lib/search/use-selection";
 import { ClientOnly } from "#components";
-import { useHead } from "#imports";
+import { useHead, useRouter } from "#imports";
 
 const title = "Geo visualisation";
 
@@ -29,7 +30,13 @@ useHead({
 	meta: [{ property: "og:title", content: title }],
 });
 
-const { searchFilters } = useSearchFilters();
+const router = useRouter();
+const { createSearchFilterParams, searchFilters } = useSearchFilters();
+const { createSelectionParams, selection } = useSelection();
+const selectedKeys = computed<Set<SelectionKey>>(() => {
+	return new Set(selection.value.selection);
+});
+
 const {
 	areas,
 	areaCenterPoints,
@@ -46,37 +53,77 @@ const { layers } = useGeoJsonLayers(searchFilters);
 
 //
 
-const { selection } = useSelection();
-const selectedKeys = computed<Set<ResourceKey>>(() => {
-	return new Set(selection.value.selection);
-});
-
 function onAreaClick(area: SpatialCoverageCenterPoint | SpatialCoverageGeojson | null) {
-	console.log({ area });
+	if (area == null) return;
+
+	const key = createSelectionKey({ kind: "geojson-area", id: area.id });
+	const _selection = new Set(selectedKeys.value);
+	if (_selection.has(key)) {
+		_selection.delete(key);
+	} else {
+		_selection.add(key);
+	}
+
+	router.push({
+		query: {
+			...createSearchFilterParams(searchFilters.value),
+			...createSelectionParams({ selection: Array.from(_selection) }),
+		},
+	});
 }
 
 function onPointClick(point: ConeOriginGeojson | null) {
-	console.log({ point });
+	if (point == null) return;
+
+	const key = createSelectionKey({ kind: "geojson-point", id: point.id });
+	const _selection = new Set(selectedKeys.value);
+	if (_selection.has(key)) {
+		_selection.delete(key);
+	} else {
+		_selection.add(key);
+	}
+
+	router.push({
+		query: {
+			...createSearchFilterParams(searchFilters.value),
+			...createSelectionParams({ selection: Array.from(_selection) }),
+		},
+	});
 }
 
 function onLinesPointsClick(collection: LinesPointsGeojson | null) {
-	console.log({ collection });
+	if (collection == null) return;
+
+	const key = createSelectionKey({ kind: "geojson-collection", id: collection.id });
+	const _selection = new Set(selectedKeys.value);
+	if (_selection.has(key)) {
+		_selection.delete(key);
+	} else {
+		_selection.add(key);
+	}
+
+	router.push({
+		query: {
+			...createSearchFilterParams(searchFilters.value),
+			...createSelectionParams({ selection: Array.from(_selection) }),
+		},
+	});
 }
 
 //
 
-const highlightedKeys = ref(new Set<ResourceKey>());
+const highlightedKeys = ref(new Set<SelectionKey>());
 
 function onAreaHover(area: SpatialCoverageCenterPoint | SpatialCoverageGeojson | null) {
-	console.log({ area });
+	if (area == null) return;
 }
 
 function onPointHover(point: ConeOriginGeojson | null) {
-	console.log({ point });
+	if (point == null) return;
 }
 
 function onLinesPointsHover(collection: LinesPointsGeojson | null) {
-	console.log({ collection });
+	if (collection == null) return;
 }
 
 //

@@ -15,15 +15,14 @@ import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import PlaceMap from "@/components/place-map.vue";
 import VisualisationContainer from "@/components/visualisation-container.vue";
 import { createList } from "@/lib/create-list";
+import { getPlaceLabel } from "@/lib/get-label";
 import { isNotNullable } from "@/lib/is-not-nullable";
-
-import { getPlaceLabel } from "../lib/get-label";
 
 const props = defineProps<{
 	ids: Set<Keyword["id"]>;
 }>();
 
-const queries = computed(() => {
+const keywordsQueriesConfig = computed(() => {
 	return Array.from(props.ids).map((id) => {
 		const params = { id };
 
@@ -36,9 +35,9 @@ const queries = computed(() => {
 	});
 });
 
-const keywordsQueries = useQueries({ queries });
+const keywordsQueries = useQueries({ queries: keywordsQueriesConfig });
 
-const centuryQueries = computed(() => {
+const centuryKeywordsQueriesConfig = computed(() => {
 	return Array.from(props.ids).map((id) => {
 		const params = { id };
 
@@ -51,7 +50,7 @@ const centuryQueries = computed(() => {
 	});
 });
 
-const centuryKeywordsQueries = useQueries({ queries: centuryQueries });
+const centuryKeywordsQueries = useQueries({ queries: centuryKeywordsQueriesConfig });
 
 const textKeywordsQuery = useTexts({ rvn_stelle_text_text__key_word: Array.from(props.ids) });
 
@@ -130,7 +129,8 @@ const isEmpty = computed(() => {
 					{{ createList(keywords.map((keyword) => keyword.stichwort)) }}
 				</h2>
 			</div>
-			<h1 class="text-center">Distribution</h1>
+
+			<h3 class="text-center">Distribution</h3>
 			<TabGroup>
 				<TabList
 					as="ul"
@@ -192,6 +192,7 @@ const isEmpty = computed(() => {
 					</div>
 				</TabPanels>
 			</TabGroup>
+
 			<TabGroup>
 				<TabList
 					as="ul"

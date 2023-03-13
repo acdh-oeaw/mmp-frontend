@@ -1,13 +1,12 @@
 import { type ComputedRef, computed } from "vue";
-import type { LocationQuery } from "vue-router";
+import { type LocationQuery } from "vue-router";
 
-import { type ResourceKey } from "@/api";
-import { getResourceKeys } from "@/lib/search/get-resource-keys";
+import { type SelectionKey, getSelectionKeys } from "@/lib/search/selection-key";
 import { unique } from "@/lib/unique";
 import { useRoute, useRouter } from "#imports";
 
 export type Selection = {
-	selection: Array<ResourceKey>;
+	selection: Array<SelectionKey>;
 };
 
 type UseSelectionResult = {
@@ -27,7 +26,7 @@ export function useSelection(): UseSelectionResult {
 
 	const selection = computed<Selection>(() => {
 		const searchFilters: Selection = {
-			selection: getResourceKeys(route.query["selection"]),
+			selection: getSelectionKeys(route.query["selection"]),
 		};
 
 		return searchFilters;

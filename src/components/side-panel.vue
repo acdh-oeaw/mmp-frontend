@@ -1,14 +1,18 @@
 <script lang="ts" setup>
 import { computed } from "vue";
 
-import { type Resource, type ResourceKind } from "@/api";
 import AuthorDetails from "@/components/author-details.vue";
+import GeojsonDetails from "@/components/geojson-details.vue";
 import KeywordDetails from "@/components/keyword-details.vue";
 import PassageDetails from "@/components/passage-details.vue";
 import PlaceDetails from "@/components/place-details.vue";
 import SideDialog from "@/components/side-dialog.vue";
 import SideDisclosure from "@/components/side-disclosure.vue";
-import { splitResourceKey } from "@/lib/search/resource-key";
+import {
+	type SelectionKind,
+	type SelectionResource,
+	splitSelectionKey,
+} from "@/lib/search/selection-key";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
 import { useSelection } from "@/lib/search/use-selection";
 import { useRouter } from "#imports";
@@ -19,10 +23,10 @@ const { createSearchFilterParams, searchFilters } = useSearchFilters();
 const { selection } = useSelection();
 
 const idsByKind = computed(() => {
-	const grouped = new Map<ResourceKind, Set<Resource["id"]>>();
+	const grouped = new Map<SelectionKind, Set<SelectionResource["id"]>>();
 
 	selection.value.selection.forEach((key) => {
-		const { kind, id } = splitResourceKey(key);
+		const { kind, id } = splitSelectionKey(key);
 
 		if (grouped.has(kind)) {
 			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -36,7 +40,12 @@ const idsByKind = computed(() => {
 });
 
 const isSideDisclosureVisible = computed(() => {
-	return idsByKind.value.has("keyword");
+	return (
+		idsByKind.value.has("keyword") ||
+		idsByKind.value.has("geojson-area") ||
+		idsByKind.value.has("geojson-collection") ||
+		idsByKind.value.has("geojson-point")
+	);
 });
 
 const isSidePanelVisible = computed(() => {
@@ -46,7 +55,6 @@ const isSidePanelVisible = computed(() => {
 });
 
 function onToggle() {
-	// TODO: only update search params after transitionend
 	router.push({ query: createSearchFilterParams(searchFilters.value) });
 }
 </script>
@@ -54,6 +62,16 @@ function onToggle() {
 <template>
 	<SideDisclosure :open="isSideDisclosureVisible" @toggle="onToggle">
 		<KeywordDetails v-if="idsByKind.has('keyword')" :ids="idsByKind.get('keyword')!" />
+		<GeojsonDetails
+			v-if="
+				idsByKind.has('geojson-area') ||
+				idsByKind.has('geojson-collection') ||
+				idsByKind.has('geojson-point')
+			"
+			:areas="idsByKind.get('geojson-area')"
+			:collections="idsByKind.get('geojson-collection')"
+			:points="idsByKind.get('geojson-point')"
+		/>
 	</SideDisclosure>
 	<SideDialog :open="isSidePanelVisible" @toggle="onToggle">
 		<AuthorDetails v-if="idsByKind.has('autor')" :ids="idsByKind.get('autor')!" />

@@ -3,6 +3,7 @@ import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/vue";
 import { ChevronDownIcon } from "@heroicons/vue/20/solid";
 import { computed } from "vue";
 
+import { type Keyword } from "@/api";
 import Centered from "@/components/centered.vue";
 import ErrorMessage from "@/components/error-message.vue";
 import KeywordTag from "@/components/keyword-tag.vue";
@@ -12,8 +13,6 @@ import { getAuthorLabel } from "@/lib/get-label";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
 import { useTextsByAuthors } from "@/lib/search/use-texts-by-authors";
 import { NuxtLink } from "#components";
-
-import { type Keyword } from "../api";
 
 const props = defineProps<{
 	ids: Set<Keyword["id"]>;

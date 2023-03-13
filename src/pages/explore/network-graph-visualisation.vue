@@ -43,11 +43,12 @@ const selectedKeys = computed<Set<NetworkGraphNode["key"]>>(() => {
 function onNodeClick(node: NetworkGraphNode | null) {
 	if (node == null) return;
 
+	const key = node.key;
 	const _selection = new Set(selectedKeys.value);
-	if (_selection.has(node.key)) {
-		_selection.delete(node.key);
+	if (_selection.has(key)) {
+		_selection.delete(key);
 	} else {
-		_selection.add(node.key);
+		_selection.add(key);
 	}
 
 	router.push({

@@ -1,7 +1,17 @@
-import type { Resource, ResourceKey, ResourceKind } from "@/api";
-import { isNonEmptyString } from "@/lib/is-nonempty-string";
+import type { LocationQuery } from "vue-router";
 
-const resourceKinds: Array<ResourceKind> = ["autor", "keyword", "ort", "stelle", "text", "usecase"];
+import { type Resource, type ResourceKey, type ResourceKind } from "@/api";
+import { isNonEmptyString } from "@/lib/is-nonempty-string";
+import { unique } from "@/lib/unique";
+
+export const resourceKinds: Array<ResourceKind> = [
+	"autor",
+	"keyword",
+	"ort",
+	"stelle",
+	"text",
+	"usecase",
+];
 
 export type ResourceIdentifier = { kind: ResourceKind; id: Resource["id"] };
 
@@ -26,4 +36,10 @@ export function isResourceKey(value: unknown): value is ResourceKey {
 	if (!resourceKinds.includes(kind as ResourceKind)) return false;
 
 	return true;
+}
+
+export function getResourceKeys(param: LocationQuery[string] | undefined): Array<ResourceKey> {
+	const value = Array.isArray(param) ? param : [param ?? null];
+	const keys = value.filter(isResourceKey);
+	return unique(keys);
 }

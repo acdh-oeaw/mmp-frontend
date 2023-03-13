@@ -6,7 +6,7 @@ import * as api from "@/api/client";
 import { type SearchFilters } from "@/lib/search/use-search-filters";
 
 export function useGeoJsonLayers(searchFilters: ComputedRef<SearchFilters>) {
-	const queries = computed(() => {
+	const caseStudiesQueriesConfig = computed(() => {
 		return searchFilters.value["case-study"].map((id) => {
 			const params = { id };
 
@@ -18,7 +18,7 @@ export function useGeoJsonLayers(searchFilters: ComputedRef<SearchFilters>) {
 			};
 		});
 	});
-	const caseStudiesQueries = useQueries({ queries });
+	const caseStudiesQueries = useQueries({ queries: caseStudiesQueriesConfig });
 	const isLoading = computed(() => {
 		return caseStudiesQueries.some((query) => {
 			return query.isInitialLoading;

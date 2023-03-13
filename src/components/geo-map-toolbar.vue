@@ -31,7 +31,7 @@ const items = computed(() => {
 
 	props.layers.forEach((layer) => {
 		items.push({
-			key: layer.id,
+			key: String(layer.id),
 			label: layer.title,
 			description: [layer.description, layer.attribution].filter(isNotNullable).join(" - "),
 		});
@@ -40,8 +40,16 @@ const items = computed(() => {
 	return items;
 });
 
-function onChangeSelection(selectedKey: string) {
-	//
+function onChangeSelection(_selectedKey: string) {
+	if (context == null) return;
+	const selectedKey = Number(_selectedKey);
+
+	const layers = context.visibility.layers.value;
+	if (layers.has(selectedKey)) {
+		layers.delete(selectedKey);
+	} else {
+		layers.add(selectedKey);
+	}
 }
 
 //
