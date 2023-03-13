@@ -90,7 +90,7 @@ function onReady(instance: LeafletMap) {
 </script>
 
 <template>
-	<div class="relative mx-auto h-full w-full py-4">
+	<div class="relative mx-auto h-full w-full">
 		<h2 class="sr-only">Geo visualisation</h2>
 
 		<template v-if="isLoading">

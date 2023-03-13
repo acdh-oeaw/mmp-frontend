@@ -7,6 +7,7 @@ import Centered from "@/components/centered.vue";
 import ErrorMessage from "@/components/error-message.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NetworkGraph from "@/components/network-graph.vue";
+import NetworkGraphLegend from "@/components/network-graph-legend.vue";
 import NetworkGraphToolbar from "@/components/network-graph-toolbar.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import VisualisationContainer from "@/components/visualisation-container.vue";
@@ -139,7 +140,7 @@ function onReady(instance: ForceGraphInstance) {
 </script>
 
 <template>
-	<div class="relative mx-auto h-full w-full py-4">
+	<div class="relative mx-auto h-full w-full">
 		<h2 class="sr-only">Network-graph visualisation</h2>
 
 		<template v-if="isLoading">
@@ -185,13 +186,15 @@ function onReady(instance: ForceGraphInstance) {
 						@node-hover="onNodeHover"
 						@ready="onReady"
 					>
-						<NetworkGraphToolbar
-							:graph="filteredGraph"
-							:keyword-type-filters="keywordTypeFilters"
-							:resource-kind-filters="resourceKindFilters"
-							@toggle-keyword-type-filter="onToggleKeywordTypeFilter"
-							@toggle-resource-kind-filter="onToggleResourceKindFilter"
-						/>
+						<NetworkGraphToolbar :graph="filteredGraph" />
+						<div class="absolute right-4 bottom-4 rounded px-8 py-3 shadow-lg">
+							<NetworkGraphLegend
+								:keyword-type-filters="keywordTypeFilters"
+								:resource-kind-filters="resourceKindFilters"
+								@toggle-keyword-type-filter="onToggleKeywordTypeFilter"
+								@toggle-resource-kind-filter="onToggleResourceKindFilter"
+							/>
+						</div>
 					</NetworkGraph>
 				</VisualisationContainer>
 			</ClientOnly>
