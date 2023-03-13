@@ -42,6 +42,7 @@ export function usePassagesSearchParams(
 				searchFilters.value["keyword"],
 			use_case: searchFilters.value["case-study"],
 			text__ort: searchFilters.value["place"],
+			text__art: searchFilters.value["text-genre"],
 			has_usecase: hasUseCase(searchFilters.value["dataset"]),
 			...getDateFilters(),
 			limit: searchFilters.value["limit"],

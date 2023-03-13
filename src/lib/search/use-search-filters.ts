@@ -1,7 +1,7 @@
 import { type ComputedRef, computed } from "vue";
 import type { LocationQuery } from "vue-router";
 
-import type { Author, CaseStudy, Keyword, Passage, Place } from "@/api";
+import type { Author, CaseStudy, Keyword, Passage, Place, SkosConcept } from "@/api";
 import { isNonEmptyString } from "@/lib/is-nonempty-string";
 import { getResourceIds } from "@/lib/search/get-resource-ids";
 import { getLimit, getOffset } from "@/lib/search/pagination";
@@ -29,6 +29,7 @@ export type SearchFilters = {
 	"date-filter": DateFilter;
 	dataset: DataSet;
 	"query-mode": QueryMode;
+	"text-genre": Array<SkosConcept["id"]>;
 	limit: number;
 	offset: number;
 };
@@ -50,6 +51,7 @@ export const defaultSearchFilters = Object.freeze({
 	"date-filter": "composition",
 	dataset: "case-studies",
 	"query-mode": "intersection",
+	"text-genre": [],
 	limit: defaultLimit,
 	offset: 0,
 } satisfies SearchFilters);
@@ -76,6 +78,7 @@ export function useSearchFilters(): UseSearchFiltersResult {
 			"date-filter": getDateFilter(route.query["date-filter"]),
 			dataset: getDataSet(route.query["dataset"]),
 			"query-mode": getQueryMode(route.query["query-mode"]),
+			"text-genre": getResourceIds(route.query["text-genre"]),
 			limit: getLimit(route.query["limit"]),
 			offset: getOffset(route.query["offset"]),
 		};
@@ -194,6 +197,10 @@ function createSearchFilterParams(searchFilters: SearchFilters): LocationQuery {
 
 	if (searchFilters["query-mode"] !== defaultSearchFilters["query-mode"]) {
 		searchParams["query-mode"] = searchFilters["query-mode"];
+	}
+
+	if (searchFilters["text-genre"].length > 0) {
+		searchParams["text-genre"] = unique(searchFilters["text-genre"]).map(String);
 	}
 
 	if (searchFilters["limit"] !== defaultSearchFilters["limit"]) {

@@ -9,6 +9,7 @@ import DateRangeSlider from "@/components/date-range-slider.vue";
 import QueryModeSelect from "@/components/query-mode-select.vue";
 import SearchAutocomplete from "@/components/search-autocomplete.vue";
 import SearchAutocompleteLoadingItem from "@/components/search-autocomplete-loading-item.vue";
+import TextGenreSelect from "@/components/text-genre-select.vue";
 import { debounce } from "@/lib/debounce";
 import { createSearchFilterKey } from "@/lib/search/create-search-filter-key";
 import { createResourceKey, splitResourceKey } from "@/lib/search/resource-key";
@@ -139,9 +140,10 @@ const items = computed(() => {
 			</SearchAutocomplete>
 
 			<div class="grid items-center gap-4 lg:grid-cols-[auto_1fr]">
-				<div class="grid items-center gap-4 md:grid-cols-3">
+				<div class="grid items-center gap-4 md:grid-cols-4">
 					<DatasetSelect />
 					<QueryModeSelect />
+					<TextGenreSelect />
 					<DateFilterSelect />
 				</div>
 				<DateRangeSlider />

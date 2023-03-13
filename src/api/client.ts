@@ -1434,7 +1434,10 @@ export function getSkosCollectionById(
 
 export namespace GetSkosConcepts {
 	// TODO: https://github.com/acdh-oeaw/acdh-django-vocabs/blob/master/vocabs/filters.py
-	export type SearchParams = PageNumberPaginationSearchParams & SortableSearchParams;
+	export type SearchParams = PageNumberPaginationSearchParams &
+		SortableSearchParams & {
+			collection?: SkosCollection["id"];
+		};
 	export type Response = PaginatedResponse<SkosConcept>;
 }
 
