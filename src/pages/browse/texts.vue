@@ -49,7 +49,7 @@ const next = computed(() => {
 });
 
 const columns = {
-	name: { label: "Name" },
+	title: { label: "Title" },
 	comment: { label: "Comment" },
 };
 </script>
