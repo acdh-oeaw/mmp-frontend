@@ -212,11 +212,11 @@ function updateStackingOrder() {
 		Object.values(context.layers).forEach((layer) => {
 			layer?.bringToFront();
 		});
-		context.featureGroups.linesPoints?.bringToFront();
 		context.featureGroups.cones?.bringToFront();
 		context.featureGroups.areas?.bringToFront();
 		context.highlights.areas?.bringToFront();
 		context.highlights.cones?.bringToFront();
+		context.featureGroups.linesPoints?.bringToFront();
 		context.featureGroups.coneOrigins?.bringToFront();
 		context.featureGroups.areaLabels?.bringToFront();
 	});
