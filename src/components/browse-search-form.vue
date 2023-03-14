@@ -46,7 +46,7 @@ function onSubmit() {
 				<span class="sr-only">{{ label }}</span>
 				<input
 					autocomplete="off"
-					class="w-full border-none py-2 pl-3 pr-10 text-sm leading-5 text-neutral-900 focus-visible:outline-none"
+					class="w-full rounded-md border border-neutral-200 bg-neutral-100 py-2 pl-3 pr-10 text-sm leading-5 text-neutral-900 focus-visible:outline-none"
 					name="browse-search-autocomplete"
 					:placeholder="placeholder"
 					type="search"

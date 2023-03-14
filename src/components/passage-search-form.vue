@@ -140,7 +140,7 @@ const items = computed(() => {
 			</SearchAutocomplete>
 
 			<div class="grid items-center gap-4 lg:grid-cols-[auto_1fr]">
-				<div class="grid items-center gap-4 md:grid-cols-4">
+				<div class="grid items-center gap-4 lg:grid-cols-4">
 					<DatasetSelect />
 					<QueryModeSelect />
 					<TextGenreSelect />

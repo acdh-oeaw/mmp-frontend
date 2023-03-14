@@ -72,7 +72,7 @@ function getDisplayLabel(selectedKey: Item["key"]) {
 			</ListboxLabel>
 
 			<ListboxButton
-				class="relative w-full min-w-[12rem] cursor-default rounded-lg bg-white py-2 pl-3 pr-10 text-left text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/75 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-300"
+				class="relative w-full min-w-[12rem] cursor-default rounded-md border border-neutral-200 bg-white py-2 pl-3 pr-10 text-left text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/75 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-300"
 			>
 				<span v-if="selectedKey" class="block truncate">{{ getDisplayLabel(selectedKey) }}</span>
 				<span v-else class="block truncate text-neutral-500">
