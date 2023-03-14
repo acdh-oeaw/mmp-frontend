@@ -13,10 +13,10 @@ import Centered from "@/components/centered.vue";
 import ErrorMessage from "@/components/error-message.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import { useCaseStudyEvent } from "@/lib/case-studies/use-case-study-events";
-import { useCaseStudyIdParam } from "@/lib/case-studies/use-case-study-id-param";
 import { useCaseStudyTimeline } from "@/lib/case-studies/use-case-study-timeline.js";
 import { getDateRangeLabel } from "@/lib/get-label";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
+import { useResourceIdParam } from "@/lib/use-resource-id-param";
 import { NuxtLink } from "#components";
 import { useHead } from "#imports";
 
@@ -27,18 +27,16 @@ useHead({
 	meta: [{ property: "og:title", content: title }],
 });
 
-const id = useCaseStudyIdParam();
+const id = useResourceIdParam();
 const timelineLib = useCaseStudyTimeline(id);
 const eventLib = useCaseStudyEvent(id);
 
 const timeline = computed(() => {
 	return timelineLib.caseStudyTimeline.value;
 });
-
 const events = computed(() => {
 	return eventLib.caseStudyEvents.value;
 });
-
 const isLoading = computed(() => {
 	return eventLib.isLoading.value || timelineLib.isLoading.value;
 });
@@ -48,9 +46,7 @@ const isError = computed(() => {
 const isFetching = computed(() => {
 	return eventLib.isFetching.value || timelineLib.isFetching.value;
 });
-
 const { createSearchFilterParams, defaultSearchFilters } = useSearchFilters();
-
 function getEventColor(type: GetCaseStudyTimetableById.Response[number]["ent_type"]) {
 	switch (type) {
 		case "autor":

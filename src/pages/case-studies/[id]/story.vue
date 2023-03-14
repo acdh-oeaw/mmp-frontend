@@ -8,7 +8,7 @@ import ErrorMessage from "@/components/error-message.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import StoryVisualisation from "@/components/story-visualisation.vue";
-import { useCaseStudyIdParam } from "@/lib/case-studies/use-case-study-id-param";
+import { useResourceIdParam } from "@/lib/use-resource-id-param";
 import { useFetch, useHead } from "#imports";
 
 const title = "Story";
@@ -18,7 +18,7 @@ useHead({
 	meta: [{ property: "og:title", content: title }],
 });
 
-const id = useCaseStudyIdParam();
+const id = useResourceIdParam();
 
 const response = await useFetch(() => {
 	return `/api/story/${id.value}`;

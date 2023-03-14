@@ -1,7 +1,8 @@
 <script lang="ts" setup>
 import { computed } from "vue";
 
-import KeywordDetails from "@/components/keyword-details.vue";
+// TODO:
+// import KeywordDetails from "@/components/keyword-details.vue";
 import { useResourceIdParam } from "@/lib/use-resource-id-param";
 import { useHead } from "#imports";
 

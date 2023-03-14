@@ -9,12 +9,12 @@ import GeoMapToolbar from "@/components/geo-map-toolbar.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import VisualisationContainer from "@/components/visualisation-container.vue";
-import { useCaseStudyIdParam } from "@/lib/case-studies/use-case-study-id-param";
 import { type GeoMapContext } from "@/lib/geo-map/geo-map.types";
 import { useGeoMap } from "@/lib/geo-map/use-geo-map";
 import { useGeoMapEvents } from "@/lib/geo-map/use-geo-map-events";
 import { useGeoJsonLayers } from "@/lib/geo-map/use-geojson-layers";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
+import { useResourceIdParam } from "@/lib/use-resource-id-param";
 import { ClientOnly } from "#components";
 import { useHead } from "#imports";
 
@@ -25,9 +25,10 @@ useHead({
 	meta: [{ property: "og:title", content: title }],
 });
 
-const _id = useCaseStudyIdParam();
+const _id = useResourceIdParam();
 
 const { searchFilters } = useSearchFilters();
+
 const {
 	areas,
 	areaCenterPoints,

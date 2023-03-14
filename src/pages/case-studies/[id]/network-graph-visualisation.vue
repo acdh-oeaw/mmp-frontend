@@ -10,13 +10,13 @@ import NetworkGraphLegend from "@/components/network-graph-legend.vue";
 import NetworkGraphToolbar from "@/components/network-graph-toolbar.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import VisualisationContainer from "@/components/visualisation-container.vue";
-import { useCaseStudyIdParam } from "@/lib/case-studies/use-case-study-id-param";
 import { type NetworkGraphContext } from "@/lib/network-graph/network-graph.types";
 import { useFilteredGraph } from "@/lib/network-graph/use-filtered-graph";
 import { useNetworkGraph } from "@/lib/network-graph/use-network-graph";
 import { useNetworkGraphEvents } from "@/lib/network-graph/use-network-graph-events";
 import { useNetworkGraphFilters } from "@/lib/network-graph/use-network-graph-filters";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
+import { useResourceIdParam } from "@/lib/use-resource-id-param";
 import { ClientOnly } from "#components";
 import { useHead } from "#imports";
 
@@ -27,7 +27,7 @@ useHead({
 	meta: [{ property: "og:title", content: title }],
 });
 
-const _id = useCaseStudyIdParam();
+const _id = useResourceIdParam();
 
 const { searchFilters } = useSearchFilters();
 const { graph, isEmpty, isError, isFetching, isLoading } = useNetworkGraph(searchFilters);

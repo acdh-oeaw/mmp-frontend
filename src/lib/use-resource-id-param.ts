@@ -1,9 +1,9 @@
 import { type ComputedRef, computed } from "vue";
 
-import { type CaseStudy } from "@/api";
+import { type Resource } from "@/api";
 import { useRoute } from "#imports";
 
-export function useCaseStudyIdParam(): ComputedRef<CaseStudy["id"]> {
+export function useResourceIdParam(): ComputedRef<Resource["id"]> {
 	const route = useRoute();
 
 	const id = computed(() => {

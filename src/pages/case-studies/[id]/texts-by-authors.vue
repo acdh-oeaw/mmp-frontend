@@ -7,10 +7,10 @@ import ErrorMessage from "@/components/error-message.vue";
 import KeywordTag from "@/components/keyword-tag.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
-import { useCaseStudyIdParam } from "@/lib/case-studies/use-case-study-id-param";
 import { getAuthorLabel } from "@/lib/get-label";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
 import { useTextsByAuthors } from "@/lib/search/use-texts-by-authors";
+import { useResourceIdParam } from "@/lib/use-resource-id-param";
 import { NuxtLink } from "#components";
 import { useHead } from "#imports";
 
@@ -21,7 +21,7 @@ useHead({
 	meta: [{ property: "og:title", content: title }],
 });
 
-const _id = useCaseStudyIdParam();
+const _id = useResourceIdParam();
 /** Search filters already take case study id into account. */
 const { createSearchFilterParams, defaultSearchFilters, searchFilters } = useSearchFilters();
 const { data, isLoading, isError, isEmpty, isFetching } = useTextsByAuthors(searchFilters);

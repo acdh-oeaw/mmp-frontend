@@ -4,9 +4,9 @@ import { computed } from "vue";
 import { useCaseStudyById } from "@/api";
 import MainContent from "@/components/main-content.vue";
 import SidePanel from "@/components/side-panel.vue";
-import { useCaseStudyIdParam } from "@/lib/case-studies/use-case-study-id-param";
 import { isNonEmptyString } from "@/lib/is-nonempty-string";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
+import { useResourceIdParam } from "@/lib/use-resource-id-param";
 import { NuxtLink, NuxtPage } from "#components";
 import { useHead } from "#imports";
 
@@ -31,7 +31,7 @@ const _links = {
 	"texts-by-authors": { path: "texts-by-authors", label: "Texts by authors" },
 };
 
-const id = useCaseStudyIdParam();
+const id = useResourceIdParam();
 const caseStudyQuery = useCaseStudyById({ id });
 
 const hasStory = computed(() => {

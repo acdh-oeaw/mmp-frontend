@@ -9,8 +9,8 @@ import TokenPieCharts from "@/components/token-pie-charts.vue";
 import TokenWordClouds from "@/components/token-word-clouds.vue";
 import VisualisationContainer from "@/components/visualisation-container.vue";
 import WordCloudToolbar from "@/components/word-cloud-toolbar.vue";
-import { useCaseStudyIdParam } from "@/lib/case-studies/use-case-study-id-param";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
+import { useResourceIdParam } from "@/lib/use-resource-id-param";
 import { useWordClouds } from "@/lib/word-cloud/use-word-clouds";
 import { ClientOnly } from "#components";
 import { useHead } from "#imports";
@@ -22,7 +22,7 @@ useHead({
 	meta: [{ property: "og:title", content: title }],
 });
 
-const _id = useCaseStudyIdParam();
+const _id = useResourceIdParam();
 
 const { searchFilters } = useSearchFilters();
 const { clouds, isEmpty, isError, isFetching, isLoading } = useWordClouds(searchFilters);
