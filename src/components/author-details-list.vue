@@ -89,8 +89,10 @@ const { caseStudies, keywords, passages, isLoading, isFetching, isEmpty, isError
 										<ChevronRightIcon class="h-5 w-5 shrink-0" />
 									</NuxtLink>
 								</div>
-								<div class="p-2">{{ caseStudy.principal_investigator }}</div>
-								<div class="p-2 line-clamp-4">{{ caseStudy.description }}</div>
+								<div class="grid gap-2 p-2">
+									<div>{{ caseStudy.principal_investigator }}</div>
+									<div class="line-clamp-4">{{ caseStudy.description }}</div>
+								</div>
 							</article>
 						</li>
 					</DisclosurePanel>
