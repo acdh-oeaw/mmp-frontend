@@ -11,7 +11,16 @@ export function useNetworkGraphEvents() {
 	const { createSearchFilterParams, searchFilters } = useSearchFilters();
 	const { createSelectionParams, selection } = useSelection();
 	const selectedKeys = computed<Set<SelectionKey>>(() => {
-		return new Set(selection.value.selection);
+		const keys = new Set();
+		const prefix = "graph-".length;
+
+		selection.value.selection.forEach((key) => {
+			if (key.startsWith("graph-author") || key.startsWith("graph-keyword")) {
+				keys.add(key.slice(prefix));
+			}
+		});
+
+		return keys;
 	});
 
 	function onNodeClick(node: NetworkGraphNode | null) {
