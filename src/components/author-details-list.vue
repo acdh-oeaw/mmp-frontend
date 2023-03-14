@@ -90,7 +90,7 @@ const { caseStudies, keywords, passages, isLoading, isFetching, isEmpty, isError
 									</NuxtLink>
 								</div>
 								<div class="p-2">{{ caseStudy.principal_investigator }}</div>
-								<div class="p-2">{{ caseStudy.description }}</div>
+								<div class="p-2 line-clamp-4">{{ caseStudy.description }}</div>
 							</article>
 						</li>
 					</DisclosurePanel>

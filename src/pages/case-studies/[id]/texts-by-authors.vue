@@ -74,7 +74,7 @@ const { data, isLoading, isError, isEmpty, isFetching } = useTextsByAuthors(sear
 						<ul role="list" class="my-1 grid gap-2">
 							<li v-for="textId of data.textIdsByAuthorId.get(authorId)" :key="textId">
 								<Disclosure as="div" class="grid gap-2">
-									<DisclosureButton class="flex w-full items-center justify-between">
+									<DisclosureButton class="flex w-full items-center justify-between text-left">
 										<span>
 											{{ data.textsById.get(textId)?.title }} ({{
 												data.passageIdsByTextTd.get(textId)?.size
