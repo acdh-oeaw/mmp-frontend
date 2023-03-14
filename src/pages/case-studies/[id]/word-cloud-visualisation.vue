@@ -35,7 +35,7 @@ function onToggle(chart: "pie-chart" | "word-cloud") {
 </script>
 
 <template>
-	<div class="relative mx-auto h-full w-full max-w-7xl px-8 py-4">
+	<div class="relative mx-auto h-full w-full">
 		<h2 class="sr-only">Word-clouds visualisation</h2>
 
 		<template v-if="isLoading">

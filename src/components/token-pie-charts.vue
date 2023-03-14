@@ -11,12 +11,18 @@ const props = defineProps<{
 </script>
 
 <template>
-	<div class="absolute inset-0 grid grid-cols-2" data-pie-charts>
-		<VisualisationContainer v-slot="{ width, height }" class="rounded">
-			<PieChart :chart="props.charts.keywords" :height="height" :width="width" />
-		</VisualisationContainer>
-		<VisualisationContainer v-slot="{ width, height }" class="rounded">
-			<PieChart :chart="props.charts.tokens" :height="height" :width="width" />
-		</VisualisationContainer>
+	<div class="absolute inset-0 grid grid-cols-2 gap-8 px-8 py-12" data-pie-charts>
+		<div class="grid h-full w-full grid-rows-[auto_1fr]">
+			<span class="mt-8 text-center font-medium">Keywords</span>
+			<VisualisationContainer v-slot="{ width, height }" class="rounded">
+				<PieChart :chart="props.charts.keywords" :height="height" :width="width" />
+			</VisualisationContainer>
+		</div>
+		<div>
+			<span class="mt-8 text-center font-medium">All words</span>
+			<VisualisationContainer v-slot="{ width, height }" class="rounded">
+				<PieChart :chart="props.charts.tokens" :height="height" :width="width" />
+			</VisualisationContainer>
+		</div>
 	</div>
 </template>

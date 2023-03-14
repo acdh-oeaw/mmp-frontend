@@ -45,7 +45,7 @@ onMounted(() => {
 		legend: { enabled: false },
 		series: createSeries(),
 		title: { text: props.title },
-		tooltip: { enabled: false },
+		tooltip: { pointFormat: "Occurences: {point.weight}" },
 	});
 
 	emit("ready", context.cloud);
