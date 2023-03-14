@@ -5,6 +5,7 @@ import { useCaseStudyById } from "@/api";
 import MainContent from "@/components/main-content.vue";
 import SidePanel from "@/components/side-panel.vue";
 import { useCaseStudyIdParam } from "@/lib/case-studies/use-case-study-id-param";
+import { isNonEmptyString } from "@/lib/is-nonempty-string";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
 import { NuxtLink, NuxtPage } from "#components";
 import { useHead } from "#imports";
@@ -21,7 +22,7 @@ const query = computed(() => {
 	return createSearchFilterParams(searchFilters.value);
 });
 
-const links = {
+const _links = {
 	timeline: { path: "timeline", label: "Timeline" },
 	story: { path: "story", label: "Story" },
 	"network-graph-visualisation": { path: "network-graph-visualisation", label: "Network graph" },
@@ -32,6 +33,13 @@ const links = {
 
 const id = useCaseStudyIdParam();
 const caseStudyQuery = useCaseStudyById({ id });
+
+const links = computed(() => {
+	/** Hide "Story" tab when case study does not have a story, to avoid 404 error message. */
+	if (isNonEmptyString(caseStudyQuery.data.value?.story_map)) return _links;
+	const { story: _, ...links } = _links;
+	return links;
+});
 </script>
 
 <template>
