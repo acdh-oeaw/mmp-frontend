@@ -149,7 +149,7 @@ function getColor(key: Item["key"]) {
 <template>
 	<Combobox
 		as="div"
-		class="relative"
+		class="relative rounded-md border border-neutral-200 bg-neutral-100"
 		:model-value="props.selectedKeys"
 		multiple
 		:name="props.name"
@@ -195,7 +195,7 @@ function getColor(key: Item["key"]) {
 				<div class="relative min-w-[12rem] flex-1">
 					<ComboboxInput
 						autocomplete="off"
-						class="w-full rounded-md border border-neutral-200 bg-neutral-100 py-2 pl-3 pr-10 text-sm leading-5 text-neutral-900 focus-visible:outline-none"
+						class="w-full bg-transparent py-2 pl-3 pr-10 text-sm leading-5 text-neutral-900 focus-visible:outline-none"
 						:placeholder="placeholder"
 						type="search"
 						:value="props.searchTerm"

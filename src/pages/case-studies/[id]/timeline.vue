@@ -2,6 +2,7 @@
 import {
 	BookOpenIcon as TextIcon,
 	CalendarDaysIcon as EventIcon,
+	ChevronRightIcon,
 	PencilIcon as AuthorIcon,
 } from "@heroicons/vue/24/outline";
 
@@ -71,34 +72,48 @@ function getEventColor(type: GetCaseStudyTimetableById.Response[number]["ent_typ
 
 			<ol
 				role="list"
-				class="overflow-x-auto transition-all"
+				class="grid items-center gap-6 transition-all"
+				style="grid-template-columns: repeat(3, auto)"
 				:class="{ 'opacity-50 grayscale': isFetching }"
 			>
-				<li v-for="event of caseStudyTimeline" :key="event.id">
-					<div>
+				<template v-for="(event, i) of caseStudyTimeline" :key="event.id">
+					<div class="text-right">
 						<span>{{ getDateRangeLabel(event.start_date, event.end_date) }}</span>
-
+					</div>
+					<div class="relative h-full min-h-[3rem] w-12">
 						<span
-							class="inline-grid place-items-center rounded-full border-4 border-white p-2 text-white shadow"
+							class="absolute top-2/4 left-2/4 h-12 w-12 -translate-x-2/4 -translate-y-2/4 rounded-full border-4 border-white p-2 text-white shadow"
 							:class="getEventColor(event.ent_type)"
 						>
-							<EventIcon v-if="event.ent_type === 'event'" class="h-6 w-6" />
-							<AuthorIcon v-if="event.ent_type === 'autor'" class="h-6 w-6" />
-							<TextIcon v-if="event.ent_type === 'text'" class="h-6 w-6" />
+							<EventIcon v-if="event.ent_type === 'event'" />
+							<AuthorIcon v-if="event.ent_type === 'autor'" />
+							<TextIcon v-if="event.ent_type === 'text'" />
 						</span>
-
-						<NuxtLink
-							v-if="event.ent_type === 'autor'"
-							:href="{
-								path: '/explore/search-results',
-								query: createSearchFilterParams({ ...defaultSearchFilters, author: [event.id] }),
-							}"
-						>
-							{{ event.ent_title }}
-						</NuxtLink>
-						<span v-else>{{ event.ent_description }}</span>
+						<div
+							v-if="i + 1 < caseStudyTimeline.length"
+							class="absolute inset-x-2/4 top-0 bottom-[-1.5rem] -z-10 border border-neutral-300"
+						/>
 					</div>
-				</li>
+					<NuxtLink
+						v-if="event.ent_type === 'autor'"
+						:href="{
+							path: '/explore/search-results',
+							query: createSearchFilterParams({ ...defaultSearchFilters, author: [event.id] }),
+						}"
+					>
+						<div
+							class="flex w-fit basis-0 items-center rounded p-2 transition hover:bg-neutral-200"
+						>
+							<span>
+								{{ event.ent_title }}
+							</span>
+							<span>
+								<ChevronRightIcon class="ml-2 inline h-5 w-5" />
+							</span>
+						</div>
+					</NuxtLink>
+					<span v-else>{{ event.ent_description }}</span>
+				</template>
 			</ol>
 		</template>
 	</div>
