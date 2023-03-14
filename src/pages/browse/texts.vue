@@ -51,7 +51,7 @@ const page = computed(() => {
 	const limit = searchFilters.value["limit"];
 	const offset = searchFilters.value["offset"];
 
-	return Math.ceil(offset / limit) + 1
+	return Math.ceil(offset / limit) + 1;
 });
 const pages = computed(() => {
 	const limit = searchFilters.value["limit"];
@@ -111,7 +111,7 @@ const columns = {
 					</thead>
 					<tbody class="divide-y divide-neutral-200">
 						<tr v-for="text of texts" :key="text.id">
-							<td class="px-6 py-4 text-neutral-800">
+							<td class="w-1/3 px-6 py-4 text-neutral-800">
 								{{ text.title }}
 							</td>
 							<td class="px-6 py-4 text-neutral-800">

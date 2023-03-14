@@ -112,7 +112,7 @@ const columns = {
 					</thead>
 					<tbody class="divide-y divide-neutral-200">
 						<tr v-for="author of authors" :key="author.id">
-							<td class="px-6 py-4 text-neutral-800">
+							<td class="w-1/3 px-6 py-4 text-neutral-800">
 								{{ getAuthorLabel(author) }}
 							</td>
 							<td class="px-6 py-4 text-neutral-800">
