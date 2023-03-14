@@ -16,7 +16,7 @@ const props = defineProps<{
 	<nav
 		v-if="props.previous != null || props.next != null"
 		aria-label="Pagination"
-		class="flex items-center justify-center gap-8 p-8 text-sm"
+		class="flex items-center justify-center gap-8 p-4 text-sm"
 	>
 		<NuxtLink
 			v-if="props.previous != null"

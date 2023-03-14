@@ -1,8 +1,10 @@
 <script lang="ts" setup>
 import { computed } from "vue";
 
+import { useCaseStudyById } from "@/api";
 import MainContent from "@/components/main-content.vue";
 import SidePanel from "@/components/side-panel.vue";
+import { useCaseStudyIdParam } from "@/lib/case-studies/use-case-study-id-param";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
 import { NuxtLink, NuxtPage } from "#components";
 import { useHead } from "#imports";
@@ -27,13 +29,22 @@ const links = {
 	"word-cloud-visualisation": { path: "word-cloud-visualisation", label: "Word cloud" },
 	"texts-by-authors": { path: "texts-by-authors", label: "Texts by authors" },
 };
+
+const id = useCaseStudyIdParam();
+const caseStudyQuery = useCaseStudyById({ id });
 </script>
 
 <template>
-	<div class="grid h-full grid-rows-[auto_1fr]">
-		<h1 class="sr-only">Case study</h1>
+	<div class="grid h-full grid-rows-[auto_auto_1fr]">
+		<div class="mx-auto grid max-w-7xl gap-4 p-8">
+			<h1 class="text-xl font-medium">{{ caseStudyQuery.data.value?.title ?? "Case study" }}</h1>
+			<span class="font-medium text-neutral-600">
+				{{ caseStudyQuery.data.value?.principal_investigator }}
+			</span>
+			<p class="text-sm leading-6">{{ caseStudyQuery.data.value?.description }}</p>
+		</div>
 
-		<nav aria-label="Case study" class="border-b border-neutral-200">
+		<nav aria-label="Case study" class="border-b border-neutral-200 shadow-lg">
 			<ul
 				class="mx-auto grid max-w-7xl grid-cols-3 items-center gap-x-8 gap-y-2 px-8 pt-4 text-sm font-medium lg:grid-cols-6"
 				role="list"

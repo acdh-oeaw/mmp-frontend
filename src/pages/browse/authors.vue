@@ -97,7 +97,7 @@ const columns = {
 			</template>
 
 			<div class="overflow-x-auto transition-all" :class="{ 'opacity-50 grayscale': isFetching }">
-				<table class="min-w-full divide-y divide-neutral-200 text-sm">
+				<table class="mt-4 min-w-full divide-y divide-neutral-200 text-sm">
 					<thead>
 						<tr>
 							<th

@@ -64,7 +64,7 @@ const { data, isLoading, isError, isEmpty, isFetching } = useTextsByAuthors(sear
 						:key="authorId"
 						class="grid gap-2 px-6 py-4 text-neutral-800"
 					>
-						<h3 class="text-lg font-medium">{{ getAuthorLabel(author) }}</h3>
+						<h3 class="text-base font-medium">{{ getAuthorLabel(author) }}</h3>
 
 						<div class="text-xs font-medium uppercase text-neutral-500">
 							{{ data.textIdsByAuthorId.get(authorId)?.size }} texts and

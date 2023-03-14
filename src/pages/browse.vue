@@ -30,7 +30,7 @@ const links = {
 			</div>
 		</aside>
 
-		<nav aria-label="Content types" class="border-b border-neutral-200">
+		<nav aria-label="Content types" class="border-b border-neutral-200 shadow-lg">
 			<ul
 				class="mx-auto grid max-w-7xl grid-cols-3 items-center gap-x-8 gap-y-2 px-8 pt-4 text-sm font-medium md:grid-cols-5"
 				role="list"
