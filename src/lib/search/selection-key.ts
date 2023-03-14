@@ -25,6 +25,8 @@ const selectionKinds = [
 	"geojson-area",
 	"geojson-collection",
 	"geojson-point",
+	"graph-keyword",
+	"graph-author",
 ] as const;
 export type SelectionKind = (typeof selectionKinds)[number];
 export type SelectionKey = `${SelectionKind}_${SelectionResource["id"]}`;

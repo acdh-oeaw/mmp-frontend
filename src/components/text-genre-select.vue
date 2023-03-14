@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 import { computed } from "vue";
 
+import { useSkosConcepts } from "@/api";
 import SingleSelect from "@/components/single-select.vue";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
-import { useSkosConcepts } from "~~/src/api";
 
 const all = "_all_";
 

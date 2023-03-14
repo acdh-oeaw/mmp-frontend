@@ -1,8 +1,7 @@
 <script lang="ts" setup>
 import { type ForceGraphInstance } from "force-graph";
-import { computed, ref } from "vue";
+import { ref } from "vue";
 
-import { type KeywordType, type ResourceKind } from "@/api";
 import Centered from "@/components/centered.vue";
 import ErrorMessage from "@/components/error-message.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
@@ -12,16 +11,14 @@ import NetworkGraphToolbar from "@/components/network-graph-toolbar.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import VisualisationContainer from "@/components/visualisation-container.vue";
 import { useCaseStudyIdParam } from "@/lib/case-studies/use-case-study-id-param";
-import {
-	type NetworkGraphContext,
-	type NetworkGraphData,
-	type NetworkGraphNode,
-} from "@/lib/network-graph/network-graph.types";
+import { type NetworkGraphContext } from "@/lib/network-graph/network-graph.types";
+import { useFilteredGraph } from "@/lib/network-graph/use-filtered-graph";
 import { useNetworkGraph } from "@/lib/network-graph/use-network-graph";
+import { useNetworkGraphEvents } from "@/lib/network-graph/use-network-graph-events";
+import { useNetworkGraphFilters } from "@/lib/network-graph/use-network-graph-filters";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
-import { useSelection } from "@/lib/search/use-selection";
 import { ClientOnly } from "#components";
-import { useHead, useRouter } from "#imports";
+import { useHead } from "#imports";
 
 const title = "Network-graph visualisation";
 
@@ -32,103 +29,20 @@ useHead({
 
 const _id = useCaseStudyIdParam();
 
-const { createSearchFilterParams, searchFilters } = useSearchFilters();
+const { searchFilters } = useSearchFilters();
 const { graph, isEmpty, isError, isFetching, isLoading } = useNetworkGraph(searchFilters);
 
-//
+const { selectedKeys, onNodeClick, highlightedKeys, onNodeHover } = useNetworkGraphEvents();
 
-const router = useRouter();
-const { createSelectionParams, selection } = useSelection();
-const selectedKeys = computed<Set<NetworkGraphNode["key"]>>(() => {
-	return new Set(selection.value.selection);
-});
-
-function onNodeClick(node: NetworkGraphNode | null) {
-	if (node == null) return;
-
-	const _selection = new Set(selectedKeys.value);
-	if (_selection.has(node.key)) {
-		_selection.delete(node.key);
-	} else {
-		_selection.add(node.key);
-	}
-
-	router.push({
-		query: {
-			...createSearchFilterParams(searchFilters.value),
-			...createSelectionParams({ selection: Array.from(_selection) }),
-		},
-	});
-}
-
-//
-
-const highlightedKeys = ref(new Set<NetworkGraphNode["key"]>());
-
-function onNodeHover(_node: NetworkGraphNode | null) {
-	//
-}
-
-//
-
-const resourceKindFilters = ref(
-	new Map<ResourceKind, boolean>([
-		["autor", true],
-		["keyword", true],
-	]),
-);
-
-function onToggleResourceKindFilter(value: ResourceKind, isVisible: boolean) {
-	resourceKindFilters.value.set(value, isVisible);
-}
-
-const keywordTypeFilters = ref(
-	new Map<KeywordType, boolean>([
-		["Ethnonym", true],
-		["Keyword", true],
-		["Name", true],
-		["Region", true],
-	]),
-);
-
-function onToggleKeywordTypeFilter(value: KeywordType, isVisible: boolean) {
-	keywordTypeFilters.value.set(value, isVisible);
-}
+const {
+	resourceKindFilters,
+	onToggleResourceKindFilter,
+	keywordTypeFilters,
+	onToggleKeywordTypeFilter,
+} = useNetworkGraphFilters();
 
 // TODO: toggle `nodeVisibility` instead?
-/** Filter by selected node types. */
-const filteredGraph = computed<NetworkGraphData>(() => {
-	const nodes: NetworkGraphData["nodes"] = new Map();
-	const edges: NetworkGraphData["edges"] = new Map();
-
-	graph.value.nodes.forEach((node) => {
-		if (resourceKindFilters.value.get(node.kind) === true) {
-			if (node.kind === "keyword") {
-				if (keywordTypeFilters.value.get(node.type) === true) {
-					nodes.set(node.key, node);
-				}
-			} else {
-				nodes.set(node.key, node);
-			}
-		}
-	});
-
-	graph.value.edges.forEach((edge) => {
-		// FIXME: there must be a better way
-		/** `d3-force` replaces string ids with object references on init. */
-		// @ts-expect-error Mutated by `d3`.
-		const source = typeof edge.source === "string" ? edge.source : edge.source.key;
-		// @ts-expect-error Mutated by `d3`.
-		const target = typeof edge.target === "string" ? edge.target : edge.target.key;
-		if (nodes.has(source) && nodes.has(target)) {
-			edges.set(edge.key, edge);
-		}
-	});
-
-	return { nodes, edges };
-});
-
-//
+const filteredGraph = useFilteredGraph({ graph, resourceKindFilters, keywordTypeFilters });
 
 const context = ref<NetworkGraphContext>({
 	graph: null,
