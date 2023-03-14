@@ -13,6 +13,41 @@ import { z } from "zod";
 import { getCaseStudyById } from "@/api";
 import { isNonEmptyString } from "@/lib/is-nonempty-string";
 
+function getIds(values: Array<string>) {
+	return values
+		.map((param) => {
+			return param.split("+");
+		})
+		.map(Number);
+}
+
+function getVisualisationParams(url: URL) {
+	const segments = url.pathname.split("/").filter(Boolean);
+
+	if (segments.includes("detail")) {
+		const type = "detail";
+		return {
+			type,
+			params: {
+				passage: segments.at(-1)?.split("+").map(Number),
+			},
+		};
+	} else {
+		return {
+			type: segments.at(1),
+			params: {
+				author: getIds(url.searchParams.getAll("Author")),
+				"case-study": url.pathname.startsWith("/studies")
+					? Number(url.pathname.split("/").at(1))
+					: getIds(url.searchParams.getAll("Use Case")),
+				keyword: getIds(url.searchParams.getAll("Keyword")),
+				passage: getIds(url.searchParams.getAll("Passage")),
+				place: getIds(url.searchParams.getAll("Place")),
+			},
+		};
+	}
+}
+
 function withReplacedIframes(): Transformer<Hast.Root> {
 	return function transformer(tree) {
 		visit(tree, function onElement(element, index, parent) {
@@ -30,19 +65,8 @@ function withReplacedIframes(): Transformer<Hast.Root> {
 			const hash = new URL(src).hash.slice(1);
 			const url = new URL(hash, "https://n");
 
-			const type = url.pathname.split("/").filter(Boolean).at(1);
-			const visualisation = {
-				type,
-				params: {
-					author: url.searchParams.getAll("Author").map(Number),
-					"case-study": url.pathname.startsWith("/studies")
-						? Number(url.pathname.split("/").at(1))
-						: url.searchParams.getAll("Use Case").map(Number),
-					keyword: url.searchParams.getAll("Keyword").map(Number),
-					passage: url.searchParams.getAll("Passage").map(Number),
-					place: url.searchParams.getAll("Place").map(Number),
-				},
-			};
+			const visualisation = getVisualisationParams(url);
+			console.dir({ visualisation, url: url.href }, { depth: null });
 
 			parent.children[index] = {
 				type: "mdxJsxFlowElement",

@@ -1,8 +1,7 @@
 <script lang="ts" setup>
 import { type Map as LeafletMap } from "leaflet";
-import { computed, ref } from "vue";
+import { ref } from "vue";
 
-import { type LinesPointsGeojson, type ResourceKey, type SpatialCoverageGeojson } from "@/api";
 import Centered from "@/components/centered.vue";
 import ErrorMessage from "@/components/error-message.vue";
 import GeoMap from "@/components/geo-map.vue";
@@ -11,11 +10,11 @@ import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import VisualisationContainer from "@/components/visualisation-container.vue";
 import { useCaseStudyIdParam } from "@/lib/case-studies/use-case-study-id-param";
-import { type ConeOriginGeojson, type GeoMapContext } from "@/lib/geo-map/geo-map.types";
+import { type GeoMapContext } from "@/lib/geo-map/geo-map.types";
 import { useGeoMap } from "@/lib/geo-map/use-geo-map";
+import { useGeoMapEvents } from "@/lib/geo-map/use-geo-map-events";
 import { useGeoJsonLayers } from "@/lib/geo-map/use-geojson-layers";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
-import { useSelection } from "@/lib/search/use-selection";
 import { ClientOnly } from "#components";
 import { useHead } from "#imports";
 
@@ -43,42 +42,16 @@ const {
 // TODO: move into useGeoMap
 const { layers } = useGeoJsonLayers(searchFilters);
 
-//
-
-const { selection } = useSelection();
-const selectedKeys = computed<Set<ResourceKey>>(() => {
-	return new Set(selection.value.selection);
-});
-
-function onAreaClick(area: SpatialCoverageGeojson | null) {
-	console.log({ area });
-}
-
-function onPointClick(point: ConeOriginGeojson | null) {
-	console.log({ point });
-}
-
-function onLinesPointsClick(collection: LinesPointsGeojson | null) {
-	console.log({ collection });
-}
-
-//
-
-const highlightedKeys = ref(new Set<ResourceKey>());
-
-function onAreaHover(area: SpatialCoverageGeojson | null) {
-	console.log({ area });
-}
-
-function onPointHover(point: ConeOriginGeojson | null) {
-	console.log({ point });
-}
-
-function onLinesPointsHover(collection: LinesPointsGeojson | null) {
-	console.log({ collection });
-}
-
-//
+const {
+	highlightedKeys,
+	selectedKeys,
+	onAreaClick,
+	onAreaHover,
+	onLinesPointsClick,
+	onLinesPointsHover,
+	onPointClick,
+	onPointHover,
+} = useGeoMapEvents();
 
 const context = ref<Pick<GeoMapContext, "map">>({
 	map: null,

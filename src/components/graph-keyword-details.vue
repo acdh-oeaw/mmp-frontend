@@ -3,11 +3,11 @@ import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/vue";
 import { useQueries } from "@tanstack/vue-query";
 import { computed } from "vue";
 
-import { type Keyword, createKey, useTexts } from "@/api";
+import { type Author, type Keyword, createKey, useTexts } from "@/api";
 import * as api from "@/api/client";
 import Centered from "@/components/centered.vue";
 import ErrorMessage from "@/components/error-message.vue";
-import KeywordDetailsConnections from "@/components/keyword-details-connections.vue";
+import GraphKeywordDetailsConnections from "@/components/graph-keyword-details-connections.vue";
 import KeywordDetailsTextsByAuthors from "@/components/keyword-details-texts-by-authors.vue";
 import LineChart from "@/components/line-chart.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
@@ -20,6 +20,7 @@ import { isNotNullable } from "@/lib/is-not-nullable";
 
 const props = defineProps<{
 	ids: Set<Keyword["id"]>;
+	authors: Set<Author["id"]>;
 }>();
 
 const keywordsQueriesConfig = computed(() => {
@@ -220,7 +221,7 @@ const isEmpty = computed(() => {
 						<KeywordDetailsTextsByAuthors :ids="props.ids" />
 					</TabPanel>
 					<TabPanel>
-						<KeywordDetailsConnections />
+						<GraphKeywordDetailsConnections />
 					</TabPanel>
 				</TabPanels>
 			</TabGroup>

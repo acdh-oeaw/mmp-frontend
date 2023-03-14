@@ -3,7 +3,7 @@ import { computed } from "vue";
 
 import AuthorDetails from "@/components/author-details.vue";
 import GeojsonDetails from "@/components/geojson-details.vue";
-import KeywordDetails from "@/components/keyword-details.vue";
+import GraphKeywordDetails from "@/components/graph-keyword-details.vue";
 import PassageDetails from "@/components/passage-details.vue";
 import PlaceDetails from "@/components/place-details.vue";
 import SideDialog from "@/components/side-dialog.vue";
@@ -42,18 +42,19 @@ const idsByKind = computed(() => {
 
 const isSideDisclosureVisible = computed(() => {
 	return (
-		idsByKind.value.has("keyword") ||
 		idsByKind.value.has("geojson-area") ||
 		idsByKind.value.has("geojson-collection") ||
-		idsByKind.value.has("geojson-point")
+		idsByKind.value.has("geojson-point") ||
+		idsByKind.value.has("graph-author") ||
+		idsByKind.value.has("graph-keyword")
 	);
 });
 
 const isSidePanelVisible = computed(() => {
 	return (
 		idsByKind.value.has("autor") ||
-		idsByKind.value.has("stelle") ||
 		idsByKind.value.has("ort") ||
+		idsByKind.value.has("stelle") ||
 		idsByKind.value.has("text")
 	);
 });
@@ -65,7 +66,11 @@ function onToggle() {
 
 <template>
 	<SideDisclosure :open="isSideDisclosureVisible" @toggle="onToggle">
-		<KeywordDetails v-if="idsByKind.has('keyword')" :ids="idsByKind.get('keyword')!" />
+		<GraphKeywordDetails
+			v-if="idsByKind.has('graph-author') || idsByKind.has('graph-keyword')"
+			:ids="idsByKind.get('graph-keyword')!"
+			:authors="idsByKind.get('graph-author')!"
+		/>
 		<GeojsonDetails
 			v-if="
 				idsByKind.has('geojson-area') ||

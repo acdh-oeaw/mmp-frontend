@@ -5,6 +5,7 @@ import { useCaseStudyById } from "@/api";
 import MainContent from "@/components/main-content.vue";
 import SidePanel from "@/components/side-panel.vue";
 import { useCaseStudyIdParam } from "@/lib/case-studies/use-case-study-id-param";
+import { isNonEmptyString } from "@/lib/is-nonempty-string";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
 import { NuxtLink, NuxtPage } from "#components";
 import { useHead } from "#imports";
@@ -21,7 +22,7 @@ const query = computed(() => {
 	return createSearchFilterParams(searchFilters.value);
 });
 
-const links = {
+const _links = {
 	timeline: { path: "timeline", label: "Timeline" },
 	story: { path: "story", label: "Story" },
 	"network-graph-visualisation": { path: "network-graph-visualisation", label: "Network graph" },
@@ -32,6 +33,17 @@ const links = {
 
 const id = useCaseStudyIdParam();
 const caseStudyQuery = useCaseStudyById({ id });
+
+const hasStory = computed(() => {
+	return isNonEmptyString(caseStudyQuery.data.value?.story_map);
+});
+
+const links = computed(() => {
+	/** Hide "Story" tab when case study does not have a story, to avoid 404 error message. */
+	if (hasStory.value === true) return _links;
+	const { story: _, ...links } = _links;
+	return links;
+});
 </script>
 
 <template>
@@ -46,7 +58,8 @@ const caseStudyQuery = useCaseStudyById({ id });
 
 		<nav aria-label="Case study" class="border-b border-neutral-200 shadow-lg">
 			<ul
-				class="mx-auto grid max-w-7xl grid-cols-3 items-center gap-x-8 gap-y-2 px-8 pt-4 text-sm font-medium lg:grid-cols-6"
+				class="mx-auto grid max-w-7xl grid-cols-3 items-center gap-x-8 gap-y-2 px-8 pt-4 text-sm font-medium"
+				:class="hasStory ? 'lg:grid-cols-6' : 'lg:grid-cols-5'"
 				role="list"
 			>
 				<li v-for="(link, key) of links" :key="key">
