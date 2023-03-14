@@ -1,55 +1,34 @@
 <script lang="ts" setup>
-import { computed } from "vue";
-
-import Centered from "@/components/centered.vue";
-import ErrorMessage from "@/components/error-message.vue";
-import LoadingIndicator from "@/components/loading-indicator.vue";
-import NothingFoundMessage from "@/components/nothing-found-message.vue";
+import AuthorDetails from "@/components/author-details.vue";
+// import KeywordDetails from "@/components/keyword-details.vue";
+import PassageDetails from "@/components/passage-details.vue";
+import PlaceDetails from "@/components/place-details.vue";
+// import TextDetails from "@/components/text-details.vue";
 import { type SearchFilters } from "@/lib/search/use-search-filters";
 
 const props = defineProps<{
 	searchFilters: SearchFilters;
 }>();
-
-const _searchFilters = computed(() => {
-	return props.searchFilters;
-});
-
-// TODO:
-const isEmpty = false;
-const isError = false;
-const isFetching = false;
-const isLoading = false;
 </script>
 
 <template>
 	<div class="relative h-full w-full">
-		<template v-if="isLoading">
-			<Centered>
-				<LoadingIndicator>Loading entity details...</LoadingIndicator>
-			</Centered>
-		</template>
-
-		<template v-else-if="isError">
-			<Centered>
-				<ErrorMessage>Failed to load entity details.</ErrorMessage>
-			</Centered>
-		</template>
-
-		<template v-else-if="isEmpty">
-			<Centered>
-				<NothingFoundMessage></NothingFoundMessage>
-			</Centered>
-		</template>
-
-		<template v-else>
-			<template v-if="isFetching">
-				<Centered>
-					<LoadingIndicator>Updating entity details...</LoadingIndicator>
-				</Centered>
-			</template>
-
-			<!--  -->
-		</template>
+		<AuthorDetails
+			v-if="'author' in props.searchFilters"
+			:ids="new Set(props.searchFilters.author)"
+		/>
+		<!-- <KeywordDetails
+				v-if="'keyword' in props.searchFilters"
+				:ids="new Set(props.searchFilters.keyword)"
+			/> -->
+		<PassageDetails
+			v-if="'passage' in props.searchFilters"
+			:ids="new Set(props.searchFilters.passage)"
+		/>
+		<PlaceDetails v-if="'place' in props.searchFilters" :ids="new Set(props.searchFilters.place)" />
+		<!-- <TextDetails
+				v-if="'text' in props.searchFilters"
+				:ids="new Set(props.searchFilters.text)"
+			/> -->
 	</div>
 </template>
