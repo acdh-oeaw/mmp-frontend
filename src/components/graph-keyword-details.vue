@@ -5,6 +5,7 @@ import { computed } from "vue";
 
 import { type Author, type Keyword, createKey, useTexts } from "@/api";
 import * as api from "@/api/client";
+import AreaMap from "@/components/area-map.vue";
 import Centered from "@/components/centered.vue";
 import ErrorMessage from "@/components/error-message.vue";
 import GraphKeywordDetailsConnections from "@/components/graph-keyword-details-connections.vue";
@@ -15,8 +16,10 @@ import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import PlaceMap from "@/components/place-map.vue";
 import VisualisationContainer from "@/components/visualisation-container.vue";
 import { createList } from "@/lib/create-list";
+import { useGeoMap } from "@/lib/geo-map/use-geo-map";
 import { getPlaceLabel } from "@/lib/get-label";
 import { isNotNullable } from "@/lib/is-not-nullable";
+import { useSearchFilters } from "@/lib/search/use-search-filters";
 
 const props = defineProps<{
 	ids: Set<Keyword["id"]>;
@@ -55,25 +58,43 @@ const centuryKeywordsQueries = useQueries({ queries: centuryKeywordsQueriesConfi
 
 const textKeywordsQuery = useTexts({ rvn_stelle_text_text__key_word: Array.from(props.ids) });
 
+const { searchFilters: _searchFilters } = useSearchFilters();
+const searchFilters = computed(() => {
+	return { ..._searchFilters.value, keyword: Array.from(props.ids) };
+});
+const {
+	areas,
+	areaCenterPoints,
+	isLoading: isGeojsonLoading,
+	isError: isGeojsonError,
+	isFetching: isGeojsonFetching,
+} = useGeoMap(searchFilters);
+
 const isLoading = computed(() => {
 	return (
 		[...keywordsQueries, ...centuryKeywordsQueries].some((query) => {
 			return query.isInitialLoading;
-		}) || textKeywordsQuery.isInitialLoading.value
+		}) ||
+		textKeywordsQuery.isInitialLoading.value ||
+		isGeojsonLoading.value
 	);
 });
 const isFetching = computed(() => {
 	return (
 		[...keywordsQueries, ...centuryKeywordsQueries].some((query) => {
 			return query.isFetching;
-		}) || textKeywordsQuery.isInitialLoading.value
+		}) ||
+		textKeywordsQuery.isInitialLoading.value ||
+		isGeojsonFetching.value
 	);
 });
 const isError = computed(() => {
 	return (
 		[...keywordsQueries, ...centuryKeywordsQueries].some((query) => {
 			return query.isError;
-		}) || textKeywordsQuery.isInitialLoading.value
+		}) ||
+		textKeywordsQuery.isInitialLoading.value ||
+		isGeojsonError.value
 	);
 });
 const keywords = computed(() => {
@@ -134,18 +155,23 @@ const isEmpty = computed(() => {
 					<TabGroup>
 						<TabList
 							as="ul"
-							class="mx-auto grid w-full max-w-7xl grid-cols-2 gap-x-8 gap-y-2 border-b border-neutral-200 px-8 pt-2 font-medium md:grid-cols-2"
+							class="grid grid-cols-3 border-b border-neutral-200 px-8 font-medium"
 							role="list"
 						>
 							<Tab
-								v-for="label in ['Geographic distribution', 'Temporal distribution']"
+								v-for="label in [
+									'Geographic distribution',
+									'Temporal distribution',
+									'Spatial coverage',
+								]"
 								:key="label"
 								v-slot="{ selected }"
 								as="li"
+								class="grid"
 							>
 								<div
-									class="flex cursor-pointer justify-center rounded-t p-2 text-center text-sm transition hover:bg-neutral-100 aria-[current]:bg-neutral-200"
-									:class="{ 'bg-neutral-200': selected }"
+									class="grid cursor-pointer place-items-center rounded-t p-2 text-center text-sm transition hover:bg-neutral-100 aria-[current]:bg-neutral-200"
+									:class="{ 'pointer-events-none bg-neutral-200': selected }"
 								>
 									<span>
 										{{ label }}
@@ -189,6 +215,14 @@ const isEmpty = computed(() => {
 													})),
 												}))
 											"
+										/>
+									</TabPanel>
+									<TabPanel>
+										<AreaMap
+											:areas="areas"
+											:area-center-points="areaCenterPoints"
+											:height="height"
+											:width="width"
 										/>
 									</TabPanel>
 								</VisualisationContainer>
