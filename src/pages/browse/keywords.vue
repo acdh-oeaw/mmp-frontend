@@ -63,6 +63,7 @@ const pages = computed(() => {
 const columns = {
 	name: { label: "Name" },
 	type: { label: "Type" },
+	links: { label: "Linked keywords" },
 };
 </script>
 
@@ -116,6 +117,10 @@ const columns = {
 							</td>
 							<td class="px-6 py-4 text-neutral-800">
 								{{ keyword.art }}
+							</td>
+							<td class="px-6 py-4 text-neutral-800">
+								<!-- TODO -->
+								{{ keyword.related_keyword.join(", ") }}
 							</td>
 						</tr>
 					</tbody>
