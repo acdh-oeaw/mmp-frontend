@@ -151,7 +151,7 @@ function getEventColor(type: GetCaseStudyTimetableById.Response[number]["ent_typ
 							style="grid-template-columns: repeat(3, auto)"
 							:class="{ 'opacity-50 grayscale': isFetching }"
 						>
-							<template v-for="(event, i) of Object(events).results" :key="event.id">
+							<template v-for="(event, i) of events" :key="event.id">
 								<div class="text-right">
 									<span>{{ getDateRangeLabel(event.start_date, event.end_date) }}</span>
 								</div>
@@ -162,7 +162,7 @@ function getEventColor(type: GetCaseStudyTimetableById.Response[number]["ent_typ
 										<EventIcon />
 									</span>
 									<div
-										v-if="i + 1 < Object(events).results.length"
+										v-if="i + 1 < events.length"
 										class="absolute inset-x-2/4 top-0 bottom-[-1.5rem] -z-10 border border-neutral-300"
 									/>
 								</div>

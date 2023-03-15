@@ -8,11 +8,11 @@ export function useCaseStudyEvent(id: ComputedRef<CaseStudy["id"]>) {
 	const isLoading = caseStudyEventQuery.isInitialLoading;
 	const isError = caseStudyEventQuery.isError;
 	const caseStudyEvents = computed(() => {
-		return caseStudyEventQuery.data.value ?? [];
+		return caseStudyEventQuery.data.value?.results ?? [];
 	});
 
 	const isEmpty = computed(() => {
-		return Object(caseStudyEvents).count === 0;
+		return caseStudyEventQuery.data.value?.count === 0;
 	});
 
 	return {
