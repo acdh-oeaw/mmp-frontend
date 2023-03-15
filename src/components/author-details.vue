@@ -7,7 +7,10 @@ import Centered from "@/components/centered.vue";
 import ErrorMessage from "@/components/error-message.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
-import { getAuthorLabel, getPlaceLabel } from "@/lib/get-label";
+import { getAuthorLabel, getDateRangeLabel, getPlaceLabel } from "@/lib/get-label";
+import { createResourceKey } from "@/lib/search/resource-key";
+import { useSearchFilters } from "@/lib/search/use-search-filters";
+import { useSelection } from "@/lib/search/use-selection";
 
 const props = defineProps<{
 	ids: Set<Author["id"]>;
@@ -18,6 +21,8 @@ const id = computed(() => {
 	return id;
 });
 
+const { createSelectionParams } = useSelection();
+const { createSearchFilterParams, searchFilters } = useSearchFilters();
 const authorQuery = useAuthorById({ id });
 const isLoading = authorQuery.isInitialLoading;
 const isFetching = authorQuery.isFetching;
@@ -55,17 +60,31 @@ const isEmpty = computed(() => {
 				</Centered>
 			</template>
 
-			<div class="grid h-full grid-rows-[auto_auto_1fr] gap-4 p-4 text-neutral-800">
+			<div class="grid h-full grid-rows-[auto_auto_auto_1fr] gap-4 p-4 text-neutral-800">
 				<h2 class="text-lg font-medium">{{ getAuthorLabel(author) }}</h2>
 
-				<dl v-if="author" class="px-2 text-sm font-medium text-neutral-500">
+				<dl v-if="author" class="text-sm font-medium text-neutral-500">
 					<div>
 						<dt class="sr-only">Century</dt>
-						<dd>{{ author.jahrhundert || "Unknown century" }}</dd>
+						<dd>{{ getDateRangeLabel(author.start_date_year, author.end_date_year) }}</dd>
 					</div>
-					<div>
+					<div v-if="author.ort">
 						<dt class="sr-only">Place</dt>
-						<dd>{{ getPlaceLabel(author.ort) }}</dd>
+						<dd>
+							<NuxtLink
+								class="hover:underline"
+								:href="{
+									query: {
+										...createSearchFilterParams(searchFilters),
+										...createSelectionParams({
+											selection: [createResourceKey({ kind: 'ort', id: author.ort.id })],
+										}),
+									},
+								}"
+							>
+								{{ getPlaceLabel(author.ort) }}
+							</NuxtLink>
+						</dd>
 					</div>
 					<div>
 						<dt class="sr-only">GND</dt>
@@ -76,6 +95,8 @@ const isEmpty = computed(() => {
 						</dd>
 					</div>
 				</dl>
+
+				<p v-if="author?.kommentar">{{ author.kommentar }}</p>
 
 				<AuthorDetailsList :id="id" />
 			</div>

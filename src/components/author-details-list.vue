@@ -9,10 +9,10 @@ import ErrorMessage from "@/components/error-message.vue";
 import KeywordDisclosure from "@/components/keyword-disclosure.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
-import { createList } from "@/lib/create-list";
 import { useAuthorDetails } from "@/lib/details/use-author-details";
-import { getAuthorLabel } from "@/lib/get-label";
+import { createResourceKey } from "@/lib/search/resource-key";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
+import { useSelection } from "@/lib/search/use-selection";
 import { NuxtLink } from "#components";
 
 const props = defineProps<{
@@ -22,9 +22,14 @@ const props = defineProps<{
 const id = computed(() => {
 	return props.id;
 });
-const { createSearchFilterParams, searchFilters } = useSearchFilters();
-const { caseStudies, keywords, passages, isLoading, isFetching, isEmpty, isError } =
-	useAuthorDetails(id, searchFilters);
+
+const { searchFilters, createSearchFilterParams } = useSearchFilters();
+const { createSelectionParams } = useSelection();
+
+const { caseStudies, keywords, texts, isLoading, isFetching, isEmpty, isError } = useAuthorDetails(
+	id,
+	searchFilters,
+);
 </script>
 
 <template>
@@ -56,6 +61,7 @@ const { caseStudies, keywords, passages, isLoading, isFetching, isEmpty, isError
 
 			<div class="grid gap-6">
 				<KeywordDisclosure :keywords="keywords" />
+
 				<Disclosure
 					v-if="caseStudies.length > 0"
 					v-slot="{ open }"
@@ -97,8 +103,9 @@ const { caseStudies, keywords, passages, isLoading, isFetching, isEmpty, isError
 						</li>
 					</DisclosurePanel>
 				</Disclosure>
+
 				<Disclosure
-					v-if="passages.length > 0"
+					v-if="texts.length > 0"
 					v-slot="{ open }"
 					as="section"
 					default-open
@@ -109,7 +116,7 @@ const { caseStudies, keywords, passages, isLoading, isFetching, isEmpty, isError
 						class="cursor-pointer text-left text-sm font-medium uppercase text-neutral-500"
 					>
 						<div class="flex w-full justify-between rounded p-2 transition hover:bg-black/10">
-							<span>Passages</span>
+							<span>Texts</span>
 							<ChevronUpIcon
 								:class="open ? '' : 'rotate-180 transform'"
 								class="inline-block h-5 w-5"
@@ -117,7 +124,7 @@ const { caseStudies, keywords, passages, isLoading, isFetching, isEmpty, isError
 						</div>
 					</DisclosureButton>
 					<DisclosurePanel as="ul" role="list" class="space-y-4">
-						<li v-for="passage of passages" :key="passage.id">
+						<li v-for="text of texts" :key="text.id">
 							<article class="divide-y divide-dotted">
 								<div
 									style="font-style: oblique 7deg"
@@ -126,21 +133,17 @@ const { caseStudies, keywords, passages, isLoading, isFetching, isEmpty, isError
 									<NuxtLink
 										class="transition line-clamp-3 hover:text-neutral-700"
 										:href="{
-											query: createSearchFilterParams({
-												...searchFilters,
-												passage: [passage.id],
-												offset: 0,
-											}),
+											query: {
+												...createSearchFilterParams(searchFilters),
+												...createSelectionParams({
+													selection: [createResourceKey({ kind: 'text', id: text.id })],
+												}),
+											},
 										}"
 									>
-										{{ passage.zitat }}
+										{{ text.title }}
 									</NuxtLink>
 									<ChevronRightIcon class="h-5 w-5 shrink-0" />
-								</div>
-								<div v-if="passage.text" class="px-2 pt-1 pb-0">
-									<div>{{ passage.text.title }}</div>
-									<div>{{ createList(passage.text.autor.map(getAuthorLabel)) }}</div>
-									<div>Century: {{ passage.text.jahrhundert }}</div>
 								</div>
 							</article>
 						</li>

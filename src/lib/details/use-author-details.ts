@@ -1,6 +1,6 @@
 import { type ComputedRef, computed } from "vue";
 
-import { type Author, useCaseStudies, useKeywords, usePassages } from "@/api";
+import { type Author, useCaseStudies, useKeywords, useTexts } from "@/api";
 import { hasUseCase } from "@/lib/search/has-usecase";
 import { type SearchFilters } from "@/lib/search/use-search-filters";
 
@@ -20,8 +20,8 @@ export function useAuthorDetails(
 		has_usecase: hasCaseStudyFilter,
 		limit: 1000,
 	});
-	const passagesQuery = usePassages({
-		text__autor: [id],
+	const textsQuery = useTexts({
+		autor: [id],
 		has_usecase: hasCaseStudyFilter,
 		limit: 1000,
 	});
@@ -32,27 +32,27 @@ export function useAuthorDetails(
 	const keywords = computed(() => {
 		return keywordsQuery.data.value?.results ?? [];
 	});
-	const passages = computed(() => {
-		return passagesQuery.data.value?.results ?? [];
+	const texts = computed(() => {
+		return textsQuery.data.value?.results ?? [];
 	});
 
 	const isLoading = computed(() => {
-		return [caseStudiesQuery, keywordsQuery, passagesQuery].some((query) => {
+		return [caseStudiesQuery, keywordsQuery, textsQuery].some((query) => {
 			return query.isInitialLoading.value;
 		});
 	});
 	const isFetching = computed(() => {
-		return [caseStudiesQuery, keywordsQuery, passagesQuery].some((query) => {
+		return [caseStudiesQuery, keywordsQuery, textsQuery].some((query) => {
 			return query.isFetching.value;
 		});
 	});
 	const isError = computed(() => {
-		return [caseStudiesQuery, keywordsQuery, passagesQuery].some((query) => {
+		return [caseStudiesQuery, keywordsQuery, textsQuery].some((query) => {
 			return query.isError.value;
 		});
 	});
 	const isEmpty = computed(() => {
-		return [caseStudies, keywords, passages].every((data) => {
+		return [caseStudies, keywords, texts].every((data) => {
 			return data.value.length === 0;
 		});
 	});
@@ -62,8 +62,8 @@ export function useAuthorDetails(
 		caseStudiesQuery,
 		keywords,
 		keywordsQuery,
-		passages,
-		passagesQuery,
+		texts,
+		textsQuery,
 		isLoading,
 		isFetching,
 		isError,
