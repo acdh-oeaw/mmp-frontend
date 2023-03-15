@@ -6,8 +6,12 @@ import Centered from "@/components/centered.vue";
 import ErrorMessage from "@/components/error-message.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
-// import TextDetailsList from "@/components/text-details-list.vue";
-// import { getPlaceLabel } from "@/lib/get-label";
+import TextDetailsList from "@/components/text-details-list.vue";
+import { getAuthorLabel, getDateRangeLabel, getPlaceLabel } from "@/lib/get-label";
+import { createResourceKey } from "@/lib/search/resource-key";
+import { useSearchFilters } from "@/lib/search/use-search-filters";
+import { useSelection } from "@/lib/search/use-selection";
+import { NuxtLink } from "#components";
 
 const props = defineProps<{
 	ids: Set<Text["id"]>;
@@ -17,6 +21,9 @@ const id = computed(() => {
 	const id = props.ids.values().next().value;
 	return id;
 });
+
+const { searchFilters, createSearchFilterParams } = useSearchFilters();
+const { createSelectionParams } = useSelection();
 
 const textQuery = useTextById({ id });
 const isLoading = textQuery.isInitialLoading;
@@ -58,26 +65,60 @@ const isEmpty = computed(() => {
 			<div class="grid h-full grid-rows-[auto_auto_1fr] gap-4 p-4 text-neutral-800">
 				<h2 class="text-lg font-medium">{{ text?.title }}</h2>
 
-				<!-- <dl v-if="text" class="px-2 text-sm font-medium text-neutral-500">
+				<dl v-if="text" class="text-sm font-medium text-neutral-500">
 					<div>
-						<dt class="sr-only">Century</dt>
-						<dd>{{ text.jahrhundert || "Unknown century" }}</dd>
-					</div>
-					<div>
-						<dt class="sr-only">Place</dt>
-						<dd>{{ getPlaceLabel(text.ort) }}</dd>
-					</div>
-					<div>
-						<dt class="sr-only">GND</dt>
+						<dt class="sr-only">Authors</dt>
 						<dd>
-							<a class="transition hover:text-neutral-700" :href="text.gnd_id" target="_blank">
-								{{ text.gnd_id }}
-							</a>
+							<ul role="list">
+								<li v-for="author of text.autor" :key="author.id">
+									<NuxtLink
+										class="hover:underline"
+										:href="{
+											query: {
+												...createSearchFilterParams(searchFilters),
+												...createSelectionParams({
+													selection: [createResourceKey({ kind: 'autor', id: author.id })],
+												}),
+											},
+										}"
+									>
+										{{ getAuthorLabel(author) }}
+									</NuxtLink>
+								</li>
+							</ul>
 						</dd>
 					</div>
-				</dl> -->
+					<div>
+						<dt class="sr-only">Date of composition</dt>
+						<dd>{{ getDateRangeLabel(text.not_before, text.not_after) }}</dd>
+					</div>
+					<div>
+						<dt class="sr-only">Place of composition</dt>
+						<dd>
+							<ul role="list">
+								<li v-for="place of text.ort" :key="place.id">
+									<NuxtLink
+										class="hover:underline"
+										:href="{
+											query: {
+												...createSearchFilterParams(searchFilters),
+												...createSelectionParams({
+													selection: [createResourceKey({ kind: 'ort', id: place.id })],
+												}),
+											},
+										}"
+									>
+										{{ getPlaceLabel(place) }}
+									</NuxtLink>
+								</li>
+							</ul>
+						</dd>
+					</div>
+				</dl>
 
-				<!-- <TextDetailsList :id="id" /> -->
+				<p v-if="text?.kommentar">{{ text.kommentar }}</p>
+
+				<TextDetailsList :id="id" />
 			</div>
 		</template>
 	</div>

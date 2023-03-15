@@ -9,6 +9,9 @@ import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import PaginationLinks from "@/components/pagination-links.vue";
 import { useBrowseSearchFilters } from "@/lib/browse/use-browse-search-filters";
 import { useTextsBrowseSearchParams } from "@/lib/browse/use-browse-texts-search-params";
+import { createResourceKey } from "@/lib/search/resource-key";
+import { useSelection } from "@/lib/search/use-selection";
+import { NuxtLink } from "#components";
 import { useHead } from "#imports";
 
 const title = "Browse texts";
@@ -18,6 +21,7 @@ useHead({
 	meta: [{ property: "og:title", content: title }],
 });
 
+const { createSelectionParams } = useSelection();
 const { createSearchFilterParams, searchFilters } = useBrowseSearchFilters();
 const searchParams = useTextsBrowseSearchParams(searchFilters);
 const textsQuery = useTexts(searchParams);
@@ -112,7 +116,19 @@ const columns = {
 					<tbody class="divide-y divide-neutral-200">
 						<tr v-for="text of texts" :key="text.id">
 							<td class="w-1/3 px-6 py-4 text-neutral-800">
-								{{ text.title }}
+								<NuxtLink
+									class="hover:underline"
+									:href="{
+										query: {
+											...createSearchFilterParams(searchFilters),
+											...createSelectionParams({
+												selection: [createResourceKey({ kind: 'text', id: text.id })],
+											}),
+										},
+									}"
+								>
+									{{ text.title }}
+								</NuxtLink>
 							</td>
 							<td class="px-6 py-4 text-neutral-800">
 								{{ text.kommentar }}

@@ -137,7 +137,19 @@ const columns = {
 							</td>
 							<td class="px-6 py-4 text-neutral-800">
 								<template v-if="passage.text != null">
-									{{ passage.text.title }}
+									<NuxtLink
+										class="font-semibold"
+										:href="{
+											query: {
+												...createSearchFilterParams(searchFilters),
+												...createSelectionParams({
+													selection: [createResourceKey({ kind: 'text', id: passage.text.id })],
+												}),
+											},
+										}"
+									>
+										{{ passage.text.title }}
+									</NuxtLink>
 								</template>
 							</td>
 							<td class="px-6 py-4 text-neutral-800">
