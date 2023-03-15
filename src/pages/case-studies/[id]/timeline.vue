@@ -87,7 +87,7 @@ function getEventColor(type: GetCaseStudyTimetableById.Response[number]["ent_typ
 					<Tab
 						v-for="(label, i) in ['All events', 'Case study specific events']"
 						:key="label"
-						class="rounded-t py-2 px-4 text-sm transition hover:bg-neutral-100"
+						class="mx-10 w-0 flex-1 rounded-t py-2 px-4 text-sm transition hover:bg-neutral-100 md:mx-24"
 						:class="{ 'bg-neutral-200': i === selectedIndex }"
 					>
 						{{ label }}

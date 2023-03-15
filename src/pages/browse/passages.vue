@@ -4,12 +4,15 @@ import { computed } from "vue";
 import { usePassages } from "@/api";
 import Centered from "@/components/centered.vue";
 import ErrorMessage from "@/components/error-message.vue";
+import KeywordDisclosure from "@/components/keyword-disclosure.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import PaginationLinks from "@/components/pagination-links.vue";
 import { usePassagesBrowseSearchParams } from "@/lib/browse/use-browse-passages-search-params";
 import { useBrowseSearchFilters } from "@/lib/browse/use-browse-search-filters";
-import { getPassageLabel } from "@/lib/get-label";
+import { getAuthorLabel, getDateRangeLabel } from "@/lib/get-label";
+import { createResourceKey } from "@/lib/search/resource-key";
+import { useSelection } from "@/lib/search/use-selection";
 import { useHead } from "#imports";
 
 const title = "Browse passages";
@@ -22,6 +25,7 @@ useHead({
 const { createSearchFilterParams, searchFilters } = useBrowseSearchFilters();
 const searchParams = usePassagesBrowseSearchParams(searchFilters);
 const passagesQuery = usePassages(searchParams);
+const { createSelectionParams } = useSelection();
 const isLoading = passagesQuery.isInitialLoading;
 const isFetching = passagesQuery.isFetching;
 const isError = passagesQuery.isError;
@@ -63,6 +67,11 @@ const pages = computed(() => {
 
 const columns = {
 	quote: { label: "Quote" },
+	text: { label: "Text" },
+	author: { label: "Author" },
+	keywords: { label: "Keywords" },
+	text_date: { label: "Date of composition" },
+	date: { label: "Temporal Coverage" },
 	comment: { label: "Comment" },
 };
 </script>
@@ -113,7 +122,50 @@ const columns = {
 					<tbody class="divide-y divide-neutral-200">
 						<tr v-for="passage of passages" :key="passage.id">
 							<td class="w-1/3 px-6 py-4 text-neutral-800">
-								{{ getPassageLabel(passage) }}
+								<template v-if="passage.zitat">
+									<NuxtLink
+										class="font-semibold line-clamp-4"
+										:href="{
+											query: {
+												...createSearchFilterParams(searchFilters),
+												...createSelectionParams({
+													selection: [createResourceKey({ kind: 'stelle', id: passage.id })],
+												}),
+											},
+										}"
+									>
+										{{ passage.zitat }}
+									</NuxtLink>
+								</template>
+							</td>
+							<td class="w-1/3 px-6 py-4 text-neutral-800">
+								{{ passage.text?.title }}
+							</td>
+							<td class="px-6 py-4 text-neutral-800">
+								<p v-for="author in passage.text?.autor" :key="author.id">
+									<NuxtLink
+										class="font-semibold"
+										:href="{
+											query: {
+												...createSearchFilterParams(searchFilters),
+												...createSelectionParams({
+													selection: [createResourceKey({ kind: 'autor', id: author.id })],
+												}),
+											},
+										}"
+									>
+										{{ getAuthorLabel(author) }}
+									</NuxtLink>
+								</p>
+							</td>
+							<td class="px-6 py-4 text-neutral-800">
+								<KeywordDisclosure no-header :keywords="passage.key_word" />
+							</td>
+							<td class="whitespace-nowrap px-6 py-4 text-neutral-800">
+								{{ getDateRangeLabel(passage.text?.not_before, passage.text?.not_after) }}
+							</td>
+							<td class="whitespace-nowrap px-6 py-4 text-neutral-800">
+								{{ getDateRangeLabel(passage.start_date, passage.end_date) || "non-defined" }}
 							</td>
 							<td class="px-6 py-4 text-neutral-800">
 								{{ passage.kommentar }}

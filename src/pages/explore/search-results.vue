@@ -3,7 +3,7 @@ import { computed } from "vue";
 
 import Centered from "@/components/centered.vue";
 import ErrorMessage from "@/components/error-message.vue";
-import KeywordTag from "@/components/keyword-tag.vue";
+import KeywordDisclosure from "@/components/keyword-disclosure.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import PaginationLinks from "@/components/pagination-links.vue";
@@ -174,23 +174,7 @@ const columns = {
 								</template>
 							</td>
 							<td class="px-6 py-4 text-neutral-800">
-								<ul class="flex flex-wrap gap-0.5" role="list">
-									<li v-for="keyword of passage.key_word" :key="keyword.id">
-										<NuxtLink
-											:href="{
-												query: {
-													...createSearchFilterParams({
-														...searchFilters,
-														keyword: [...searchFilters.keyword, keyword.id],
-														offset: 0,
-													}),
-												},
-											}"
-										>
-											<KeywordTag :keyword="keyword" />
-										</NuxtLink>
-									</li>
-								</ul>
+								<KeywordDisclosure no-header :keywords="passage.key_word" />
 							</td>
 							<td class="whitespace-nowrap px-6 py-4 text-xs text-neutral-800">
 								{{ getDateRangeLabel(passage.text?.not_before, passage.text?.not_after) }}

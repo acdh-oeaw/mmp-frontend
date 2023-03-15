@@ -9,7 +9,6 @@ import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import PaginationLinks from "@/components/pagination-links.vue";
 import { usePlacesBrowseSearchParams } from "@/lib/browse/use-browse-places-search-params";
 import { useBrowseSearchFilters } from "@/lib/browse/use-browse-search-filters";
-import { getPlaceLabel } from "@/lib/get-label";
 import { useHead } from "#imports";
 
 const title = "Browse places";
@@ -62,7 +61,12 @@ const pages = computed(() => {
 });
 
 const columns = {
-	name: { label: "Name" },
+	name: { label: "English name" },
+	name_antik: { label: "Ancient name" },
+	name_de: { label: "German name" },
+	name_fr: { label: "French name" },
+	name_gr: { label: "Greek name" },
+	name_it: { label: "Italian name" },
 	comment: { label: "Comment" },
 };
 </script>
@@ -112,10 +116,25 @@ const columns = {
 					</thead>
 					<tbody class="divide-y divide-neutral-200">
 						<tr v-for="place of places" :key="place.id">
-							<td class="w-1/3 px-6 py-4 text-neutral-800">
-								{{ getPlaceLabel(place) }}
+							<td class="px-6 py-4 text-neutral-800">
+								{{ place.name }}
 							</td>
 							<td class="px-6 py-4 text-neutral-800">
+								{{ place.name_antik }}
+							</td>
+							<td class="px-6 py-4 text-neutral-800">
+								{{ place.name_de }}
+							</td>
+							<td class="px-6 py-4 text-neutral-800">
+								{{ place.name_fr }}
+							</td>
+							<td class="px-6 py-4 text-neutral-800">
+								{{ place.name_gr }}
+							</td>
+							<td class="px-6 py-4 text-neutral-800">
+								{{ place.name_it }}
+							</td>
+							<td class="w-1/3 px-6 py-4 text-neutral-800">
 								{{ place.kommentar }}
 							</td>
 						</tr>

@@ -9,6 +9,7 @@ import { useSearchFilters } from "@/lib/search/use-search-filters";
 
 const props = defineProps<{
 	keywords: Array<Keyword> | Array<KeywordNormalized> | GetPassageById.Response["key_word"];
+	noHeader?: boolean;
 }>();
 const keywords = computed(() => {
 	return props.keywords;
@@ -17,8 +18,16 @@ const { createSearchFilterParams, searchFilters } = useSearchFilters();
 </script>
 
 <template>
-	<Disclosure v-if="keywords.length > 0" v-slot="{ open }" as="section" class="grid gap-1">
-		<DisclosureButton class="text-left text-sm font-medium uppercase text-neutral-500">
+	<Disclosure
+		v-if="keywords.length > 0"
+		v-slot="{ open }"
+		as="section"
+		class="flex flex-1 flex-col"
+	>
+		<DisclosureButton
+			v-if="!props.noHeader"
+			class="text-left text-sm font-medium uppercase text-neutral-500"
+		>
 			<div
 				:class="{
 					'hover:bg-black/10': keywords.length > 15,

@@ -9,7 +9,7 @@ import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import PaginationLinks from "@/components/pagination-links.vue";
 import { useAuthorsBrowseSearchParams } from "@/lib/browse/use-browse-authors-search-params";
 import { useBrowseSearchFilters } from "@/lib/browse/use-browse-search-filters";
-import { getAuthorLabel } from "@/lib/get-label";
+import { getAuthorLabel, getDateRangeLabel, getPlaceLabel } from "@/lib/get-label";
 import { createResourceKey } from "@/lib/search/resource-key";
 import { useSelection } from "@/lib/search/use-selection";
 import { NuxtLink } from "#components";
@@ -67,7 +67,10 @@ const pages = computed(() => {
 
 const columns = {
 	name: { label: "Name" },
+	place: { label: "Birthplace" },
+	date: { label: "Lifetime" },
 	comment: { label: "Comment" },
+	dnd: { label: "GND ID" },
 };
 </script>
 
@@ -116,9 +119,9 @@ const columns = {
 					</thead>
 					<tbody class="divide-y divide-neutral-200">
 						<tr v-for="author of authors" :key="author.id">
-							<td class="w-1/3 px-6 py-4 text-neutral-800">
+							<td class="whitespace-nowrap px-6 py-4 font-bold">
 								<NuxtLink
-									class="hover:underline"
+									class="font-semibold hover:underline"
 									:href="{
 										query: {
 											...createSearchFilterParams(searchFilters),
@@ -131,8 +134,19 @@ const columns = {
 									{{ getAuthorLabel(author) }}
 								</NuxtLink>
 							</td>
-							<td class="px-6 py-4 text-neutral-800">
+							<td class="px-6 py-4">
+								{{ getPlaceLabel(author.ort) }}
+							</td>
+							<td class="whitespace-nowrap px-6 py-4">
+								{{ getDateRangeLabel(author.start_date_year, author.end_date_year) }}
+							</td>
+							<td class="px-6 py-4">
 								{{ author.kommentar }}
+							</td>
+							<td class="px-6 py-4 font-semibold">
+								<a :href="author.gnd_id" target="_blank">
+									{{ author.gnd_id.replace("https:\/\/d-nb.info/gnd/", "") }}
+								</a>
 							</td>
 						</tr>
 					</tbody>
