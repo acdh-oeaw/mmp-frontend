@@ -130,7 +130,7 @@ function getEventColor(type: GetCaseStudyTimetableById.Response[number]["ent_typ
 									}"
 								>
 									<div
-										class="flex w-fit basis-0 items-center rounded p-2 transition hover:bg-neutral-200"
+										class="-ml-2 flex w-fit basis-0 items-center rounded p-2 transition hover:bg-neutral-200"
 									>
 										<span>
 											{{ event.ent_title }}

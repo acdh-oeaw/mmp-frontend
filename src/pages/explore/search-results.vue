@@ -97,6 +97,12 @@ const columns = {
 			</template>
 
 			<div class="overflow-x-auto transition-all" :class="{ 'opacity-50 grayscale': isFetching }">
+				<div class="text-center text-sm text-gray-500">
+					{{ passagesQuery.data.value?.count }} passage{{
+						passagesQuery.data.value?.count != 1 ? "s" : ""
+					}}
+					found
+				</div>
 				<table class="min-w-full divide-y divide-neutral-200 text-sm">
 					<thead>
 						<tr>
