@@ -48,7 +48,7 @@ const links = computed(() => {
 
 <template>
 	<div class="grid h-full grid-rows-[auto_auto_1fr]">
-		<div class="mx-auto grid max-w-7xl gap-4 p-8">
+		<div class="mx-auto grid w-full max-w-7xl gap-4 p-8">
 			<h1 class="text-xl font-medium">{{ caseStudyQuery.data.value?.title ?? "Case study" }}</h1>
 			<span class="font-medium text-neutral-600">
 				{{ caseStudyQuery.data.value?.principal_investigator }}
