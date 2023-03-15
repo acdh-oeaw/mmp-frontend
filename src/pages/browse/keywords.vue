@@ -9,6 +9,9 @@ import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import PaginationLinks from "@/components/pagination-links.vue";
 import { useKeywordsBrowseSearchParams } from "@/lib/browse/use-browse-keywords-search-params";
 import { useBrowseSearchFilters } from "@/lib/browse/use-browse-search-filters";
+import { createResourceKey } from "@/lib/search/resource-key";
+import { useSelection } from "@/lib/search/use-selection";
+import { NuxtLink } from "#components";
 import { useHead } from "#imports";
 
 const title = "Browse keywords";
@@ -18,6 +21,7 @@ useHead({
 	meta: [{ property: "og:title", content: title }],
 });
 
+const { createSelectionParams } = useSelection();
 const { createSearchFilterParams, searchFilters } = useBrowseSearchFilters();
 const searchParams = useKeywordsBrowseSearchParams(searchFilters);
 const keywordsQuery = useKeywords(searchParams);
@@ -113,7 +117,19 @@ const columns = {
 					<tbody class="divide-y divide-neutral-200">
 						<tr v-for="keyword of keywords" :key="keyword.id">
 							<td class="w-1/3 px-6 py-4 text-neutral-800">
-								{{ keyword.stichwort }}
+								<NuxtLink
+									class="hover:underline"
+									:href="{
+										query: {
+											...createSearchFilterParams(searchFilters),
+											...createSelectionParams({
+												selection: [createResourceKey({ kind: 'keyword', id: keyword.id })],
+											}),
+										},
+									}"
+								>
+									{{ keyword.stichwort }}
+								</NuxtLink>
 							</td>
 							<td class="px-6 py-4 text-neutral-800">
 								{{ keyword.art }}

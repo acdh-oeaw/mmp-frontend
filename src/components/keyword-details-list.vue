@@ -1,12 +1,12 @@
 <script lang="ts" setup>
 import { computed } from "vue";
 
-import { type Place } from "@/api";
+import { type Keyword } from "@/api";
 import Centered from "@/components/centered.vue";
 import ErrorMessage from "@/components/error-message.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
-import { useTextDetails } from "@/lib/details/use-text-details";
+import { useKeywordDetails } from "@/lib/details/use-keyword-details";
 import { getPassageLabel } from "@/lib/get-label";
 import { createResourceKey } from "@/lib/search/resource-key";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
@@ -14,7 +14,7 @@ import { useSelection } from "@/lib/search/use-selection";
 import { NuxtLink } from "#components";
 
 const props = defineProps<{
-	id: Place["id"];
+	id: Keyword["id"];
 }>();
 
 const id = computed(() => {
@@ -24,10 +24,7 @@ const id = computed(() => {
 const { searchFilters, createSearchFilterParams } = useSearchFilters();
 const { createSelectionParams } = useSelection();
 
-const { passages, caseStudies, isLoading, isFetching, isEmpty, isError } = useTextDetails(
-	id,
-	searchFilters,
-);
+const { passages, isLoading, isFetching, isEmpty, isError } = useKeywordDetails(id, searchFilters);
 </script>
 
 <template>
@@ -60,37 +57,41 @@ const { passages, caseStudies, isLoading, isFetching, isEmpty, isError } = useTe
 			<div class="grid gap-6">
 				<section v-if="passages.length > 0" class="grid gap-1">
 					<h3 class="text-xs font-medium uppercase text-neutral-500">Passages</h3>
-					<ul class="divide-y text-sm" role="list">
+					<ul role="list" class="divide-y text-sm">
 						<li v-for="passage of passages" :key="passage.id">
-							<NuxtLink
-								class="hover:underline"
-								:href="{
-									query: {
-										...createSearchFilterParams(searchFilters),
-										...createSelectionParams({
-											selection: [createResourceKey({ kind: 'stelle', id: passage.id })],
-										}),
-									},
-								}"
-							>
-								{{ getPassageLabel(passage) }}
-							</NuxtLink>
-						</li>
-					</ul>
-				</section>
-
-				<section v-if="caseStudies.length > 0" class="grid gap-1">
-					<h3 class="text-xs font-medium uppercase text-neutral-500">Case studies</h3>
-					<ul class="divide-y text-sm" role="list">
-						<li v-for="caseStudy of caseStudies" :key="caseStudy.id">
-							<article class="grid gap-1">
-								<NuxtLink class="hover:underline" :href="{ path: `/case-studies/${caseStudy.id}` }">
-									<strong>{{ caseStudy.title }}</strong>
+							<article class="grid gap-1 py-2">
+								<NuxtLink
+									class="hover:underline"
+									:href="{
+										query: {
+											...createSearchFilterParams(searchFilters),
+											...createSelectionParams({
+												selection: [createResourceKey({ kind: 'stelle', id: passage.id })],
+											}),
+										},
+									}"
+								>
+									{{ getPassageLabel(passage) }}
 								</NuxtLink>
-								<span>{{ caseStudy.principal_investigator }}</span>
-								<p class="line-clamp-4">
-									{{ caseStudy.description }}
-								</p>
+								<ul role="list" class="flex flex-wrap gap-1 text-xs font-medium">
+									<li v-for="keyword of passage.key_word" :key="keyword.id">
+										<NuxtLink
+											class="hover:underline"
+											:href="{
+												query: {
+													...createSearchFilterParams(searchFilters),
+													...createSelectionParams({
+														selection: [createResourceKey({ kind: 'keyword', id: keyword.id })],
+													}),
+												},
+											}"
+										>
+											<span class="inline-flex rounded bg-neutral-100 px-2 py-1 transition">
+												{{ keyword.stichwort }}
+											</span>
+										</NuxtLink>
+									</li>
+								</ul>
 							</article>
 						</li>
 					</ul>

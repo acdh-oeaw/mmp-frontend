@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import BrowseSearchForm from "@/components/browse-search-form.vue";
 import MainContent from "@/components/main-content.vue";
+import SidePanel from "@/components/side-panel.vue";
 import { NuxtLink, NuxtPage } from "#components";
 import { useHead } from "#imports";
 
@@ -49,5 +50,7 @@ const links = {
 		<MainContent>
 			<NuxtPage />
 		</MainContent>
+
+		<SidePanel />
 	</div>
 </template>

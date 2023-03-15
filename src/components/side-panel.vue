@@ -4,6 +4,7 @@ import { computed } from "vue";
 import AuthorDetails from "@/components/author-details.vue";
 import GeojsonDetails from "@/components/geojson-details.vue";
 import GraphKeywordDetails from "@/components/graph-keyword-details.vue";
+import KeywordDetails from "@/components/keyword-details.vue";
 import PassageDetails from "@/components/passage-details.vue";
 import PlaceDetails from "@/components/place-details.vue";
 import SideDialog from "@/components/side-dialog.vue";
@@ -53,6 +54,7 @@ const isSideDisclosureVisible = computed(() => {
 const isSidePanelVisible = computed(() => {
 	return (
 		idsByKind.value.has("autor") ||
+		idsByKind.value.has("keyword") ||
 		idsByKind.value.has("ort") ||
 		idsByKind.value.has("stelle") ||
 		idsByKind.value.has("text")
@@ -84,6 +86,7 @@ function onToggle() {
 	</SideDisclosure>
 	<SideDialog :open="isSidePanelVisible" @toggle="onToggle">
 		<AuthorDetails v-if="idsByKind.has('autor')" :ids="idsByKind.get('autor')!" />
+		<KeywordDetails v-else-if="idsByKind.has('keyword')" :ids="idsByKind.get('keyword')!" />
 		<PassageDetails v-else-if="idsByKind.has('stelle')" :ids="idsByKind.get('stelle')!" />
 		<PlaceDetails v-else-if="idsByKind.has('ort')" :ids="idsByKind.get('ort')!" />
 		<TextDetails v-else-if="idsByKind.has('text')" :ids="idsByKind.get('text')!" />
