@@ -10,6 +10,9 @@ import PaginationLinks from "@/components/pagination-links.vue";
 import { useAuthorsBrowseSearchParams } from "@/lib/browse/use-browse-authors-search-params";
 import { useBrowseSearchFilters } from "@/lib/browse/use-browse-search-filters";
 import { getAuthorLabel } from "@/lib/get-label";
+import { createResourceKey } from "@/lib/search/resource-key";
+import { useSelection } from "@/lib/search/use-selection";
+import { NuxtLink } from "#components";
 import { useHead } from "#imports";
 
 const title = "Browse authors";
@@ -19,6 +22,7 @@ useHead({
 	meta: [{ property: "og:title", content: title }],
 });
 
+const { createSelectionParams } = useSelection();
 const { createSearchFilterParams, searchFilters } = useBrowseSearchFilters();
 const searchParams = useAuthorsBrowseSearchParams(searchFilters);
 const authorsQuery = useAuthors(searchParams);
@@ -113,7 +117,19 @@ const columns = {
 					<tbody class="divide-y divide-neutral-200">
 						<tr v-for="author of authors" :key="author.id">
 							<td class="w-1/3 px-6 py-4 text-neutral-800">
-								{{ getAuthorLabel(author) }}
+								<NuxtLink
+									class="hover:underline"
+									:href="{
+										query: {
+											...createSearchFilterParams(searchFilters),
+											...createSelectionParams({
+												selection: [createResourceKey({ kind: 'autor', id: author.id })],
+											}),
+										},
+									}"
+								>
+									{{ getAuthorLabel(author) }}
+								</NuxtLink>
 							</td>
 							<td class="px-6 py-4 text-neutral-800">
 								{{ author.kommentar }}
