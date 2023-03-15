@@ -305,21 +305,27 @@ onMounted(async () => {
 
 	//
 
+	function getConeStyles(_feature: ConeGeojson) {
+		const color = colors.cones;
+
+		return {
+			color,
+			dashArray: "4",
+			fill: true,
+			fillOpacity: 0.18,
+			opacity: 0.75,
+			stroke: true,
+			weight: 1,
+		};
+	}
+
 	context.featureGroups.cones = geoJSON<ConeGeojson["properties"]>(undefined, {
 		style(feature) {
 			if (feature == null) return {};
 
-			const color = colors.cones;
+			const styles = getConeStyles(feature as ConeGeojson);
 
-			return {
-				color,
-				dashArray: "4",
-				fill: true,
-				fillOpacity: 0.18,
-				opacity: 0.75,
-				stroke: true,
-				weight: 1,
-			};
+			return styles;
 		},
 	}).addTo(context.map);
 
