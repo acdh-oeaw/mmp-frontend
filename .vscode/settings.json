@@ -16,6 +16,7 @@
 		"*.css": "tailwindcss"
 	},
 	"files.eol": "\n",
+	"html.autoCreateQuotes": false,
 	"less.validate": false,
 	"scss.validate": false,
 	"stylelint.enable": true,
@@ -27,11 +28,8 @@
 	"typescript.inlayHints.parameterNames.enabled": "all",
 	"typescript.preferences.importModuleSpecifier": "non-relative",
 	"typescript.tsdk": "node_modules/typescript/lib",
+	"volar.inlayHints.eventArgumentInInlineHandlers": false,
 	"[markdown][mdx]": {
 		"editor.wordWrap": "on"
-	},
-	"[vue]": {
-		"html.autoCreateQuotes": false,
-		"volar.inlayHints.eventArgumentInInlineHandlers": false
 	}
 }

@@ -32,7 +32,7 @@ function onToggle() {
 						leave-to="-translate-x-full"
 					>
 						<aside
-							class="pointer-events-auto grid h-full w-full max-w-md content-start overflow-y-auto rounded bg-white py-8 shadow-xl"
+							class="pointer-events-auto grid h-full w-full max-w-md grid-rows-[auto_1fr] overflow-y-auto rounded bg-white py-8 shadow-xl"
 						>
 							<div class="justify-self-end px-8">
 								<button class="flex gap-1" @click="onToggle">
