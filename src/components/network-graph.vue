@@ -130,13 +130,23 @@ onMounted(async () => {
 
 		//
 		if (props.selectedKeys.has(node.key)) {
+			ctx.globalAlpha = 0.75;
 			ctx.fillStyle = color;
 			const w = width * 1.25;
 			const h = height * 1.125;
-			const radius = 4 / globalScale;
-			ctx.beginPath();
-			ctx.roundRect(x - w / 2, y - h / 2, w, h, radius);
-			ctx.fill();
+
+			/** Firefox does not yet support `roundRect`. */
+			if ("roundRect" in ctx) {
+				const radius = 4 / globalScale;
+				ctx.beginPath();
+				ctx.roundRect(x - w / 2, y - h / 2, w, h, radius);
+				ctx.fill();
+			} else {
+				// @ts-expect-error See above.
+				ctx.fillRect(x - w / 2, y - h / 2, w, h);
+			}
+
+			ctx.globalAlpha = 1;
 
 			ctx.fillStyle = "#f8fafc";
 			ctx.fillText(label, x, y);

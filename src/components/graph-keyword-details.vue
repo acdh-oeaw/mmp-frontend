@@ -20,7 +20,7 @@ import { isNotNullable } from "@/lib/is-not-nullable";
 
 const props = defineProps<{
 	ids: Set<Keyword["id"]>;
-	authors: Set<Author["id"]>;
+	authors?: Set<Author["id"]>;
 }>();
 
 const keywordsQueriesConfig = computed(() => {
