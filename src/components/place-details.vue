@@ -57,7 +57,7 @@ const isEmpty = computed(() => {
 				</Centered>
 			</template>
 
-			<div class="grid gap-4 p-4 text-neutral-800">
+			<div class="grid h-full grid-rows-[auto_auto_auto_1fr] gap-4 p-4 text-neutral-800">
 				<h2 class="text-lg font-medium">{{ getPlaceLabel(place) }}</h2>
 
 				<dl v-if="place" class="text-sm font-medium text-neutral-500">
@@ -72,7 +72,7 @@ const isEmpty = computed(() => {
 				</dl>
 
 				<div class="grid h-96 w-full">
-					<VisualisationContainer v-slot="{ width, height }" class="rounded">
+					<VisualisationContainer v-slot="{ width, height }">
 						<PlaceMap
 							v-if="place && place.lat && place.long"
 							:height="height"

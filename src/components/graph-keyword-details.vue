@@ -125,106 +125,112 @@ const isEmpty = computed(() => {
 				</Centered>
 			</template>
 
-			<div class="grid gap-4 p-4 text-neutral-800">
+			<div class="grid h-full grid-rows-[auto_auto_1fr] gap-4 p-4 text-neutral-800">
 				<h2 class="text-lg font-medium">
 					{{ createList(keywords.map((keyword) => keyword.stichwort)) }}
 				</h2>
+
+				<div>
+					<TabGroup>
+						<TabList
+							as="ul"
+							class="mx-auto grid w-full max-w-7xl grid-cols-2 gap-x-8 gap-y-2 border-b border-neutral-200 px-8 pt-2 font-medium md:grid-cols-2"
+							role="list"
+						>
+							<Tab
+								v-for="label in ['Geographic distribution', 'Temporal distribution']"
+								:key="label"
+								v-slot="{ selected }"
+								as="li"
+							>
+								<div
+									class="flex cursor-pointer justify-center rounded-t p-2 text-center text-sm transition hover:bg-neutral-100 aria-[current]:bg-neutral-200"
+									:class="{ 'bg-neutral-200': selected }"
+								>
+									<span>
+										{{ label }}
+									</span>
+								</div>
+							</Tab>
+						</TabList>
+						<TabPanels>
+							<div class="h-80">
+								<VisualisationContainer
+									v-slot="{ width, height }"
+									class="rounded-b rounded-t-none border border-t-0 border-neutral-200"
+								>
+									<TabPanel>
+										<PlaceMap
+											v-if="texts"
+											:width="width"
+											:height="height"
+											:points="
+												texts.results
+													.map((text) => text.ort)
+													.flat(1)
+													.map((place) => ({
+														label: getPlaceLabel(place),
+														lat: Number(place.lat),
+														lng: Number(place.long),
+													}))
+											"
+										/>
+									</TabPanel>
+									<TabPanel>
+										<LineChart
+											:width="width"
+											:height="height"
+											:series="
+												centuryKeywords.map((century) => ({
+													name: century.title,
+													data: century.data.map(([centuryName, weight]) => ({
+														name: String(centuryName),
+														weight,
+													})),
+												}))
+											"
+										/>
+									</TabPanel>
+								</VisualisationContainer>
+							</div>
+						</TabPanels>
+					</TabGroup>
+				</div>
+
+				<div class="h-full">
+					<TabGroup>
+						<TabList
+							as="ul"
+							class="mx-auto grid w-full max-w-7xl grid-cols-2 gap-x-8 gap-y-2 border-b border-neutral-200 px-8 pt-4 font-medium md:grid-cols-2"
+							role="list"
+						>
+							<Tab
+								v-for="label in ['Texts & Authors', 'Connections']"
+								:key="label"
+								v-slot="{ selected }"
+								as="li"
+							>
+								<div
+									class="flex cursor-pointer justify-center rounded-t p-2 text-center text-sm transition hover:bg-neutral-100 aria-[current]:bg-neutral-200"
+									:class="{ 'bg-neutral-200': selected }"
+								>
+									<span>
+										{{ label }}
+									</span>
+								</div>
+							</Tab>
+						</TabList>
+						<TabPanels class="grid h-full py-2">
+							<TabPanel>
+								<KeywordDetailsTextsByAuthors :ids="props.ids" />
+							</TabPanel>
+							<TabPanel>
+								<GraphKeywordDetailsConnections />
+							</TabPanel>
+						</TabPanels>
+					</TabGroup>
+				</div>
 			</div>
-
-			<h3 class="text-center">Distribution</h3>
-			<TabGroup>
-				<TabList
-					as="ul"
-					class="mx-auto grid max-w-7xl grid-cols-2 gap-x-8 gap-y-2 border-b border-neutral-200 px-8 pt-2 font-medium md:grid-cols-2"
-					role="list"
-				>
-					<Tab
-						v-for="label in ['Geographic', 'Temporal']"
-						:key="label"
-						v-slot="{ selected }"
-						as="li"
-					>
-						<div
-							class="flex cursor-pointer justify-center rounded-t p-2 transition hover:bg-neutral-100 aria-[current]:bg-neutral-200"
-							:class="{ 'bg-neutral-200': selected }"
-						>
-							<span>
-								{{ label }}
-							</span>
-						</div>
-					</Tab>
-				</TabList>
-				<TabPanels>
-					<div class="h-80">
-						<VisualisationContainer v-slot="{ width, height }" class="rounded-b">
-							<TabPanel>
-								<PlaceMap
-									v-if="texts"
-									:width="width"
-									:height="height"
-									:points="
-										texts.results
-											.map((text) => text.ort)
-											.flat(1)
-											.map((place) => ({
-												label: getPlaceLabel(place),
-												lat: Number(place.lat),
-												lng: Number(place.long),
-											}))
-									"
-								/>
-							</TabPanel>
-							<TabPanel>
-								<LineChart
-									:width="width"
-									:height="height"
-									:series="
-										centuryKeywords.map((century) => ({
-											name: century.title,
-											data: century.data.map(([centuryName, weight]) => ({
-												name: String(centuryName),
-												weight,
-											})),
-										}))
-									"
-								/>
-							</TabPanel>
-						</VisualisationContainer>
-					</div>
-				</TabPanels>
-			</TabGroup>
-
-			<TabGroup>
-				<TabList
-					as="ul"
-					class="mx-auto grid max-w-7xl grid-cols-2 gap-x-8 gap-y-2 border-b border-neutral-200 px-8 pt-4 font-medium md:grid-cols-2"
-					role="list"
-				>
-					<Tab
-						v-for="label in ['Texts & Authors', 'Connections']"
-						:key="label"
-						v-slot="{ selected }"
-						as="li"
-					>
-						<div
-							class="flex cursor-pointer justify-center rounded-t p-2 transition hover:bg-neutral-100 aria-[current]:bg-neutral-200"
-							:class="{ 'bg-neutral-200': selected }"
-						>
-							<span>
-								{{ label }}
-							</span>
-						</div>
-					</Tab>
-				</TabList>
-				<TabPanels>
-					<TabPanel>
-						<KeywordDetailsTextsByAuthors :ids="props.ids" />
-					</TabPanel>
-					<TabPanel>
-						<GraphKeywordDetailsConnections />
-					</TabPanel>
-				</TabPanels>
-			</TabGroup>
 		</template>
 	</div>
 </template>

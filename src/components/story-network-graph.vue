@@ -60,7 +60,7 @@ const highlightedKeys = new Set<ResourceKey>();
 					</Centered>
 				</template>
 
-				<VisualisationContainer v-slot="{ width, height }" class="rounded">
+				<VisualisationContainer v-slot="{ width, height }">
 					<NetworkGraph
 						:graph="graph"
 						:height="height"

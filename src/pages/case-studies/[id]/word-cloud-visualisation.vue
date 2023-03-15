@@ -72,7 +72,7 @@ function onToggle(chart: "pie-chart" | "word-cloud") {
 
 				<VisualisationContainer
 					v-slot="{ width, height }"
-					class="min-h-[600px] rounded transition-all"
+					class="min-h-[600px] transition-all"
 					:class="{ 'opacity-50 grayscale': isFetching }"
 				>
 					<TokenPieCharts

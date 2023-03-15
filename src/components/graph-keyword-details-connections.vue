@@ -15,7 +15,7 @@ const { selection } = useSelection();
 </script>
 
 <template>
-	<div class="relative w-full">
+	<div class="relative h-full w-full">
 		<h2 class="sr-only">Texts by authors</h2>
 
 		<template v-if="isLoading">

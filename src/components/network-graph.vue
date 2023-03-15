@@ -116,8 +116,6 @@ onMounted(async () => {
 		const label = node.label;
 		const color = node.color;
 
-		// FIXME:
-		// const fontSize = (Math.log2(node.neighbors.size || 1) + 18) / globalScale;
 		const fontSize = 14 / globalScale;
 		ctx.font = `${fontSize}px 'Roboto FlexVariable', ui-sans-serif, system-ui, sans-serif`;
 
@@ -127,31 +125,28 @@ onMounted(async () => {
 		}) as [number, number];
 		const [width, height] = dimensions;
 
-		ctx.fillStyle = "hsl(0deg 0% 100% / 75%)";
-		ctx.fillRect(x - width / 2, y - height / 2, width, height);
-
 		ctx.textAlign = "center";
 		ctx.textBaseline = "middle";
 
 		//
-		ctx.fillStyle = color;
-		ctx.fillText(label, x, y);
-		// FIXME:
-		// if (props.selectedKeys.has(node.id)) {
-		// 	ctx.shadowColor = node.color;
-		// 	ctx.shadowBlur = 15;
-		// 	ctx.fillStyle = "#f1f5fa";
-		// 	ctx.strokeStyle = node.color;
-		// 	ctx.lineWidth = 2 / globalScale;
-		// } else {
-		// 	ctx.fillStyle = node.color;
-		// 	ctx.strokeStyle = "#f1f5fa";
-		// 	ctx.lineWidth = 1.7 / globalScale;
-		// }
-		// ctx.strokeText(label, x, y);
-		// ctx.fillText(label, x, y);
-		// ctx.shadowBlur = 0;
-		//
+		if (props.selectedKeys.has(node.key)) {
+			ctx.fillStyle = color;
+			const w = width * 1.25;
+			const h = height * 1.125;
+			const radius = 4 / globalScale;
+			ctx.beginPath();
+			ctx.roundRect(x - w / 2, y - h / 2, w, h, radius);
+			ctx.fill();
+
+			ctx.fillStyle = "#f8fafc";
+			ctx.fillText(label, x, y);
+		} else {
+			ctx.fillStyle = "hsl(0deg 0% 100% / 75%)";
+			ctx.fillRect(x - width / 2, y - height / 2, width, height);
+
+			ctx.fillStyle = color;
+			ctx.fillText(label, x, y);
+		}
 
 		node.__pointerAreaPaint = dimensions;
 	});

@@ -73,7 +73,7 @@ const highlightedKeys = new Set<ResourceKey>();
 					</Centered>
 				</template>
 
-				<VisualisationContainer v-slot="{ width, height }" class="rounded">
+				<VisualisationContainer v-slot="{ width, height }">
 					<GeoMap
 						:areas="areas"
 						:area-center-points="areaCenterPoints"

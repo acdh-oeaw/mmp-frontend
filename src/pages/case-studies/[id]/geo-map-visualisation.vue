@@ -101,7 +101,7 @@ function onReady(instance: LeafletMap) {
 
 				<VisualisationContainer
 					v-slot="{ width, height }"
-					class="min-h-[600px] rounded transition-all"
+					class="min-h-[600px] transition-all"
 					:class="{ 'opacity-50 grayscale': isFetching }"
 				>
 					<GeoMap

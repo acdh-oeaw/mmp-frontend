@@ -74,18 +74,20 @@ function getEventColor(type: GetCaseStudyTimetableById.Response[number]["ent_typ
 				<ErrorMessage>Failed to load timeline.</ErrorMessage>
 			</Centered>
 		</template>
+
 		<template v-else>
 			<template v-if="isFetching">
 				<Centered>
 					<LoadingIndicator>Updating timeline...</LoadingIndicator>
 				</Centered>
 			</template>
+
 			<TabGroup>
 				<TabList v-slot="{ selectedIndex }" class="mb-4 flex justify-around border-b">
 					<Tab
 						v-for="(label, i) in ['All events', 'Case study specific events']"
 						:key="label"
-						class="rounded-t p-2 transition hover:bg-neutral-100"
+						class="rounded-t py-2 px-4 text-sm transition hover:bg-neutral-100"
 						:class="{ 'bg-neutral-200': i === selectedIndex }"
 					>
 						{{ label }}

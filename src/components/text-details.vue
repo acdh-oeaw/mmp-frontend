@@ -55,7 +55,7 @@ const isEmpty = computed(() => {
 				</Centered>
 			</template>
 
-			<div class="grid gap-4 p-4 text-neutral-800">
+			<div class="grid h-full grid-rows-[auto_auto_1fr] gap-4 p-4 text-neutral-800">
 				<h2 class="text-lg font-medium">{{ text?.title }}</h2>
 
 				<!-- <dl v-if="text" class="px-2 text-sm font-medium text-neutral-500">
