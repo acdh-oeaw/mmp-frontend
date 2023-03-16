@@ -97,7 +97,7 @@ const columns = {
 			</template>
 
 			<div class="overflow-x-auto transition-all" :class="{ 'opacity-50 grayscale': isFetching }">
-				<div class="text-center text-sm text-gray-500">
+				<div class="py-4 text-center text-sm text-gray-500">
 					{{ passagesQuery.data.value?.count }} passage{{
 						passagesQuery.data.value?.count != 1 ? "s" : ""
 					}}
@@ -121,7 +121,7 @@ const columns = {
 							<td class="px-6 py-4 text-neutral-800">
 								<template v-if="passage.zitat">
 									<NuxtLink
-										class="font-semibold line-clamp-4"
+										class="font-medium transition line-clamp-4 hover:underline"
 										:href="{
 											query: {
 												...createSearchFilterParams(searchFilters),
@@ -138,7 +138,7 @@ const columns = {
 							<td class="px-6 py-4 text-neutral-800">
 								<template v-if="passage.text != null">
 									<NuxtLink
-										class="font-semibold"
+										class="font-medium transition hover:underline"
 										:href="{
 											query: {
 												...createSearchFilterParams(searchFilters),
@@ -157,7 +157,7 @@ const columns = {
 									<ul role="list">
 										<li v-for="author of passage.text.autor" :key="author.id">
 											<NuxtLink
-												class="font-semibold"
+												class="font-medium transition hover:underline"
 												:href="{
 													query: {
 														...createSearchFilterParams(searchFilters),

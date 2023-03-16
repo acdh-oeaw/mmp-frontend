@@ -9,7 +9,11 @@ import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import { createList } from "@/lib/create-list";
 import { usePlaceDetails } from "@/lib/details/use-place-details";
 import { getAuthorLabel } from "@/lib/get-label";
+import { createResourceKey } from "@/lib/search/resource-key";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
+import { useSelection } from "@/lib/search/use-selection";
+import { NuxtLink } from "#components";
+import { useRoute } from "#imports";
 
 const props = defineProps<{
 	id: Place["id"];
@@ -18,7 +22,11 @@ const props = defineProps<{
 const id = computed(() => {
 	return props.id;
 });
+
+const route = useRoute();
 const { searchFilters } = useSearchFilters();
+const { createSelectionParams } = useSelection();
+
 const { authors, texts, isLoading, isFetching, isEmpty, isError } = usePlaceDetails(
 	id,
 	searchFilters,
@@ -58,7 +66,19 @@ const { authors, texts, isLoading, isFetching, isEmpty, isError } = usePlaceDeta
 					<ul role="list">
 						<li v-for="author of authors" :key="author.id">
 							<article>
-								<div>{{ getAuthorLabel(author) }}</div>
+								<NuxtLink
+									class="transition hover:underline"
+									:href="{
+										query: {
+											...route.query,
+											...createSelectionParams({
+												selection: [createResourceKey({ kind: 'autor', id: author.id })],
+											}),
+										},
+									}"
+								>
+									<strong>{{ getAuthorLabel(author) }}</strong>
+								</NuxtLink>
 								<div v-if="author.kommentar">{{ author.kommentar }}</div>
 								<div>{{ author.jahrhundert }}</div>
 							</article>
@@ -67,11 +87,23 @@ const { authors, texts, isLoading, isFetching, isEmpty, isError } = usePlaceDeta
 				</section>
 
 				<section v-if="texts.length > 0" class="grid gap-1">
-					<h3 class="text-xs font-medium uppercase text-neutral-500">Case studies</h3>
+					<h3 class="text-xs font-medium uppercase text-neutral-500">Texts</h3>
 					<ul role="list">
 						<li v-for="text of texts" :key="text.id">
 							<article>
-								<div>{{ text.title }}</div>
+								<NuxtLink
+									class="transition hover:underline"
+									:href="{
+										query: {
+											...route.query,
+											...createSelectionParams({
+												selection: [createResourceKey({ kind: 'text', id: text.id })],
+											}),
+										},
+									}"
+								>
+									<strong>{{ text.title }}</strong>
+								</NuxtLink>
 								<div>{{ createList(text.autor.map(getAuthorLabel)) }}</div>
 								<div>{{ text.jahrhundert }}</div>
 							</article>

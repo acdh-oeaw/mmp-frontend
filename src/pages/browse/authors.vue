@@ -119,9 +119,9 @@ const columns = {
 					</thead>
 					<tbody class="divide-y divide-neutral-200">
 						<tr v-for="author of authors" :key="author.id">
-							<td class="whitespace-nowrap px-6 py-4 font-bold">
+							<td class="whitespace-nowrap px-6 py-4">
 								<NuxtLink
-									class="font-semibold hover:underline"
+									class="font-medium transition hover:underline"
 									:href="{
 										query: {
 											...createSearchFilterParams(searchFilters),
@@ -135,7 +135,20 @@ const columns = {
 								</NuxtLink>
 							</td>
 							<td class="px-6 py-4">
-								{{ getPlaceLabel(author.ort) }}
+								<NuxtLink
+									v-if="author.ort"
+									class="font-medium transition hover:underline"
+									:href="{
+										query: {
+											...createSearchFilterParams(searchFilters),
+											...createSelectionParams({
+												selection: [createResourceKey({ kind: 'ort', id: author.ort?.id })],
+											}),
+										},
+									}"
+								>
+									{{ getPlaceLabel(author.ort) }}
+								</NuxtLink>
 							</td>
 							<td class="whitespace-nowrap px-6 py-4">
 								{{ getDateRangeLabel(author.start_date_year, author.end_date_year) }}
@@ -143,8 +156,12 @@ const columns = {
 							<td class="px-6 py-4">
 								{{ author.kommentar }}
 							</td>
-							<td class="px-6 py-4 font-semibold">
-								<a :href="author.gnd_id" target="_blank">
+							<td class="px-6 py-4">
+								<a
+									class="font-medium transition hover:underline"
+									:href="author.gnd_id"
+									target="_blank"
+								>
 									{{ author.gnd_id.replace("https:\/\/d-nb.info/gnd/", "") }}
 								</a>
 							</td>

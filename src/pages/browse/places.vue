@@ -9,6 +9,9 @@ import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import PaginationLinks from "@/components/pagination-links.vue";
 import { usePlacesBrowseSearchParams } from "@/lib/browse/use-browse-places-search-params";
 import { useBrowseSearchFilters } from "@/lib/browse/use-browse-search-filters";
+import { createResourceKey } from "@/lib/search/resource-key";
+import { useSelection } from "@/lib/search/use-selection";
+import { NuxtLink } from "#components";
 import { useHead } from "#imports";
 
 const title = "Browse places";
@@ -18,6 +21,7 @@ useHead({
 	meta: [{ property: "og:title", content: title }],
 });
 
+const { createSelectionParams } = useSelection();
 const { createSearchFilterParams, searchFilters } = useBrowseSearchFilters();
 const searchParams = usePlacesBrowseSearchParams(searchFilters);
 const placesQuery = usePlaces(searchParams);
@@ -117,7 +121,19 @@ const columns = {
 					<tbody class="divide-y divide-neutral-200">
 						<tr v-for="place of places" :key="place.id">
 							<td class="px-6 py-4 text-neutral-800">
-								{{ place.name }}
+								<NuxtLink
+									class="font-medium transition hover:underline"
+									:href="{
+										query: {
+											...createSearchFilterParams(searchFilters),
+											...createSelectionParams({
+												selection: [createResourceKey({ kind: 'ort', id: place.id })],
+											}),
+										},
+									}"
+								>
+									{{ place.name }}
+								</NuxtLink>
 							</td>
 							<td class="px-6 py-4 text-neutral-800">
 								{{ place.name_antik }}

@@ -14,6 +14,7 @@ import { createResourceKey } from "@/lib/search/resource-key";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
 import { useSelection } from "@/lib/search/use-selection";
 import { NuxtLink } from "#components";
+import { useRoute } from "#imports";
 
 const props = defineProps<{
 	id: Author["id"];
@@ -23,7 +24,8 @@ const id = computed(() => {
 	return props.id;
 });
 
-const { searchFilters, createSearchFilterParams } = useSearchFilters();
+const route = useRoute();
+const { searchFilters } = useSearchFilters();
 const { createSelectionParams } = useSelection();
 
 const { caseStudies, keywords, texts, isLoading, isFetching, isEmpty, isError } = useAuthorDetails(
@@ -134,7 +136,7 @@ const { caseStudies, keywords, texts, isLoading, isFetching, isEmpty, isError } 
 										class="transition line-clamp-3 hover:text-neutral-700"
 										:href="{
 											query: {
-												...createSearchFilterParams(searchFilters),
+												...route.query,
 												...createSelectionParams({
 													selection: [createResourceKey({ kind: 'text', id: text.id })],
 												}),

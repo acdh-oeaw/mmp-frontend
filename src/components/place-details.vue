@@ -82,6 +82,8 @@ const isEmpty = computed(() => {
 					</VisualisationContainer>
 				</div>
 
+				<p v-if="place?.kommentar">{{ place.kommentar }}</p>
+
 				<PlaceDetailsList :id="id" />
 			</div>
 		</template>
