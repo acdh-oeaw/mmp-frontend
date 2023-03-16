@@ -21,7 +21,6 @@ const ids = computed(() => {
 <template>
 	<div class="relative mx-auto h-full w-full">
 		<h2 class="sr-only">Author</h2>
-
 		<div>
 			<AuthorDetails :ids="ids" />
 		</div>

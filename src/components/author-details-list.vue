@@ -60,7 +60,7 @@ const { caseStudies, keywords, texts, isLoading, isFetching, isEmpty, isError } 
 			</template>
 
 			<div class="grid gap-6">
-				<KeywordDisclosure :keywords="keywords" />
+				<KeywordDisclosure new-tab :keywords="keywords" />
 
 				<Disclosure
 					v-if="caseStudies.length > 0"
@@ -86,6 +86,7 @@ const { caseStudies, keywords, texts, isLoading, isFetching, isEmpty, isError } 
 							<article class="divide-y divide-dotted">
 								<div>
 									<NuxtLink
+										target="_blank"
 										class="flex items-center justify-between rounded p-2 transition hover:bg-black/10"
 										:href="{ path: `/case-studies/${caseStudy.id}/timeline` }"
 									>

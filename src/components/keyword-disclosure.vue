@@ -10,6 +10,7 @@ import { useSearchFilters } from "@/lib/search/use-search-filters";
 const props = defineProps<{
 	keywords: Array<Keyword> | Array<KeywordNormalized> | GetPassageById.Response["key_word"];
 	noHeader?: boolean;
+	newTab?: boolean;
 }>();
 const keywords = computed(() => {
 	return props.keywords;
@@ -47,6 +48,7 @@ const { createSearchFilterParams, searchFilters } = useSearchFilters();
 			<li v-for="keyword of open ? keywords : keywords.slice(0, 15)" :key="keyword.id">
 				<NuxtLink
 					class="hover:bg-black/10"
+					:target="newTab ? '_blank' : undefined"
 					:href="{
 						query: createSearchFilterParams({ ...searchFilters, keyword: [keyword.id], offset: 0 }),
 					}"

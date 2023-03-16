@@ -84,7 +84,11 @@ const { passages, caseStudies, isLoading, isFetching, isEmpty, isError } = useTe
 					<ul class="divide-y text-sm" role="list">
 						<li v-for="caseStudy of caseStudies" :key="caseStudy.id">
 							<article class="grid gap-1">
-								<NuxtLink class="hover:underline" :href="{ path: `/case-studies/${caseStudy.id}` }">
+								<NuxtLink
+									target="_blank"
+									class="hover:underline"
+									:href="{ path: `/case-studies/${caseStudy.id}` }"
+								>
 									<strong>{{ caseStudy.title }}</strong>
 								</NuxtLink>
 								<span>{{ caseStudy.principal_investigator }}</span>

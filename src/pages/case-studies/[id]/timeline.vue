@@ -137,7 +137,7 @@ function getEventColor(type: GetCaseStudyTimetableById.Response[number]["ent_typ
 					</TabPanel>
 					<TabPanel>
 						<template v-if="emptyTimeline">
-							<Centered>
+							<Centered class="pointer-events-none">
 								<NothingFoundMessage></NothingFoundMessage>
 							</Centered>
 						</template>

@@ -97,6 +97,7 @@ const { data, isLoading, isError, isEmpty, isFetching } = useTextsByAuthors(sear
 												class="grid gap-1"
 											>
 												<NuxtLink
+													target="_blank"
 													:href="{
 														path: '/explore/search-results',
 														query: createSearchFilterParams({
@@ -114,6 +115,7 @@ const { data, isLoading, isError, isEmpty, isFetching } = useTextsByAuthors(sear
 														:key="keyword.id"
 													>
 														<NuxtLink
+															target="_blank"
 															:href="{
 																path: '/explore/search-results',
 																query: createSearchFilterParams({
