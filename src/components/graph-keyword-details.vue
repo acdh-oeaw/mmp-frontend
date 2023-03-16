@@ -219,11 +219,15 @@ const isEmpty = computed(() => {
 									</TabPanel>
 									<TabPanel>
 										<AreaMap
+											v-if="areas.length > 0"
 											:areas="areas"
 											:area-center-points="areaCenterPoints"
 											:height="height"
 											:width="width"
 										/>
+										<Centered v-else>
+											<NothingFoundMessage></NothingFoundMessage>
+										</Centered>
 									</TabPanel>
 								</VisualisationContainer>
 							</div>
