@@ -85,7 +85,7 @@ function getEventColor(type: GetCaseStudyTimetableById.Response[number]["ent_typ
 			<TabGroup>
 				<TabList v-slot="{ selectedIndex }" class="mb-4 flex justify-around border-b">
 					<Tab
-						v-for="(label, i) in ['All events', 'Case study specific events']"
+						v-for="(label, i) in ['Case study specific events', 'All events']"
 						:key="label"
 						class="mx-10 w-0 flex-1 rounded-t py-2 px-4 text-sm transition hover:bg-neutral-100 md:mx-24"
 						:class="{ 'bg-neutral-200': i === selectedIndex }"
@@ -94,6 +94,32 @@ function getEventColor(type: GetCaseStudyTimetableById.Response[number]["ent_typ
 					</Tab>
 				</TabList>
 				<TabPanels>
+					<TabPanel>
+						<ol
+							role="list"
+							class="grid items-center gap-6 transition-all"
+							style="grid-template-columns: repeat(3, auto)"
+							:class="{ 'opacity-50 grayscale': isFetching }"
+						>
+							<template v-for="(event, i) of events" :key="event.id">
+								<div class="text-right">
+									<span>{{ getDateRangeLabel(event.start_date, event.end_date) }}</span>
+								</div>
+								<div class="relative h-full min-h-[3rem] w-12">
+									<span
+										class="absolute top-2/4 left-2/4 h-12 w-12 -translate-x-2/4 -translate-y-2/4 rounded-full border-4 border-white bg-green-500 p-2 text-white shadow"
+									>
+										<EventIcon />
+									</span>
+									<div
+										v-if="i + 1 < events.length"
+										class="absolute inset-x-2/4 top-0 bottom-[-1.5rem] -z-10 border border-neutral-300"
+									/>
+								</div>
+								<span>{{ event.description || "No Description" }}</span>
+							</template>
+						</ol>
+					</TabPanel>
 					<TabPanel>
 						<ol
 							role="list"
@@ -141,32 +167,6 @@ function getEventColor(type: GetCaseStudyTimetableById.Response[number]["ent_typ
 									</div>
 								</NuxtLink>
 								<span v-else>{{ event.ent_description }}</span>
-							</template>
-						</ol>
-					</TabPanel>
-					<TabPanel>
-						<ol
-							role="list"
-							class="grid items-center gap-6 transition-all"
-							style="grid-template-columns: repeat(3, auto)"
-							:class="{ 'opacity-50 grayscale': isFetching }"
-						>
-							<template v-for="(event, i) of events" :key="event.id">
-								<div class="text-right">
-									<span>{{ getDateRangeLabel(event.start_date, event.end_date) }}</span>
-								</div>
-								<div class="relative h-full min-h-[3rem] w-12">
-									<span
-										class="absolute top-2/4 left-2/4 h-12 w-12 -translate-x-2/4 -translate-y-2/4 rounded-full border-4 border-white bg-green-500 p-2 text-white shadow"
-									>
-										<EventIcon />
-									</span>
-									<div
-										v-if="i + 1 < events.length"
-										class="absolute inset-x-2/4 top-0 bottom-[-1.5rem] -z-10 border border-neutral-300"
-									/>
-								</div>
-								<span>{{ event.description || "No Description" }}</span>
 							</template>
 						</ol>
 					</TabPanel>
