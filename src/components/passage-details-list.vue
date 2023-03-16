@@ -56,7 +56,7 @@ const isEmpty = computed(() => {
 
 			<div class="grid gap-6">
 				<section class="grid gap-1">
-					<dl v-if="passage" class="grid gap-6">
+					<dl v-if="passage" class="grid gap-6 text-sm">
 						<KeywordDisclosure new-tab :keywords="passage.key_word" />
 						<div v-if="passage.translation" class="grid gap-1 px-2">
 							<dt class="text-sm font-medium uppercase text-neutral-500">Translation</dt>

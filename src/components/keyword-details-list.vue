@@ -12,6 +12,7 @@ import { createResourceKey } from "@/lib/search/resource-key";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
 import { useSelection } from "@/lib/search/use-selection";
 import { NuxtLink } from "#components";
+import { useRoute } from "#imports";
 
 const props = defineProps<{
 	id: Keyword["id"];
@@ -21,7 +22,8 @@ const id = computed(() => {
 	return props.id;
 });
 
-const { searchFilters, createSearchFilterParams } = useSearchFilters();
+const route = useRoute();
+const { searchFilters } = useSearchFilters();
 const { createSelectionParams } = useSelection();
 
 const { passages, isLoading, isFetching, isEmpty, isError } = useKeywordDetails(id, searchFilters);
@@ -61,10 +63,10 @@ const { passages, isLoading, isFetching, isEmpty, isError } = useKeywordDetails(
 						<li v-for="passage of passages" :key="passage.id">
 							<article class="grid gap-1 py-2">
 								<NuxtLink
-									class="hover:underline"
+									class="transition hover:underline"
 									:href="{
 										query: {
-											...createSearchFilterParams(searchFilters),
+											...route.query,
 											...createSelectionParams({
 												selection: [createResourceKey({ kind: 'stelle', id: passage.id })],
 											}),
@@ -76,10 +78,10 @@ const { passages, isLoading, isFetching, isEmpty, isError } = useKeywordDetails(
 								<ul role="list" class="flex flex-wrap gap-1 text-xs font-medium">
 									<li v-for="keyword of passage.key_word" :key="keyword.id">
 										<NuxtLink
-											class="hover:underline"
+											class="transition hover:underline"
 											:href="{
 												query: {
-													...createSearchFilterParams(searchFilters),
+													...route.query,
 													...createSelectionParams({
 														selection: [createResourceKey({ kind: 'keyword', id: keyword.id })],
 													}),

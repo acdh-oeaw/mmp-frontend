@@ -13,6 +13,7 @@ import { useBrowseSearchFilters } from "@/lib/browse/use-browse-search-filters";
 import { getAuthorLabel, getDateRangeLabel } from "@/lib/get-label";
 import { createResourceKey } from "@/lib/search/resource-key";
 import { useSelection } from "@/lib/search/use-selection";
+import { NuxtLink } from "#components";
 import { useHead } from "#imports";
 
 const title = "Browse passages";
@@ -124,7 +125,7 @@ const columns = {
 							<td class="w-1/3 px-6 py-4 text-neutral-800">
 								<template v-if="passage.zitat">
 									<NuxtLink
-										class="font-semibold line-clamp-4"
+										class="font-medium transition line-clamp-4 hover:underline"
 										:href="{
 											query: {
 												...createSearchFilterParams(searchFilters),
@@ -139,12 +140,24 @@ const columns = {
 								</template>
 							</td>
 							<td class="w-1/3 px-6 py-4 text-neutral-800">
-								{{ passage.text?.title }}
+								<NuxtLink
+									class="font-medium transition hover:underline"
+									:href="{
+										query: {
+											...createSearchFilterParams(searchFilters),
+											...createSelectionParams({
+												selection: [createResourceKey({ kind: 'text', id: passage.text!.id })],
+											}),
+										},
+									}"
+								>
+									{{ passage.text?.title }}
+								</NuxtLink>
 							</td>
 							<td class="px-6 py-4 text-neutral-800">
 								<p v-for="author in passage.text?.autor" :key="author.id">
 									<NuxtLink
-										class="font-semibold"
+										class="font-medium transition hover:underline"
 										:href="{
 											query: {
 												...createSearchFilterParams(searchFilters),
@@ -167,7 +180,7 @@ const columns = {
 							<td class="whitespace-nowrap px-6 py-4 text-neutral-800">
 								{{ getDateRangeLabel(passage.start_date, passage.end_date) || "non-defined" }}
 							</td>
-							<td class="px-6 py-4 text-neutral-800">
+							<td class="min-w-[200px] px-6 py-4 text-neutral-800">
 								{{ passage.kommentar }}
 							</td>
 						</tr>

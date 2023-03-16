@@ -12,6 +12,7 @@ import { createResourceKey } from "@/lib/search/resource-key";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
 import { useSelection } from "@/lib/search/use-selection";
 import { NuxtLink } from "#components";
+import { useRoute } from "#imports";
 
 const props = defineProps<{
 	id: Place["id"];
@@ -21,7 +22,8 @@ const id = computed(() => {
 	return props.id;
 });
 
-const { searchFilters, createSearchFilterParams } = useSearchFilters();
+const route = useRoute();
+const { searchFilters } = useSearchFilters();
 const { createSelectionParams } = useSelection();
 
 const { passages, caseStudies, isLoading, isFetching, isEmpty, isError } = useTextDetails(
@@ -62,19 +64,21 @@ const { passages, caseStudies, isLoading, isFetching, isEmpty, isError } = useTe
 					<h3 class="text-xs font-medium uppercase text-neutral-500">Passages</h3>
 					<ul class="divide-y text-sm" role="list">
 						<li v-for="passage of passages" :key="passage.id">
-							<NuxtLink
-								class="hover:underline"
-								:href="{
-									query: {
-										...createSearchFilterParams(searchFilters),
-										...createSelectionParams({
-											selection: [createResourceKey({ kind: 'stelle', id: passage.id })],
-										}),
-									},
-								}"
-							>
-								{{ getPassageLabel(passage) }}
-							</NuxtLink>
+							<div class="py-2">
+								<NuxtLink
+									class="transition hover:underline"
+									:href="{
+										query: {
+											...route.query,
+											...createSelectionParams({
+												selection: [createResourceKey({ kind: 'stelle', id: passage.id })],
+											}),
+										},
+									}"
+								>
+									{{ getPassageLabel(passage) }}
+								</NuxtLink>
+							</div>
 						</li>
 					</ul>
 				</section>
@@ -83,10 +87,10 @@ const { passages, caseStudies, isLoading, isFetching, isEmpty, isError } = useTe
 					<h3 class="text-xs font-medium uppercase text-neutral-500">Case studies</h3>
 					<ul class="divide-y text-sm" role="list">
 						<li v-for="caseStudy of caseStudies" :key="caseStudy.id">
-							<article class="grid gap-1">
+							<article class="grid gap-1 py-2">
 								<NuxtLink
 									target="_blank"
-									class="hover:underline"
+									class="transition hover:underline"
 									:href="{ path: `/case-studies/${caseStudy.id}` }"
 								>
 									<strong>{{ caseStudy.title }}</strong>

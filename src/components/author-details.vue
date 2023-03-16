@@ -9,8 +9,8 @@ import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import { getAuthorLabel, getDateRangeLabel, getPlaceLabel } from "@/lib/get-label";
 import { createResourceKey } from "@/lib/search/resource-key";
-import { useSearchFilters } from "@/lib/search/use-search-filters";
 import { useSelection } from "@/lib/search/use-selection";
+import { useRoute } from "#imports";
 
 const props = defineProps<{
 	ids: Set<Author["id"]>;
@@ -21,8 +21,8 @@ const id = computed(() => {
 	return id;
 });
 
+const route = useRoute();
 const { createSelectionParams } = useSelection();
-const { createSearchFilterParams, searchFilters } = useSearchFilters();
 const authorQuery = useAuthorById({ id });
 const isLoading = authorQuery.isInitialLoading;
 const isFetching = authorQuery.isFetching;
@@ -72,10 +72,10 @@ const isEmpty = computed(() => {
 						<dt class="sr-only">Place</dt>
 						<dd>
 							<NuxtLink
-								class="hover:underline"
+								class="transition hover:underline"
 								:href="{
 									query: {
-										...createSearchFilterParams(searchFilters),
+										...route.query,
 										...createSelectionParams({
 											selection: [createResourceKey({ kind: 'ort', id: author.ort.id })],
 										}),

@@ -122,7 +122,7 @@ const columns = {
 						<tr v-for="text of texts" :key="text.id">
 							<td class="w-1/3 px-6 py-4 text-neutral-800">
 								<NuxtLink
-									class="hover:underline"
+									class="font-medium transition hover:underline"
 									:href="{
 										query: {
 											...createSearchFilterParams(searchFilters),
@@ -141,7 +141,7 @@ const columns = {
 							<td class="whitespace-nowrap px-6 py-4 text-neutral-800">
 								<p v-for="author in text.autor" :key="author.id">
 									<NuxtLink
-										class="font-semibold"
+										class="font-medium transition hover:underline"
 										:href="{
 											query: {
 												...createSearchFilterParams(searchFilters),

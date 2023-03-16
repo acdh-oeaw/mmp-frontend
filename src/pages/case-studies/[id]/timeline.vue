@@ -92,7 +92,7 @@ function getEventColor(type: GetCaseStudyTimetableById.Response[number]["ent_typ
 			</template>
 
 			<TabGroup>
-				<TabList v-slot="{ selectedIndex }" class="mb-4 flex justify-around border-b">
+				<TabList v-slot="{ selectedIndex }" class="my-6 flex justify-around border-b">
 					<Tab
 						v-for="(label, i) in ['Case study specific events', 'All events']"
 						:key="label"
@@ -144,7 +144,7 @@ function getEventColor(type: GetCaseStudyTimetableById.Response[number]["ent_typ
 						<ol
 							v-else
 							role="list"
-							class="grid items-center gap-6 transition-all"
+							class="grid items-center gap-6 text-sm transition-all"
 							style="grid-template-columns: repeat(3, auto)"
 							:class="{ 'opacity-50 grayscale': isFetching }"
 						>

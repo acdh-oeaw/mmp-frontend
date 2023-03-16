@@ -4,6 +4,7 @@ import { computed } from "vue";
 import { useKeywords } from "@/api";
 import Centered from "@/components/centered.vue";
 import ErrorMessage from "@/components/error-message.vue";
+import KeywordLink from "@/components/keyword-link.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import PaginationLinks from "@/components/pagination-links.vue";
@@ -118,7 +119,7 @@ const columns = {
 						<tr v-for="keyword of keywords" :key="keyword.id">
 							<td class="w-1/3 px-6 py-4 text-neutral-800">
 								<NuxtLink
-									class="hover:underline"
+									class="font-medium transition hover:underline"
 									:href="{
 										query: {
 											...createSearchFilterParams(searchFilters),
@@ -135,8 +136,21 @@ const columns = {
 								{{ keyword.art }}
 							</td>
 							<td class="px-6 py-4 text-neutral-800">
-								<!-- TODO -->
-								{{ keyword.related_keyword.join(", ") }}
+								<ul role="list" class="flex flex-wrap gap-1">
+									<li v-for="id of keyword.related_keyword" :key="id">
+										<KeywordLink
+											:keyword="id"
+											:href="{
+												query: {
+													...createSearchFilterParams(searchFilters),
+													...createSelectionParams({
+														selection: [createResourceKey({ kind: 'keyword', id })],
+													}),
+												},
+											}"
+										/>
+									</li>
+								</ul>
 							</td>
 						</tr>
 					</tbody>

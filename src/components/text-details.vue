@@ -9,9 +9,9 @@ import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import TextDetailsList from "@/components/text-details-list.vue";
 import { getAuthorLabel, getDateRangeLabel, getPlaceLabel } from "@/lib/get-label";
 import { createResourceKey } from "@/lib/search/resource-key";
-import { useSearchFilters } from "@/lib/search/use-search-filters";
 import { useSelection } from "@/lib/search/use-selection";
 import { NuxtLink } from "#components";
+import { useRoute } from "#imports";
 
 const props = defineProps<{
 	ids: Set<Text["id"]>;
@@ -22,7 +22,7 @@ const id = computed(() => {
 	return id;
 });
 
-const { searchFilters, createSearchFilterParams } = useSearchFilters();
+const route = useRoute();
 const { createSelectionParams } = useSelection();
 
 const textQuery = useTextById({ id });
@@ -72,10 +72,10 @@ const isEmpty = computed(() => {
 							<ul role="list">
 								<li v-for="author of text.autor" :key="author.id">
 									<NuxtLink
-										class="hover:underline"
+										class="transition hover:underline"
 										:href="{
 											query: {
-												...createSearchFilterParams(searchFilters),
+												...route.query,
 												...createSelectionParams({
 													selection: [createResourceKey({ kind: 'autor', id: author.id })],
 												}),
@@ -98,10 +98,10 @@ const isEmpty = computed(() => {
 							<ul role="list">
 								<li v-for="place of text.ort" :key="place.id">
 									<NuxtLink
-										class="hover:underline"
+										class="transition hover:underline"
 										:href="{
 											query: {
-												...createSearchFilterParams(searchFilters),
+												...route.query,
 												...createSelectionParams({
 													selection: [createResourceKey({ kind: 'ort', id: place.id })],
 												}),
