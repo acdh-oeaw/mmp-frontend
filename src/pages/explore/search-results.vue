@@ -101,8 +101,18 @@ const columns = {
 					{{ passagesQuery.data.value?.count }} passage{{
 						passagesQuery.data.value?.count != 1 ? "s" : ""
 					}}
-					found
+					<span>found</span>
+					<span v-if="Number(passagesQuery.data.value?.count) >= searchFilters['limit']">
+						(showing {{ searchFilters["offset"] + 1 }} -
+						{{
+							searchFilters["offset"] + searchFilters["limit"] >
+							Number(passagesQuery.data.value?.count)
+								? passagesQuery.data.value?.count
+								: searchFilters["offset"] + searchFilters["limit"]
+						}})
+					</span>
 				</div>
+				<PaginationLinks :previous="previous" :next="next" :pages="pages" :page="page" />
 				<table class="min-w-full divide-y divide-neutral-200 text-sm">
 					<thead>
 						<tr>
