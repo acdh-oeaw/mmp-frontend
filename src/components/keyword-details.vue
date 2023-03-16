@@ -58,7 +58,10 @@ const isEmpty = computed(() => {
 				class="grid h-full grid-rows-[auto_auto_1fr] gap-4 p-4 text-neutral-800 transition-all"
 				:class="{ 'opacity-50 grayscale': isFetching }"
 			>
-				<h2 class="text-lg font-medium">{{ keyword?.stichwort }}</h2>
+				<h2 class="text-lg font-medium">
+					{{ keyword?.stichwort }}
+					<span v-if="keyword?.art">({{ keyword?.art }})</span>
+				</h2>
 
 				<p v-if="keyword?.kommentar">{{ keyword.kommentar }}</p>
 
