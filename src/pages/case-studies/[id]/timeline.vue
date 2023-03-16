@@ -12,6 +12,7 @@ import { type GetCaseStudyTimetableById } from "@/api";
 import Centered from "@/components/centered.vue";
 import ErrorMessage from "@/components/error-message.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
+import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import { useCaseStudyEvent } from "@/lib/case-studies/use-case-study-events";
 import { useCaseStudyTimeline } from "@/lib/case-studies/use-case-study-timeline.js";
 import { getDateRangeLabel } from "@/lib/get-label";
@@ -46,6 +47,14 @@ const isError = computed(() => {
 const isFetching = computed(() => {
 	return eventLib.isFetching.value || timelineLib.isFetching.value;
 });
+
+const emptyTimeline = computed(() => {
+	return timelineLib.isEmpty.value;
+});
+const emptyEvents = computed(() => {
+	return eventLib.isEmpty.value;
+});
+
 const { createSearchFilterParams, defaultSearchFilters } = useSearchFilters();
 function getEventColor(type: GetCaseStudyTimetableById.Response[number]["ent_type"]) {
 	switch (type) {
@@ -95,7 +104,13 @@ function getEventColor(type: GetCaseStudyTimetableById.Response[number]["ent_typ
 				</TabList>
 				<TabPanels>
 					<TabPanel>
+						<div v-if="emptyEvents" class="pointer-events-none mt-16">
+							<Centered class="">
+								<NothingFoundMessage></NothingFoundMessage>
+							</Centered>
+						</div>
 						<ol
+							v-else
 							role="list"
 							class="grid items-center gap-6 transition-all"
 							style="grid-template-columns: repeat(3, auto)"
@@ -121,7 +136,13 @@ function getEventColor(type: GetCaseStudyTimetableById.Response[number]["ent_typ
 						</ol>
 					</TabPanel>
 					<TabPanel>
+						<template v-if="emptyTimeline">
+							<Centered>
+								<NothingFoundMessage></NothingFoundMessage>
+							</Centered>
+						</template>
 						<ol
+							v-else
 							role="list"
 							class="grid items-center gap-6 transition-all"
 							style="grid-template-columns: repeat(3, auto)"
