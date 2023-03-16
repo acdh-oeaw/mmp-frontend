@@ -104,11 +104,11 @@ function getEventColor(type: GetCaseStudyTimetableById.Response[number]["ent_typ
 				</TabList>
 				<TabPanels>
 					<TabPanel>
-						<div v-if="emptyEvents" class="pointer-events-none mt-16">
-							<Centered class="">
+						<template v-if="emptyEvents">
+							<Centered class="pointer-events-none">
 								<NothingFoundMessage></NothingFoundMessage>
 							</Centered>
-						</div>
+						</template>
 						<ol
 							v-else
 							role="list"
