@@ -23,6 +23,8 @@ function onSetWordCloud() {
 
 <template>
 	<Toolbar>
+		<div class="flex items-center gap-2"></div>
+		<div class="flex items-center gap-2"></div>
 		<div class="flex items-center gap-2">
 			<ToolbarIconButton
 				v-if="props.type === 'pie-chart'"

@@ -73,14 +73,7 @@ function _onFitWorld() {
 
 <template>
 	<Toolbar>
-		<div class="flex items-center gap-2">
-			<ToolbarIconButton label="Zoom in" @click="onZoomIn">
-				<MagnifyingGlassPlusIcon class="h-5 w-5 shrink-0" />
-			</ToolbarIconButton>
-			<ToolbarIconButton label="Zoom out" @click="onZoomOut">
-				<MagnifyingGlassMinusIcon class="h-5 w-5 shrink-0" />
-			</ToolbarIconButton>
-		</div>
+		<div class="flex items-center gap-2"></div>
 		<div class="flex items-center gap-2">
 			<SingleSelect
 				v-if="items.length > 0"
@@ -90,6 +83,14 @@ function _onFitWorld() {
 				:selected-key="selectedKey"
 				@change-selection="onChangeSelection"
 			/>
+		</div>
+		<div class="flex items-center gap-2">
+			<ToolbarIconButton label="Zoom in" @click="onZoomIn">
+				<MagnifyingGlassPlusIcon class="h-5 w-5 shrink-0" />
+			</ToolbarIconButton>
+			<ToolbarIconButton label="Zoom out" @click="onZoomOut">
+				<MagnifyingGlassMinusIcon class="h-5 w-5 shrink-0" />
+			</ToolbarIconButton>
 		</div>
 	</Toolbar>
 </template>

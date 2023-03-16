@@ -81,17 +81,6 @@ function onSaveAsGexf() {
 <template>
 	<Toolbar>
 		<div class="flex items-center gap-2">
-			<ToolbarIconButton label="Zoom in" @click="onZoomIn">
-				<MagnifyingGlassPlusIcon class="h-5 w-5 shrink-0" />
-			</ToolbarIconButton>
-			<ToolbarIconButton label="Zoom out" @click="onZoomOut">
-				<MagnifyingGlassMinusIcon class="h-5 w-5 shrink-0" />
-			</ToolbarIconButton>
-			<ToolbarIconButton label="Zoom to fit" @click="onZoomToFit">
-				<ArrowsPointingInIcon class="h-5 w-5 shrink-0" />
-			</ToolbarIconButton>
-		</div>
-		<div class="flex items-center gap-2">
 			<ToolbarIconButton label="Unpin nodes" @click="onUnPinNodes">
 				<ArrowsPointingOutIcon class="h-5 w-5 shrink-0" />
 			</ToolbarIconButton>
@@ -108,6 +97,17 @@ function onSaveAsGexf() {
 			</ToolbarIconButton>
 			<ToolbarIconButton label="Save as gexf" @click="onSaveAsGexf">
 				<FolderArrowDownIcon class="h-5 w-5 shrink-0" />
+			</ToolbarIconButton>
+		</div>
+		<div class="flex items-center gap-2">
+			<ToolbarIconButton label="Zoom in" @click="onZoomIn">
+				<MagnifyingGlassPlusIcon class="h-5 w-5 shrink-0" />
+			</ToolbarIconButton>
+			<ToolbarIconButton label="Zoom out" @click="onZoomOut">
+				<MagnifyingGlassMinusIcon class="h-5 w-5 shrink-0" />
+			</ToolbarIconButton>
+			<ToolbarIconButton label="Zoom to fit" @click="onZoomToFit">
+				<ArrowsPointingInIcon class="h-5 w-5 shrink-0" />
 			</ToolbarIconButton>
 		</div>
 	</Toolbar>
