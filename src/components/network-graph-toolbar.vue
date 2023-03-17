@@ -88,7 +88,7 @@ function onSaveAsGexf() {
 				<XMarkIcon class="h-5 w-5 shrink-0" />
 			</ToolbarIconButton>
 		</div>
-		<div class="flex items-center gap-2">
+		<div class="mx-auto flex items-center gap-2">
 			<ToolbarIconButton label="Save as image" @click="onSaveAsImage">
 				<FolderArrowDownIcon class="h-5 w-5 shrink-0" />
 			</ToolbarIconButton>
