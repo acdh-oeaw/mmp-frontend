@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+/* stylelint-disable color-named */
+import { maxYear, minYear } from "@/lib/search/search.config";
 import { NuxtImg, NuxtLink } from "#components";
 </script>
 
@@ -25,26 +27,33 @@ import { NuxtImg, NuxtLink } from "#components";
 					<h2 class="text-xl font-extrabold sm:text-2xl lg:text-3xl xl:text-4xl">
 						Visualizing Semantic Landscapes in Early Medieval Europe
 					</h2>
+					<h2 class="text-base font-extrabold sm:text-lg lg:text-xl xl:text-2xl">
+						({{ -minYear }} BCE - {{ maxYear }} CE)
+					</h2>
 				</div>
 
-				<div class="grid max-w-3xl gap-4 leading-7">
+				<div
+					class="grid max-w-3xl gap-4 leading-7"
+					style="
+						text-shadow: -1px -1px 0 rgb(0 0 0), 1px -1px 0 rgb(0 0 0), -1px 1px 0 rgb(0 0 0),
+							1px 1px 0 rgb(0 0 0);
+					"
+				>
 					<p class="font-bold">
-						In the turbulent world of the early Middle Ages, ethnicity became a key resource in the
-						reorganization of the political landscape. Mapping Medieval Peoples (MMP) proposes an
-						innovative technical solution to analyze and visualize the "mental maps" and the
-						semantic fields that emerge from the analysis of late antique and early medieval source
-						material.
-					</p>
-
-					<p>
-						We attempt to reconstruct &quot;mental maps&quot; of a world of peoples, and will offer
-						insights into the interplay between ethnonyms, religious terms, as well as attributes,
-						traits and stereotypes, thus surveying the language employed to create ethnic entities
-						and to distinguish them from each other.
+						<i>Mapping Medieval Peoples</i>
+						(MMP) examines medieval perceptions of peoples and space and the intellectual frameworks
+						in which they were generated. It aims to reconstruct the mental maps of medieval
+						authors. As medieval conceptions of space were expressed and developed primarily through
+						narrative, in MMP we have developed applications for network analysis and
+						geovisualization. This interdisciplinary approach allows us to visualize the narrative
+						descriptions of space and to elucidate how space and the peoples inhabiting it were
+						described and imagined. Furthermore, it makes the different angles from which ethnic
+						groups were described more visible and helps to bring out the complexities and
+						ambiguities of ethnic terminology.
 					</p>
 				</div>
 
-				<div class="grid gap-6 sm:grid-cols-2" style="text-shadow: none">
+				<div class="grid gap-6 sm:grid-cols-3">
 					<div class="grid gap-1">
 						<NuxtLink
 							class="inline-flex items-center justify-center rounded border bg-neutral-100 px-12 py-4 text-sm font-medium uppercase text-neutral-900 shadow-md transition hover:bg-white"
@@ -53,7 +62,6 @@ import { NuxtImg, NuxtLink } from "#components";
 							Search the data
 						</NuxtLink>
 					</div>
-
 					<div class="grid gap-1">
 						<NuxtLink
 							class="inline-flex items-center justify-center rounded border bg-neutral-100 px-12 py-4 text-sm font-medium uppercase text-neutral-900 shadow-md transition hover:bg-white"
@@ -62,6 +70,27 @@ import { NuxtImg, NuxtLink } from "#components";
 							Read case studies
 						</NuxtLink>
 					</div>
+					<div class="grid gap-1">
+						<NuxtLink
+							class="inline-flex items-center justify-center rounded border bg-neutral-100 px-12 py-4 text-sm font-medium uppercase text-neutral-900 shadow-md transition hover:bg-white"
+							href="/about"
+						>
+							Learn more
+						</NuxtLink>
+					</div>
+				</div>
+
+				<div
+					style="
+						text-shadow: -1px -1px 0 rgb(0 0 0), 1px -1px 0 rgb(0 0 0), -1px 1px 0 rgb(0 0 0),
+							1px 1px 0 rgb(0 0 0);
+					"
+				>
+					<p>
+						This project has received funding from the ÖAW Innovation Fund Research, Science and
+						Society (2020-2023)
+					</p>
+					<p>Hosted by ACDH & Imafo</p>
 				</div>
 			</div>
 		</div>
