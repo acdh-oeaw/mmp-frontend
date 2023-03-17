@@ -8,10 +8,12 @@ const label = "Date filter";
 
 const labels: Record<DateFilter, { label: string; description?: string }> = {
 	composition: {
-		label: "Date of composition",
+		label: "Time of composition",
+		description: "Time-frame in which the text was written",
 	},
 	content: {
 		label: "Temporal coverage",
+		description: "Time-frame of events referred to",
 	},
 };
 

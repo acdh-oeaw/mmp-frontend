@@ -74,7 +74,7 @@ function _onFitWorld() {
 <template>
 	<Toolbar>
 		<div class="flex items-center gap-2"></div>
-		<div class="flex items-center gap-2">
+		<div class="mx-auto flex items-center gap-2">
 			<SingleSelect
 				v-if="items.length > 0"
 				:items="items"

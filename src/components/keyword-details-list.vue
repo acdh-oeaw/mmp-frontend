@@ -61,7 +61,7 @@ const { passages, isLoading, isFetching, isEmpty, isError } = useKeywordDetails(
 					<h3 class="text-xs font-medium uppercase text-neutral-500">Passages</h3>
 					<ul role="list" class="divide-y text-sm">
 						<li v-for="passage of passages" :key="passage.id">
-							<article class="grid gap-1 py-2">
+							<article class="grid gap-2 py-4">
 								<NuxtLink
 									class="transition hover:underline"
 									:href="{
@@ -88,7 +88,9 @@ const { passages, isLoading, isFetching, isEmpty, isError } = useKeywordDetails(
 												},
 											}"
 										>
-											<span class="inline-flex rounded bg-neutral-100 px-2 py-1 transition">
+											<span
+												class="inline-flex rounded bg-neutral-200 px-2 py-1 transition hover:underline"
+											>
 												{{ keyword.stichwort }}
 											</span>
 										</NuxtLink>

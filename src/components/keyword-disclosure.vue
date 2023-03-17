@@ -50,6 +50,7 @@ const { createSearchFilterParams, searchFilters } = useSearchFilters();
 					class="hover:bg-black/10"
 					:target="newTab ? '_blank' : undefined"
 					:href="{
+						path: '/explore/search-results',
 						query: createSearchFilterParams({ ...searchFilters, keyword: [keyword.id], offset: 0 }),
 					}"
 				>
