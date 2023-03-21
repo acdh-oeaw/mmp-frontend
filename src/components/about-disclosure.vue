@@ -4,11 +4,12 @@ import { ChevronDownIcon } from "@heroicons/vue/24/outline";
 
 const props = defineProps<{
 	title: string;
+	opened?: boolean;
 }>();
 </script>
 
 <template>
-	<Disclosure v-slot="{ open }">
+	<Disclosure v-slot="{ open }" :default-open="opened">
 		<DisclosureButton as="div" class="flex cursor-pointer items-center justify-between">
 			<h2 class="my-6 text-blue-900">
 				{{ props.title }}

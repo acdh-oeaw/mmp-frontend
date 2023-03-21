@@ -20,7 +20,7 @@ useHead({
 			<div class="prose-sm">
 				<h1>About</h1>
 				<div class="divide-y">
-					<AboutDisclosure title="Find out more about our aims and methods">
+					<AboutDisclosure opened title="Find out more about our aims and methods">
 						<p>
 							From the world of Late Antiquity and the early Middle Ages, numerous ethnic names,
 							such as Goths, Huns, Lombards or Franks, have been handed down to us. Especially in

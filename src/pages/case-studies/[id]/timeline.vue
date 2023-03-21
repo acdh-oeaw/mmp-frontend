@@ -35,9 +35,38 @@ const eventLib = useCaseStudyEvent(id);
 const timeline = computed(() => {
 	return timelineLib.caseStudyTimeline.value;
 });
+const timelineEventsOnly = computed(() => {
+	return timeline.value.filter((event) => {
+		return event.ent_type === "event";
+	});
+});
+
 const events = computed(() => {
 	return eventLib.caseStudyEvents.value;
 });
+const eventsPlus = computed(() => {
+	const entities = timeline.value
+		.filter((event) => {
+			return event.ent_type !== "event";
+		})
+		.map((ent) => {
+			return {
+				id: ent.id,
+				title: ent.ent_title,
+				description: ent.ent_description,
+				start_date: ent.start_date,
+				end_date: ent.end_date,
+				type: ent.ent_type,
+			};
+		});
+
+	return [...entities, ...events.value].sort((a, b) => {
+		if (b.start_date == null) return 1;
+		else if (a.start_date == null) return -1;
+		return a.start_date - b.start_date;
+	});
+});
+
 const isLoading = computed(() => {
 	return eventLib.isLoading.value || timelineLib.isLoading.value;
 });
@@ -112,26 +141,52 @@ function getEventColor(type: GetCaseStudyTimetableById.Response[number]["ent_typ
 						<ol
 							v-else
 							role="list"
-							class="grid items-center gap-6 transition-all"
+							class="grid items-center gap-6 text-sm transition-all"
 							style="grid-template-columns: repeat(3, auto)"
 							:class="{ 'opacity-50 grayscale': isFetching }"
 						>
-							<template v-for="(event, i) of events" :key="event.id">
+							<template v-for="(event, i) of eventsPlus" :key="event.id">
 								<div class="text-right">
-									<span>{{ getDateRangeLabel(event.start_date, event.end_date) }}</span>
+									<span>
+										{{ getDateRangeLabel(Object(event).start_date, Object(event).end_date) }}
+									</span>
 								</div>
 								<div class="relative h-full min-h-[3rem] w-12">
 									<span
-										class="absolute top-2/4 left-2/4 h-12 w-12 -translate-x-2/4 -translate-y-2/4 rounded-full border-4 border-white bg-green-500 p-2 text-white shadow"
+										class="absolute top-2/4 left-2/4 h-12 w-12 -translate-x-2/4 -translate-y-2/4 rounded-full border-4 border-white p-2 text-white shadow"
+										:class="getEventColor(Object(event).type || 'event')"
 									>
-										<EventIcon />
+										<AuthorIcon v-if="Object(event).type === 'autor'" />
+										<TextIcon v-else-if="Object(event).type === 'text'" />
+										<EventIcon v-else />
 									</span>
 									<div
-										v-if="i + 1 < events.length"
+										v-if="i + 1 < eventsPlus.length"
 										class="absolute inset-x-2/4 top-0 bottom-[-1.5rem] -z-10 border border-neutral-300"
 									/>
 								</div>
-								<span>{{ event.description || "No Description" }}</span>
+								<NuxtLink
+									v-if="Object(event).type === 'autor'"
+									:href="{
+										path: '/explore/search-results',
+										query: createSearchFilterParams({
+											...defaultSearchFilters,
+											author: [Object(event).id],
+										}),
+									}"
+								>
+									<div
+										class="-ml-2 flex w-fit basis-0 items-center rounded p-2 transition hover:bg-neutral-200"
+									>
+										<span>
+											{{ Object(event).title }}
+										</span>
+										<span>
+											<ChevronRightIcon class="ml-2 inline h-5 w-5" />
+										</span>
+									</div>
+								</NuxtLink>
+								<span v-else>{{ Object(event).description }}</span>
 							</template>
 						</ol>
 					</TabPanel>
@@ -142,52 +197,27 @@ function getEventColor(type: GetCaseStudyTimetableById.Response[number]["ent_typ
 							</Centered>
 						</template>
 						<ol
-							v-else
 							role="list"
-							class="grid items-center gap-6 text-sm transition-all"
+							class="grid items-center gap-6 transition-all"
 							style="grid-template-columns: repeat(3, auto)"
 							:class="{ 'opacity-50 grayscale': isFetching }"
 						>
-							<template v-for="(event, i) of timeline" :key="event.id">
+							<template v-for="(event, i) of timelineEventsOnly" :key="event.id">
 								<div class="text-right">
 									<span>{{ getDateRangeLabel(event.start_date, event.end_date) }}</span>
 								</div>
 								<div class="relative h-full min-h-[3rem] w-12">
 									<span
-										class="absolute top-2/4 left-2/4 h-12 w-12 -translate-x-2/4 -translate-y-2/4 rounded-full border-4 border-white p-2 text-white shadow"
-										:class="getEventColor(event.ent_type)"
+										class="absolute top-2/4 left-2/4 h-12 w-12 -translate-x-2/4 -translate-y-2/4 rounded-full border-4 border-white bg-green-500 p-2 text-white shadow"
 									>
-										<EventIcon v-if="event.ent_type === 'event'" />
-										<AuthorIcon v-if="event.ent_type === 'autor'" />
-										<TextIcon v-if="event.ent_type === 'text'" />
+										<EventIcon />
 									</span>
 									<div
-										v-if="i + 1 < timeline.length"
+										v-if="i + 1 < timelineEventsOnly.length"
 										class="absolute inset-x-2/4 top-0 bottom-[-1.5rem] -z-10 border border-neutral-300"
 									/>
 								</div>
-								<NuxtLink
-									v-if="event.ent_type === 'autor'"
-									:href="{
-										path: '/explore/search-results',
-										query: createSearchFilterParams({
-											...defaultSearchFilters,
-											author: [event.id],
-										}),
-									}"
-								>
-									<div
-										class="-ml-2 flex w-fit basis-0 items-center rounded p-2 transition hover:bg-neutral-200"
-									>
-										<span>
-											{{ event.ent_title }}
-										</span>
-										<span>
-											<ChevronRightIcon class="ml-2 inline h-5 w-5" />
-										</span>
-									</div>
-								</NuxtLink>
-								<span v-else>{{ event.ent_description }}</span>
+								<span>{{ event.ent_description || "No Description" }}</span>
 							</template>
 						</ol>
 					</TabPanel>
