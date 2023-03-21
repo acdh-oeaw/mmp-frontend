@@ -21,6 +21,15 @@ import { useResourceIdParam } from "@/lib/use-resource-id-param";
 import { NuxtLink } from "#components";
 import { useHead } from "#imports";
 
+type TimelineEntry = {
+	id: number;
+	title?: string | null;
+	description?: string | null;
+	start_date?: number | null;
+	end_date?: number | null;
+	type: "autor" | "event" | "text";
+};
+
 const title = "Timeline";
 
 useHead({
@@ -29,38 +38,36 @@ useHead({
 });
 
 const id = useResourceIdParam();
-const timelineLib = useCaseStudyTimeline(id);
-const eventLib = useCaseStudyEvent(id);
+const timeline = useCaseStudyTimeline(id);
+const events = useCaseStudyEvent(id);
 
-const timeline = computed(() => {
-	return timelineLib.caseStudyTimeline.value;
-});
 const timelineEventsOnly = computed(() => {
-	return timeline.value.filter((event) => {
+	return timeline.caseStudyTimeline.value.filter((event) => {
 		return event.ent_type === "event";
 	});
 });
 
-const events = computed(() => {
-	return eventLib.caseStudyEvents.value;
-});
-const eventsPlus = computed(() => {
-	const entities = timeline.value
-		.filter((event) => {
-			return event.ent_type !== "event";
-		})
-		.map((ent) => {
-			return {
-				id: ent.id,
-				title: ent.ent_title,
-				description: ent.ent_description,
-				start_date: ent.start_date,
-				end_date: ent.end_date,
-				type: ent.ent_type,
-			};
-		});
+const mergedTimelineEntries = computed(() => {
+	const timelineEntries: Array<TimelineEntry> = [];
 
-	return [...entities, ...events.value].sort((a, b) => {
+	events.caseStudyEvents.value.forEach((event) => {
+		timelineEntries.push({ ...event, type: "event" });
+	});
+
+	timeline.caseStudyTimeline.value.forEach((entry) => {
+		if (entry.ent_type === "event") return;
+
+		timelineEntries.push({
+			id: entry.id,
+			title: entry.ent_title,
+			description: entry.ent_description,
+			start_date: entry.start_date,
+			end_date: entry.end_date,
+			type: entry.ent_type,
+		});
+	});
+
+	return timelineEntries.sort((a, b) => {
 		if (b.start_date == null) return 1;
 		else if (a.start_date == null) return -1;
 		return a.start_date - b.start_date;
@@ -68,20 +75,20 @@ const eventsPlus = computed(() => {
 });
 
 const isLoading = computed(() => {
-	return eventLib.isLoading.value || timelineLib.isLoading.value;
+	return events.isLoading.value || timeline.isLoading.value;
 });
 const isError = computed(() => {
-	return eventLib.isError.value || timelineLib.isError.value;
+	return events.isError.value || timeline.isError.value;
 });
 const isFetching = computed(() => {
-	return eventLib.isFetching.value || timelineLib.isFetching.value;
+	return events.isFetching.value || timeline.isFetching.value;
 });
 
 const emptyTimeline = computed(() => {
-	return timelineLib.isEmpty.value;
+	return timeline.isEmpty.value;
 });
 const emptyEvents = computed(() => {
-	return eventLib.isEmpty.value;
+	return events.isEmpty.value;
 });
 
 const { createSearchFilterParams, defaultSearchFilters } = useSearchFilters();
@@ -145,33 +152,33 @@ function getEventColor(type: GetCaseStudyTimetableById.Response[number]["ent_typ
 							style="grid-template-columns: repeat(3, auto)"
 							:class="{ 'opacity-50 grayscale': isFetching }"
 						>
-							<template v-for="(event, i) of eventsPlus" :key="event.id">
+							<template v-for="(event, i) of mergedTimelineEntries" :key="event.id">
 								<div class="text-right">
 									<span>
-										{{ getDateRangeLabel(Object(event).start_date, Object(event).end_date) }}
+										{{ getDateRangeLabel(event.start_date, event.end_date) }}
 									</span>
 								</div>
 								<div class="relative h-full min-h-[3rem] w-12">
 									<span
 										class="absolute top-2/4 left-2/4 h-12 w-12 -translate-x-2/4 -translate-y-2/4 rounded-full border-4 border-white p-2 text-white shadow"
-										:class="getEventColor(Object(event).type || 'event')"
+										:class="getEventColor(event.type)"
 									>
-										<AuthorIcon v-if="Object(event).type === 'autor'" />
-										<TextIcon v-else-if="Object(event).type === 'text'" />
+										<AuthorIcon v-if="event.type === 'autor'" />
+										<TextIcon v-else-if="event.type === 'text'" />
 										<EventIcon v-else />
 									</span>
 									<div
-										v-if="i + 1 < eventsPlus.length"
+										v-if="i + 1 < mergedTimelineEntries.length"
 										class="absolute inset-x-2/4 top-0 bottom-[-1.5rem] -z-10 border border-neutral-300"
 									/>
 								</div>
 								<NuxtLink
-									v-if="Object(event).type === 'autor'"
+									v-if="event.type === 'autor'"
 									:href="{
 										path: '/explore/search-results',
 										query: createSearchFilterParams({
 											...defaultSearchFilters,
-											author: [Object(event).id],
+											author: [event.id],
 										}),
 									}"
 								>
@@ -179,14 +186,14 @@ function getEventColor(type: GetCaseStudyTimetableById.Response[number]["ent_typ
 										class="-ml-2 flex w-fit basis-0 items-center rounded p-2 transition hover:bg-neutral-200"
 									>
 										<span>
-											{{ Object(event).title }}
+											{{ event.title }}
 										</span>
 										<span>
 											<ChevronRightIcon class="ml-2 inline h-5 w-5" />
 										</span>
 									</div>
 								</NuxtLink>
-								<span v-else>{{ Object(event).description }}</span>
+								<span v-else>{{ event.description }}</span>
 							</template>
 						</ol>
 					</TabPanel>
