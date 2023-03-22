@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { Dialog, DialogPanel, DialogTitle } from "@headlessui/vue";
+import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from "@headlessui/vue";
 import { ChartPieIcon, CloudIcon, ListBulletIcon, XMarkIcon } from "@heroicons/vue/24/outline";
 import { ref } from "vue";
 
@@ -24,7 +24,11 @@ function onSetWordCloud() {
 	emit("toggle", "word-cloud");
 }
 
-var isOpen = ref(false);
+const isDialogOpen = ref(false);
+
+function onCloseDialog() {
+	isDialogOpen.value = false;
+}
 </script>
 
 <template>
@@ -32,7 +36,7 @@ var isOpen = ref(false);
 		<div class="flex items-center gap-2"></div>
 		<div class="mx-auto flex items-center gap-2"></div>
 		<div class="flex items-center gap-2">
-			<ToolbarIconButton v-if="clouds" label="View all words" @click="isOpen = true">
+			<ToolbarIconButton v-if="clouds" label="View all words" @click="isDialogOpen = true">
 				<ListBulletIcon class="h-5 w-5 shrink-0" />
 			</ToolbarIconButton>
 			<ToolbarIconButton
@@ -51,31 +55,65 @@ var isOpen = ref(false);
 			</ToolbarIconButton>
 		</div>
 		<div class="flex items-center gap-2"></div>
-		<Dialog :open="isOpen" @close="isOpen = false">
-			<div class="fixed inset-0 bg-black/30" aria-hidden="true" @click="isOpen = false" />
-			<div class="fixed inset-0 flex items-center justify-center p-4">
-				<DialogPanel class="h-full w-fit overflow-y-scroll rounded bg-white p-5 md:h-2/4">
-					<div class="flex justify-between pb-5 align-middle">
-						<DialogTitle>List of keywords</DialogTitle>
-						<button @click="isOpen = false">
-							<XMarkIcon class="h-5 w-5" />
-						</button>
-					</div>
-					<div class="grid grid-cols-2">
-						<h2>Keywords</h2>
-						<h2 class="pb-2 text-right">All words</h2>
-						<div
-							v-for="(list, i) in [props.clouds?.keywords, props.clouds?.tokens]"
-							:key="String(list)"
-							:class="i === 1 && 'text-right'"
+
+		<TransitionRoot :show="isDialogOpen" as="template">
+			<Dialog class="relative z-50" @close="onCloseDialog">
+				<TransitionChild
+					as="template"
+					enter="duration-300 ease-out"
+					enter-from="opacity-0"
+					enter-to="opacity-100"
+					leave="duration-200 ease-in"
+					leave-from="opacity-100"
+					leave-to="opacity-0"
+				>
+					<div class="fixed inset-0 bg-black/25" />
+				</TransitionChild>
+
+				<div class="fixed inset-0 flex items-center justify-center p-4">
+					<TransitionChild
+						as="template"
+						enter="ease-out duration-300"
+						enter-from="opacity-0 scale-95"
+						enter-to="opacity-100 scale-100"
+						leave="ease-in duration-200"
+						leave-from="opacity-100 scale-100"
+						leave-to="opacity-0 scale-95"
+					>
+						<DialogPanel
+							class="grid h-full w-full max-w-md gap-4 overflow-hidden rounded bg-white py-8 shadow-xl md:h-2/3"
 						>
-							<ul>
-								<li v-for="word in list" :key="word.name">{{ word.name }}: {{ word.weight }}</li>
-							</ul>
-						</div>
-					</div>
-				</DialogPanel>
-			</div>
-		</Dialog>
+							<div class="flex items-center justify-between px-8">
+								<DialogTitle class="text-lg font-medium">List of keywords</DialogTitle>
+
+								<button class="flex gap-1" @click="onCloseDialog">
+									<XMarkIcon
+										aria-hidden="true"
+										class="h-5 w-5 shrink-0 transition hover:text-neutral-700"
+									/>
+									<span class="sr-only">Close</span>
+								</button>
+							</div>
+
+							<div class="grid grid-cols-2 gap-4 overflow-y-auto px-8 text-sm">
+								<h3 class="font-medium">Keywords</h3>
+								<h3 class="text-right font-medium">All words</h3>
+								<div
+									v-for="(list, i) in [props.clouds?.keywords, props.clouds?.tokens]"
+									:key="i"
+									:class="i === 1 && 'text-right'"
+								>
+									<ul role="list">
+										<li v-for="word in list" :key="word.name">
+											{{ word.name }}: {{ word.weight }}
+										</li>
+									</ul>
+								</div>
+							</div>
+						</DialogPanel>
+					</TransitionChild>
+				</div>
+			</Dialog>
+		</TransitionRoot>
 	</Toolbar>
 </template>

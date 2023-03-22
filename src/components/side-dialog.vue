@@ -3,6 +3,7 @@ import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from "@headlessu
 import { ArrowLeftIcon, XMarkIcon } from "@heroicons/vue/24/outline";
 
 import { ClientOnly } from "#components";
+import { useRouter } from "#imports";
 
 const props = defineProps<{
 	open: boolean;
@@ -15,6 +16,8 @@ const emit = defineEmits<{
 function onToggle() {
 	emit("toggle");
 }
+
+const router = useRouter();
 </script>
 
 <template>
@@ -49,10 +52,10 @@ function onToggle() {
 						>
 							<div class="flex justify-between">
 								<div class="px-8">
-									<button class="flex gap-1" @click="$router.go(-1)">
+									<button class="flex gap-1" @click="router.go(-1)">
 										<ArrowLeftIcon
 											aria-hidden="true"
-											class="h-6 w-6 transition hover:text-neutral-700"
+											class="h-6 w-6 shrink-0 transition hover:text-neutral-700"
 										/>
 										<span class="sr-only">Go Back</span>
 									</button>
@@ -61,7 +64,7 @@ function onToggle() {
 									<button class="flex gap-1" @click="onToggle">
 										<XMarkIcon
 											aria-hidden="true"
-											class="h-6 w-6 transition hover:text-neutral-700"
+											class="h-6 w-6 shrink-0 transition hover:text-neutral-700"
 										/>
 										<span class="sr-only">Close</span>
 									</button>
