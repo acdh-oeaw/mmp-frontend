@@ -165,18 +165,18 @@ useHead({
 							<ul class="m-0 p-0">
 								<li>
 									<a
-										href="https://www.oeaw.ac.at/imafo/forschung/historische-identitaetsforschung/mitarbeiterinnen/walter-pohl"
-										class="underline"
-									>
-										Walter Pohl (Imafo / AAS)
-									</a>
-								</li>
-								<li>
-									<a
 										href="https://www.oeaw.ac.at/imafo/forschung/historische-identitaetsforschung/mitarbeiterinnen/veronika-wieser/"
 										class="underline"
 									>
 										Veronika Wieser (Imafo / AAS)
+									</a>
+								</li>
+								<li>
+									<a
+										href="https://www.oeaw.ac.at/imafo/forschung/historische-identitaetsforschung/mitarbeiterinnen/walter-pohl"
+										class="underline"
+									>
+										Walter Pohl (Imafo / AAS)
 									</a>
 								</li>
 							</ul>
@@ -241,6 +241,11 @@ useHead({
 					</AboutDisclosure>
 					<AboutDisclosure title="Find out more about our events and publications">
 						<p>
+							In preparation: collected volume 'Mapping Medieval Peoples: New Approaches to Ethnic
+							Identity and Space, 400-1400CE', ed. Laura Gazzoli, Veronika Wieser, Katharina
+							Winckler (Brepols, 2024)
+						</p>
+						<p>
 							<b>Workshop</b>
 							&nbsp;
 							<a
@@ -264,11 +269,6 @@ useHead({
 							</a>
 							<span>,</span>
 							June 10, 2022, organized by Laura Gazzoli
-						</p>
-						<p>
-							In preparation: collected volume ‘Mapping Medieval Peoples: New Approaches to Ethnic
-							Identity and Space, 400-1400CE’, ed. Laura Gazzoli, Veronika Wieser, Katharina
-							Winckler (Brepols, 2024)
 						</p>
 					</AboutDisclosure>
 					<AboutDisclosure title="Find out more about our resources"></AboutDisclosure>
