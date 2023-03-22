@@ -54,7 +54,7 @@ var isOpen = ref(false);
 		<Dialog :open="isOpen" @close="isOpen = false">
 			<div class="fixed inset-0 bg-black/30" aria-hidden="true" @click="isOpen = false" />
 			<div class="fixed inset-0 flex items-center justify-center p-4">
-				<DialogPanel class="h-2/4 w-fit overflow-y-scroll rounded bg-white p-5">
+				<DialogPanel class="h-full w-fit overflow-y-scroll rounded bg-white p-5 md:h-2/4">
 					<div class="flex justify-between pb-5 align-middle">
 						<DialogTitle>List of keywords</DialogTitle>
 						<button @click="isOpen = false">
