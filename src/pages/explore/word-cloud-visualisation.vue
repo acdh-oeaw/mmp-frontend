@@ -84,7 +84,7 @@ function onToggle(chart: "pie-chart" | "word-cloud") {
 						:clouds="clouds"
 						:width="width"
 					/>
-					<WordCloudToolbar :type="type" @toggle="onToggle" />
+					<WordCloudToolbar :type="type" :clouds="clouds" @toggle="onToggle" />
 				</VisualisationContainer>
 			</ClientOnly>
 		</template>
