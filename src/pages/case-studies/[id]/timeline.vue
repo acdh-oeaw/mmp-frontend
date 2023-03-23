@@ -148,8 +148,7 @@ function getEventColor(type: GetCaseStudyTimetableById.Response[number]["ent_typ
 						<ol
 							v-else
 							role="list"
-							class="grid items-center gap-6 text-sm transition-all"
-							style="grid-template-columns: repeat(3, auto)"
+							class="grid grid-cols-[fit-content(40%)_fit-content(3rem)_1fr] items-center gap-6 transition-all"
 							:class="{ 'opacity-50 grayscale': isFetching }"
 						>
 							<template v-for="(event, i) of mergedTimelineEntries" :key="event.id">
@@ -205,8 +204,7 @@ function getEventColor(type: GetCaseStudyTimetableById.Response[number]["ent_typ
 						</template>
 						<ol
 							role="list"
-							class="grid items-center gap-6 transition-all"
-							style="grid-template-columns: repeat(3, auto)"
+							class="grid grid-cols-[fit-content(40%)_fit-content(3rem)_1fr] items-center gap-6 transition-all"
 							:class="{ 'opacity-50 grayscale': isFetching }"
 						>
 							<template v-for="(event, i) of timelineEventsOnly" :key="event.id">
