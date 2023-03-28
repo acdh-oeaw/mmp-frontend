@@ -13,7 +13,7 @@ useHead({
 </script>
 
 <template>
-	<div class="grid h-full grid-rows-[auto_auto_1fr]">
+	<div class="grid h-full grid-rows-[auto_1fr]">
 		<h1 class="sr-only">Case studies</h1>
 
 		<aside>
