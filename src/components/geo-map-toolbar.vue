@@ -8,6 +8,7 @@ import Toolbar from "@/components/toolbar.vue";
 import ToolbarIconButton from "@/components/toolbar-icon-button.vue";
 import { initialViewState } from "@/lib/geo-map/geo-map.config";
 import { key } from "@/lib/geo-map/geo-map.context";
+import { type BaseLayer } from "@/lib/geo-map/use-geo-map-base-layer";
 import { isNotNullable } from "@/lib/is-not-nullable";
 
 interface Item {
@@ -18,29 +19,39 @@ interface Item {
 
 const props = defineProps<{
 	layers: Map<GeojsonLayer["id"], GeojsonLayer>;
+	baseLayer: BaseLayer;
+	baseLayers: Array<Item>;
+}>();
+
+const emit = defineEmits<{
+	(event: "change-base-layer", key: BaseLayer): void;
 }>();
 
 const context = inject(key);
 
-const label = "Layers";
+//
 
-const selectedKey = context ? context.visibility.layers.value.values().next().value : undefined;
+const layersLabel = "Layers";
 
-const items = computed(() => {
-	const items: Array<Item> = [];
+const selectedLayerKey = context
+	? context.visibility.layers.value.values().next().value
+	: undefined;
+
+const layers = computed(() => {
+	const layers: Array<Item> = [];
 
 	props.layers.forEach((layer) => {
-		items.push({
+		layers.push({
 			key: String(layer.id),
 			label: layer.title,
 			description: [layer.description, layer.attribution].filter(isNotNullable).join(" - "),
 		});
 	});
 
-	return items;
+	return layers;
 });
 
-function onChangeSelection(_selectedKey: string) {
+function onChangeLayerSelection(_selectedKey: string) {
 	if (context == null) return;
 	const selectedKey = Number(_selectedKey);
 
@@ -50,6 +61,14 @@ function onChangeSelection(_selectedKey: string) {
 	} else {
 		layers.add(selectedKey);
 	}
+}
+
+//
+
+const baseLayerLabel = "Layers";
+
+function onChangeBaseLayerSelection(_selectedKey: string) {
+	emit("change-base-layer", _selectedKey as BaseLayer);
 }
 
 //
@@ -73,17 +92,24 @@ function _onFitWorld() {
 
 <template>
 	<Toolbar>
-		<div class="flex items-center gap-2"></div>
-		<div class="mx-auto flex items-center gap-2">
+		<div class="flex items-center gap-2">
 			<SingleSelect
-				v-if="items.length > 0"
-				:items="items"
-				:label="label"
+				v-if="layers.length > 0"
+				:items="layers"
+				:label="layersLabel"
 				name="custom-layers"
-				:selected-key="selectedKey"
-				@change-selection="onChangeSelection"
+				:selected-key="selectedLayerKey"
+				@change-selection="onChangeLayerSelection"
+			/>
+			<SingleSelect
+				v-if="props.baseLayers.length > 0"
+				:items="props.baseLayers"
+				:label="baseLayerLabel"
+				:selected-key="props.baseLayer"
+				@change-selection="onChangeBaseLayerSelection"
 			/>
 		</div>
+		<div class="mx-auto flex items-center gap-2"></div>
 		<div class="flex items-center gap-2">
 			<ToolbarIconButton label="Zoom in" @click="onZoomIn">
 				<MagnifyingGlassPlusIcon class="h-5 w-5 shrink-0" />

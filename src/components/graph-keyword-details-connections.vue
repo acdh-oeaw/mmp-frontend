@@ -8,6 +8,7 @@ import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import { useNetworkGraph } from "@/lib/network-graph/use-network-graph";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
 import { useSelection } from "@/lib/search/use-selection";
+import { SelectionKey } from "~~/src/lib/search/selection-key";
 
 const { searchFilters, defaultSearchFilters, createSearchFilterParams } = useSearchFilters();
 const { graph, isLoading, isError, isEmpty, isFetching } = useNetworkGraph(searchFilters);
@@ -49,12 +50,12 @@ const { selection } = useSelection();
 						v-for="[key, conn] in Array.from(graph.edges)
 							.filter(([key, edge]) => {
 								return (
-									selection.selection.includes(edge.source) ||
-									selection.selection.includes(edge.target)
+									selection.selection.includes('graph-' + edge.source as SelectionKey) ||
+									selection.selection.includes('graph-' + edge.target as SelectionKey)
 								);
 							})
-							.sort(([aKey, aVal], [bKey, bVal]) => {
-								return bVal.count - aVal.count;
+							.sort(([aKey, aValue], [bKey, bValue]) => {
+								return bValue.count - aValue.count;
 							})"
 						:key="key"
 					>

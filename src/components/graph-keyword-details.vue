@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/vue";
 import { useQueries } from "@tanstack/vue-query";
-import { computed } from "vue";
+import { computed, inject } from "vue";
 
 import { type Author, type Keyword, createKey, useTexts } from "@/api";
 import * as api from "@/api/client";
@@ -20,6 +20,7 @@ import { useGeoMap } from "@/lib/geo-map/use-geo-map";
 import { getPlaceLabel } from "@/lib/get-label";
 import { isNotNullable } from "@/lib/is-not-nullable";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
+import { key } from "~~/src/lib/network-graph/network-graph.context";
 
 const props = defineProps<{
 	ids: Set<Keyword["id"]>;
@@ -117,6 +118,8 @@ const texts = textKeywordsQuery.data;
 const isEmpty = computed(() => {
 	return keywords.value.length === 0;
 });
+
+const _context = inject(key);
 </script>
 
 <template>

@@ -70,6 +70,7 @@ export const initialViewState = {
 	bounds: initialBounds,
 };
 
+// FIXME: do we use these?
 export const colors = {
 	cones: "hsl(50deg 100% 75%)",
 	coneOrigins: "hsl(50deg 100% 75%)",
