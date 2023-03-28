@@ -217,6 +217,15 @@ function updateAreaLabels() {
 	}
 }
 
+function updateBaseLayer() {
+	if (context.baseLayer == null) return;
+
+	const baseLayer = props.baseLayer ? baseLayers[props.baseLayer] : config.baseLayer;
+
+	context.baseLayer.setUrl(baseLayer.url);
+	context.baseLayer.options.attribution = baseLayer.attribution;
+}
+
 function updateStackingOrder() {
 	nextTick(() => {
 		Object.values(context.layers).forEach((layer) => {
@@ -765,6 +774,10 @@ watch(
 	],
 	updateAreas,
 );
+
+watch(() => {
+	return props.baseLayer;
+}, updateBaseLayer);
 
 //
 
