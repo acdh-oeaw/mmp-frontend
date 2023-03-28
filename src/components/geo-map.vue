@@ -7,6 +7,7 @@ import {
 	type LatLngBoundsLiteral,
 	type Map as LeafletMap,
 	type Marker,
+	type PathOptions,
 	type Polygon,
 } from "leaflet";
 import { nextTick, onMounted, onUnmounted, provide, ref, watch } from "vue";
@@ -15,7 +16,6 @@ import {
 	type ConeGeojson,
 	type GeojsonLayer,
 	type LinesPointsGeojson,
-	type ResourceKey,
 	type SpatialCoverageGeojson,
 } from "@/api";
 import { debounce } from "@/lib/debounce";
@@ -30,6 +30,7 @@ import {
 	type GeoMapContext,
 	type SpatialCoverageCenterPoint,
 } from "@/lib/geo-map/geo-map.types";
+import { type SelectionKey, createSelectionKey } from "@/lib/search/selection-key";
 
 const props = defineProps<{
 	areas: Array<SpatialCoverageGeojson>;
@@ -37,10 +38,10 @@ const props = defineProps<{
 	cones: Array<ConeGeojson>;
 	coneOrigins: Array<ConeOriginGeojson>;
 	height: number;
-	highlightedKeys: Set<ResourceKey>;
+	highlightedKeys: Set<SelectionKey>;
 	layers: Map<GeojsonLayer["id"], GeojsonLayer>;
 	linesPoints: Array<LinesPointsGeojson>;
-	selectedKeys: Set<ResourceKey>;
+	selectedKeys: Set<SelectionKey>;
 	width: number;
 }>();
 
@@ -305,7 +306,7 @@ onMounted(async () => {
 
 	//
 
-	function getConeStyles(_feature: ConeGeojson) {
+	function getConeStyles(_feature: ConeGeojson): PathOptions {
 		const color = colors.cones;
 
 		return {
@@ -331,19 +332,21 @@ onMounted(async () => {
 
 	//
 
-	function getAreaStyles(feature: SpatialCoverageGeojson) {
+	function getAreaStyles(feature: SpatialCoverageGeojson): PathOptions {
 		const keyword = feature.properties.key_word;
 		// FIXME: @see https://github.com/acdh-oeaw/mmp/issues/211
 		// assert(keyword != null, "Spatial Coverage is missing a keyword.");
 
+		const key: SelectionKey = createSelectionKey({ id: feature.id, kind: "geojson-area" });
+		const isSelected = props.selectedKeys.has(key);
 		// const color = keywordColors[keyword.art];
 		const color = keyword ? keywordColors[keyword.art] : "#0f172a";
 
 		return {
-			color,
+			color: isSelected ? "#ef4444" : color,
 			dashArray: "12 6",
 			fill: true,
-			fillOpacity: 0.18,
+			fillOpacity: isSelected ? 0.36 : 0.18,
 			opacity: 0.75,
 			stroke: true,
 			weight: 2,
@@ -362,7 +365,7 @@ onMounted(async () => {
 
 			layer.on("mouseover", () => {
 				const styles = getAreaStyles(feature);
-				layer.setStyle({ ...styles, color: "#ef4444", fillOpacity: 0.5 });
+				layer.setStyle({ ...styles, color: "#ef4444", fillOpacity: 0.54 });
 			});
 			layer.on("mouseout", () => {
 				const styles = getAreaStyles(feature);
