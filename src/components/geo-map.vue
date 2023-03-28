@@ -744,6 +744,18 @@ watch(
 	updateStackingOrder,
 );
 
+watch(
+	[
+		() => {
+			return props.highlightedKeys;
+		},
+		() => {
+			return props.selectedKeys;
+		},
+	],
+	updateAreas,
+);
+
 //
 
 onUnmounted(() => {
