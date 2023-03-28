@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { assert } from "@stefanprobst/assert";
 import { groupByToMap } from "@stefanprobst/group-by";
 import { type ForceCenter, type ForceLink, type ForceManyBody } from "d3";
 import { type ForceGraphInstance, type LinkObject, type NodeObject } from "force-graph";
@@ -12,6 +13,7 @@ import {
 	type NetworkGraphNode,
 } from "@/lib/network-graph/network-graph.types";
 import { type SelectionKey } from "@/lib/search/selection-key";
+import { useSearchFilters } from "@/lib/search/use-search-filters";
 
 const props = defineProps<{
 	graph: NetworkGraphData;
@@ -26,6 +28,8 @@ const emit = defineEmits<{
 	(event: "node-hover", node: NetworkGraphNode | null): void;
 	(event: "ready", forceGraph: ForceGraphInstance): void;
 }>();
+
+const { searchFilters } = useSearchFilters();
 
 const context: NetworkGraphContext = {
 	graph: null,
@@ -193,20 +197,25 @@ onMounted(async () => {
 		NodeObject,
 		Required<LinkObject>
 	> | null;
-	// _linkForce?.strength((link) => {
-	// 	const source = link.source;
-	// 	assert(typeof source === "object");
-	// 	if (source.kind === "autor") {
-	// 		return 0.7;
-	// 	}
-	// 	return 0;
-	// });
 
 	const _chargeForce = context.graph.d3Force("charge") as ForceManyBody<NodeObject> | null;
 	// chargeForce?.strength(-100);
 
-	const _centerForce = context.graph.d3Force("center") as ForceCenter<NodeObject> | null;
+	let _centerForce = context.graph.d3Force("center") as ForceCenter<NodeObject> | null;
 	// context.graph.d3Force("center", null);
+
+	if (searchFilters.value.author.length >= 2) {
+		_linkForce?.strength((link) => {
+			const source = link.source;
+			assert(typeof source === "object");
+			if (source.kind === "autor") {
+				return 0.7;
+			}
+			return 0.05;
+		});
+
+		// _centerForce = context.graph.d3Force("center", null);
+	}
 
 	context.graph.autoPauseRedraw(false);
 	updateGraph();
