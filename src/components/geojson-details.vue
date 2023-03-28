@@ -151,7 +151,7 @@ const _context = inject(key);
 
 			<div>
 				<section v-if="areas.length > 0">
-					<h2 class="flex border-b border-neutral-200 pb-1 text-xl font-medium">
+					<h2 class="sr-only flex border-b border-neutral-200 pb-1 text-xl font-medium">
 						Spatial coverages
 					</h2>
 					<ul role="list" class="divide-y">
@@ -199,7 +199,7 @@ const _context = inject(key);
 				</section>
 
 				<section v-if="points.length > 0">
-					<h2 class="flex border-b border-neutral-200 pb-1 text-xl font-medium">Places</h2>
+					<h2 class="sr-only flex border-b border-neutral-200 pb-1 text-xl font-medium">Places</h2>
 					<ul role="list" class="divide-y">
 						<li v-for="point of points" :key="point.id">
 							<article class="relative my-8 grid gap-2">
@@ -230,7 +230,9 @@ const _context = inject(key);
 				</section>
 
 				<section v-if="collections.length > 0">
-					<h2 class="flex border-b border-neutral-200 pb-1 text-xl font-medium">Collections</h2>
+					<h2 class="sr-only flex border-b border-neutral-200 pb-1 text-xl font-medium">
+						Contextual data
+					</h2>
 					<ul role="list" class="divide-y">
 						<li v-for="collection of collections" :key="collection.id">
 							<article class="relative my-8 grid gap-2">
