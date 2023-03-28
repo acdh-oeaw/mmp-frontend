@@ -85,9 +85,14 @@ const context: GeoMapContext = {
 		),
 		layers: ref(new Set<GeojsonLayer["id"]>([...props.layers.keys()])),
 	},
+
 	overlays: {
 		areas: ref<Array<SpatialCoverageGeojson>>([]),
 		cones: ref<Array<ConeOriginGeojson>>([]),
+	},
+
+	disabled: {
+		areas: ref<Set<SpatialCoverageGeojson["id"]>>(new Set()),
 	},
 };
 
@@ -139,6 +144,8 @@ function updateCones() {
 
 	if (isVisible) {
 		cones.forEach((polygon) => {
+			if (context.disabled.areas.value.has(polygon.id)) return;
+
 			featureGroup?.addData(polygon);
 		});
 	}
@@ -154,6 +161,8 @@ function updateAreas() {
 
 	if (isVisible) {
 		areas.forEach((polygon) => {
+			if (context.disabled.areas.value.has(polygon.id)) return;
+
 			featureGroup?.addData(polygon);
 		});
 	}
@@ -168,6 +177,8 @@ function updateOverlayAreas() {
 
 	if (isVisible) {
 		context.overlays.areas.value.forEach((polygon) => {
+			if (context.disabled.areas.value.has(polygon.id)) return;
+
 			featureGroup?.addData(polygon);
 		});
 	}
@@ -212,6 +223,8 @@ function updateAreaLabels() {
 
 	if (isVisible) {
 		areaCenterPoints.forEach((point) => {
+			if (context.disabled.areas.value.has(point.id)) return;
+
 			featureGroup?.addData(point);
 		});
 	}
@@ -773,6 +786,27 @@ watch(
 		},
 	],
 	updateAreas,
+);
+
+watch(context.disabled.areas, () => {
+	updateAreas();
+	updateCones();
+	updateOverlayAreas();
+	updateAreaLabels();
+});
+
+watch(
+	[
+		() => {
+			return props.areas;
+		},
+		() => {
+			return props.areaCenterPoints;
+		},
+	],
+	() => {
+		context.disabled.areas.value = new Set();
+	},
 );
 
 watch(() => {

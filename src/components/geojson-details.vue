@@ -1,5 +1,6 @@
 <script lang="ts" setup>
-import { XMarkIcon } from "@heroicons/vue/24/outline";
+import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/vue";
+import { EyeIcon, EyeSlashIcon, XMarkIcon } from "@heroicons/vue/24/outline";
 import { useQueries } from "@tanstack/vue-query";
 import { computed, inject } from "vue";
 
@@ -12,6 +13,7 @@ import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import { key } from "@/lib/geo-map/geo-map.context";
 import { type ConeOriginGeojson } from "@/lib/geo-map/geo-map.types";
+import { useGeoMap } from "@/lib/geo-map/use-geo-map";
 import { getPassageLabel, getPlaceLabel } from "@/lib/get-label";
 import { isNotNullable } from "@/lib/is-not-nullable";
 import { createSelectionKey } from "@/lib/search/selection-key";
@@ -119,7 +121,28 @@ function deselect<T>(selection: Array<T>, value: T): Array<T> {
 	});
 }
 
-const _context = inject(key);
+//
+
+// TODO: loading states
+const { areas: allAreas } = useGeoMap(searchFilters);
+
+function onToggleAreaVisibility(id: SpatialCoverageGeojson["id"]) {
+	if (context == null) return;
+
+	const values = new Set(context.disabled.areas.value);
+
+	if (values.has(id)) {
+		values.delete(id);
+	} else {
+		values.add(id);
+	}
+
+	context.disabled.areas.value = values;
+}
+
+//
+
+const context = inject(key);
 </script>
 
 <template>
@@ -150,137 +173,207 @@ const _context = inject(key);
 			</template>
 
 			<div>
-				<section v-if="areas.length > 0">
-					<h2 class="sr-only flex border-b border-neutral-200 pb-1 text-xl font-medium">
-						Spatial coverages
-					</h2>
-					<ul role="list" class="divide-y">
-						<li v-for="area of areas" :key="area.id">
-							<article class="relative my-8 grid gap-2">
-								<NuxtLink
-									class="absolute right-2.5 flex items-center gap-1"
-									:href="{
-										query: {
-											...createSearchFilterParams(searchFilters),
-											...createSelectionParams({
-												selection: deselect(
-													selection.selection,
-													createSelectionKey({ kind: 'geojson-area', id: area.id }),
-												),
-											}),
-										},
-									}"
-								>
-									<XMarkIcon class="h-4 w-4 shrink-0" />
-									<span class="sr-only">Deselect</span>
-								</NuxtLink>
-								<h3 class="pr-8 text-lg font-medium">
-									{{ area.properties.key_word?.stichwort }} ({{ area.properties.key_word?.art }})
-								</h3>
-								<div>
-									<KeywordTag v-if="area.properties.key_word" :keyword="area.properties.key_word" />
-								</div>
-								<p class="text-sm leading-6">{{ area.properties.kommentar }}</p>
-								<dl>
-									<div class="grid gap-1">
-										<dt class="text-sm font-medium uppercase text-neutral-600">Passages</dt>
-										<dd class="text-sm">
-											<ul role="list">
-												<li v-for="passage of area.properties.stelle" :key="passage.id">
-													{{ getPassageLabel(passage) }}
-												</li>
-											</ul>
-										</dd>
-									</div>
-								</dl>
-							</article>
-						</li>
-					</ul>
-				</section>
+				<TabGroup>
+					<TabList
+						as="ul"
+						class="grid grid-cols-2 border-b border-neutral-200 px-8 font-medium"
+						role="list"
+					>
+						<Tab v-slot="{ selected }" as="li">
+							<div
+								class="grid cursor-pointer place-items-center rounded-t p-2 text-center text-sm transition hover:bg-neutral-100 aria-[current]:bg-neutral-200"
+								:class="{ 'pointer-events-none bg-neutral-200': selected }"
+							>
+								<span>Selected</span>
+							</div>
+						</Tab>
+						<Tab v-slot="{ selected }" as="li">
+							<div
+								class="grid cursor-pointer place-items-center rounded-t p-2 text-center text-sm transition hover:bg-neutral-100 aria-[current]:bg-neutral-200"
+								:class="{ 'pointer-events-none bg-neutral-200': selected }"
+							>
+								<span>All</span>
+							</div>
+						</Tab>
+					</TabList>
 
-				<section v-if="points.length > 0">
-					<h2 class="sr-only flex border-b border-neutral-200 pb-1 text-xl font-medium">Places</h2>
-					<ul role="list" class="divide-y">
-						<li v-for="point of points" :key="point.id">
-							<article class="relative my-8 grid gap-2">
-								<NuxtLink
-									class="absolute right-2.5 flex items-center gap-1"
-									:href="{
-										query: {
-											...createSearchFilterParams(searchFilters),
-											...createSelectionParams({
-												selection: deselect(
-													selection.selection,
-													createSelectionKey({ kind: 'geojson-point', id: point.id }),
-												),
-											}),
-										},
-									}"
-								>
-									<XMarkIcon class="h-4 w-4 shrink-0" />
-									<span class="sr-only">Deselect</span>
-								</NuxtLink>
-								<h3 class="pr-8 text-lg font-medium">
-									{{ getPlaceLabel(point) }}
-								</h3>
-								<p class="text-sm leading-6">{{ point.kommentar }}</p>
-							</article>
-						</li>
-					</ul>
-				</section>
+					<TabPanels>
+						<TabPanel>
+							<section v-if="areas.length > 0">
+								<h2 class="sr-only flex border-b border-neutral-200 pb-1 text-xl font-medium">
+									Spatial coverages
+								</h2>
+								<ul role="list" class="divide-y">
+									<li v-for="area of areas" :key="area.id">
+										<article class="relative my-8 grid gap-2">
+											<NuxtLink
+												class="absolute right-2.5 flex items-center gap-1"
+												:href="{
+													query: {
+														...createSearchFilterParams(searchFilters),
+														...createSelectionParams({
+															selection: deselect(
+																selection.selection,
+																createSelectionKey({ kind: 'geojson-area', id: area.id }),
+															),
+														}),
+													},
+												}"
+											>
+												<XMarkIcon class="h-4 w-4 shrink-0" />
+												<span class="sr-only">Deselect</span>
+											</NuxtLink>
+											<h3 class="pr-8 text-lg font-medium">
+												{{ area.properties.key_word?.stichwort }} ({{
+													area.properties.key_word?.art
+												}})
+											</h3>
+											<div>
+												<KeywordTag
+													v-if="area.properties.key_word"
+													:keyword="area.properties.key_word"
+												/>
+											</div>
+											<p class="text-sm leading-6">{{ area.properties.kommentar }}</p>
+											<dl>
+												<div class="grid gap-1">
+													<dt class="text-sm font-medium uppercase text-neutral-600">Passages</dt>
+													<dd class="text-sm">
+														<ul role="list">
+															<li v-for="passage of area.properties.stelle" :key="passage.id">
+																{{ getPassageLabel(passage) }}
+															</li>
+														</ul>
+													</dd>
+												</div>
+											</dl>
+										</article>
+									</li>
+								</ul>
+							</section>
 
-				<section v-if="collections.length > 0">
-					<h2 class="sr-only flex border-b border-neutral-200 pb-1 text-xl font-medium">
-						Contextual data
-					</h2>
-					<ul role="list" class="divide-y">
-						<li v-for="collection of collections" :key="collection.id">
-							<article class="relative my-8 grid gap-2">
-								<NuxtLink
-									class="absolute right-2.5 flex items-center gap-1"
-									:href="{
-										query: {
-											...createSearchFilterParams(searchFilters),
-											...createSelectionParams({
-												selection: deselect(
-													selection.selection,
-													createSelectionKey({ kind: 'geojson-collection', id: collection.id }),
-												),
-											}),
-										},
-									}"
+							<section v-if="points.length > 0">
+								<h2 class="sr-only flex border-b border-neutral-200 pb-1 text-xl font-medium">
+									Places
+								</h2>
+								<ul role="list" class="divide-y">
+									<li v-for="point of points" :key="point.id">
+										<article class="relative my-8 grid gap-2">
+											<NuxtLink
+												class="absolute right-2.5 flex items-center gap-1"
+												:href="{
+													query: {
+														...createSearchFilterParams(searchFilters),
+														...createSelectionParams({
+															selection: deselect(
+																selection.selection,
+																createSelectionKey({ kind: 'geojson-point', id: point.id }),
+															),
+														}),
+													},
+												}"
+											>
+												<XMarkIcon class="h-4 w-4 shrink-0" />
+												<span class="sr-only">Deselect</span>
+											</NuxtLink>
+											<h3 class="pr-8 text-lg font-medium">
+												{{ getPlaceLabel(point) }}
+											</h3>
+											<p class="text-sm leading-6">{{ point.kommentar }}</p>
+										</article>
+									</li>
+								</ul>
+							</section>
+
+							<section v-if="collections.length > 0">
+								<h2 class="sr-only flex border-b border-neutral-200 pb-1 text-xl font-medium">
+									Contextual data
+								</h2>
+								<ul role="list" class="divide-y">
+									<li v-for="collection of collections" :key="collection.id">
+										<article class="relative my-8 grid gap-2">
+											<NuxtLink
+												class="absolute right-2.5 flex items-center gap-1"
+												:href="{
+													query: {
+														...createSearchFilterParams(searchFilters),
+														...createSelectionParams({
+															selection: deselect(
+																selection.selection,
+																createSelectionKey({
+																	kind: 'geojson-collection',
+																	id: collection.id,
+																}),
+															),
+														}),
+													},
+												}"
+											>
+												<XMarkIcon class="h-4 w-4 shrink-0" />
+												<span class="sr-only">Deselect</span>
+											</NuxtLink>
+											<h3 class="pr-8 text-lg font-medium">
+												{{ collection.properties.key_word?.stichwort }} ({{
+													collection.properties.key_word?.art
+												}})
+											</h3>
+											<div>
+												<KeywordTag
+													v-if="collection.properties.key_word"
+													:keyword="collection.properties.key_word"
+												/>
+											</div>
+											<p class="text-sm leading-6">{{ collection.properties.kommentar }}</p>
+											<dl>
+												<div class="grid gap-1">
+													<dt class="text-sm font-medium uppercase text-neutral-600">Passages</dt>
+													<dd class="text-sm">
+														<ul role="list">
+															<li v-for="passage of collection.properties.stelle" :key="passage.id">
+																{{ getPassageLabel(passage) }}
+															</li>
+														</ul>
+													</dd>
+												</div>
+											</dl>
+										</article>
+									</li>
+								</ul>
+							</section>
+						</TabPanel>
+
+						<TabPanel>
+							<ul role="list" class="divide-y divide-neutral-200 py-4 text-sm">
+								<li
+									v-for="area of allAreas"
+									:key="area.id"
+									class="flex items-center justify-between gap-4 py-4"
 								>
-									<XMarkIcon class="h-4 w-4 shrink-0" />
-									<span class="sr-only">Deselect</span>
-								</NuxtLink>
-								<h3 class="pr-8 text-lg font-medium">
-									{{ collection.properties.key_word?.stichwort }} ({{
-										collection.properties.key_word?.art
-									}})
-								</h3>
-								<div>
-									<KeywordTag
-										v-if="collection.properties.key_word"
-										:keyword="collection.properties.key_word"
-									/>
-								</div>
-								<p class="text-sm leading-6">{{ collection.properties.kommentar }}</p>
-								<dl>
-									<div class="grid gap-1">
-										<dt class="text-sm font-medium uppercase text-neutral-600">Passages</dt>
-										<dd class="text-sm">
-											<ul role="list">
-												<li v-for="passage of collection.properties.stelle" :key="passage.id">
-													{{ getPassageLabel(passage) }}
-												</li>
-											</ul>
-										</dd>
+									<div class="grid gap-2">
+										<span>
+											{{ area.properties.key_word?.stichwort }} ({{
+												area.properties.key_word?.art
+											}})
+										</span>
+										<ul role="list" class="grid gap-1 text-xs text-neutral-500">
+											<li v-for="passage of area.properties.stelle" :key="passage.id">
+												{{ getPassageLabel(passage) }}
+											</li>
+										</ul>
 									</div>
-								</dl>
-							</article>
-						</li>
-					</ul>
-				</section>
+									<button @click="onToggleAreaVisibility(area.id)">
+										<EyeSlashIcon
+											v-if="context?.disabled.areas.value.has(area.id)"
+											class="h-5 w-5 shrink-0"
+										/>
+										<EyeIcon v-else class="h-5 w-5 shrink-0" />
+										<span class="sr-only">Toggle visibility</span>
+									</button>
+								</li>
+							</ul>
+						</TabPanel>
+					</TabPanels>
+				</TabGroup>
 			</div>
 		</template>
 	</div>

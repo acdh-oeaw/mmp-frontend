@@ -52,4 +52,7 @@ export interface GeoMapContext {
 		areas: Ref<Array<SpatialCoverageGeojson>>;
 		cones: Ref<Array<ConeOriginGeojson>>;
 	};
+	disabled: {
+		areas: Ref<Set<SpatialCoverageGeojson["id"]>>;
+	};
 }
