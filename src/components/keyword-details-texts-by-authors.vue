@@ -18,10 +18,10 @@ const props = defineProps<{
 	ids: Set<Keyword["id"]>;
 }>();
 
-const { createSearchFilterParams, defaultSearchFilters } = useSearchFilters();
+const { createSearchFilterParams, searchFilters, defaultSearchFilters } = useSearchFilters();
 const searchParams = computed(() => {
 	const params = {
-		...defaultSearchFilters,
+		...searchFilters.value,
 		keyword: Array.from(props.ids),
 	};
 
