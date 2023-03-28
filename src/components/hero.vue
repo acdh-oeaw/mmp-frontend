@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 /* stylelint-disable color-named */
-import { maxYear, minYear } from "@/lib/search/search.config";
 import { NuxtImg, NuxtLink } from "#components";
 </script>
 
@@ -25,10 +24,10 @@ import { NuxtImg, NuxtLink } from "#components";
 						Mapping Medieval Peoples
 					</h1>
 					<h2 class="text-xl font-extrabold sm:text-2xl lg:text-3xl xl:text-4xl">
-						Visualizing Semantic Landscapes in Early Medieval Europe
+						Visualising Semantic Landscapes in Early Medieval Europe
 					</h2>
 					<h2 class="text-base font-extrabold sm:text-lg lg:text-xl xl:text-2xl">
-						({{ -minYear }} BCE - {{ maxYear }} CE)
+						({{ 250 }} BCE - {{ 1250 }} CE)
 					</h2>
 				</div>
 
@@ -42,13 +41,13 @@ import { NuxtImg, NuxtLink } from "#components";
 					<p class="font-bold">
 						<i>Mapping Medieval Peoples</i>
 						(MMP) examines medieval perceptions of peoples and space and the intellectual frameworks
-						in which they were generated. It aims to reconstruct the mental maps of medieval
+						in which they came into being through reconstructing the mental maps of medieval
 						authors. As medieval conceptions of space were expressed and developed primarily through
 						narrative, in MMP we have developed applications for network analysis and
-						geovisualization. This interdisciplinary approach allows us to visualize the narrative
-						descriptions of space and to elucidate how space and the peoples inhabiting it were
-						described and imagined. Furthermore, it makes the different angles from which ethnic
-						groups were described more visible and helps to bring out the complexities and
+						geovisualisation, using an interdisciplinary approach which allows us to visualise
+						narrative descriptions of space. This allows us to elucidate how space and the peoples
+						inhabiting it were described and imagined, and to make the different angles from which
+						ethnic groups were described more visible, while bringing out the complexities and
 						ambiguities of ethnic terminology.
 					</p>
 				</div>

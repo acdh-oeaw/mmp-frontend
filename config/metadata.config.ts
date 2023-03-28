@@ -30,7 +30,7 @@ export const metadata: Metadata = {
 	locale: "en",
 	title: "Mapping Medieval Peoples",
 	shortTitle: "MMP",
-	description: "Visualizing Semantic Landscapes in Early Medieval Europe",
+	description: "Visualising Semantic Landscapes in Early Medieval Europe",
 	logo: {
 		path: "./public/assets/images/logo.svg",
 		fit: "contain",

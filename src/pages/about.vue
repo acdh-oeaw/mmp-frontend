@@ -16,31 +16,31 @@ useHead({
 <template>
 	<MainContent>
 		<div class="mx-auto w-full max-w-4xl px-8 py-4">
-			<h1 class="sr-only">About</h1>
+			<h1 class="sr-only">Find out more about..</h1>
 			<div class="prose-sm">
-				<h1>About</h1>
+				<h1>Find out more about..</h1>
 				<div class="divide-y">
-					<AboutDisclosure opened title="Find out more about our aims and methods">
+					<AboutDisclosure opened title="Our aims and methods">
 						<p>
-							From the world of Late Antiquity and the early Middle Ages, numerous ethnic names,
-							such as Goths, Huns, Lombards or Franks, have been handed down to us. Especially in
+							From the world of Late Antiquity and the early Middle Ages, numerous ethnic names
+							(such as Goths, Huns, Lombards or Franks) have been handed down to us. Especially in
 							the course of the early Middle Ages (5th-11th centuries), ethnic identity played an
-							important role in the development of new political and religious communities and in
-							the legitimation of political power. However, ethnic attributions were not at all
-							firmly defined. On the contrary, even supposedly obvious labels of different origins
-							such as language, clothing or weapons were not reliable criteria for the assignment to
-							a particular people. So, what do these peoples' names tell us about medieval peoples,
-							about their communities and about the space they inhabited? What did they mean for the
-							scholars who recorded them in Latin, Greek or Syriac texts, and for their audience?
+							important role in the development of new political and religious communities and the
+							legitimation of political power. However, ethnic attributions were not all firmly
+							defined – even more obvious indications of different origins such as language,
+							clothing or weapons were not reliable criteria for the assignment to a particular
+							people. What can these names tell us about medieval peoples, their communities and the
+							space they inhabited? What did they mean for the scholars who recorded them in Latin,
+							Greek or Syriac texts, and for their audience?
 						</p>
 						<p>
 							The aim of MMP is to reconstruct the mental maps of medieval authors and thereby to
-							elucidate firstly how ethnic identifications helped readers to perceive the medieval
-							social world, and, secondly, how attributions to peoples and perceptions of space were
-							intertwined. This touches upon questions of the creation and appropriation of
-							territory, on the construction of otherness, on the influence of religious ideas and
-							terminology for conceptions of space and peoples, and on the circumstances under which
-							perceptions of peoples and space changed over the course of time.
+							elucidate how ethnic identifications helped readers to perceive the medieval social
+							world, and thus, how attributions to peoples and perceptions of space were
+							intertwined. This touches on questions of the creation and appropriation of territory,
+							the construction of otherness, and the influence of religious ideas and terminology on
+							conceptions of space and peoples, as well as the circumstances under which perceptions
+							of peoples and space changed over the course of time.
 						</p>
 						<p>
 							Find out more about our project and the people behind it in this short movie, a
@@ -50,66 +50,70 @@ useHead({
 							</a>
 						</p>
 					</AboutDisclosure>
-					<AboutDisclosure title="Find out more about our sources">
+					<!-- prettier-ignore -->
+					<AboutDisclosure title="Our sources">
 						<p>
-							MMP includes ca. 5500 passages from 1150 different texts from 440 different authors
+							MMP includes ca. 5500 passages from 1150 different texts from 440 different authors,
 							covering a broad range of medieval source material (including historiography,
 							hagiography, exegesis, charters, geographical works, legislative texts, conciliar
-							acts, homilies, annals). We have identified 690 keywords, organised into four
+							acts, homilies and annals). We have identified 690 keywords, organised into four
 							categories: 1.
 							<b>Keywords</b>
 							(which include a wider range of ethnic terminology such as gens, patria, then
 							attributes, titles, stereotypical traits); 2.
-							<b>Ethnonyms</b>
-							<span>;</span>
-							3.
+							<b>Ethnonyms</b>;	3.
 							<b>Personal names</b>
 							(such as important political players); 4.
-							<b>Regions/geographical names</b>
+							<b>Regional and geographical names</b>
 							(which include spatial terms, such as mountains, rivers, as well as abstract concepts
-							like East and North, and geographical regions that were also used for political
-							communities).
-							<br />
-							All keywords and passages from Latin and Greek texts have been selected that are in
-							some way relevant for the significance of the terms and contribute to a better
+							like East and North, and geographical regions that also designated political
+							communities). All keywords and passages from Latin and Greek texts have been selected
+							are in some way relevant for the significance of the terms and contribute to a better
 							understanding of ethnic terminology.
 						</p>
 						<p>
-							Our data includes, firstly, the
+							Our data includes the
 							<b>Case Studies</b>
-							and, secondly, a broader corpus of data that has been generated in the database
-							project
+							and also a broader corpus of data that was generated for the database project
 							<a class="font-semibold underline" href="https://www.oeaw.ac.at/imafo/gens/">
 								GENS: Group Terminology and Ethnic Nomenclature
-							</a>
-							<span>:</span>
+							</a>:
 							A Semantic Database (Latin Europe c. 400-1200), in the ERC SCIRE - Social Cohesion,
 							Identity and Religion in Europe (2007-2013) by Walter Pohl, Cinzia Grifoni and
-							Katharina Winckler.
-							<br />
-							The source material of the
+							Katharina Winckler. The source material of the
 							<b>Case Studies</b>
 							and the
 							<b>GENS Database</b>
 							has a slightly different focus: the
 							<b>Case Studies</b>
 							have been modelled along specific research questions and allow an in-depth study of a
-							specific people, a region, an ethnonym, while the
+							specific people, region or ethnonym, while the
 							<b>GENS Database</b>
 							focuses on the meanings of Romanness in the post-imperial West and allows a
 							comprehensive selection of early medieval Latin sources on that topic. These terms,
-							all in relation to Romanness, can be searched for nearly comprehensively: alienigena;
-							civ* roman*; civ* + roman*; gens Christiana/christianorum; gens romana; gens + romana;
-							gent* + roman*; gens *orum; gent* + Dei; popul* + gentium; popul* + nationum;
-							Romania*; romana* civita*; natio* + gentium
+							all in relation to Romanness, can be searched for comprehensively, for example:
+							alienigena; civ* roman*; civ* + roman*; gens Christiana/christianorum; gens romana;
+							gens + romana; gent* + roman*; gens *orum; gent* + Dei; popul* + gentium; popul* +
+							nationum; Romania*; romana* civita*; natio* + gentium
 						</p>
 					</AboutDisclosure>
-					<AboutDisclosure title="Find out more about our search options">
+					<AboutDisclosure title="Ways to search our data">
+						<!-- prettier-ignore -->
 						<p>
 							MMP is intended to provide a wide overview of how ethnic terminology was employed and
-							perceptions of space were constructed. It allows a qualitative search and evaluation
-							of meaning and recurrence of ethnic and spatial terminology until the first half of
-							the 13th century.
+							how perceptions of space were constructed. It allows a qualitative search and
+							evaluation of meaning and recurrence of ethnic and spatial terminology until the first
+							half of the 13th century. The search is conducted via
+							<b>autocomplete</b>.
+							Use
+							<b>browse the data</b>
+							for an overview of all data included. Use the
+							<b>side panels</b>
+							to access more information about authors and keywords. You can click on the
+							<b>colour-coded keywords</b>
+							to search for them in the database in a new window, while the
+							<b>grey keywords</b>
+							bring up works, authors and places in the side bar.
 						</p>
 						<b>You can search for:</b>
 						<ul>
@@ -131,35 +135,32 @@ useHead({
 							</li>
 						</ul>
 					</AboutDisclosure>
-					<AboutDisclosure title="Find out more how the data is visualized">
+					<AboutDisclosure title="How the data is visualized">
+						<!-- prettier-ignore -->
 						<p>
 							MMP provides a visual representation of the semantic field of ethnic terminology
-							<span>(</span>
-							<b>graph</b>
-							<span>),</span>
-							it has a spatial dimension
-							<span>(</span>
-							<b>geovisualization</b>
-							<span>),</span>
-							and it integrates the temporal perspective, using two different temporal perspectives
-							<span>(</span>
-							<b>time of compostition</b>
+							(<b>graph</b>),
+							a spatial dimension
+							(<b>geovisualisation</b>)
+							- in which keywords are placed on the map with a 'cone' showing the point of activity
+							of the author of a text projecting onto the area they associated with that keyword -
+							and permits filtering through two different time-frames
+							(<b>time of compostition</b>
 							and
 							<b>temporal coverage</b>
 							of the events described) to show how, for instance, the perception of a specific
-							people or keyword changed and varied over the course of time and from one historical
-							context to another. Another feature are
+							people or keyword changed and varied over the course of time, and from one historical
+							context to another. You can also view
 							<b>word clouds</b>
 							and
 							<b>pie charts</b>
-							<span>:</span>
-							while the graphs work with selected keywords, and provide a qualitative perspective,
-							these two offer a quantitative perspective. They compare the occurrence of the
-							selected keywords in a passage or case study with the occurrence of lemmatized
-							keywords according to their quantitative occurrence.
+							which offer a quantitative perspective to complement the qualitative one offered by
+							the other visualisations. These compare the occurrence of the selected keywords in a
+							passage or case study with the occurrence of lemmatized keywords according to their
+							quantitative occurrence.
 						</p>
 					</AboutDisclosure>
-					<AboutDisclosure title="Find out more about our research team">
+					<AboutDisclosure title="Who we are">
 						<div class="grid grid-cols-2">
 							<span>Project Leaders</span>
 							<ul class="m-0 p-0">
@@ -235,11 +236,12 @@ useHead({
 								<li>Matej Ďurčo</li>
 								<li>Peter Andorfer</li>
 								<li>Robin Kaggl</li>
-								<li>Stefan Probst</li>
+								<li>Marc Schmitz</li>
 							</ul>
 						</div>
 					</AboutDisclosure>
-					<AboutDisclosure title="Find out more about our events and publications">
+					<!-- prettier-ignore -->
+					<AboutDisclosure title="Our events and publications">
 						<p>
 							In preparation: collected volume 'Mapping Medieval Peoples: New Approaches to Ethnic
 							Identity and Space, 400-1400CE', ed. Laura Gazzoli, Veronika Wieser, Katharina
@@ -251,12 +253,9 @@ useHead({
 							<a
 								class="underline"
 								href="https://www.oeaw.ac.at/imafo/veranstaltungen/detail/ab-aquilone-conceptions-of-space-and-identities-in-europes-far-north-in-the-middle-ages"
-							>
-								'Ab aquilone: conceptions of space and identities in Europe's far north in the
-								middle ages'
-							</a>
-							<span>,</span>
-							June 10, 2022, organized by Laura Gazzoli
+							>'Ab aquilone: conceptions of space and identities in Europe's far north in the
+								middle ages'</a>,
+							June 10, 2022, organised by Laura Gazzoli
 						</p>
 						<p>
 							<b>Workshop</b>
@@ -264,14 +263,54 @@ useHead({
 							<a
 								class="underline"
 								href="https://www.oeaw.ac.at/imafo/veranstaltungen/detail/ethnonyms-and-the-order-of-space-in-the-frankish-realms-6th-9th-c"
-							>
-								'Ethnonyms and the order of space in the Frankish realms (6th to 9th c.)'
-							</a>
-							<span>,</span>
-							June 10, 2022, organized by Laura Gazzoli
+							>'Ethnonyms and the order of space in the Frankish realms (6th to 9th c.)'</a>,
+							November 4, 2022, organised by Katharina Winckler
 						</p>
 					</AboutDisclosure>
-					<AboutDisclosure title="Find out more about our resources"></AboutDisclosure>
+					<!-- prettier-ignore -->
+					<AboutDisclosure title="Our resources">
+						<h2>Bibliography</h2>
+						<p>
+							Many of our texts are taken from the
+							<i>Digital Monumenta Germaniae historica</i>:
+							<a class="font-semibold underline" href="https://www.dmgh.de/">dmgh.de</a>
+						</p>
+						<p>
+							Adam of Bremen,
+							<i>History of the Archbishops of Hamburg-Bremen</i>, trans. by Francis J. Tschan, with a new introduction and selected bibliography by Timothy Reuter, 2<sup>nd</sup>
+							edn (New York: Columbia University Press, 2002)
+						</p>
+						<p>
+							Bede, <i>Historia ecclesiastica gentis Anglorum: Ecclesiastical History of the English
+							People</i>, ed. and trans. by Bertram Colgrave and R. A. B. Mynors (Oxford: Oxford
+							University Press, 1969)
+						</p>
+						<p>
+							Encomium Emmae Reginae, ed. and trans. by Alistair Campbell, with a supplementary
+							introduction by Simon Keynes, 2<sup>nd</sup> edn (Cambridge: Cambridge University Press, 1998)
+						</p>
+						<p>
+							<i>Historia Norwegie</i>, ed. by Inger Ekrem and Lars Boje Mortensen and trans. by Peter
+							Fisher (Copenhagen: Museum Tusculanum Press, 2003)
+						</p>
+						<p>
+							Saxo Grammaticus, <i>Gesta Danorum: The History of the Danes</i>, ed. by Karsten
+							Friis-Jensen, trans. by Peter Fisher (Oxford: Oxford University Press, 2015)
+						</p>
+						<p>
+							Theodoricus of Nidaros, <i>e antiquitate regum Norwagensium: On the Old Norwegian Kings</i>,
+							ed. and trans. by Egil Kraggerud (Oslo: Novus Forlag, 2018)
+						</p>
+						<p>
+							Vincent Kadłubek, <i>Chronica Polonorum</i>, ed. by Marianus Plezia, Pomniki dziejowe
+							Polski/Monumenta Poloniae historica, Nova series 11 (Kraków: Secesja, 1994)
+						</p>
+						<p>
+							William of Malmesbury, <i>Gesta regum Anglorum: The Deeds of the English Kings</i>, ed. and
+							trans. by R. A. B. Mynors, completed by R. M. Thompson and M. Winterbottom (Oxford:
+							Oxford University Press, 1998)
+						</p>
+					</AboutDisclosure>
 					<AboutDisclosure title="Contact">
 						<p>
 							Veronika Wieser (PI):
