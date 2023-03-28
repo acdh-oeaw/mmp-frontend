@@ -13,6 +13,7 @@ import SideDisclosure from "@/components/side-disclosure.vue";
 import VisualisationContainer from "@/components/visualisation-container.vue";
 import { type GeoMapContext } from "@/lib/geo-map/geo-map.types";
 import { useGeoMap } from "@/lib/geo-map/use-geo-map";
+import { useGeoMapBaseLayer } from "@/lib/geo-map/use-geo-map-base-layer";
 import { useGeoMapEvents } from "@/lib/geo-map/use-geo-map-events";
 import { useGeoJsonLayers } from "@/lib/geo-map/use-geojson-layers";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
@@ -75,6 +76,8 @@ const isSideDisclosureVisible = computed(() => {
 function onToggleSideDisclosure() {
 	router.push({ query: createSearchFilterParams(searchFilters.value) });
 }
+
+const { baseLayer, baseLayers, onChangeBaseLayer } = useGeoMapBaseLayer();
 </script>
 
 <template>
@@ -121,6 +124,7 @@ function onToggleSideDisclosure() {
 					<GeoMap
 						:areas="areas"
 						:area-center-points="areaCenterPoints"
+						:base-layer="baseLayer"
 						:cones="cones"
 						:cone-origins="coneOrigins"
 						:height="height"
@@ -137,7 +141,12 @@ function onToggleSideDisclosure() {
 						@lines-points-click="onLinesPointsClick"
 						@lines-points-hover="onLinesPointsHover"
 					>
-						<GeoMapToolbar :layers="layers" />
+						<GeoMapToolbar
+							:layers="layers"
+							:base-layer="baseLayer"
+							:base-layers="baseLayers"
+							@change-base-layer="onChangeBaseLayer"
+						/>
 
 						<SideDisclosure :open="isSideDisclosureVisible" @toggle="onToggleSideDisclosure">
 							<GeojsonDetails

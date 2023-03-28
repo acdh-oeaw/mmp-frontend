@@ -22,7 +22,13 @@ import { debounce } from "@/lib/debounce";
 import { createAreaTooltipContent } from "@/lib/geo-map/create-area-tooltip-content";
 import { createConeOriginTooltipContent } from "@/lib/geo-map/create-cone-origin-tooltip-content";
 import { createLinesPointsTooltipContent } from "@/lib/geo-map/create-lines-points-tooltip-content";
-import { colors, config, initialViewState, keywordColors } from "@/lib/geo-map/geo-map.config";
+import {
+	baseLayers,
+	colors,
+	config,
+	initialViewState,
+	keywordColors,
+} from "@/lib/geo-map/geo-map.config";
 import { key } from "@/lib/geo-map/geo-map.context";
 import {
 	type ConeOriginGeojson,
@@ -30,11 +36,13 @@ import {
 	type GeoMapContext,
 	type SpatialCoverageCenterPoint,
 } from "@/lib/geo-map/geo-map.types";
+import { type BaseLayer } from "@/lib/geo-map/use-geo-map-base-layer";
 import { type SelectionKey, createSelectionKey } from "@/lib/search/selection-key";
 
 const props = defineProps<{
 	areas: Array<SpatialCoverageGeojson>;
 	areaCenterPoints: Array<SpatialCoverageCenterPoint>;
+	baseLayer?: BaseLayer;
 	cones: Array<ConeGeojson>;
 	coneOrigins: Array<ConeOriginGeojson>;
 	height: number;
@@ -299,8 +307,10 @@ onMounted(async () => {
 
 	//
 
-	context.baseLayer = tileLayer(config.baseLayer.url, {
-		attribution: config.baseLayer.attribution,
+	const baseLayer = props.baseLayer ? baseLayers[props.baseLayer] : config.baseLayer;
+
+	context.baseLayer = tileLayer(baseLayer.url, {
+		attribution: baseLayer.attribution,
 		minZoom: 2,
 	}).addTo(context.map);
 
