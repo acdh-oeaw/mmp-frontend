@@ -1,8 +1,6 @@
 <script lang="ts" setup>
 import AboutDisclosure from "@/components/about-disclosure.vue";
 import MainContent from "@/components/main-content.vue";
-import StoryNetworkGraph from "@/components/story-network-graph.vue";
-import { defaultSearchFilters } from "@/lib/search/use-search-filters";
 import { useHead } from "#imports";
 
 const title = "About";
@@ -21,34 +19,51 @@ useHead({
 				<h1>Find out more about..</h1>
 				<div class="divide-y">
 					<AboutDisclosure opened title="Our aims and methods">
-						<p>
-							From the world of Late Antiquity and the early Middle Ages, numerous ethnic names
-							(such as Goths, Huns, Lombards or Franks) have been handed down to us. Especially in
-							the course of the early Middle Ages (5th-11th centuries), ethnic identity played an
-							important role in the development of new political and religious communities and the
-							legitimation of political power. However, ethnic attributions were not all firmly
-							defined – even more obvious indications of different origins such as language,
-							clothing or weapons were not reliable criteria for the assignment to a particular
-							people. What can these names tell us about medieval peoples, their communities and the
-							space they inhabited? What did they mean for the scholars who recorded them in Latin,
-							Greek or Syriac texts, and for their audience?
-						</p>
-						<p>
-							The aim of MMP is to reconstruct the mental maps of medieval authors and thereby to
-							elucidate how ethnic identifications helped readers to perceive the medieval social
-							world, and thus, how attributions to peoples and perceptions of space were
-							intertwined. This touches on questions of the creation and appropriation of territory,
-							the construction of otherness, and the influence of religious ideas and terminology on
-							conceptions of space and peoples, as well as the circumstances under which perceptions
-							of peoples and space changed over the course of time.
-						</p>
-						<p>
-							Find out more about our project and the people behind it in this short movie, a
-							contribution to the exhibition
-							<a class="font-semibold underline" href="https://www.youtube.com/watch?v=JHv7U96k78g">
-								Reiternomaden in Europa
-							</a>
-						</p>
+						<div class="flex">
+							<div>
+								<p>
+									From the world of Late Antiquity and the early Middle Ages, numerous ethnic names
+									(such as Goths, Huns, Lombards or Franks) have been handed down to us. Especially
+									in the course of the early Middle Ages (5th-11th centuries), ethnic identity
+									played an important role in the development of new political and religious
+									communities and the legitimation of political power. However, ethnic attributions
+									were not all firmly defined – even more obvious indications of different origins
+									such as language, clothing or weapons were not reliable criteria for the
+									assignment to a particular people. What can these names tell us about medieval
+									peoples, their communities and the space they inhabited? What did they mean for
+									the scholars who recorded them in Latin, Greek or Syriac texts, and for their
+									audience?
+								</p>
+								<p>
+									The aim of MMP is to reconstruct the mental maps of medieval authors and thereby
+									to elucidate how ethnic identifications helped readers to perceive the medieval
+									social world, and thus, how attributions to peoples and perceptions of space were
+									intertwined. This touches on questions of the creation and appropriation of
+									territory, the construction of otherness, and the influence of religious ideas and
+									terminology on conceptions of space and peoples, as well as the circumstances
+									under which perceptions of peoples and space changed over the course of time.
+								</p>
+								<p>
+									Find out more about our project and the people behind it in this short movie, a
+									contribution to the exhibition
+									<a
+										class="font-semibold underline"
+										href="https://www.youtube.com/watch?v=JHv7U96k78g"
+									>
+										Reiternomaden in Europa
+									</a>
+								</p>
+							</div>
+							<div class="mx-2 h-full">
+								<a href="/assets/poster.pdf" target="_blank">
+									<img
+										src="/assets/images/poster.jpg"
+										class="h-full rounded-xl transition hover:rounded-none"
+										alt="poster"
+									/>
+								</a>
+							</div>
+						</div>
 					</AboutDisclosure>
 					<!-- prettier-ignore -->
 					<AboutDisclosure title="Our sources">
@@ -116,23 +131,21 @@ useHead({
 							bring up works, authors and places in the side bar.
 						</p>
 						<b>You can search for:</b>
-						<ul>
-							<li>The ethnoyms a specific author uses.</li>
-							<div class="relative h-96 w-full">
-								<StoryNetworkGraph
-									:search-filters="{
-										...defaultSearchFilters,
-										author: [24],
-									}"
-								/>
-							</div>
+						<!-- prettier-ignore -->
+						<ul class="list-disc">
+							<li>The ethnonyms a specific author uses</li>
+								Type <b>Jerome</b> into the search bar – all possible searches will appear via autocomplete – and select <b>network graph</b>, then choose what you want to see on the graph: in this case, uncheck everything but <b>author and ethnonyms</b>
 							<li>Which peoples are mentioned together?</li>
+							Type <b>Dani</b> into the search bar – all possible searches will appear via autocomplete – and uncheck everything but <b>ethnonyms</b> to see the other peoples mentioned in connection with the Danes
 							<li>The combinations between ethnonyms and keywords via Union/Intersection</li>
-							<li>You can compare authors and their use of keywords</li>
+							Put <b>Dani</b> and <b>feritas</b> into the search bar – the terms will be available to select via autocomplete – and you can then see passages containing both (<b>intersection/and</b>) or either (<b>union/or</b>) in the search results, and then visualise the connections between these and other terms in the graph
+							<li>Comparisons of different authors’ use of keywords</li>
+							Put <b>Orosius</b>, <b>Einhard</b> and <b>rex</b> into the search bar (the terms will come up via autocomplete and can be selected) and select <b>union (or)</b>, then view them in the graph
 							<li>
 								The combination of a place name and an ethnonym or a specific region in a specific
 								period (time of composition or temporal coverage)
 							</li>
+							Put <b>Normannia</b> and <b>Normanni</b> into the search bar (available terms will appear via autocomplete), and set the timeslider to 900 – 1200, select <b>time of composition</b> or <b>temporal coverage</b>, you can then view the resulting passages and a graph of the connections, both as intersection and union
 						</ul>
 					</AboutDisclosure>
 					<AboutDisclosure title="How the data is visualized">

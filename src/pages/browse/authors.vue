@@ -67,8 +67,8 @@ const pages = computed(() => {
 
 const columns = {
 	name: { label: "Name" },
-	place: { label: "Birthplace" },
-	date: { label: "Lifetime" },
+	place: { label: "Place" },
+	date: { label: "Dates" },
 	comment: { label: "Comment" },
 	dnd: { label: "GND ID" },
 };
