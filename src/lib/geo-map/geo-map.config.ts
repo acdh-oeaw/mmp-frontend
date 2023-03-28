@@ -36,7 +36,14 @@ export const baseLayers = {
 		label: "Digital Atlas of the Roman Empire",
 		url: "https://dh.gu.se/tiles/imperium/{z}/{x}/{y}.png",
 		attribution:
-			"© Johan Åhlfeldt, Centre for Digital Humanities, University of Gothenburg 2019. Contact: johan.ahlfeldt@lir.gu.se",
+			"&copy; Johan Åhlfeldt, Centre for Digital Humanities, University of Gothenburg 2019. Contact: johan.ahlfeldt@lir.gu.se",
+	},
+	openstreetmap: {
+		id: "openstreetmap",
+		label: "OpenStreetMap",
+		url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+		attribution:
+			'&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
 	},
 };
 
