@@ -11,12 +11,13 @@ import {
 	type NetworkGraphData,
 	type NetworkGraphNode,
 } from "@/lib/network-graph/network-graph.types";
+import { type SelectionKey } from "@/lib/search/selection-key";
 
 const props = defineProps<{
 	graph: NetworkGraphData;
 	height: number;
-	highlightedKeys: Set<NetworkGraphNode["key"]>;
-	selectedKeys: Set<NetworkGraphNode["key"]>;
+	highlightedKeys: Set<SelectionKey>;
+	selectedKeys: Set<SelectionKey>;
 	width: number;
 }>();
 

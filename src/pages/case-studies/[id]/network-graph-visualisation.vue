@@ -1,14 +1,16 @@
 <script lang="ts" setup>
 import { type ForceGraphInstance } from "force-graph";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 
 import Centered from "@/components/centered.vue";
 import ErrorMessage from "@/components/error-message.vue";
+import GraphKeywordDetails from "@/components/graph-keyword-details.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NetworkGraph from "@/components/network-graph.vue";
 import NetworkGraphLegend from "@/components/network-graph-legend.vue";
 import NetworkGraphToolbar from "@/components/network-graph-toolbar.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
+import SideDisclosure from "@/components/side-disclosure.vue";
 import VisualisationContainer from "@/components/visualisation-container.vue";
 import { type NetworkGraphContext } from "@/lib/network-graph/network-graph.types";
 import { useFilteredGraph } from "@/lib/network-graph/use-filtered-graph";
@@ -16,9 +18,10 @@ import { useNetworkGraph } from "@/lib/network-graph/use-network-graph";
 import { useNetworkGraphEvents } from "@/lib/network-graph/use-network-graph-events";
 import { useNetworkGraphFilters } from "@/lib/network-graph/use-network-graph-filters";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
+import { useSelectionByKind } from "@/lib/search/use-selection-by-kind";
 import { useResourceIdParam } from "@/lib/use-resource-id-param";
 import { ClientOnly } from "#components";
-import { useHead } from "#imports";
+import { useHead, useRouter } from "#imports";
 
 const title = "Network-graph visualisation";
 
@@ -29,7 +32,9 @@ useHead({
 
 const _id = useResourceIdParam();
 
-const { searchFilters } = useSearchFilters();
+const router = useRouter();
+const { createSearchFilterParams, searchFilters } = useSearchFilters();
+const selectionByKind = useSelectionByKind();
 const { graph, isEmpty, isError, isFetching, isLoading } = useNetworkGraph(searchFilters);
 
 const { selectedKeys, onNodeClick, highlightedKeys, onNodeHover } = useNetworkGraphEvents();
@@ -50,6 +55,14 @@ const context = ref<NetworkGraphContext>({
 
 function onReady(instance: ForceGraphInstance) {
 	context.value.graph = instance;
+}
+
+const isSideDisclosureVisible = computed(() => {
+	return selectionByKind.value.has("graph-author") || selectionByKind.value.has("graph-keyword");
+});
+
+function onToggleSideDisclosure() {
+	router.push({ query: createSearchFilterParams(searchFilters.value) });
 }
 </script>
 
@@ -105,6 +118,7 @@ function onReady(instance: ForceGraphInstance) {
 						@ready="onReady"
 					>
 						<NetworkGraphToolbar :graph="filteredGraph" />
+
 						<div class="absolute right-4 bottom-4 rounded bg-white px-8 py-3 shadow-lg">
 							<NetworkGraphLegend
 								:keyword-type-filters="keywordTypeFilters"
@@ -113,6 +127,14 @@ function onReady(instance: ForceGraphInstance) {
 								@toggle-resource-kind-filter="onToggleResourceKindFilter"
 							/>
 						</div>
+
+						<SideDisclosure :open="isSideDisclosureVisible" @toggle="onToggleSideDisclosure">
+							<GraphKeywordDetails
+								v-if="selectionByKind.has('graph-author') || selectionByKind.has('graph-keyword')"
+								:ids="selectionByKind.get('graph-keyword')!"
+								:authors="selectionByKind.get('graph-author')!"
+							/>
+						</SideDisclosure>
 					</NetworkGraph>
 				</VisualisationContainer>
 			</ClientOnly>
