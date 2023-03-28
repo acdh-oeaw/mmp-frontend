@@ -343,10 +343,6 @@ const context = inject(key);
 						</TabPanel>
 
 						<TabPanel>
-							<!-- prettier-ignore -->
-							<span>
-								this is the 2<sup>>nd</sup>stuff
-							</span>
 							<ul role="list" class="divide-y divide-neutral-200 py-4 text-sm">
 								<li
 									v-for="area of allAreas"
