@@ -2,7 +2,6 @@
 import { computed } from "vue";
 
 import AuthorDetails from "@/components/author-details.vue";
-import GeojsonDetails from "@/components/geojson-details.vue";
 import GraphKeywordDetails from "@/components/graph-keyword-details.vue";
 import KeywordDetails from "@/components/keyword-details.vue";
 import PassageDetails from "@/components/passage-details.vue";
@@ -10,54 +9,26 @@ import PlaceDetails from "@/components/place-details.vue";
 import SideDialog from "@/components/side-dialog.vue";
 import SideDisclosure from "@/components/side-disclosure.vue";
 import TextDetails from "@/components/text-details.vue";
-import {
-	type SelectionKind,
-	type SelectionResource,
-	splitSelectionKey,
-} from "@/lib/search/selection-key";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
-import { useSelection } from "@/lib/search/use-selection";
+import { useSelectionByKind } from "@/lib/search/use-selection-by-kind";
 import { useRouter } from "#imports";
 
 const router = useRouter();
 
 const { createSearchFilterParams, searchFilters } = useSearchFilters();
-const { selection } = useSelection();
-
-const idsByKind = computed(() => {
-	const grouped = new Map<SelectionKind, Set<SelectionResource["id"]>>();
-
-	selection.value.selection.forEach((key) => {
-		const { kind, id } = splitSelectionKey(key);
-
-		if (grouped.has(kind)) {
-			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-			grouped.get(kind)!.add(id);
-		} else {
-			grouped.set(kind, new Set([id]));
-		}
-	});
-
-	return grouped;
-});
+const selectionByKind = useSelectionByKind();
 
 const isSideDisclosureVisible = computed(() => {
-	return (
-		idsByKind.value.has("geojson-area") ||
-		idsByKind.value.has("geojson-collection") ||
-		idsByKind.value.has("geojson-point") ||
-		idsByKind.value.has("graph-author") ||
-		idsByKind.value.has("graph-keyword")
-	);
+	return selectionByKind.value.has("graph-author") || selectionByKind.value.has("graph-keyword");
 });
 
 const isSidePanelVisible = computed(() => {
 	return (
-		idsByKind.value.has("autor") ||
-		idsByKind.value.has("keyword") ||
-		idsByKind.value.has("ort") ||
-		idsByKind.value.has("stelle") ||
-		idsByKind.value.has("text")
+		selectionByKind.value.has("autor") ||
+		selectionByKind.value.has("keyword") ||
+		selectionByKind.value.has("ort") ||
+		selectionByKind.value.has("stelle") ||
+		selectionByKind.value.has("text")
 	);
 });
 
@@ -69,26 +40,22 @@ function onToggle() {
 <template>
 	<SideDisclosure :open="isSideDisclosureVisible" @toggle="onToggle">
 		<GraphKeywordDetails
-			v-if="idsByKind.has('graph-author') || idsByKind.has('graph-keyword')"
-			:ids="idsByKind.get('graph-keyword')!"
-			:authors="idsByKind.get('graph-author')!"
-		/>
-		<GeojsonDetails
-			v-if="
-				idsByKind.has('geojson-area') ||
-				idsByKind.has('geojson-collection') ||
-				idsByKind.has('geojson-point')
-			"
-			:areas="idsByKind.get('geojson-area')"
-			:collections="idsByKind.get('geojson-collection')"
-			:points="idsByKind.get('geojson-point')"
+			v-if="selectionByKind.has('graph-author') || selectionByKind.has('graph-keyword')"
+			:ids="selectionByKind.get('graph-keyword')!"
+			:authors="selectionByKind.get('graph-author')!"
 		/>
 	</SideDisclosure>
 	<SideDialog :open="isSidePanelVisible" @toggle="onToggle">
-		<AuthorDetails v-if="idsByKind.has('autor')" :ids="idsByKind.get('autor')!" />
-		<KeywordDetails v-else-if="idsByKind.has('keyword')" :ids="idsByKind.get('keyword')!" />
-		<PassageDetails v-else-if="idsByKind.has('stelle')" :ids="idsByKind.get('stelle')!" />
-		<PlaceDetails v-else-if="idsByKind.has('ort')" :ids="idsByKind.get('ort')!" />
-		<TextDetails v-else-if="idsByKind.has('text')" :ids="idsByKind.get('text')!" />
+		<AuthorDetails v-if="selectionByKind.has('autor')" :ids="selectionByKind.get('autor')!" />
+		<KeywordDetails
+			v-else-if="selectionByKind.has('keyword')"
+			:ids="selectionByKind.get('keyword')!"
+		/>
+		<PassageDetails
+			v-else-if="selectionByKind.has('stelle')"
+			:ids="selectionByKind.get('stelle')!"
+		/>
+		<PlaceDetails v-else-if="selectionByKind.has('ort')" :ids="selectionByKind.get('ort')!" />
+		<TextDetails v-else-if="selectionByKind.has('text')" :ids="selectionByKind.get('text')!" />
 	</SideDialog>
 </template>

@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { XMarkIcon } from "@heroicons/vue/24/outline";
 import { useQueries } from "@tanstack/vue-query";
-import { computed } from "vue";
+import { computed, inject } from "vue";
 
 import { type LinesPointsGeojson, type SpatialCoverageGeojson, createKey } from "@/api";
 import * as api from "@/api/client";
@@ -10,6 +10,7 @@ import ErrorMessage from "@/components/error-message.vue";
 import KeywordTag from "@/components/keyword-tag.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
+import { key } from "@/lib/geo-map/geo-map.context";
 import { type ConeOriginGeojson } from "@/lib/geo-map/geo-map.types";
 import { getPassageLabel, getPlaceLabel } from "@/lib/get-label";
 import { isNotNullable } from "@/lib/is-not-nullable";
@@ -117,6 +118,8 @@ function deselect<T>(selection: Array<T>, value: T): Array<T> {
 		return key !== value;
 	});
 }
+
+const _context = inject(key);
 </script>
 
 <template>

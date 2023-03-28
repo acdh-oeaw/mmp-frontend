@@ -1,22 +1,25 @@
 <script lang="ts" setup>
 import { type Map as LeafletMap } from "leaflet";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 
 import Centered from "@/components/centered.vue";
 import ErrorMessage from "@/components/error-message.vue";
 import GeoMap from "@/components/geo-map.vue";
 import GeoMapToolbar from "@/components/geo-map-toolbar.vue";
+import GeojsonDetails from "@/components/geojson-details.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
+import SideDisclosure from "@/components/side-disclosure.vue";
 import VisualisationContainer from "@/components/visualisation-container.vue";
 import { type GeoMapContext } from "@/lib/geo-map/geo-map.types";
 import { useGeoMap } from "@/lib/geo-map/use-geo-map";
 import { useGeoMapEvents } from "@/lib/geo-map/use-geo-map-events";
 import { useGeoJsonLayers } from "@/lib/geo-map/use-geojson-layers";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
+import { useSelectionByKind } from "@/lib/search/use-selection-by-kind";
 import { useResourceIdParam } from "@/lib/use-resource-id-param";
 import { ClientOnly } from "#components";
-import { useHead } from "#imports";
+import { useHead, useRouter } from "#imports";
 
 const title = "Geo visualisation";
 
@@ -27,7 +30,9 @@ useHead({
 
 const _id = useResourceIdParam();
 
-const { searchFilters } = useSearchFilters();
+const router = useRouter();
+const { createSearchFilterParams, searchFilters } = useSearchFilters();
+const selectionByKind = useSelectionByKind();
 
 const {
 	areas,
@@ -60,6 +65,18 @@ const context = ref<Pick<GeoMapContext, "map">>({
 
 function onReady(instance: LeafletMap) {
 	context.value.map = instance;
+}
+
+const isSideDisclosureVisible = computed(() => {
+	return (
+		selectionByKind.value.has("geojson-area") ||
+		selectionByKind.value.has("geojson-collection") ||
+		selectionByKind.value.has("geojson-point")
+	);
+});
+
+function onToggleSideDisclosure() {
+	router.push({ query: createSearchFilterParams(searchFilters.value) });
 }
 </script>
 
@@ -124,6 +141,19 @@ function onReady(instance: LeafletMap) {
 						@lines-points-hover="onLinesPointsHover"
 					>
 						<GeoMapToolbar :layers="layers" />
+
+						<SideDisclosure :open="isSideDisclosureVisible" @toggle="onToggleSideDisclosure">
+							<GeojsonDetails
+								v-if="
+									selectionByKind.has('geojson-area') ||
+									selectionByKind.has('geojson-collection') ||
+									selectionByKind.has('geojson-point')
+								"
+								:areas="selectionByKind.get('geojson-area')"
+								:collections="selectionByKind.get('geojson-collection')"
+								:points="selectionByKind.get('geojson-point')"
+							/>
+						</SideDisclosure>
 					</GeoMap>
 				</VisualisationContainer>
 			</ClientOnly>

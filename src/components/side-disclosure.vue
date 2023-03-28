@@ -20,7 +20,7 @@ function onToggle() {
 <template>
 	<ClientOnly>
 		<TransitionRoot :show="props.open" as="template">
-			<div class="relative z-50">
+			<div class="pointer-events-none relative z-50">
 				<div class="pointer-events-none fixed inset-0 flex">
 					<TransitionChild
 						as="template"
