@@ -8,10 +8,12 @@ import {
 import { type SelectionKey, createSelectionKey } from "@/lib/search/selection-key";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
 import { useSelection } from "@/lib/search/use-selection";
+import { useFullScreen } from "@/lib/use-full-screen";
 import { useRouter } from "#imports";
 
 export function useGeoMapEvents() {
 	const router = useRouter();
+	const isFullscreen = useFullScreen();
 	const { createSearchFilterParams, searchFilters } = useSearchFilters();
 	const { createSelectionParams, selection } = useSelection();
 	const selectedKeys = computed<Set<SelectionKey>>(() => {
@@ -33,6 +35,7 @@ export function useGeoMapEvents() {
 			query: {
 				...createSearchFilterParams(searchFilters.value),
 				...createSelectionParams({ selection: Array.from(_selection) }),
+				"view-mode": isFullscreen.value ? "fullscreen" : undefined,
 			},
 		});
 	}
@@ -52,6 +55,7 @@ export function useGeoMapEvents() {
 			query: {
 				...createSearchFilterParams(searchFilters.value),
 				...createSelectionParams({ selection: Array.from(_selection) }),
+				"view-mode": isFullscreen.value ? "fullscreen" : undefined,
 			},
 		});
 	}
@@ -71,6 +75,7 @@ export function useGeoMapEvents() {
 			query: {
 				...createSearchFilterParams(searchFilters.value),
 				...createSelectionParams({ selection: Array.from(_selection) }),
+				"view-mode": isFullscreen.value ? "fullscreen" : undefined,
 			},
 		});
 	}

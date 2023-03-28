@@ -23,7 +23,7 @@ const query = computed(() => {
 const links = {
 	"search-results": { path: "search-results", label: "Search results" },
 	"network-graph-visualisation": { path: "network-graph-visualisation", label: "Network graph" },
-	"geo-map-visualisation": { path: "geo-map-visualisation", label: "Map" },
+	"geo-map-visualisation": { path: "geo-map-visualisation", label: "Map (spatial coverage)" },
 	"word-cloud-visualisation": { path: "word-cloud-visualisation", label: "Word cloud" },
 };
 </script>

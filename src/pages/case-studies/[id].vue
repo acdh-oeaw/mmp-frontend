@@ -26,7 +26,7 @@ const _links = {
 	timeline: { path: "timeline", label: "Timeline" },
 	story: { path: "story", label: "Story" },
 	"network-graph-visualisation": { path: "network-graph-visualisation", label: "Network graph" },
-	"geo-map-visualisation": { path: "geo-map-visualisation", label: "Map" },
+	"geo-map-visualisation": { path: "geo-map-visualisation", label: "Map (spatial coverage)" },
 	"word-cloud-visualisation": { path: "word-cloud-visualisation", label: "Word cloud" },
 	"texts-by-authors": { path: "texts-by-authors", label: "Texts by authors" },
 };

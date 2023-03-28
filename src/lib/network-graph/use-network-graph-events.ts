@@ -5,10 +5,12 @@ import { type NetworkGraphNode } from "@/lib/network-graph/network-graph.types";
 import { type SelectionKey, createSelectionKey } from "@/lib/search/selection-key";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
 import { useSelection } from "@/lib/search/use-selection";
+import { useFullScreen } from "@/lib/use-full-screen";
 import { useRouter } from "#imports";
 
 export function useNetworkGraphEvents() {
 	const router = useRouter();
+	const isFullscreen = useFullScreen();
 	const { createSearchFilterParams, searchFilters } = useSearchFilters();
 	const { createSelectionParams, selection } = useSelection();
 	const selectedKeys = computed<Set<SelectionKey>>(() => {
@@ -42,6 +44,7 @@ export function useNetworkGraphEvents() {
 			query: {
 				...createSearchFilterParams(searchFilters.value),
 				...createSelectionParams({ selection: Array.from(_selection) }),
+				"view-mode": isFullscreen.value ? "fullscreen" : undefined,
 			},
 		});
 	}
