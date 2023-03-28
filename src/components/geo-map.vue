@@ -793,6 +793,7 @@ watch(context.disabled.areas, () => {
 	updateCones();
 	updateOverlayAreas();
 	updateAreaLabels();
+	updateStackingOrder();
 });
 
 watch(
