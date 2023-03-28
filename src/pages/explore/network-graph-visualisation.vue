@@ -11,6 +11,7 @@ import NetworkGraphLegend from "@/components/network-graph-legend.vue";
 import NetworkGraphToolbar from "@/components/network-graph-toolbar.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import SideDisclosure from "@/components/side-disclosure.vue";
+import ViewMode from "@/components/view-mode.vue";
 import VisualisationContainer from "@/components/visualisation-container.vue";
 import { type NetworkGraphContext } from "@/lib/network-graph/network-graph.types";
 import { useFilteredGraph } from "@/lib/network-graph/use-filtered-graph";
@@ -98,42 +99,43 @@ function onToggleSideDisclosure() {
 						<LoadingIndicator>Updating network graph...</LoadingIndicator>
 					</Centered>
 				</template>
-
-				<VisualisationContainer
-					v-slot="{ width, height }"
-					class="min-h-[600px] transition-all"
-					:class="{ 'opacity-50 grayscale': isFetching }"
-				>
-					<NetworkGraph
-						:graph="filteredGraph"
-						:height="height"
-						:highlighted-keys="highlightedKeys"
-						:selected-keys="selectedKeys"
-						:width="width"
-						@node-click="onNodeClick"
-						@node-hover="onNodeHover"
-						@ready="onReady"
+				<ViewMode>
+					<VisualisationContainer
+						v-slot="{ width, height }"
+						class="min-h-[600px] transition-all"
+						:class="{ 'opacity-50 grayscale': isFetching }"
 					>
-						<NetworkGraphToolbar :graph="filteredGraph" />
+						<NetworkGraph
+							:graph="filteredGraph"
+							:height="height"
+							:highlighted-keys="highlightedKeys"
+							:selected-keys="selectedKeys"
+							:width="width"
+							@node-click="onNodeClick"
+							@node-hover="onNodeHover"
+							@ready="onReady"
+						>
+							<NetworkGraphToolbar :graph="filteredGraph" />
 
-						<div class="absolute right-4 bottom-4 rounded bg-white px-8 py-3 shadow-lg">
-							<NetworkGraphLegend
-								:keyword-type-filters="keywordTypeFilters"
-								:resource-kind-filters="resourceKindFilters"
-								@toggle-keyword-type-filter="onToggleKeywordTypeFilter"
-								@toggle-resource-kind-filter="onToggleResourceKindFilter"
-							/>
-						</div>
+							<div class="absolute right-4 bottom-4 rounded bg-white px-8 py-3 shadow-lg">
+								<NetworkGraphLegend
+									:keyword-type-filters="keywordTypeFilters"
+									:resource-kind-filters="resourceKindFilters"
+									@toggle-keyword-type-filter="onToggleKeywordTypeFilter"
+									@toggle-resource-kind-filter="onToggleResourceKindFilter"
+								/>
+							</div>
 
-						<SideDisclosure :open="isSideDisclosureVisible" @toggle="onToggleSideDisclosure">
-							<GraphKeywordDetails
-								v-if="selectionByKind.has('graph-author') || selectionByKind.has('graph-keyword')"
-								:ids="selectionByKind.get('graph-keyword')!"
-								:authors="selectionByKind.get('graph-author')!"
-							/>
-						</SideDisclosure>
-					</NetworkGraph>
-				</VisualisationContainer>
+							<SideDisclosure :open="isSideDisclosureVisible" @toggle="onToggleSideDisclosure">
+								<GraphKeywordDetails
+									v-if="selectionByKind.has('graph-author') || selectionByKind.has('graph-keyword')"
+									:ids="selectionByKind.get('graph-keyword')!"
+									:authors="selectionByKind.get('graph-author')!"
+								/>
+							</SideDisclosure>
+						</NetworkGraph>
+					</VisualisationContainer>
+				</ViewMode>
 			</ClientOnly>
 		</template>
 	</div>

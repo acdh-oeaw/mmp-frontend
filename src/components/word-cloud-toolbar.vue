@@ -3,6 +3,7 @@ import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } fro
 import { ChartPieIcon, CloudIcon, ListBulletIcon, XMarkIcon } from "@heroicons/vue/24/outline";
 import { ref } from "vue";
 
+import FullscreenButton from "@/components/fullscreen-button.vue";
 import Toolbar from "@/components/toolbar.vue";
 import ToolbarIconButton from "@/components/toolbar-icon-button.vue";
 import { type Token } from "@/lib/word-cloud/word-cloud.types";
@@ -33,8 +34,6 @@ function onCloseDialog() {
 
 <template>
 	<Toolbar>
-		<div class="flex items-center gap-2"></div>
-		<div class="mx-auto flex items-center gap-2"></div>
 		<div class="flex items-center gap-2">
 			<ToolbarIconButton v-if="clouds" label="View all words" @click="isDialogOpen = true">
 				<ListBulletIcon class="h-5 w-5 shrink-0" />
@@ -54,7 +53,9 @@ function onCloseDialog() {
 				<ChartPieIcon class="h-5 w-5 shrink-0" />
 			</ToolbarIconButton>
 		</div>
-		<div class="flex items-center gap-2"></div>
+		<div class="flex items-center gap-2">
+			<FullscreenButton />
+		</div>
 
 		<TransitionRoot :show="isDialogOpen" as="template">
 			<Dialog class="relative z-50" @close="onCloseDialog">

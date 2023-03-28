@@ -3,6 +3,7 @@ import { MagnifyingGlassMinusIcon, MagnifyingGlassPlusIcon } from "@heroicons/vu
 import { computed, inject } from "vue";
 
 import { type GeojsonLayer } from "@/api";
+import FullscreenButton from "@/components/fullscreen-button.vue";
 import SingleSelect from "@/components/single-select.vue";
 import Toolbar from "@/components/toolbar.vue";
 import ToolbarIconButton from "@/components/toolbar-icon-button.vue";
@@ -109,7 +110,6 @@ function _onFitWorld() {
 				@change-selection="onChangeBaseLayerSelection"
 			/>
 		</div>
-		<div class="mx-auto flex items-center gap-2"></div>
 		<div class="flex items-center gap-2">
 			<ToolbarIconButton label="Zoom in" @click="onZoomIn">
 				<MagnifyingGlassPlusIcon class="h-5 w-5 shrink-0" />
@@ -117,6 +117,9 @@ function _onFitWorld() {
 			<ToolbarIconButton label="Zoom out" @click="onZoomOut">
 				<MagnifyingGlassMinusIcon class="h-5 w-5 shrink-0" />
 			</ToolbarIconButton>
+		</div>
+		<div class="flex items-center gap-2">
+			<FullscreenButton />
 		</div>
 	</Toolbar>
 </template>

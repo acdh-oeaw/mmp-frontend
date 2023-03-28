@@ -1,14 +1,15 @@
 <script lang="ts" setup>
 import {
-	ArrowsPointingInIcon,
-	ArrowsPointingOutIcon,
 	FolderArrowDownIcon,
+	LockOpenIcon,
 	MagnifyingGlassMinusIcon,
 	MagnifyingGlassPlusIcon,
+	ViewfinderCircleIcon,
 	XMarkIcon,
 } from "@heroicons/vue/24/outline";
 import { inject } from "vue";
 
+import FullscreenButton from "@/components/fullscreen-button.vue";
 import Toolbar from "@/components/toolbar.vue";
 import ToolbarIconButton from "@/components/toolbar-icon-button.vue";
 import { saveAsCsv, saveAsGexf, saveAsImage } from "@/lib/network-graph/export-data";
@@ -82,13 +83,13 @@ function onSaveAsGexf() {
 	<Toolbar>
 		<div class="flex items-center gap-2">
 			<ToolbarIconButton label="Unpin nodes" @click="onUnPinNodes">
-				<ArrowsPointingOutIcon class="h-5 w-5 shrink-0" />
+				<LockOpenIcon class="h-5 w-5 shrink-0" />
 			</ToolbarIconButton>
 			<ToolbarIconButton label="Clear selection" @click="onClearSelection">
 				<XMarkIcon class="h-5 w-5 shrink-0" />
 			</ToolbarIconButton>
 		</div>
-		<div class="mx-auto flex items-center gap-2">
+		<div class="flex items-center gap-2">
 			<ToolbarIconButton label="Save as image" @click="onSaveAsImage">
 				<FolderArrowDownIcon class="h-5 w-5 shrink-0" />
 			</ToolbarIconButton>
@@ -107,8 +108,11 @@ function onSaveAsGexf() {
 				<MagnifyingGlassMinusIcon class="h-5 w-5 shrink-0" />
 			</ToolbarIconButton>
 			<ToolbarIconButton label="Zoom to fit" @click="onZoomToFit">
-				<ArrowsPointingInIcon class="h-5 w-5 shrink-0" />
+				<ViewfinderCircleIcon class="h-5 w-5 shrink-0" />
 			</ToolbarIconButton>
+		</div>
+		<div class="flex items-center gap-2">
+			<FullscreenButton />
 		</div>
 	</Toolbar>
 </template>

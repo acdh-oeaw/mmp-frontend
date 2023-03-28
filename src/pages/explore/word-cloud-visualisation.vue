@@ -7,6 +7,7 @@ import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import TokenPieCharts from "@/components/token-pie-charts.vue";
 import TokenWordClouds from "@/components/token-word-clouds.vue";
+import ViewMode from "@/components/view-mode.vue";
 import VisualisationContainer from "@/components/visualisation-container.vue";
 import WordCloudToolbar from "@/components/word-cloud-toolbar.vue";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
@@ -67,25 +68,27 @@ function onToggle(chart: "pie-chart" | "word-cloud") {
 					</Centered>
 				</template>
 
-				<VisualisationContainer
-					v-slot="{ width, height }"
-					class="min-h-[600px] transition-all"
-					:class="{ 'opacity-50 grayscale': isFetching }"
-				>
-					<TokenPieCharts
-						v-if="type === 'pie-chart'"
-						:height="height"
-						:charts="clouds"
-						:width="width"
-					/>
-					<TokenWordClouds
-						v-else-if="type === 'word-cloud'"
-						:height="height"
-						:clouds="clouds"
-						:width="width"
-					/>
-					<WordCloudToolbar :type="type" :clouds="clouds" @toggle="onToggle" />
-				</VisualisationContainer>
+				<ViewMode>
+					<VisualisationContainer
+						v-slot="{ width, height }"
+						class="min-h-[600px] transition-all"
+						:class="{ 'opacity-50 grayscale': isFetching }"
+					>
+						<TokenPieCharts
+							v-if="type === 'pie-chart'"
+							:height="height"
+							:charts="clouds"
+							:width="width"
+						/>
+						<TokenWordClouds
+							v-else-if="type === 'word-cloud'"
+							:height="height"
+							:clouds="clouds"
+							:width="width"
+						/>
+						<WordCloudToolbar :type="type" :clouds="clouds" @toggle="onToggle" />
+					</VisualisationContainer>
+				</ViewMode>
 			</ClientOnly>
 		</template>
 	</div>
