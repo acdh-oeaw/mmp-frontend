@@ -34,9 +34,10 @@ const context = inject(key);
 
 const layersLabel = "Layers";
 
-const selectedLayerKey = context
-	? context.visibility.layers.value.values().next().value
-	: undefined;
+const selectedLayerKey =
+	context && context.visibility.layers.value.size > 0
+		? String(context.visibility.layers.value.values().next().value)
+		: undefined;
 
 const layers = computed(() => {
 	const layers: Array<Item> = [];
@@ -98,7 +99,7 @@ function _onFitWorld() {
 				v-if="layers.length > 0"
 				:items="layers"
 				:label="layersLabel"
-				name="custom-layers"
+				name="geojson-layers"
 				:selected-key="selectedLayerKey"
 				@change-selection="onChangeLayerSelection"
 			/>
@@ -106,6 +107,7 @@ function _onFitWorld() {
 				v-if="props.baseLayers.length > 0"
 				:items="props.baseLayers"
 				:label="baseLayerLabel"
+				name="base-layer"
 				:selected-key="props.baseLayer"
 				@change-selection="onChangeBaseLayerSelection"
 			/>

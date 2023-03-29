@@ -24,7 +24,7 @@ const props = defineProps<{
 	label: string;
 	name?: string;
 	placeholder?: string;
-	selectedKey: Item["key"];
+	selectedKey?: Item["key"];
 }>();
 
 const emit = defineEmits<{
