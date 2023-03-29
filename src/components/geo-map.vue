@@ -145,7 +145,7 @@ async function updateLayers() {
 						color,
 						fill: false,
 						stroke: true,
-						weight: 2,
+						weight: 1,
 					};
 
 					return styles;
@@ -488,7 +488,7 @@ onMounted(async () => {
 				color,
 				fill: false,
 				stroke: true,
-				weight: 2,
+				weight: 1,
 			};
 
 			return styles;

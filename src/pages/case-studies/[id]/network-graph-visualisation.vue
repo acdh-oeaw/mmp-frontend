@@ -20,6 +20,7 @@ import { useNetworkGraphFilters } from "@/lib/network-graph/use-network-graph-fi
 import { useSearchFilters } from "@/lib/search/use-search-filters";
 import { useSelectionByKind } from "@/lib/search/use-selection-by-kind";
 import { useResourceIdParam } from "@/lib/use-resource-id-param";
+import { useViewMode } from "@/lib/use-view-mode";
 import { ClientOnly } from "#components";
 import { useHead, useRouter } from "#imports";
 
@@ -36,6 +37,7 @@ const router = useRouter();
 const { createSearchFilterParams, searchFilters } = useSearchFilters();
 const selectionByKind = useSelectionByKind();
 const { graph, isEmpty, isError, isFetching, isLoading } = useNetworkGraph(searchFilters);
+const { createViewModeParams, viewMode } = useViewMode();
 
 const { selectedKeys, onNodeClick, highlightedKeys, onNodeHover } = useNetworkGraphEvents();
 
@@ -62,7 +64,12 @@ const isSideDisclosureVisible = computed(() => {
 });
 
 function onToggleSideDisclosure() {
-	router.push({ query: createSearchFilterParams(searchFilters.value) });
+	router.push({
+		query: {
+			...createSearchFilterParams(searchFilters.value),
+			...createViewModeParams(viewMode.value),
+		},
+	});
 }
 </script>
 
