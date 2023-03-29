@@ -28,16 +28,20 @@ export function useNetworkGraphEvents() {
 
 	function onNodeClick(node: NetworkGraphNode | null) {
 		if (node == null) return;
-
 		const key = createSelectionKey({
 			kind: node.kind === "autor" ? "graph-author" : "graph-keyword",
 			id: node.id,
 		});
-		const _selection = new Set(selection.value.selection);
-		if (_selection.has(key)) {
-			_selection.delete(key);
-		} else {
-			_selection.add(key);
+
+		let _selection;
+		if (node.kind === "autor") _selection = new Set([key]);
+		else {
+			_selection = new Set(selection.value.selection);
+			if (_selection.has(key)) {
+				_selection.delete(key);
+			} else {
+				_selection.add(key);
+			}
 		}
 
 		router.push({

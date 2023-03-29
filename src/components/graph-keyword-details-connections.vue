@@ -60,6 +60,7 @@ const { selection } = useSelection();
 						:key="key"
 					>
 						<NuxtLink
+							v-if="graph.nodes.get(conn.source)?.kind === 'keyword'"
 							class="my-1 flex justify-between rounded p-2 transition hover:bg-black/10"
 							:href="{
 								path: '/explore/search-results',
@@ -69,6 +70,29 @@ const { selection } = useSelection();
 										Number(graph.nodes.get(conn.source)?.id),
 										Number(graph.nodes.get(conn.target)?.id),
 									],
+									offset: 0,
+								}),
+							}"
+						>
+							<div>
+								{{ graph.nodes.get(conn.source)?.label }}
+								<ChevronUpDownIcon class="inline h-5 w-5 rotate-90" />
+								{{ graph.nodes.get(conn.target)?.label }}
+							</div>
+							<div class="flex min-w-fit items-center justify-center pl-1">
+								{{ conn.count }}
+								<ChevronRightIcon class="inline h-5 w-5" />
+							</div>
+						</NuxtLink>
+						<NuxtLink
+							v-else
+							class="my-1 flex justify-between rounded p-2 transition hover:bg-black/10"
+							:href="{
+								path: '/explore/search-results',
+								query: createSearchFilterParams({
+									...defaultSearchFilters,
+									keyword: [Number(graph.nodes.get(conn.target)?.id)],
+									author: [Number(graph.nodes.get(conn.source)?.id)],
 									offset: 0,
 								}),
 							}"
