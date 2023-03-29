@@ -1,6 +1,7 @@
 <script lang="ts" setup>
-import { ref } from "vue";
+import { ref, watch } from "vue";
 
+import { useCaseStudyById } from "@/api";
 import Centered from "@/components/centered.vue";
 import ErrorMessage from "@/components/error-message.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
@@ -15,14 +16,15 @@ import { useWordClouds } from "@/lib/word-cloud/use-word-clouds";
 import { ClientOnly } from "#components";
 import { useHead } from "#imports";
 
-const title = "Word-cloud visualisation";
+const title = ref("Word-cloud visualisation");
 
 useHead({
 	title,
 	meta: [{ property: "og:title", content: title }],
 });
 
-const _id = useResourceIdParam();
+const id = useResourceIdParam();
+const caseStudyQuery = useCaseStudyById({ id });
 
 const { searchFilters } = useSearchFilters();
 const { clouds, isEmpty, isError, isFetching, isLoading } = useWordClouds(searchFilters);
@@ -32,6 +34,12 @@ const type = ref<"pie-chart" | "word-cloud">("word-cloud");
 function onToggle(chart: "pie-chart" | "word-cloud") {
 	type.value = chart;
 }
+
+watch(caseStudyQuery.data, (caseStudy) => {
+	if (caseStudy?.title != null) {
+		title.value = ["Word-cloud visualisation", caseStudy.title].join(" - ");
+	}
+});
 </script>
 
 <template>

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed } from "vue";
+import { computed, ref, watch } from "vue";
 
 import { useCaseStudyById } from "@/api";
 import MainContent from "@/components/main-content.vue";
@@ -10,7 +10,7 @@ import { useResourceIdParam } from "@/lib/use-resource-id-param";
 import { NuxtLink, NuxtPage } from "#components";
 import { useHead } from "#imports";
 
-const title = "Case study";
+const title = ref("Case study");
 
 useHead({
 	title,
@@ -43,6 +43,12 @@ const links = computed(() => {
 	if (hasStory.value === true) return _links;
 	const { story: _, ...links } = _links;
 	return links;
+});
+
+watch(caseStudyQuery.data, (caseStudy) => {
+	if (caseStudy?.title != null) {
+		title.value = caseStudy.title;
+	}
 });
 </script>
 

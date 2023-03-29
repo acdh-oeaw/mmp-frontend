@@ -56,7 +56,7 @@ const api = computed(() => {
 			</div>
 			<div
 				v-bind="api.thumbProps"
-				class="flex h-5 w-5 items-center justify-center rounded-full border border-neutral-100 bg-white shadow focus:outline-1 focus:outline-blue-500 disabled:bg-neutral-200"
+				class="flex h-5 w-5 items-center justify-center rounded-full border border-neutral-400 bg-white shadow hover:border-neutral-500 focus:outline-1 focus:outline-blue-500 disabled:bg-neutral-200"
 			>
 				<input v-bind="api.hiddenInputProps" />
 			</div>

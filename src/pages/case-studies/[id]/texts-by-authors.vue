@@ -1,7 +1,9 @@
 <script lang="ts" setup>
 import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/vue";
 import { ChevronDownIcon } from "@heroicons/vue/20/solid";
+import { ref, watch } from "vue";
 
+import { useCaseStudyById } from "@/api";
 import Centered from "@/components/centered.vue";
 import ErrorMessage from "@/components/error-message.vue";
 import KeywordTag from "@/components/keyword-tag.vue";
@@ -14,17 +16,25 @@ import { useResourceIdParam } from "@/lib/use-resource-id-param";
 import { NuxtLink } from "#components";
 import { useHead } from "#imports";
 
-const title = "Texts by authors";
+const title = ref("Texts by authors");
 
 useHead({
 	title,
 	meta: [{ property: "og:title", content: title }],
 });
 
-const _id = useResourceIdParam();
+const id = useResourceIdParam();
+const caseStudyQuery = useCaseStudyById({ id });
+
 /** Search filters already take case study id into account. */
 const { createSearchFilterParams, defaultSearchFilters, searchFilters } = useSearchFilters();
 const { data, isLoading, isError, isEmpty, isFetching } = useTextsByAuthors(searchFilters);
+
+watch(caseStudyQuery.data, (caseStudy) => {
+	if (caseStudy?.title != null) {
+		title.value = ["Texts by authors", caseStudy.title].join(" - ");
+	}
+});
 </script>
 
 <template>
