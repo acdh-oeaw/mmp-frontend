@@ -89,7 +89,7 @@ import { NuxtImg, NuxtLink } from "#components";
 						This project has received funding from the ÖAW Innovation Fund Research, Science and
 						Society (2020-2023)
 					</p>
-					<p>Hosted by ACDH & Imafo</p>
+					<p>Hosted by ACDH-CH & Imafo</p>
 				</div>
 			</div>
 		</div>
