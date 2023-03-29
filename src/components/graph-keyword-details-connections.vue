@@ -6,9 +6,9 @@ import ErrorMessage from "@/components/error-message.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import { useNetworkGraph } from "@/lib/network-graph/use-network-graph";
+import { SelectionKey } from "@/lib/search/selection-key";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
 import { useSelection } from "@/lib/search/use-selection";
-import { SelectionKey } from "~~/src/lib/search/selection-key";
 
 const { searchFilters, defaultSearchFilters, createSearchFilterParams } = useSearchFilters();
 const { graph, isLoading, isError, isEmpty, isFetching } = useNetworkGraph(searchFilters);

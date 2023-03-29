@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { useFullScreen } from "../lib/use-full-screen";
+import { useFullScreen } from "@/lib/use-full-screen";
 
 const isFullscreen = useFullScreen();
 </script>

@@ -19,8 +19,8 @@ import { createList } from "@/lib/create-list";
 import { useGeoMap } from "@/lib/geo-map/use-geo-map";
 import { getPlaceLabel } from "@/lib/get-label";
 import { isNotNullable } from "@/lib/is-not-nullable";
+import { key } from "@/lib/network-graph/network-graph.context";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
-import { key } from "~~/src/lib/network-graph/network-graph.context";
 
 const props = defineProps<{
 	ids: Set<Keyword["id"]>;
