@@ -375,7 +375,7 @@ onMounted(async () => {
 		const color = keyword ? keywordColors[keyword.art] : "#0f172a";
 
 		return {
-			color: isSelected ? "#ef4444" : color,
+			color: isSelected ? colors.areaHighlights : color,
 			dashArray: "12 6",
 			fill: true,
 			fillOpacity: isSelected ? 0.36 : 0.18,
@@ -397,7 +397,7 @@ onMounted(async () => {
 
 			layer.on("mouseover", () => {
 				const styles = getAreaStyles(feature);
-				layer.setStyle({ ...styles, color: "#ef4444", fillOpacity: 0.54 });
+				layer.setStyle({ ...styles, color: colors.areaHighlights, fillOpacity: 0.54 });
 			});
 			layer.on("mouseout", () => {
 				const styles = getAreaStyles(feature);
@@ -515,7 +515,7 @@ onMounted(async () => {
 					const area = _area as Polygon;
 					if (area.feature?.id === feature.id) {
 						const styles = getAreaStyles(area.feature as SpatialCoverageGeojson);
-						area.setStyle({ ...styles, color: "#ef4444", fillOpacity: 0.5 });
+						area.setStyle({ ...styles, color: colors.areaHighlights, fillOpacity: 0.5 });
 					}
 				});
 			});

@@ -66,13 +66,12 @@ export const initialViewState = {
 	bounds: initialBounds,
 };
 
-// FIXME: do we use these?
 export const colors = {
 	cones: "hsl(50deg 100% 75%)",
 	coneOrigins: "hsl(50deg 100% 75%)",
 	linesPoints: "hsl(180deg 75% 50%)",
-	areaHighlights: "hsl(0deg 75% 75%)",
-	coneHighlights: "hsl(0deg 75% 75%)",
+	areaHighlights: "hsl(0deg 85% 60%)",
+	coneHighlights: "hsl(50deg 100% 60%)",
 };
 
 /** Area colors. */

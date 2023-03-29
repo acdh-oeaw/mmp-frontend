@@ -4,7 +4,7 @@ import "leaflet/dist/leaflet.css";
 import { nextTick, onMounted, onUnmounted, provide, ref, watch } from "vue";
 
 import { debounce } from "@/lib/debounce";
-import { config, initialViewState } from "@/lib/geo-map/geo-map.config";
+import { colors, config, initialViewState } from "@/lib/geo-map/geo-map.config";
 import { key } from "@/lib/geo-map/place-map.context";
 import { type PlaceMapContext } from "@/lib/geo-map/place-map.types";
 
@@ -22,12 +22,42 @@ const context: PlaceMapContext = {
 
 const elementRef = ref<HTMLElement | null>(null);
 
+async function updatePoints() {
+	context.points.forEach((point) => {
+		point.remove();
+	});
+	context.points = [];
+
+	nextTick(async () => {
+		/** `leaflet` assumes `window` global. */
+		const { circleMarker } = await import("leaflet");
+
+		const map = context.map;
+		if (map == null) return;
+
+		props.points.forEach((point) => {
+			context.points.push(
+				circleMarker([point.lat, point.lng], {
+					color: colors.coneOrigins,
+					fill: true,
+					fillOpacity: 0.18,
+					opacity: 0.75,
+					radius: 3,
+					stroke: true,
+					weight: 2,
+				})
+					.bindTooltip(() => {
+						return point.label;
+					})
+					.addTo(map),
+			);
+		});
+	});
+}
+
 onMounted(async () => {
 	/** `leaflet` assumes `window` global. */
-	const { map: createMap, tileLayer, marker, icon } = await import("leaflet");
-	const { default: iconUrl } = await import("leaflet/dist/images/marker-icon.png");
-	const { default: iconRetinaUrl } = await import("leaflet/dist/images/marker-icon-2x.png");
-	const { default: shadowUrl } = await import("leaflet/dist/images/marker-shadow.png");
+	const { map: createMap, tileLayer } = await import("leaflet");
 
 	if (elementRef.value == null) return;
 
@@ -38,18 +68,7 @@ onMounted(async () => {
 		minZoom: 2,
 	}).addTo(context.map);
 
-	props.points.forEach((point) => {
-		context.points.push(
-			// TODO: do we want to `bindTooltip` instead of html `title`?
-			marker([point.lat, point.lng], {
-				icon: icon({ iconUrl, iconRetinaUrl, shadowUrl }),
-				autoPanOnFocus: false,
-				riseOnHover: true,
-				title: point.label,
-				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-			}).addTo(context.map!),
-		);
-	});
+	void updatePoints();
 });
 
 const resize = debounce((_width: number, _height: number) => {
@@ -74,36 +93,9 @@ watch(
 	},
 );
 
-watch(
-	() => {
-		return props.points;
-	},
-	(points) => {
-		context.points.forEach((point) => {
-			point.remove();
-		});
-		context.points = [];
-
-		nextTick(async () => {
-			/** `leaflet` assumes `window` global. */
-			const { marker } = await import("leaflet");
-
-			const map = context.map;
-			if (map == null) return;
-
-			points.forEach((point) => {
-				context.points.push(
-					// TODO: do we want to `bindTooltip` instead of html `title`?
-					marker([point.lat, point.lng], {
-						autoPanOnFocus: false,
-						riseOnHover: true,
-						title: point.label,
-					}).addTo(map),
-				);
-			});
-		});
-	},
-);
+watch(() => {
+	return props.points;
+}, updatePoints);
 
 onUnmounted(() => {
 	context.map?.remove();
