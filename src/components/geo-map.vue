@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import "leaflet/dist/leaflet.css";
 
-// import { assert } from "@stefanprobst/assert";
 import {
 	type CircleMarker,
 	type LatLngBoundsLiteral,
@@ -21,6 +20,7 @@ import {
 import { debounce } from "@/lib/debounce";
 import { createAreaTooltipContent } from "@/lib/geo-map/create-area-tooltip-content";
 import { createConeOriginTooltipContent } from "@/lib/geo-map/create-cone-origin-tooltip-content";
+import { createGeojsonLayerTooltipContent } from "@/lib/geo-map/create-geojson-layer-tooltip-content";
 import { createLinesPointsTooltipContent } from "@/lib/geo-map/create-lines-points-tooltip-content";
 import {
 	baseLayers,
@@ -106,7 +106,7 @@ async function updateLayers() {
 	});
 
 	/** `leaflet` assumes `window` global. */
-	const { geoJSON } = await import("leaflet");
+	const { circleMarker, geoJSON } = await import("leaflet");
 
 	const map = context.map;
 	if (map == null) return;
@@ -114,7 +114,43 @@ async function updateLayers() {
 	context.layers = {};
 	layers.forEach((layer) => {
 		if (context.visibility.layers.value.has(layer.id)) {
-			context.layers[layer.id] = geoJSON(layer.data).addTo(map);
+			context.layers[layer.id] = geoJSON(layer.data, {
+				onEachFeature(feature, layer) {
+					layer.bindTooltip(createGeojsonLayerTooltipContent(feature), {
+						permanent: false,
+						sticky: true,
+					});
+				},
+				pointToLayer(feature, latlng) {
+					const color = colors.linesPoints;
+
+					const point = circleMarker(latlng, {
+						color,
+						fill: true,
+						fillOpacity: 0.18,
+						opacity: 0.75,
+						radius: 3,
+						stroke: true,
+						weight: 2,
+					});
+
+					return point;
+				},
+				style(feature) {
+					if (feature == null) return {};
+
+					const color = colors.linesPoints;
+
+					const styles = {
+						color,
+						fill: false,
+						stroke: true,
+						weight: 2,
+					};
+
+					return styles;
+				},
+			}).addTo(map);
 		}
 	});
 }
@@ -416,7 +452,7 @@ onMounted(async () => {
 	//
 
 	context.featureGroups.linesPoints = geoJSON<LinesPointsGeojson["properties"]>(undefined, {
-		onEachFeature(feature: LinesPointsGeojson, layer: CircleMarker) {
+		onEachFeature(feature: LinesPointsGeojson, layer) {
 			layer.bindTooltip(createLinesPointsTooltipContent(feature), {
 				permanent: false,
 				sticky: true,
@@ -448,12 +484,14 @@ onMounted(async () => {
 
 			const color = colors.linesPoints;
 
-			return {
+			const styles = {
 				color,
 				fill: false,
 				stroke: true,
 				weight: 2,
 			};
+
+			return styles;
 		},
 	}).addTo(context.map);
 
