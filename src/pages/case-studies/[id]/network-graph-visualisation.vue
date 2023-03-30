@@ -1,7 +1,8 @@
 <script lang="ts" setup>
 import { type ForceGraphInstance } from "force-graph";
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 
+import { useCaseStudyById } from "@/api";
 import Centered from "@/components/centered.vue";
 import ErrorMessage from "@/components/error-message.vue";
 import GraphKeywordDetails from "@/components/graph-keyword-details.vue";
@@ -24,14 +25,15 @@ import { useViewMode } from "@/lib/use-view-mode";
 import { ClientOnly } from "#components";
 import { useHead, useRouter } from "#imports";
 
-const title = "Network-graph visualisation";
+const title = ref("Network-graph visualisation");
 
 useHead({
 	title,
 	meta: [{ property: "og:title", content: title }],
 });
 
-const _id = useResourceIdParam();
+const id = useResourceIdParam();
+const caseStudyQuery = useCaseStudyById({ id });
 
 const router = useRouter();
 const { createSearchFilterParams, searchFilters } = useSearchFilters();
@@ -71,6 +73,12 @@ function onToggleSideDisclosure() {
 		},
 	});
 }
+
+watch(caseStudyQuery.data, (caseStudy) => {
+	if (caseStudy?.title != null) {
+		title.value = ["Network-graph visualisation", caseStudy.title].join(" - ");
+	}
+});
 </script>
 
 <template>

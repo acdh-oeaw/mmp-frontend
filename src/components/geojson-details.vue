@@ -124,7 +124,15 @@ function deselect<T>(selection: Array<T>, value: T): Array<T> {
 //
 
 // TODO: loading states
-const { areas: allAreas } = useGeoMap(searchFilters);
+const { areas: _allAreas } = useGeoMap(searchFilters);
+const allAreas = computed(() => {
+	const sorted = [..._allAreas.value].sort((a, z) => {
+		if (a.properties.key_word == null) return -1;
+		if (z.properties.key_word == null) return 1;
+		return a.properties.key_word.stichwort.localeCompare(z.properties.key_word.stichwort);
+	});
+	return sorted;
+});
 
 function onToggleAreaVisibility(id: SpatialCoverageGeojson["id"]) {
 	if (context == null) return;

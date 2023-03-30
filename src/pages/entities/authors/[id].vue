@@ -1,11 +1,12 @@
 <script lang="ts" setup>
-import { computed } from "vue";
+import { computed, ref, watch } from "vue";
 
+import { useAuthorById } from "@/api";
 import AuthorDetails from "@/components/author-details.vue";
 import { useResourceIdParam } from "@/lib/use-resource-id-param";
 import { useHead } from "#imports";
 
-const title = "Author";
+const title = ref("Author");
 
 useHead({
 	title,
@@ -16,10 +17,18 @@ const id = useResourceIdParam();
 const ids = computed(() => {
 	return new Set([id.value]);
 });
+
+const authorByIdQuery = useAuthorById({ id });
+
+watch(authorByIdQuery.data, (author) => {
+	if (author?.name != null) {
+		title.value = author.name;
+	}
+});
 </script>
 
 <template>
-	<div class="relative mx-auto h-full w-full">
+	<div class="relative mx-auto grid h-full w-full">
 		<h2 class="sr-only">Author</h2>
 		<div>
 			<AuthorDetails :ids="ids" />

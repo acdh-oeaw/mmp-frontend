@@ -61,7 +61,7 @@ const columns = {
 	text: { label: "Text" },
 	authors: { label: "Author" },
 	keywords: { label: "Keywords" },
-	dateOfComposition: { label: "Date of composition" },
+	dateOfComposition: { label: "Time of composition" },
 	temporalCoverage: { label: "Temporal coverage" },
 };
 </script>

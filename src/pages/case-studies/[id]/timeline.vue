@@ -6,8 +6,9 @@ import {
 	ChevronRightIcon,
 	PencilIcon as AuthorIcon,
 } from "@heroicons/vue/24/outline";
-import { computed } from "vue";
+import { computed, ref, watch } from "vue";
 
+import { useCaseStudyById } from "@/api";
 import { type GetCaseStudyTimetableById } from "@/api";
 import Centered from "@/components/centered.vue";
 import ErrorMessage from "@/components/error-message.vue";
@@ -30,7 +31,7 @@ type TimelineEntry = {
 	type: "autor" | "event" | "text";
 };
 
-const title = "Timeline";
+const title = ref("Timeline");
 
 useHead({
 	title,
@@ -38,6 +39,8 @@ useHead({
 });
 
 const id = useResourceIdParam();
+const caseStudyQuery = useCaseStudyById({ id });
+
 const timeline = useCaseStudyTimeline(id);
 const events = useCaseStudyEvent(id);
 
@@ -102,6 +105,12 @@ function getEventColor(type: GetCaseStudyTimetableById.Response[number]["ent_typ
 			return "bg-blue-500";
 	}
 }
+
+watch(caseStudyQuery.data, (caseStudy) => {
+	if (caseStudy?.title != null) {
+		title.value = ["Timeline", caseStudy.title].join(" - ");
+	}
+});
 </script>
 
 <template>

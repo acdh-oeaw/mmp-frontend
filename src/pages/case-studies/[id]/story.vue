@@ -1,8 +1,9 @@
 <script lang="ts" setup>
 import { runSync } from "@mdx-js/mdx";
-import { computed } from "vue";
+import { computed, ref, watch } from "vue";
 import * as runtime from "vue-jsx-runtime";
 
+import { useCaseStudyById } from "@/api";
 import Centered from "@/components/centered.vue";
 import ErrorMessage from "@/components/error-message.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
@@ -11,7 +12,7 @@ import StoryVisualisation from "@/components/story-visualisation.vue";
 import { useResourceIdParam } from "@/lib/use-resource-id-param";
 import { useFetch, useHead } from "#imports";
 
-const title = "Story";
+const title = ref("Story");
 
 useHead({
 	title,
@@ -19,6 +20,7 @@ useHead({
 });
 
 const id = useResourceIdParam();
+const caseStudyQuery = useCaseStudyById({ id });
 
 const response = await useFetch(() => {
 	return `/api/story/${id.value}`;
@@ -44,6 +46,12 @@ const components = {
 };
 
 const StoryContent = code.value?.default;
+
+watch(caseStudyQuery.data, (caseStudy) => {
+	if (caseStudy?.title != null) {
+		title.value = ["Story", caseStudy.title].join(" - ");
+	}
+});
 </script>
 
 <template>
