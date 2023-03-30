@@ -27,7 +27,7 @@ import { NuxtImg, NuxtLink } from "#components";
 						Visualising Semantic Landscapes in Early Medieval Europe
 					</h2>
 					<h2 class="text-base font-extrabold sm:text-lg lg:text-xl xl:text-2xl">
-						({{ 250 }} BCE - {{ 1250 }} CE)
+						({{ 250 }} CE - {{ 1250 }} CE)
 					</h2>
 				</div>
 
@@ -90,6 +90,24 @@ import { NuxtImg, NuxtLink } from "#components";
 						Society (2020-2023)
 					</p>
 					<p>Hosted by ACDH & Imafo</p>
+					<p class="mx-auto mt-4 w-fit rounded bg-black/40 p-2">
+						<a href="https://www.oeaw.ac.at/imafo" target="_blank">
+							<NuxtImg
+								alt="ACDH-CH Logo"
+								src="/assets/images/logo-acdh.svg"
+								class="inline-block h-16 px-4"
+							/>
+							<span class="sr-only">ACDH-CH Logo</span>
+						</a>
+						<a href="https://www.oeaw.ac.at/acdh/" target="_blank">
+							<NuxtImg
+								alt="Imafo Logo"
+								src="/assets/images/imafo_logo_white.png"
+								class="inline-block h-16 px-4"
+							/>
+							<span class="sr-only">Imafo Logo</span>
+						</a>
+					</p>
 				</div>
 			</div>
 		</div>

@@ -7,14 +7,14 @@ import { type DataSet, dataSets, useSearchFilters } from "@/lib/search/use-searc
 const label = "Dataset";
 
 const labels: Record<DataSet, { label: string; description?: string }> = {
+	all: {
+		label: "All datasets",
+	},
 	"case-studies": {
 		label: "Case studies only",
 	},
 	gens: {
 		label: "GENS database",
-	},
-	all: {
-		label: "All datasets",
 	},
 };
 

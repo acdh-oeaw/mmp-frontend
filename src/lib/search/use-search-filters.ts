@@ -49,7 +49,7 @@ export const defaultSearchFilters = Object.freeze({
 	place: [],
 	"date-range": [minYear, maxYear],
 	"date-filter": "composition",
-	dataset: "case-studies",
+	dataset: "all",
 	"query-mode": "intersection",
 	"text-genre": [],
 	limit: defaultLimit,
