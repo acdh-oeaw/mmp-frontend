@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/vue";
+import { ChevronRightIcon, ChevronUpIcon } from "@heroicons/vue/24/outline";
 import { computed } from "vue";
 
 import { type Place } from "@/api";
@@ -60,48 +62,84 @@ const { passages, caseStudies, isLoading, isFetching, isEmpty, isError } = useTe
 			</template>
 
 			<div class="grid gap-6">
-				<section v-if="passages.length > 0" class="grid gap-1">
-					<h3 class="text-xs font-medium uppercase text-neutral-500">Passages</h3>
-					<ul class="divide-y text-sm" role="list">
-						<li v-for="passage of passages" :key="passage.id">
-							<div class="py-2">
-								<NuxtLink
-									class="transition hover:underline"
-									:href="{
-										query: {
-											...route.query,
-											...createSelectionParams({
-												selection: [createResourceKey({ kind: 'stelle', id: passage.id })],
-											}),
-										},
-									}"
-								>
-									{{ getPassageLabel(passage) }}
-								</NuxtLink>
+				<section v-if="passages.length > 0" class="-ml-2 grid gap-1">
+					<Disclosure v-slot="{ open }" as="section" default-open class="grid gap-1">
+						<DisclosureButton
+							as="h3"
+							class="cursor-pointer text-left text-sm font-medium uppercase text-neutral-500"
+						>
+							<div class="flex justify-between rounded p-2 transition hover:bg-black/10">
+								<span>Passages</span>
+								<ChevronUpIcon
+									:class="open ? '' : 'rotate-180 transform'"
+									class="inline-block h-5 w-5"
+								/>
 							</div>
-						</li>
-					</ul>
+						</DisclosureButton>
+						<DisclosurePanel as="ul" role="list" class="space-y-4 divide-solid divide-gray-300">
+							<li v-for="passage of passages" :key="passage.id">
+								<article class="divide-y divide-dotted">
+									<div>
+										<NuxtLink
+											class="flex items-center justify-between rounded p-2 transition hover:bg-black/10"
+											:href="{
+												query: {
+													...route.query,
+													...createSelectionParams({
+														selection: [createResourceKey({ kind: 'stelle', id: passage.id })],
+													}),
+												},
+											}"
+										>
+											<strong>
+												{{ getPassageLabel(passage) }}
+											</strong>
+											<ChevronRightIcon class="h-5 w-5 shrink-0" />
+										</NuxtLink>
+									</div>
+								</article>
+							</li>
+						</DisclosurePanel>
+					</Disclosure>
 				</section>
 
-				<section v-if="caseStudies.length > 0" class="grid gap-1">
-					<h3 class="text-xs font-medium uppercase text-neutral-500">Case studies</h3>
-					<ul class="divide-y text-sm" role="list">
-						<li v-for="caseStudy of caseStudies" :key="caseStudy.id">
-							<article class="grid gap-1 py-2">
-								<NuxtLink
-									target="_blank"
-									class="transition hover:underline"
-									:href="{ path: `/case-studies/${caseStudy.id}` }"
-								>
-									<strong>{{ caseStudy.title }}</strong>
-								</NuxtLink>
-								<span>{{ caseStudy.principal_investigator }}</span>
-								<p class="line-clamp-4">
-									{{ caseStudy.description }}
-								</p>
-							</article>
-						</li>
-					</ul>
+				<section v-if="caseStudies.length > 0" class="-ml-2 grid gap-1">
+					<Disclosure v-slot="{ open }" as="section" default-open class="grid gap-1">
+						<DisclosureButton
+							as="h3"
+							class="cursor-pointer text-left text-sm font-medium uppercase text-neutral-500"
+						>
+							<div class="flex justify-between rounded p-2 transition hover:bg-black/10">
+								<span>Case Studies</span>
+								<ChevronUpIcon
+									:class="open ? '' : 'rotate-180 transform'"
+									class="inline-block h-5 w-5"
+								/>
+							</div>
+						</DisclosureButton>
+						<DisclosurePanel as="ul" role="list" class="space-y-4 divide-solid divide-gray-300">
+							<li v-for="caseStudy of caseStudies" :key="caseStudy.id">
+								<article class="divide-y divide-dotted">
+									<div>
+										<NuxtLink
+											target="_blank"
+											class="flex items-center justify-between rounded p-2 transition hover:bg-black/10"
+											:href="{ path: `/case-studies/${caseStudy.id}/timeline` }"
+										>
+											<strong>
+												{{ caseStudy.title }}
+											</strong>
+											<ChevronRightIcon class="h-5 w-5 shrink-0" />
+										</NuxtLink>
+									</div>
+									<div class="grid gap-2 p-2">
+										<div>{{ caseStudy.principal_investigator }}</div>
+										<div class="line-clamp-4">{{ caseStudy.description }}</div>
+									</div>
+								</article>
+							</li>
+						</DisclosurePanel>
+					</Disclosure>
 				</section>
 			</div>
 		</template>

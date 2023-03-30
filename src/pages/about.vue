@@ -19,51 +19,34 @@ useHead({
 				<h1>Find out more about..</h1>
 				<div class="divide-y">
 					<AboutDisclosure opened title="Our aims and methods">
-						<div class="flex">
-							<div>
-								<p>
-									From the world of Late Antiquity and the early Middle Ages, numerous ethnic names
-									(such as Goths, Huns, Lombards or Franks) have been handed down to us. Especially
-									in the course of the early Middle Ages (5th-11th centuries), ethnic identity
-									played an important role in the development of new political and religious
-									communities and the legitimation of political power. However, ethnic attributions
-									were not all firmly defined – even more obvious indications of different origins
-									such as language, clothing or weapons were not reliable criteria for the
-									assignment to a particular people. What can these names tell us about medieval
-									peoples, their communities and the space they inhabited? What did they mean for
-									the scholars who recorded them in Latin, Greek or Syriac texts, and for their
-									audience?
-								</p>
-								<p>
-									The aim of MMP is to reconstruct the mental maps of medieval authors and thereby
-									to elucidate how ethnic identifications helped readers to perceive the medieval
-									social world, and thus, how attributions to peoples and perceptions of space were
-									intertwined. This touches on questions of the creation and appropriation of
-									territory, the construction of otherness, and the influence of religious ideas and
-									terminology on conceptions of space and peoples, as well as the circumstances
-									under which perceptions of peoples and space changed over the course of time.
-								</p>
-								<p>
-									Find out more about our project and the people behind it in this short movie, a
-									contribution to the exhibition
-									<a
-										class="font-semibold underline"
-										href="https://www.youtube.com/watch?v=JHv7U96k78g"
-									>
-										Reiternomaden in Europa
-									</a>
-								</p>
-							</div>
-							<div class="mx-2 h-full">
-								<a href="/assets/poster.pdf" target="_blank">
-									<img
-										src="/assets/images/poster.jpg"
-										class="h-full rounded-xl transition hover:rounded-none"
-										alt="poster"
-									/>
-								</a>
-							</div>
-						</div>
+						<p>
+							From the world of Late Antiquity and the early Middle Ages, numerous ethnic names
+							(such as Goths, Huns, Lombards or Franks) have been handed down to us. Especially in
+							the course of the early Middle Ages (5th-11th centuries), ethnic identity played an
+							important role in the development of new political and religious communities and the
+							legitimation of political power. However, ethnic attributions were not all firmly
+							defined - even more obvious indications of different origins such as language,
+							clothing or weapons were not reliable criteria for the assignment to a particular
+							people. What can these names tell us about medieval peoples, their communities and the
+							space they inhabited? What did they mean for the scholars who recorded them in Latin,
+							Greek or Syriac texts, and for their audience?
+						</p>
+						<p>
+							The aim of MMP is to reconstruct the mental maps of medieval authors and thereby to
+							elucidate how ethnic identifications helped readers to perceive the medieval social
+							world, and thus, how attributions to peoples and perceptions of space were
+							intertwined. This touches on questions of the creation and appropriation of territory,
+							the construction of otherness, and the influence of religious ideas and terminology on
+							conceptions of space and peoples, as well as the circumstances under which perceptions
+							of peoples and space changed over the course of time.
+						</p>
+						<p>
+							Find out more about our project and the people behind it in this short movie, a
+							contribution to the exhibition
+							<a class="font-semibold underline" href="https://www.youtube.com/watch?v=JHv7U96k78g">
+								Reiternomaden in Europa
+							</a>
+						</p>
 					</AboutDisclosure>
 					<!-- prettier-ignore -->
 					<AboutDisclosure title="Our sources">

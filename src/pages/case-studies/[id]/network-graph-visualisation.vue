@@ -145,9 +145,8 @@ watch(caseStudyQuery.data, (caseStudy) => {
 
 						<SideDisclosure :open="isSideDisclosureVisible" @toggle="onToggleSideDisclosure">
 							<GraphKeywordDetails
-								v-if="selectionByKind.has('graph-author') || selectionByKind.has('graph-keyword')"
+								v-if="selectionByKind.has('graph-keyword')"
 								:ids="selectionByKind.get('graph-keyword')!"
-								:authors="selectionByKind.get('graph-author')!"
 							/>
 						</SideDisclosure>
 					</NetworkGraph>

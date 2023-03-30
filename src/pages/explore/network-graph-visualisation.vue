@@ -4,6 +4,7 @@ import { computed, ref } from "vue";
 
 import Centered from "@/components/centered.vue";
 import ErrorMessage from "@/components/error-message.vue";
+import GraphAuthorDetails from "@/components/graph-author-details.vue";
 import GraphKeywordDetails from "@/components/graph-keyword-details.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NetworkGraph from "@/components/network-graph.vue";
@@ -135,9 +136,12 @@ function onToggleSideDisclosure() {
 
 							<SideDisclosure :open="isSideDisclosureVisible" @toggle="onToggleSideDisclosure">
 								<GraphKeywordDetails
-									v-if="selectionByKind.has('graph-author') || selectionByKind.has('graph-keyword')"
+									v-if="selectionByKind.has('graph-keyword')"
 									:ids="selectionByKind.get('graph-keyword')!"
-									:authors="selectionByKind.get('graph-author')!"
+								/>
+								<GraphAuthorDetails
+									v-if="selectionByKind.has('graph-author')"
+									:ids="selectionByKind.get('graph-author')!"
 								/>
 							</SideDisclosure>
 						</NetworkGraph>

@@ -19,7 +19,7 @@ export function useNetworkGraphEvents() {
 
 		selection.value.selection.forEach((key) => {
 			if (key.startsWith("graph-author") || key.startsWith("graph-keyword")) {
-				keys.add(key.slice(prefix) as ResourceKey);
+				keys.add(key.slice(prefix).replace("author", "autor") as ResourceKey);
 			}
 		});
 
@@ -28,18 +28,25 @@ export function useNetworkGraphEvents() {
 
 	function onNodeClick(node: NetworkGraphNode | null) {
 		if (node == null) return;
-
 		const key = createSelectionKey({
 			kind: node.kind === "autor" ? "graph-author" : "graph-keyword",
 			id: node.id,
 		});
-		const _selection = new Set(selection.value.selection);
+
+		let _selection = new Set(selection.value.selection);
+
 		if (_selection.has(key)) {
 			_selection.delete(key);
+		} else if (node.kind === "autor") {
+			_selection = new Set([key]);
 		} else {
+			_selection = new Set(
+				[..._selection].filter((id) => {
+					return id.includes("keyword");
+				}),
+			);
 			_selection.add(key);
 		}
-
 		router.push({
 			query: {
 				...createSearchFilterParams(searchFilters.value),

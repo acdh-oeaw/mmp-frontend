@@ -211,10 +211,10 @@ onMounted(async () => {
 			if (source.kind === "autor") {
 				return 0.7;
 			}
-			return 0.05;
+			return 0;
 		});
 
-		// _centerForce = context.graph.d3Force("center", null);
+		_centerForce?.strength(0);
 	}
 
 	context.graph.autoPauseRedraw(false);

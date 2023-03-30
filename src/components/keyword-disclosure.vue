@@ -10,6 +10,7 @@ import { useSearchFilters } from "@/lib/search/use-search-filters";
 const props = defineProps<{
 	keywords: Array<Keyword> | Array<KeywordNormalized> | GetPassageById.Response["key_word"];
 	noHeader?: boolean;
+	label?: string;
 	newTab?: boolean;
 }>();
 const keywords = computed(() => {
@@ -36,7 +37,7 @@ const { createSearchFilterParams, searchFilters } = useSearchFilters();
 				}"
 				class="flex w-full justify-between rounded p-2 transition"
 			>
-				<span>Keywords</span>
+				<span>{{ label || "Keywords" }}</span>
 				<ChevronUpIcon
 					v-if="keywords.length > 15"
 					:class="open ? '' : 'rotate-180 transform'"
