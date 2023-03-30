@@ -10,27 +10,6 @@ export const baseLayers = {
 		attribution:
 			"Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community",
 	},
-	"esri-world-terrain": {
-		id: "esri-world-terrain",
-		label: "Esri - World Terrain",
-		url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Terrain_Base/MapServer/tile/{z}/{y}/{x}",
-		attribution: "Tiles &copy; Esri &mdash; Source: USGS, Esri, TANA, DeLorme, and NPS",
-		maxZoom: 13,
-	},
-	"esri-world-shaded-relief": {
-		id: "esri-world-shaded-relief",
-		label: "Esri - World Shaded Relief",
-		url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/{z}/{y}/{x}",
-		attribution: "Tiles &copy; Esri &mdash; Source: Esri",
-		maxZoom: 13,
-	},
-	"esri-world-physical": {
-		id: "esri-world-physical",
-		label: "Esri - World Physical",
-		url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Physical_Map/MapServer/tile/{z}/{y}/{x}",
-		attribution: "Tiles &copy; Esri &mdash; Source: US National Park Service",
-		maxZoom: 8,
-	},
 	dare: {
 		id: "dare",
 		label: "Digital Atlas of the Roman Empire",

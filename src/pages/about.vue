@@ -1,6 +1,9 @@
 <script lang="ts" setup>
+import { ChevronRightIcon } from "@heroicons/vue/24/outline";
+
 import AboutDisclosure from "@/components/about-disclosure.vue";
 import MainContent from "@/components/main-content.vue";
+import { NuxtLink } from "#components";
 import { useHead } from "#imports";
 
 const title = "About";
@@ -116,19 +119,102 @@ useHead({
 						<b>You can search for:</b>
 						<!-- prettier-ignore -->
 						<ul class="list-disc">
-							<li>The ethnonyms a specific author uses</li>
-								Type <b>Jerome</b> into the search bar – all possible searches will appear via autocomplete – and select <b>network graph</b>, then choose what you want to see on the graph: in this case, uncheck everything but <b>author and ethnonyms</b>
-							<li>Which peoples are mentioned together?</li>
-							Type <b>Dani</b> into the search bar – all possible searches will appear via autocomplete – and uncheck everything but <b>ethnonyms</b> to see the other peoples mentioned in connection with the Danes
-							<li>The combinations between ethnonyms and keywords via Union/Intersection</li>
-							Put <b>Dani</b> and <b>feritas</b> into the search bar – the terms will be available to select via autocomplete – and you can then see passages containing both (<b>intersection/and</b>) or either (<b>union/or</b>) in the search results, and then visualise the connections between these and other terms in the graph
-							<li>Comparisons of different authors’ use of keywords</li>
-							Put <b>Orosius</b>, <b>Einhard</b> and <b>rex</b> into the search bar (the terms will come up via autocomplete and can be selected) and select <b>union (or)</b>, then view them in the graph
-							<li>
-								The combination of a place name and an ethnonym or a specific region in a specific
-								period (time of composition or temporal coverage)
+							<li class="font-semibold">
+								<NuxtLink
+									class="flex w-fit items-center gap-4 rounded p-2 hover:bg-neutral-100"
+									:href="{
+										path: '/explore/network-graph-visualisation',
+										query: {
+											author: 24,
+										}
+									}"
+									target="_blank"
+								>
+									<span>
+										The ethnonyms a specific author uses
+									</span>
+									<ChevronRightIcon class="h-full w-5" />
+								</NuxtLink>
 							</li>
-							Put <b>Normannia</b> and <b>Normanni</b> into the search bar (available terms will appear via autocomplete), and set the timeslider to 900 – 1200, select <b>time of composition</b> or <b>temporal coverage</b>, you can then view the resulting passages and a graph of the connections, both as intersection and union
+							Type <b>Jerome</b> into the search bar - all possible searches will appear via autocomplete - and select <b>network graph</b>, then choose what you want to see on the graph: in this case, uncheck everything but <b>author and ethnonyms</b>
+							<li class="font-semibold">
+								<NuxtLink
+									class="flex w-fit items-center gap-4 rounded p-2 hover:bg-neutral-100"
+									:href="{
+										path: '/explore/network-graph-visualisation',
+										query: {
+											keyword: 53,
+										}
+									}"
+									target="_blank"
+								>
+									<span>
+										Which peoples are mentioned together?
+									</span>
+									<ChevronRightIcon class="h-full w-5" />
+								</NuxtLink>
+							</li>
+							Type <b>Dani</b> into the search bar - all possible searches will appear via autocomplete - and uncheck everything but <b>ethnonyms</b> to see the other peoples mentioned in connection with the Danes
+							<li class="font-semibold">
+								<NuxtLink
+									class="flex w-fit items-center gap-4 rounded p-2 hover:bg-neutral-100"
+									:href="{
+										path: '/explore/search-results',
+										query: {
+											keyword: [53, 289],
+										}
+									}"
+									target="_blank"
+								>
+									<span>
+										The combinations between ethnonyms and keywords via Union/Intersection
+									</span>
+									<ChevronRightIcon class="h-full w-5" />
+								</NuxtLink>
+							</li>
+							Put <b>Dani</b> and <b>feritas</b> into the search bar - the terms will be available to select via autocomplete - and you can then see passages containing both (<b>intersection/and</b>) or either (<b>union/or</b>) in the search results, and then visualise the connections between these and other terms in the graph
+							<li class="font-semibold">
+								<NuxtLink
+									class="flex w-fit items-center gap-4 rounded p-2 hover:bg-neutral-100"
+									:href="{
+										path: '/explore/network-graph-visualisation',
+										query: {
+											author: [88, 71],
+											keyword: 168,
+											'query-mode': 'union',
+											selection: 'graph-keyword_168',
+										}
+									}"
+									target="_blank"
+								>
+									<span>
+										Comparisons of different authors' use of keywords
+									</span>
+									<ChevronRightIcon class="h-full w-5" />
+								</NuxtLink>
+							</li>
+							Put <b>Orosius</b>, <b>Einhard</b> and <b>rex</b> into the search bar (the terms will come up via autocomplete and can be selected) and select <b>union (or)</b>, then view them in the graph
+							<li class="font-semibold">
+								<NuxtLink
+									class="flex w-fit items-center gap-4 rounded p-2 hover:bg-neutral-100"
+									:href="{
+										path: '/explore/search-results',
+										query: {
+											keyword: [137, 288],
+											'query-mode': 'union',
+											'date-range': [900, 1200],
+										}
+									}"
+									target="_blank"
+								>
+									<span>
+										The combination of a place name and an ethnonym or a specific region in a specific
+										period (time of composition or temporal coverage)
+									</span>
+									<ChevronRightIcon class="h-full w-5" />
+								</NuxtLink>
+							</li>
+							Put <b>Normannia</b> and <b>Normanni</b> into the search bar (available terms will appear via autocomplete), and set the timeslider to 900 - 1200, select <b>time of composition</b> or <b>temporal coverage</b>, you can then view the resulting passages and a graph of the connections, both as intersection and union
 						</ul>
 					</AboutDisclosure>
 					<AboutDisclosure title="How the data is visualized">
@@ -241,7 +327,7 @@ useHead({
 						<p>
 							In preparation: collected volume 'Mapping Medieval Peoples: New Approaches to Ethnic
 							Identity and Space, 400-1400CE', ed. Laura Gazzoli, Veronika Wieser, Katharina
-							Winckler (Brepols, 2024)
+							Winckler (Submitted, 2024)
 						</p>
 						<p>
 							<b>Workshop</b>
