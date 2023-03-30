@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { ChevronRightIcon } from "@heroicons/vue/24/outline";
 import { computed } from "vue";
 
 import { type Author, useAuthorById } from "@/api";
@@ -25,16 +26,27 @@ const id = computed(() => {
 
 const route = useRoute();
 const { createSelectionParams } = useSelection();
-const { searchFilters } = useSearchFilters();
+
+const { searchFilters, defaultSearchFilters } = useSearchFilters();
 
 const authorQuery = useAuthorById({ id });
 const graphQuery = useNetworkGraph(searchFilters);
 
-const isLoading = authorQuery.isInitialLoading.value || graphQuery.isLoading.value;
-const isFetching = authorQuery.isFetching.value || graphQuery.isFetching.value;
-const isError = authorQuery.isError.value || graphQuery.isError.value;
+const isLoading = computed(() => {
+	return authorQuery.isInitialLoading.value || graphQuery.isLoading.value;
+});
+const isFetching = computed(() => {
+	return authorQuery.isFetching.value || graphQuery.isFetching.value;
+});
+const isError = computed(() => {
+	return authorQuery.isError.value || graphQuery.isError.value;
+});
 const author = authorQuery.data;
 const graph = graphQuery.graph;
+
+const isEmpty = computed(() => {
+	return author.value == null;
+});
 
 const graphAuthors = [...graph.value.nodes]
 	.filter(([key]) => {
@@ -47,10 +59,6 @@ const graphAuthors = [...graph.value.nodes]
 		// Always puts selected author on top
 		return Number(a.key.replace(/\D/g, "")) === id.value ? -1 : 0;
 	});
-
-const isEmpty = computed(() => {
-	return author.value == null;
-});
 </script>
 
 <template>
@@ -79,7 +87,7 @@ const isEmpty = computed(() => {
 					<LoadingIndicator>Updating author...</LoadingIndicator>
 				</Centered>
 			</template>
-			<div class="grid h-full grid-rows-[auto_auto_auto_1fr] gap-4 p-4 text-neutral-800">
+			<div class="flex h-full flex-col gap-4 p-4 text-neutral-800">
 				<h2 class="text-lg font-medium">{{ getAuthorLabel(author) }}</h2>
 
 				<dl v-if="author" class="text-sm font-medium text-neutral-500">
@@ -114,20 +122,42 @@ const isEmpty = computed(() => {
 						</dd>
 					</div>
 				</dl>
-				<div
-					v-for="(graphAuthor, i) in graphAuthors.filter(
-						(graphAuthor) => graphAuthor.key.replace(/\D/g, '') !== id,
-					)"
-					:key="graphAuthor.key"
-				>
-					<KeywordDisclosureWrapper
-						new-tab
-						:label="i === 0 ? 'Connected Keywords' : `Shared with ${graphAuthor.label}`"
-						:ids="[...graphAuthor.neighbors].map((neighbor) => Number(neighbor.replace(/\D/g, '')))"
-					/>
-				</div>
-
 				<p v-if="author?.kommentar">{{ author.kommentar }}</p>
+				<NuxtLink
+					class="-ml-2 flex justify-between rounded p-2 align-middle transition hover:bg-slate-100"
+					:href="{
+						path: '/explore/search-results',
+						query: {
+							...defaultSearchFilters,
+							...createSelectionParams({
+								selection: [createResourceKey({ kind: 'autor', id })],
+							}),
+							author: id,
+						},
+					}"
+				>
+					<span>Find out more about {{ getAuthorLabel(author) }}</span>
+					<ChevronRightIcon class="h-5 w-5" />
+				</NuxtLink>
+				<div class="row-auto -ml-2 flex flex-col gap-4">
+					<div
+						v-for="(graphAuthor, i) in graphAuthors.filter(
+							(graphAuthor) => graphAuthor.key.replace(/\D/g, '') !== id,
+						)"
+						:key="graphAuthor.key"
+					>
+						<KeywordDisclosureWrapper
+							new-tab
+							:label="i === 0 ? 'Connected Keywords' : `Shared with ${graphAuthor.label}`"
+							:ids="
+								[...graphAuthor.neighbors]
+									// intersect with first Set
+									.filter((node) => graphAuthors[0]?.neighbors.has(node))
+									.map((neighbor) => Number(neighbor.replace(/\D/g, '')))
+							"
+						/>
+					</div>
+				</div>
 			</div>
 		</template>
 	</div>

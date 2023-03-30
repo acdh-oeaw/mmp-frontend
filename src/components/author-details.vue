@@ -60,7 +60,7 @@ const isEmpty = computed(() => {
 				</Centered>
 			</template>
 
-			<div class="grid h-full grid-rows-[auto_auto_auto_1fr] gap-4 p-4 text-neutral-800">
+			<div class="flex h-full flex-col gap-4 p-4 text-neutral-800">
 				<h2 class="text-lg font-medium">{{ getAuthorLabel(author) }}</h2>
 
 				<dl v-if="author" class="text-sm font-medium text-neutral-500">
@@ -95,9 +95,7 @@ const isEmpty = computed(() => {
 						</dd>
 					</div>
 				</dl>
-
 				<p v-if="author?.kommentar">{{ author.kommentar }}</p>
-
 				<AuthorDetailsList :id="id" />
 			</div>
 		</template>

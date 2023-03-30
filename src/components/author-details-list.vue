@@ -35,7 +35,7 @@ const { caseStudies, keywords, texts, isLoading, isFetching, isEmpty, isError } 
 </script>
 
 <template>
-	<div class="relative h-full w-full">
+	<div class="relative -ml-2 h-full w-full">
 		<template v-if="isLoading">
 			<Centered>
 				<LoadingIndicator>Loading details...</LoadingIndicator>
@@ -129,25 +129,23 @@ const { caseStudies, keywords, texts, isLoading, isFetching, isEmpty, isError } 
 					<DisclosurePanel as="ul" role="list" class="space-y-4">
 						<li v-for="text of texts" :key="text.id">
 							<article class="divide-y divide-dotted">
-								<div
+								<NuxtLink
 									style="font-style: oblique 7deg"
-									class="flex items-center justify-between rounded p-2 pb-1 font-semibold transition hover:bg-black/10"
+									class="flex items-center justify-between rounded p-2 pb-1 font-semibold transition hover:bg-black/10 hover:text-neutral-700"
+									:href="{
+										query: {
+											...route.query,
+											...createSelectionParams({
+												selection: [createResourceKey({ kind: 'text', id: text.id })],
+											}),
+										},
+									}"
 								>
-									<NuxtLink
-										class="transition line-clamp-3 hover:text-neutral-700"
-										:href="{
-											query: {
-												...route.query,
-												...createSelectionParams({
-													selection: [createResourceKey({ kind: 'text', id: text.id })],
-												}),
-											},
-										}"
-									>
+									<span class="line-clamp-3">
 										{{ text.title }}
-									</NuxtLink>
+									</span>
 									<ChevronRightIcon class="h-5 w-5 shrink-0" />
-								</div>
+								</NuxtLink>
 							</article>
 						</li>
 					</DisclosurePanel>
