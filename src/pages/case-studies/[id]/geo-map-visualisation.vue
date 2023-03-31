@@ -11,6 +11,7 @@ import GeojsonDetails from "@/components/geojson-details.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import SideDisclosure from "@/components/side-disclosure.vue";
+import ViewMode from "@/components/view-mode.vue";
 import VisualisationContainer from "@/components/visualisation-container.vue";
 import { type GeoMapContext } from "@/lib/geo-map/geo-map.types";
 import { useGeoMap } from "@/lib/geo-map/use-geo-map";
@@ -134,52 +135,54 @@ watch(caseStudyQuery.data, (caseStudy) => {
 					</Centered>
 				</template>
 
-				<VisualisationContainer
-					v-slot="{ width, height }"
-					class="min-h-[600px] transition-all"
-					:class="{ 'opacity-50 grayscale': isFetching }"
-				>
-					<GeoMap
-						:areas="areas"
-						:area-center-points="areaCenterPoints"
-						:base-layer="baseLayer"
-						:cones="cones"
-						:cone-origins="coneOrigins"
-						:height="height"
-						:highlighted-keys="highlightedKeys"
-						:layers="layers"
-						:lines-points="linesPoints"
-						:selected-keys="selectedKeys"
-						:width="width"
-						@ready="onReady"
-						@area-click="onAreaClick"
-						@area-hover="onAreaHover"
-						@point-click="onPointClick"
-						@point-hover="onPointHover"
-						@lines-points-click="onLinesPointsClick"
-						@lines-points-hover="onLinesPointsHover"
+				<ViewMode>
+					<VisualisationContainer
+						v-slot="{ width, height }"
+						class="min-h-[600px] transition-all"
+						:class="{ 'opacity-50 grayscale': isFetching }"
 					>
-						<GeoMapToolbar
-							:layers="layers"
+						<GeoMap
+							:areas="areas"
+							:area-center-points="areaCenterPoints"
 							:base-layer="baseLayer"
-							:base-layers="baseLayers"
-							@change-base-layer="onChangeBaseLayer"
-						/>
-
-						<SideDisclosure :open="isSideDisclosureVisible" @toggle="onToggleSideDisclosure">
-							<GeojsonDetails
-								v-if="
-									selectionByKind.has('geojson-area') ||
-									selectionByKind.has('geojson-collection') ||
-									selectionByKind.has('geojson-point')
-								"
-								:areas="selectionByKind.get('geojson-area')"
-								:collections="selectionByKind.get('geojson-collection')"
-								:points="selectionByKind.get('geojson-point')"
+							:cones="cones"
+							:cone-origins="coneOrigins"
+							:height="height"
+							:highlighted-keys="highlightedKeys"
+							:layers="layers"
+							:lines-points="linesPoints"
+							:selected-keys="selectedKeys"
+							:width="width"
+							@ready="onReady"
+							@area-click="onAreaClick"
+							@area-hover="onAreaHover"
+							@point-click="onPointClick"
+							@point-hover="onPointHover"
+							@lines-points-click="onLinesPointsClick"
+							@lines-points-hover="onLinesPointsHover"
+						>
+							<GeoMapToolbar
+								:layers="layers"
+								:base-layer="baseLayer"
+								:base-layers="baseLayers"
+								@change-base-layer="onChangeBaseLayer"
 							/>
-						</SideDisclosure>
-					</GeoMap>
-				</VisualisationContainer>
+
+							<SideDisclosure :open="isSideDisclosureVisible" @toggle="onToggleSideDisclosure">
+								<GeojsonDetails
+									v-if="
+										selectionByKind.has('geojson-area') ||
+										selectionByKind.has('geojson-collection') ||
+										selectionByKind.has('geojson-point')
+									"
+									:areas="selectionByKind.get('geojson-area')"
+									:collections="selectionByKind.get('geojson-collection')"
+									:points="selectionByKind.get('geojson-point')"
+								/>
+							</SideDisclosure>
+						</GeoMap>
+					</VisualisationContainer>
+				</ViewMode>
 			</ClientOnly>
 		</template>
 	</div>
