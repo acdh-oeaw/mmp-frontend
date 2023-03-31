@@ -90,7 +90,7 @@ import { NuxtImg, NuxtLink } from "#components";
 						Society (2020-2023)
 					</p>
 					<p>Hosted by ACDH-CH &amp; Imafo</p>
-					<p class="mx-auto mt-4 w-fit rounded bg-black/40 p-2">
+					<p class="mx-auto mt-4 w-fit rounded bg-black/40 p-2 text-white">
 						<a href="https://www.oeaw.ac.at/imafo" target="_blank">
 							<NuxtImg
 								alt="ACDH-CH Logo"
