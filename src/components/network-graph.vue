@@ -106,7 +106,7 @@ onMounted(async () => {
 
 	context.graph.nodeColor("color");
 	context.graph.linkColor("dark-grey");
-	context.graph.linkWidth("count");
+	// context.graph.linkWidth("count");
 	// context.graph.linkDirectionalParticles(1)
 	// context.graph.linkDirectionalParticleWidth(1.7)
 

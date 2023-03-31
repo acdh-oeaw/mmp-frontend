@@ -51,7 +51,6 @@ onMounted(() => {
 		legend: { verticalAlign: "top" },
 		series: createSeries(),
 		title: { text: props.title },
-		tooltip: { enabled: false },
 		xAxis: {
 			tickInterval: 3,
 			categories: [
@@ -76,14 +75,8 @@ onMounted(() => {
 				"1500",
 			],
 		},
-		// tooltip: {
-		//   formatter() {
-		//     const endings = ['st', 'nd', 'rd'];
-		//     return `${this.point.x}${endings[this.point.x - 1] || 'th'} century<br />${
-		//       this.point.y
-		//     } occurences`;
-		//   },
-		// },
+		tooltip: { pointFormat: "Occurences: {point.y}" },
+
 		yAxis: {
 			title: {
 				text: "",

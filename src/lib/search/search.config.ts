@@ -35,5 +35,6 @@ export const keywordColors: Record<KeywordType, string> = {
 };
 
 // https://github.com/acdh-oeaw/mmp/blob/master/archiv/endpoint_views.py#L17
-export const minYear = -300;
+// The date range mentioned in the link above only affects the keyword by century endpoint, the earliest archived text in the database was written 199 BCE, which means this can and should stay the same
+export const minYear = -1000;
 export const maxYear = 1500;
