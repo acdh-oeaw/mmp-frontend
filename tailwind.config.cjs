@@ -2,7 +2,6 @@
 
 const colors = require("tailwindcss/colors");
 const headlessui = require("@headlessui/tailwindcss");
-const lineclamp = require("@tailwindcss/line-clamp");
 const typography = require("@tailwindcss/typography");
 
 const neutral = colors.slate;
@@ -12,7 +11,7 @@ const negative = colors.red;
 /** @type {TailwindConfig} */
 const config = {
 	content: ["./src/**/*.@(css|ts|vue)"],
-	plugins: [headlessui, lineclamp, typography],
+	plugins: [headlessui, typography],
 	theme: {
 		extend: {
 			colors: {
