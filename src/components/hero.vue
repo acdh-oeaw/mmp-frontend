@@ -94,7 +94,7 @@ import { NuxtImg, NuxtLink } from "#components";
 						<a href="https://www.oeaw.ac.at/imafo" target="_blank">
 							<NuxtImg
 								alt="ACDH-CH Logo"
-								src="/assets/images/logo-acdh.svg"
+								src="/assets/images/logo-acdh-white.svg"
 								class="inline-block h-16 px-4"
 							/>
 							<span class="sr-only">ACDH-CH Logo</span>
@@ -102,7 +102,7 @@ import { NuxtImg, NuxtLink } from "#components";
 						<a href="https://www.oeaw.ac.at/acdh/" target="_blank">
 							<NuxtImg
 								alt="Imafo Logo"
-								src="/assets/images/imafo_logo_white.png"
+								src="/assets/images/logo-imafo-white.png"
 								class="inline-block h-16 px-4"
 							/>
 							<span class="sr-only">Imafo Logo</span>
