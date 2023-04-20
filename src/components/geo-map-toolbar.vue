@@ -4,13 +4,14 @@ import { computed, inject } from "vue";
 
 import { type GeojsonLayer } from "@/api";
 import FullscreenButton from "@/components/fullscreen-button.vue";
+import MultiSelect from "@/components/multi-select.vue";
 import SingleSelect from "@/components/single-select.vue";
 import Toolbar from "@/components/toolbar.vue";
 import ToolbarIconButton from "@/components/toolbar-icon-button.vue";
 import { initialViewState } from "@/lib/geo-map/geo-map.config";
 import { key } from "@/lib/geo-map/geo-map.context";
 import { type BaseLayer } from "@/lib/geo-map/use-geo-map-base-layer";
-import { isNotNullable } from "@/lib/is-not-nullable";
+import { isNonEmptyString } from "@/lib/is-nonempty-string";
 
 interface Item {
 	key: string;
@@ -34,10 +35,11 @@ const context = inject(key);
 
 const layersLabel = "Layers";
 
-const selectedLayerKey =
-	context && context.visibility.layers.value.size > 0
-		? String(context.visibility.layers.value.values().next().value)
-		: undefined;
+const selectedLayerKeys = computed(() => {
+	if (context == null) return [];
+
+	return Array.from(context.visibility.layers.value).map(String);
+});
 
 const layers = computed(() => {
 	const layers: Array<Item> = [];
@@ -46,23 +48,17 @@ const layers = computed(() => {
 		layers.push({
 			key: String(layer.id),
 			label: layer.title,
-			description: [layer.description, layer.attribution].filter(isNotNullable).join(" - "),
+			description: [layer.description, layer.attribution].filter(isNonEmptyString).join(" - "),
 		});
 	});
 
 	return layers;
 });
 
-function onChangeLayerSelection(_selectedKey: string) {
+function onChangeLayerSelection(_selectedKeys: Array<string>) {
 	if (context == null) return;
-	const selectedKey = Number(_selectedKey);
-
-	const layers = context.visibility.layers.value;
-	if (layers.has(selectedKey)) {
-		layers.delete(selectedKey);
-	} else {
-		layers.add(selectedKey);
-	}
+	const selectedKeys = _selectedKeys.map(Number);
+	context.visibility.layers.value = new Set(selectedKeys);
 }
 
 //
@@ -95,14 +91,20 @@ function _onFitWorld() {
 <template>
 	<Toolbar>
 		<div class="flex items-center gap-2">
-			<SingleSelect
+			<MultiSelect
 				v-if="layers.length > 0"
 				:items="layers"
 				:label="layersLabel"
 				name="geojson-layers"
-				:selected-key="selectedLayerKey"
+				:selected-keys="selectedLayerKeys"
 				@change-selection="onChangeLayerSelection"
-			/>
+			>
+				<template #selection="{ selectedKeys }">
+					<span v-if="selectedKeys.length === 0">No layer selected</span>
+					<span v-else-if="selectedKeys.length === 1">One layer selected</span>
+					<span v-else>{{ selectedKeys.length }} layers selected</span>
+				</template>
+			</MultiSelect>
 			<SingleSelect
 				v-if="props.baseLayers.length > 0"
 				:items="props.baseLayers"

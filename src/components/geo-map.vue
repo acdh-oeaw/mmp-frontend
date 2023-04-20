@@ -128,7 +128,7 @@ async function updateLayers() {
 						color,
 						fill: true,
 						fillOpacity: 0.18,
-						opacity: 0.75,
+						opacity: 1,
 						radius: 3,
 						stroke: true,
 						weight: 2,

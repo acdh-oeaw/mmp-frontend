@@ -77,12 +77,14 @@ function getDisplayLabel(selectedKey: Item["key"]) {
 			<ListboxButton
 				class="relative w-full min-w-[12rem] cursor-default rounded-md border border-neutral-200 bg-white py-2 pl-3 pr-10 text-left text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/75 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-300"
 			>
-				<span v-if="selectedKeys.length > 0" class="flex flex-wrap gap-2">
-					{{ createList(selectedKeys.map(getDisplayLabel)) }}
-				</span>
-				<span v-else class="block truncate text-neutral-500">
-					{{ props.placeholder ?? "Select a value" }}
-				</span>
+				<slot name="selection" :selected-keys="selectedKeys">
+					<span v-if="selectedKeys.length > 0" class="flex flex-wrap gap-2">
+						{{ createList(selectedKeys.map(getDisplayLabel)) }}
+					</span>
+					<span v-else class="block truncate text-neutral-500">
+						{{ props.placeholder ?? "Select a value" }}
+					</span>
+				</slot>
 				<span
 					class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2 text-neutral-400"
 				>
