@@ -4,7 +4,7 @@ import { EyeIcon, EyeSlashIcon, XMarkIcon } from "@heroicons/vue/24/outline";
 import { useQueries } from "@tanstack/vue-query";
 import { computed, inject } from "vue";
 
-import { type LinesPointsGeojson, type SpatialCoverageGeojson, createKey } from "@/api";
+import { createKey, type LinesPointsGeojson, type SpatialCoverageGeojson } from "@/api";
 import * as api from "@/api/client";
 import Centered from "@/components/centered.vue";
 import ErrorMessage from "@/components/error-message.vue";
@@ -146,6 +146,20 @@ function onToggleAreaVisibility(id: SpatialCoverageGeojson["id"]) {
 	}
 
 	context.disabled.areas.value = values;
+}
+
+function onSetAreasVisibility(isVisible: boolean) {
+	if (context == null) return;
+
+	if (isVisible) {
+		context.disabled.areas.value = new Set();
+	} else {
+		context.disabled.areas.value = new Set(
+			allAreas.value.map((area) => {
+				return area.id;
+			}),
+		);
+	}
 }
 
 //
@@ -351,6 +365,22 @@ const context = inject(key);
 						</TabPanel>
 
 						<TabPanel>
+							<div class="mt-8 flex justify-center gap-4">
+								<button
+									class="flex items-center gap-1 rounded px-4 py-2 text-sm transition hover:bg-neutral-100"
+									@click="onSetAreasVisibility(false)"
+								>
+									<EyeSlashIcon class="h-5 w-5 shrink-0" />
+									<span>Hide all</span>
+								</button>
+								<button
+									class="flex items-center gap-1 rounded px-4 py-2 text-sm transition hover:bg-neutral-100"
+									@click="onSetAreasVisibility(true)"
+								>
+									<EyeIcon class="h-5 w-5 shrink-0" />
+									<span>Show all</span>
+								</button>
+							</div>
 							<ul role="list" class="divide-y divide-neutral-200 py-4 text-sm">
 								<li
 									v-for="area of allAreas"
