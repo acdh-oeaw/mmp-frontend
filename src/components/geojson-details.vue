@@ -1,6 +1,15 @@
 <script lang="ts" setup>
-import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/vue";
-import { EyeIcon, EyeSlashIcon, XMarkIcon } from "@heroicons/vue/24/outline";
+import {
+	Disclosure,
+	DisclosureButton,
+	DisclosurePanel,
+	Tab,
+	TabGroup,
+	TabList,
+	TabPanel,
+	TabPanels,
+} from "@headlessui/vue";
+import { ChevronDownIcon, EyeIcon, EyeSlashIcon, XMarkIcon } from "@heroicons/vue/24/outline";
 import { useQueries } from "@tanstack/vue-query";
 import { computed, inject } from "vue";
 
@@ -8,6 +17,7 @@ import { createKey, type LinesPointsGeojson, type SpatialCoverageGeojson } from 
 import * as api from "@/api/client";
 import Centered from "@/components/centered.vue";
 import ErrorMessage from "@/components/error-message.vue";
+import GeojsonPassageMetadata from "@/components/geojson-passage-metadata.vue";
 import KeywordTag from "@/components/keyword-tag.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
@@ -257,13 +267,32 @@ const context = inject(key);
 												/>
 											</div>
 											<p class="text-sm leading-6">{{ area.properties.kommentar }}</p>
-											<dl>
+											<dl class="grid gap-2">
+												<div class="flex gap-1 text-xs text-neutral-500">
+													<dt>Degree of uncertainty:</dt>
+													<dd>{{ area.properties.fuzzyness }}</dd>
+												</div>
 												<div class="grid gap-1">
 													<dt class="text-sm font-medium uppercase text-neutral-600">Passages</dt>
 													<dd class="text-sm">
-														<ul role="list">
+														<ul class="divide-y divide-neutral-200" role="list">
 															<li v-for="passage of area.properties.stelle" :key="passage.id">
-																{{ getPassageLabel(passage) }}
+																<Disclosure v-slot="{ open }">
+																	<DisclosureButton
+																		class="grid grid-cols-[1fr_auto] gap-2 rounded p-1 transition hover:bg-neutral-100"
+																	>
+																		<span class="text-left">{{ getPassageLabel(passage) }}</span>
+																		<ChevronDownIcon
+																			class="h-4 w-4 shrink-0 transition"
+																			:class="open && 'rotate-180'"
+																		/>
+																	</DisclosureButton>
+																	<DisclosurePanel
+																		class="max-h-96 overflow-auto p-1 text-xs text-neutral-500"
+																	>
+																		<GeojsonPassageMetadata :id="passage.id" />
+																	</DisclosurePanel>
+																</Disclosure>
 															</li>
 														</ul>
 													</dd>
