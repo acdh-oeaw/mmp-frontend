@@ -16,22 +16,26 @@ jobs:
         os: [ubuntu-latest]
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Enable corepack
+        run: corepack enable
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: "npm"
+          cache: "pnpm"
 
       - name: Install dependencies
-        run: npm ci --no-audit --no-fund
+        run: pnpm install --frozen-lockfile
 
       - name: Format
-        run: npm run format:check
+        run: pnpm run format:check
 
       - name: Lint
-        run: npm run lint:check
+        run: pnpm run lint:check
 
       - name: Typecheck
-        run: npm run types:check
+        run: pnpm run types:check

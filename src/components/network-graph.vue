@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import { assert } from "@stefanprobst/assert";
-import { groupByToMap } from "@stefanprobst/group-by";
+import { assert } from "@acdh-oeaw/lib";
+import { groupByToMap } from "@acdh-oeaw/lib";
 import { type ForceCenter, type ForceLink, type ForceManyBody } from "d3";
 import { type ForceGraphInstance, type LinkObject, type NodeObject } from "force-graph";
 import { nextTick, onMounted, onUnmounted, provide, ref, watch } from "vue";
@@ -122,7 +122,7 @@ onMounted(async () => {
 		const color = node.color;
 
 		const fontSize = 14 / globalScale;
-		ctx.font = `${fontSize}px 'Roboto FlexVariable', ui-sans-serif, system-ui, sans-serif`;
+		ctx.font = `${fontSize}px 'Roboto Flex Variable', ui-sans-serif, system-ui, sans-serif`;
 
 		const textWidth = ctx.measureText(label).width;
 		const dimensions = [textWidth, fontSize].map((n) => {

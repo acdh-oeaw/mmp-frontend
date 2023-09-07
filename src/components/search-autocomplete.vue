@@ -12,7 +12,7 @@ import {
 	ChevronUpDownIcon as SelectorIcon,
 	XMarkIcon,
 } from "@heroicons/vue/20/solid";
-import { groupByToMap } from "@stefanprobst/group-by";
+import { groupByToMap } from "@acdh-oeaw/lib";
 import { computed, ref, watch } from "vue";
 
 import LoadingIndicator from "@/components/loading-indicator.vue";

@@ -20,7 +20,7 @@ const config = {
 				negative,
 			},
 			fontFamily: {
-				sans: ["Roboto FlexVariable", "ui-sans-serif", "system-ui", "sans-serif"],
+				sans: ["Roboto Flex Variable", "ui-sans-serif", "system-ui", "sans-serif"],
 			},
 		},
 	},

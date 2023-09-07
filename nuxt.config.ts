@@ -32,7 +32,7 @@ export default defineNuxtConfig({
 	},
 	components: false,
 	css: [
-		"@fontsource/roboto-flex/variable-full.css",
+		"@fontsource-variable/roboto-flex/standard.css",
 		"tailwindcss/tailwind.css",
 		"@/styles/index.css",
 	],
@@ -42,7 +42,7 @@ export default defineNuxtConfig({
 	imports: {
 		autoImport: false,
 	},
-	modules: ["@nuxt/image-edge"],
+	modules: ["@nuxt/image"],
 	nitro: {
 		compressPublicAssets: true,
 	},
@@ -68,14 +68,6 @@ export default defineNuxtConfig({
 					"@/*": ["./src/*"],
 					"~/*": ["./*"],
 				},
-			},
-		},
-	},
-	vite: {
-		esbuild: {
-			define: {
-				/** Statically replace `process.env.NODE_ENV` in `@stefanprobst/assert`. */
-				"process.env.NODE_ENV": JSON.stringify(process.env["NODE_ENV"]),
 			},
 		},
 	},

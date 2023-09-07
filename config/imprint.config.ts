@@ -1,4 +1,4 @@
-import { createUrl } from "@stefanprobst/request";
+import { createUrl, createUrlSearchParams } from "@acdh-oeaw/lib";
 
 import { env } from "~/config/env.config";
 import { metadata } from "~/config/metadata.config";
@@ -9,5 +9,5 @@ const locale = metadata.locale;
 export const url = createUrl({
 	baseUrl: "https://imprint.acdh.oeaw.ac.at",
 	pathname: `/${redmineId}`,
-	searchParams: { locale },
+	searchParams: createUrlSearchParams({ locale }),
 });

@@ -10,7 +10,7 @@ import {
 	CheckIcon as CheckMarkIcon,
 	ChevronUpDownIcon as SelectorIcon,
 } from "@heroicons/vue/20/solid";
-import { keyByToMap } from "@stefanprobst/key-by";
+import { keyByToMap } from "@acdh-oeaw/lib";
 import { computed } from "vue";
 
 interface Item {

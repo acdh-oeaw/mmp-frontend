@@ -1,7 +1,6 @@
-import { assert } from "@stefanprobst/assert";
-import type { UseQueryOptions } from "@tanstack/vue-query";
-import { useQuery, useQueryClient } from "@tanstack/vue-query";
-import type { Ref } from "vue";
+import { assert } from "@acdh-oeaw/lib";
+import { useQuery, useQueryClient, type UseQueryOptions } from "@tanstack/vue-query";
+import { type Ref } from "vue";
 
 import * as api from "@/api/client";
 
@@ -15,10 +14,10 @@ type MaybeRefDeep<T> = MaybeRef<
 		: T
 >;
 
-type Options = {
+interface Options {
 	isEnabled?: UseQueryOptions["enabled"];
 	keepPreviousData?: UseQueryOptions["keepPreviousData"];
-};
+}
 
 function getQueryOptions(options?: Options) {
 	const queryOptions: Pick<UseQueryOptions, "enabled" | "keepPreviousData"> = {};

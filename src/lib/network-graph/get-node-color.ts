@@ -1,4 +1,4 @@
-import { assert } from "@stefanprobst/assert";
+import { assert } from "@acdh-oeaw/lib";
 
 import { type GraphNode } from "@/api";
 import { keywordNodeColors, nodeColors } from "@/lib/network-graph/network-graph.config";

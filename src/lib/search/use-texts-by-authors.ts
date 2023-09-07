@@ -1,4 +1,4 @@
-import { assert } from "@stefanprobst/assert";
+import { assert } from "@acdh-oeaw/lib";
 import { type ComputedRef, computed } from "vue";
 
 import { type Author, type GetPassages, type Text, usePassages } from "@/api";

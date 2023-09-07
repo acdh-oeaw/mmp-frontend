@@ -1,7 +1,5 @@
 import { compile } from "@mdx-js/mdx";
-import { assert } from "@stefanprobst/assert";
-import { keyByToMap } from "@stefanprobst/key-by";
-import { HttpError } from "@stefanprobst/request";
+import { HttpError, keyByToMap, assert } from "@acdh-oeaw/lib";
 import { valueToEstree } from "estree-util-value-to-estree";
 import { H3Error } from "h3";
 import type * as Hast from "hast";
