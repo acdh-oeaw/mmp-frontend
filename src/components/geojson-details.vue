@@ -100,21 +100,21 @@ const isError = computed(() => {
 		return query.isError;
 	});
 });
-const areas = computed(() => {
+const areasSetup = computed(() => {
 	return areasQueries
 		.map((query) => {
 			return query.data;
 		})
 		.filter(isNotNullable);
 });
-const points = computed(() => {
+const pointsSetup = computed(() => {
 	return pointsQueries
 		.map((query) => {
 			return query.data;
 		})
 		.filter(isNotNullable);
 });
-const collections = computed(() => {
+const collectionsSetup = computed(() => {
 	return collectionsQueries
 		.map((query) => {
 			return query.data;
@@ -122,7 +122,11 @@ const collections = computed(() => {
 		.filter(isNotNullable);
 });
 const isEmpty = computed(() => {
-	return areas.value.length === 0 && points.value.length === 0 && collections.value.length === 0;
+	return (
+		areasSetup.value.length === 0 &&
+		pointsSetup.value.length === 0 &&
+		collectionsSetup.value.length === 0
+	);
 });
 
 function deselect<T>(selection: Array<T>, value: T): Array<T> {
@@ -208,7 +212,7 @@ const context = inject(key);
 				<TabGroup>
 					<TabList
 						as="ul"
-						class="grid grid-cols-2 border-b border-neutral-200 px-8 font-medium"
+						class="grid grid-cols-2 gap-4 border-b border-neutral-200 px-8 font-medium"
 						role="list"
 					>
 						<Tab v-slot="{ selected }" as="li">
@@ -231,12 +235,12 @@ const context = inject(key);
 
 					<TabPanels>
 						<TabPanel>
-							<section v-if="areas.length > 0">
+							<section v-if="areasSetup.length > 0">
 								<h2 class="sr-only flex border-b border-neutral-200 pb-1 text-xl font-medium">
 									Spatial coverages
 								</h2>
 								<ul role="list" class="divide-y">
-									<li v-for="area of areas" :key="area.id">
+									<li v-for="area of areasSetup" :key="area.id">
 										<article class="relative my-8 grid gap-2">
 											<NuxtLink
 												class="absolute right-2.5 flex items-center gap-1"
@@ -303,12 +307,12 @@ const context = inject(key);
 								</ul>
 							</section>
 
-							<section v-if="points.length > 0">
+							<section v-if="pointsSetup.length > 0">
 								<h2 class="sr-only flex border-b border-neutral-200 pb-1 text-xl font-medium">
 									Places
 								</h2>
 								<ul role="list" class="divide-y">
-									<li v-for="point of points" :key="point.id">
+									<li v-for="point of pointsSetup" :key="point.id">
 										<article class="relative my-8 grid gap-2">
 											<NuxtLink
 												class="absolute right-2.5 flex items-center gap-1"
@@ -336,12 +340,12 @@ const context = inject(key);
 								</ul>
 							</section>
 
-							<section v-if="collections.length > 0">
+							<section v-if="collectionsSetup.length > 0">
 								<h2 class="sr-only flex border-b border-neutral-200 pb-1 text-xl font-medium">
 									Contextual data
 								</h2>
 								<ul role="list" class="divide-y">
-									<li v-for="collection of collections" :key="collection.id">
+									<li v-for="collection of collectionsSetup" :key="collection.id">
 										<article class="relative my-8 grid gap-2">
 											<NuxtLink
 												class="absolute right-2.5 flex items-center gap-1"

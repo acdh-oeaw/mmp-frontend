@@ -3,7 +3,7 @@ import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/vue";
 import { useQueries } from "@tanstack/vue-query";
 import { computed, inject } from "vue";
 
-import { type Author, type Keyword, createKey, useTexts } from "@/api";
+import { type Author, createKey, type Keyword, useTexts } from "@/api";
 import * as api from "@/api/client";
 import AreaMap from "@/components/area-map.vue";
 import Centered from "@/components/centered.vue";
@@ -158,7 +158,7 @@ const _context = inject(key);
 					<TabGroup>
 						<TabList
 							as="ul"
-							class="grid grid-cols-3 border-b border-neutral-200 px-8 font-medium"
+							class="grid grid-cols-3 gap-4 border-b border-neutral-200 px-8 font-medium"
 							role="list"
 						>
 							<Tab

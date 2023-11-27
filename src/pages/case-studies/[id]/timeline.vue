@@ -8,8 +8,7 @@ import {
 } from "@heroicons/vue/24/outline";
 import { computed, ref, watch } from "vue";
 
-import { useCaseStudyById } from "@/api";
-import { type GetCaseStudyTimetableById } from "@/api";
+import { type GetCaseStudyTimetableById, useCaseStudyById } from "@/api";
 import Centered from "@/components/centered.vue";
 import ErrorMessage from "@/components/error-message.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
@@ -22,14 +21,14 @@ import { useResourceIdParam } from "@/lib/use-resource-id-param";
 import { NuxtLink } from "#components";
 import { useHead } from "#imports";
 
-type TimelineEntry = {
+interface TimelineEntry {
 	id: number;
 	title?: string | null;
 	description?: string | null;
 	start_date?: number | null;
 	end_date?: number | null;
 	type: "autor" | "event" | "text";
-};
+}
 
 const title = ref("Timeline");
 
@@ -141,7 +140,7 @@ watch(caseStudyQuery.data, (caseStudy) => {
 					<Tab
 						v-for="(label, i) in ['Case study specific events', 'All events']"
 						:key="label"
-						class="mx-10 w-0 flex-1 rounded-t py-2 px-4 text-sm transition hover:bg-neutral-100 md:mx-24"
+						class="mx-10 w-0 flex-1 rounded-t px-4 py-2 text-sm transition hover:bg-neutral-100 md:mx-24"
 						:class="{ 'bg-neutral-200': i === selectedIndex }"
 					>
 						{{ label }}
@@ -168,7 +167,7 @@ watch(caseStudyQuery.data, (caseStudy) => {
 								</div>
 								<div class="relative h-full min-h-[3rem] w-12">
 									<span
-										class="absolute top-2/4 left-2/4 h-12 w-12 -translate-x-2/4 -translate-y-2/4 rounded-full border-4 border-white p-2 text-white shadow"
+										class="absolute left-2/4 top-2/4 h-12 w-12 -translate-x-2/4 -translate-y-2/4 rounded-full border-4 border-white p-2 text-white shadow"
 										:class="getEventColor(event.type)"
 									>
 										<AuthorIcon v-if="event.type === 'autor'" />
@@ -177,7 +176,7 @@ watch(caseStudyQuery.data, (caseStudy) => {
 									</span>
 									<div
 										v-if="i + 1 < mergedTimelineEntries.length"
-										class="absolute inset-x-2/4 top-0 bottom-[-1.5rem] -z-10 border border-neutral-300"
+										class="absolute inset-x-2/4 bottom-[-1.5rem] top-0 -z-10 border border-neutral-300"
 									/>
 								</div>
 								<NuxtLink
@@ -222,13 +221,13 @@ watch(caseStudyQuery.data, (caseStudy) => {
 								</div>
 								<div class="relative h-full min-h-[3rem] w-12">
 									<span
-										class="absolute top-2/4 left-2/4 h-12 w-12 -translate-x-2/4 -translate-y-2/4 rounded-full border-4 border-white bg-green-500 p-2 text-white shadow"
+										class="absolute left-2/4 top-2/4 h-12 w-12 -translate-x-2/4 -translate-y-2/4 rounded-full border-4 border-white bg-green-500 p-2 text-white shadow"
 									>
 										<EventIcon />
 									</span>
 									<div
 										v-if="i + 1 < timelineEventsOnly.length"
-										class="absolute inset-x-2/4 top-0 bottom-[-1.5rem] -z-10 border border-neutral-300"
+										class="absolute inset-x-2/4 bottom-[-1.5rem] top-0 -z-10 border border-neutral-300"
 									/>
 								</div>
 								<span>{{ event.ent_description || "No Description" }}</span>
