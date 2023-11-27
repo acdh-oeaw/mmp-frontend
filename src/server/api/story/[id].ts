@@ -3,7 +3,7 @@ import { assert } from "@stefanprobst/assert";
 import { keyByToMap } from "@stefanprobst/key-by";
 import { HttpError } from "@stefanprobst/request";
 import { valueToEstree } from "estree-util-value-to-estree";
-import { H3Error } from "h3";
+import { defineEventHandler, H3Error } from "h3";
 import type * as Hast from "hast";
 import type * as _Mdxast from "remark-mdx";
 import { type Transformer } from "unified";
