@@ -351,16 +351,41 @@ useHead({
 					</AboutDisclosure>
 					<!-- prettier-ignore -->
 					<AboutDisclosure title="Our resources">
-						<h2>Bibliography</h2>
+						<h2>Select Bibliography </h2>
 						<p>
 							Many of our texts are taken from the
 							<i>Digital Monumenta Germaniae historica</i>:
 							<a class="font-semibold underline" href="https://www.dmgh.de/">dmgh.de</a>
+							as well as the
+							<i>Corpus Christianorum: </i>
+							<a href="https://www.corpuschristianorum.org/" class="font-semibold underline">corpuschristianorum.org</a>  and the Loeb Classical Library <a class="font-semibold underline" href="https://www.loebclassics.com/">loebclassics.com</a>
 						</p>
+						<p>Other editions, as well as translations used, are cited here:</p>
+						<p>Abbo of Fleury, <i>Life of St. Eadmund,</i> ed. by Michael Winterbottom, in <i>Three Lives of English Saints</i> (Toronto: Centre for Medieval Studies of the Pontifical Institute of Toronto, 1972), pp. 66-87 </p>
 						<p>
 							Adam of Bremen,
 							<i>History of the Archbishops of Hamburg-Bremen</i>, trans. by Francis J. Tschan, with a new introduction and selected bibliography by Timothy Reuter, 2<sup>nd</sup>
 							edn (New York: Columbia University Press, 2002)
+						</p>
+						<p>
+							Aethicus Ister, <i>The Cosmography of Aethicus Ister,</i> ed. and trans. Michael W. Herren (Turnhout: Brepols, 2011)
+						</p>
+						<p>
+							Alcuin of York, <i>Letters,</i> trans. Stephen Allott <i>(Alcuin of York, c. AD 732 to 804: His Life and Letters)</i> (York: William Sessions, 1974)
+						</p>
+						<p>
+							Alcuin of York, <i>Life of Willibrord,</i> trans. A. Grieve (1932), <a class="font-semibold underline" href="https://sourcebooks.fordham.edu/basis/alcuin-willbrord.asp">sourcebooks.fordham.edu/basis/alcuin-willbrord.asp</a>
+						</p>
+						<p>
+							Arnobius, <i>The Case against the Pagans,</i> Ancient Christian Writers, 2 vols. (New York/Ramsey, NJ: Newman Press, 1949)
+						</p>
+						<p>
+							Augustine, <i>De excidio urbis Romae sermo,</i> ed. and trans. by Marie Vianney O'Reilly, Catholic University of America Patristic Studies 89 (Washington D. C.: Catholic University of America Press, 1955)
+						</p>
+						<p>Augustine, <i>The City of God against the Pagans,</i> ed. and trans. R. W. Dyson (Cambridge: Cambridge University Press, 1998)</p>
+						<p>Bede, <i>The Commentary on the Seven Catholic Epistles,</i> trans. David Hurst (Piscataway: Gorgias Press, 1985)</p>
+						<p>
+							Bede, <i>The Explanation of the Apocalypse,</i> trans. E. Marshall (Oxford and London: James Parker and Co., 1878)
 						</p>
 						<p>
 							Bede, <i>Historia ecclesiastica gentis Anglorum: Ecclesiastical History of the English
@@ -368,24 +393,96 @@ useHead({
 							University Press, 1969)
 						</p>
 						<p>
-							Encomium Emmae Reginae, ed. and trans. by Alistair Campbell, with a supplementary
+							Bede, <i>Homilies on the Gospels, Volume 1: Advent to Lent,</i> Trans. Lawrence T. Martin and David Hurst (Piscataway, NJ: Gorgias Press, 2010)
+						</p>
+						<p>
+							Bede, <i>On the Song of Songs and Selected Writings,</i> trans. by Arthur Holder, Classics of Western Spirituality (New York/Mahwah, NJ: Paulist Press, 2011)
+						</p>
+						<p>
+							Bede, <i>On the Tabernacle,</i> trans. by Arthur G. Holder, Liverpool Translated Texts for Historians (Liverpool: Liverpool University Press, 1994)
+						</p>
+						<p>
+							Bede, <i>The Reckoning of Time,</i> trans. by Faith Wallis, Liverpool Translated Texts for Historians (Liverpool: Liverpool University Press, 1999)
+						</p>
+						<p>
+							Boniface, <i>The Letters of St Boniface,</i> trans. by Ephraim Emerton (New York: Norton, 1976)
+						</p>
+						<p>
+							Burgess, R. W., ed. and trans., <i>The Chronicle of Hydatius and The Consularia Constantinopolitana: two contemporary accounts of the final years of the Roman empire</i> (Oxford: Oxford University Press, 2017)
+						</p>
+						<p>
+							<i>Encomium Emmae Reginae,</i> ed. and trans. by Alistair Campbell, with a supplementary
 							introduction by Simon Keynes, 2<sup>nd</sup> edn (Cambridge: Cambridge University Press, 1998)
+						</p>
+						<p>
+							Gertz, M. Cl., ed., <i>Vitae sanctorum Danorum</i> (Copenhagen: G. E. C. Gad, 1908–12)
+						</p>
+						<p>
+							Godman, Peter, ed. and trans., <i>Poetry of the Carolingian Renaissance</i> (London: Duckworth, 1985)
+						</p>
+						<p>
+							Gregory the Great, <i>Dialogues,</i> trans. Odo John Zimmerman, The Fathers of the Church 39 (Washington D. C.: Catholic University of America Press, 1959)
 						</p>
 						<p>
 							<i>Historia Norwegie</i>, ed. by Inger Ekrem and Lars Boje Mortensen and trans. by Peter
 							Fisher (Copenhagen: Museum Tusculanum Press, 2003)
 						</p>
 						<p>
+							Isidore of Seville, <i>De ecclesiasticis officiis,</i> trans. by Thomas L. Knoebel, Ancient Christian Writers (New York/Mahwah, NJ: The Newman Press, 2008)
+						</p>
+						<p>
+							Isidore of Seville, <i>The Etymologies,</i> ed. and trans. by Stephen A. Barney, W. J. Lewis, J. A. Beach, Oliver Berghof (Cambridge: Cambridge University Press, 2006)
+						</p>
+						<p>
+							Isidore of Seville, <i>History of the Kings of the Goths,</i> Vandals, and Suevi, trans. Guido Donini and Gordon B. Ford (Leiden: E. J. Brill, 1966)
+						</p>
+						<p>
+							Jordanes, <i>Romana and Getica,</i> trans. Peter van Nuffelen and Lieve van Hoof, Translated Texts for Historians 75 (Liverpool: Liverpool University Press, 2020)
+						</p>
+						<p>
+							King, P. D., trans., <i>Charlemagne: Translated Sources</i> (Kendal, Cumbria: P. D. King, 1987)
+						</p>
+						<p>
+							Lampert of Hersfeld, <i>The Annals of Lampert of Hersfeld,</i> trans. by I. S. Robinson (Manchester: Manchester University Press, 2016)
+						</p>
+						<p>
+							Liutprand of Cremona, <i>The Complete Works of Liutprand of Cremona,</i> trans. by Paolo Squatriti, Medieval Texts in Translation (Washington, D.C.: Catholic University of America Press, 2007)
+						</p>
+						<p>
+							Nelson, Janet L., trans., <i>The Annals of St Bertin</i> (Manchester: Manchester University Press, 1991)
+						</p>
+						<p>
+							Orosius, <i>Seven Books of History against the Pagans,</i> trans. A. T. Fear, Translated Texts for Historians 54 (Liverpool: Liverpool University Press, 2010)
+						</p>
+						<p>
+							Salvian of Marseilles, <i>The Writings of Salvian,</i> the Presbyter, trans. Jeremiah F. O’Sullivan (Washington, D. C.: Catholic University of America Press, 1947)
+						</p>
+						<p>
 							Saxo Grammaticus, <i>Gesta Danorum: The History of the Danes</i>, ed. by Karsten
 							Friis-Jensen, trans. by Peter Fisher (Oxford: Oxford University Press, 2015)
 						</p>
 						<p>
-							Theodoricus of Nidaros, <i>e antiquitate regum Norwagensium: On the Old Norwegian Kings</i>,
+							Scholz, Bernhard Walter, and Rogers, Barbara, trans., <i>Royal Frankish annals and Nithard's Histories</i> (Ann Arbor: University of Michigan Press, 1972)
+						</p>
+						<p>
+							Theodoricus of Nidaros, <i>De antiquitate regum Norwagensium: On the Old Norwegian Kings</i>,
 							ed. and trans. by Egil Kraggerud (Oslo: Novus Forlag, 2018)
+						</p>
+						<p>
+							Thietmar of Merseburg, <i>Ottonian Germany: The Chronicon of Thietmar of Merseburg,</i> translated and annotated by David A. Warner (Manchester: Manchester University Press, 2001)
+						</p>
+						<p>
+							Venantius Fortunatus, <i>Personal and Political Poems,</i> trans. by Judith George, Translated Texts for Historians 23 (Liverpool: Liverpool University Press, 1995)
+						</p>
+						<p>
+							Victor of Vita, <i>History of the Vandal Persecution,</i> trans. John Moorhead, Translated Texts for Historians 10 (Liverpool: Liverpool University Press, 1992)
 						</p>
 						<p>
 							Vincent Kadłubek, <i>Chronica Polonorum</i>, ed. by Marianus Plezia, Pomniki dziejowe
 							Polski/Monumenta Poloniae historica, Nova series 11 (Kraków: Secesja, 1994)
+						</p>
+						<p>
+							Widukind of Corvey, <i>Deeds of the Saxons,</i> trans. by Bernard S. Bacharach and David S. Bacharach (Washington D.C.: Catholic University of America Press, 2014)
 						</p>
 						<p>
 							William of Malmesbury, <i>Gesta regum Anglorum: The Deeds of the English Kings</i>, ed. and
