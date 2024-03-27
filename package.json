@@ -166,8 +166,5 @@
 			"stylelint-config-html/vue",
 			"@stefanprobst/stylelint-config"
 		]
-	},
-	"volta": {
-		"node": "18.14.0"
 	}
 }
