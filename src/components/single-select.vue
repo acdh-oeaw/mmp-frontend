@@ -27,9 +27,7 @@ const props = defineProps<{
 	selectedKey?: Item["key"];
 }>();
 
-const emit = defineEmits<{
-	(event: "change-selection", selectedKey: Item["key"]): void;
-}>();
+const emit = defineEmits<(event: "change-selection", selectedKey: Item["key"]) => void>();
 
 //
 
@@ -49,7 +47,6 @@ const itemsByKey = computed(() => {
 
 function getDisplayLabel(selectedKey: Item["key"]) {
 	if (itemsByKey.value.has(selectedKey)) {
-		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 		const item = itemsByKey.value.get(selectedKey)!;
 		return item.label;
 	}
@@ -99,9 +96,9 @@ function getDisplayLabel(selectedKey: Item["key"]) {
 					v-slot="{ selected }"
 					:key="item.key"
 					:value="item.key"
-					class="relative grid cursor-default select-none gap-1 py-2 pr-10 pl-4 ui-active:bg-neutral-100 ui-active:text-neutral-900"
+					class="relative grid cursor-default select-none gap-1 py-2 pl-4 pr-10 ui-active:bg-neutral-100 ui-active:text-neutral-900"
 				>
-					<span class="block truncate ui-selected:font-medium">{{ item.label }}</span>
+					<span class="block ui-selected:font-medium">{{ item.label }}</span>
 					<span v-if="item.description" class="block text-xs text-neutral-500">
 						{{ item.description }}
 					</span>
