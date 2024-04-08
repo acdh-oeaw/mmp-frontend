@@ -7,7 +7,6 @@
 		"mikestead.dotenv",
 		"stylelint.vscode-stylelint",
 		"vue.volar",
-		"vue.vscode-typescript-vue-plugin",
 		"unifiedjs.vscode-mdx"
 	]
 }
