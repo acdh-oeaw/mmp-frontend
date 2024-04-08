@@ -25,10 +25,10 @@ import { createLinesPointsTooltipContent } from "@/lib/geo-map/create-lines-poin
 import {
 	baseLayers,
 	colors,
-	layerColors,
 	config,
 	initialViewState,
 	keywordColors,
+	layerColors,
 } from "@/lib/geo-map/geo-map.config";
 import { key } from "@/lib/geo-map/geo-map.context";
 import {
@@ -38,7 +38,7 @@ import {
 	type SpatialCoverageCenterPoint,
 } from "@/lib/geo-map/geo-map.types";
 import { type BaseLayer } from "@/lib/geo-map/use-geo-map-base-layer";
-import { type SelectionKey, createSelectionKey } from "@/lib/search/selection-key";
+import { createSelectionKey, type SelectionKey } from "@/lib/search/selection-key";
 
 const props = defineProps<{
 	areas: Array<SpatialCoverageGeojson>;
@@ -641,16 +641,18 @@ onMounted(async () => {
 
 		const zoomLevel = context.map.getZoom();
 
-		if (zoomLevel <= 4 && context.visibility.featureGroups.value.has("areaLabels")) {
+		const level = 3;
+
+		if (zoomLevel <= level && context.visibility.featureGroups.value.has("areaLabels")) {
 			context.visibility.featureGroups.value.delete("areaLabels");
-		} else if (zoomLevel > 4 && !context.visibility.featureGroups.value.has("areaLabels")) {
+		} else if (zoomLevel > level && !context.visibility.featureGroups.value.has("areaLabels")) {
 			context.visibility.featureGroups.value.add("areaLabels");
 		}
 	});
 
 	//
 
-	updateLayers();
+	void updateLayers();
 	updateLinesPoints();
 	updateCones();
 	updateAreas();
