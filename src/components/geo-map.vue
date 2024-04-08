@@ -154,7 +154,7 @@ async function updateLayers() {
 						color,
 						fill: false,
 						stroke: true,
-						weight: 1,
+						weight: 1.5,
 					};
 
 					return styles;
@@ -393,7 +393,7 @@ onMounted(async () => {
 			fillOpacity: 0.18,
 			opacity: 0.75,
 			stroke: true,
-			weight: 1,
+			weight: 1.5,
 		};
 	}
 
@@ -497,7 +497,7 @@ onMounted(async () => {
 				color,
 				fill: false,
 				stroke: true,
-				weight: 1,
+				weight: 1.5,
 			};
 
 			return styles;
