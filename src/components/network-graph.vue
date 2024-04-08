@@ -227,7 +227,7 @@ onMounted(async () => {
 const resize = debounce((width: number, height: number) => {
 	if (context.graph == null) return;
 
-	nextTick(() => {
+	void nextTick(() => {
 		updateAuthorNodePositions(Array.from(props.graph.nodes.values()) as Array<NodeObject>);
 
 		context.graph?.width(width);

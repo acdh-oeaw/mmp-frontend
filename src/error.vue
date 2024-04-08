@@ -4,11 +4,11 @@ import MainContent from "@/components/main-content.vue";
 import { clearError } from "#app";
 
 const _props = defineProps<{
-	error: Error;
+	error: unknown;
 }>();
 
 function handleError() {
-	clearError({ redirect: "/" });
+	void clearError({ redirect: "/" });
 }
 </script>
 

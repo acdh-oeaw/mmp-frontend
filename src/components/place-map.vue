@@ -22,13 +22,13 @@ const context: PlaceMapContext = {
 
 const elementRef = ref<HTMLElement | null>(null);
 
-async function updatePoints() {
+function updatePoints() {
 	context.points.forEach((point) => {
 		point.remove();
 	});
 	context.points = [];
 
-	nextTick(async () => {
+	void nextTick(async () => {
 		/** `leaflet` assumes `window` global. */
 		const { circleMarker } = await import("leaflet");
 
@@ -74,7 +74,7 @@ onMounted(async () => {
 const resize = debounce((_width: number, _height: number) => {
 	if (context.map == null) return;
 
-	nextTick(() => {
+	void nextTick(() => {
 		context.map?.invalidateSize();
 	});
 });

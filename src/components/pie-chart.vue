@@ -70,7 +70,7 @@ onMounted(() => {
 const resize = debounce((width: number, height: number) => {
 	if (context.chart == null) return;
 
-	nextTick(() => {
+	void nextTick(() => {
 		context.chart?.setSize(width, height);
 		// context.chart?.reflow();
 	});

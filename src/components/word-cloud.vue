@@ -54,7 +54,7 @@ onMounted(() => {
 const resize = debounce((width: number, height: number) => {
 	if (context.cloud == null) return;
 
-	nextTick(() => {
+	void nextTick(() => {
 		context.cloud?.setSize(width, height);
 		// context.cloud?.reflow();
 	});

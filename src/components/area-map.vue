@@ -172,7 +172,7 @@ onMounted(async () => {
 const resize = debounce((_width: number, _height: number) => {
 	if (context.map == null) return;
 
-	nextTick(() => {
+	void nextTick(() => {
 		context.map?.invalidateSize();
 	});
 });

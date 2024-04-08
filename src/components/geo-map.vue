@@ -285,7 +285,7 @@ function updateBaseLayer() {
 }
 
 function updateStackingOrder() {
-	nextTick(() => {
+	void nextTick(() => {
 		Object.values(context.layers).forEach((layer) => {
 			layer?.bringToFront();
 		});
@@ -310,7 +310,7 @@ function updateBounds() {
 	) {
 		const bounds = initialViewState.bounds;
 
-		nextTick(() => {
+		void nextTick(() => {
 			context.map?.flyToBounds(bounds, { duration: 0.25 });
 		});
 	} else if (areas.length) {
@@ -334,7 +334,7 @@ function updateBounds() {
 			[Math.max(...lat), Math.max(...lng)],
 		];
 
-		nextTick(() => {
+		void nextTick(() => {
 			/**
 			 * Note that leaflet currently does not properly cancel previous `fitBounds` animations,
 			 * which means that when cone origins load quickly after spatial coverage areas,
@@ -671,7 +671,7 @@ onMounted(async () => {
 const resize = debounce((_width: number, _height: number) => {
 	if (context.map == null) return;
 
-	nextTick(() => {
+	void nextTick(() => {
 		context.map?.invalidateSize();
 	});
 });
