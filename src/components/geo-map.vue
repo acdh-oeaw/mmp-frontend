@@ -25,6 +25,7 @@ import { createLinesPointsTooltipContent } from "@/lib/geo-map/create-lines-poin
 import {
 	baseLayers,
 	colors,
+	layerColors,
 	config,
 	initialViewState,
 	keywordColors,
@@ -114,6 +115,14 @@ async function updateLayers() {
 	context.layers = {};
 	layers.forEach((layer) => {
 		if (context.visibility.layers.value.has(layer.id)) {
+			/**
+			 * Custom geojson layers can provide a layer "kind", which is used to select a custom color
+			 * for geojson features.
+			 */
+			// @ts-expect-error Unclear if per spec a FeatureCollection is allowed to have properties.
+			const properties = layer.data.properties as { kind?: keyof typeof layerColors } | undefined;
+			const layerColor = properties?.kind != null ? layerColors[properties.kind] : undefined;
+
 			context.layers[layer.id] = geoJSON(layer.data, {
 				onEachFeature(feature, layer) {
 					layer.bindTooltip(createGeojsonLayerTooltipContent(feature), {
@@ -122,7 +131,7 @@ async function updateLayers() {
 					});
 				},
 				pointToLayer(feature, latlng) {
-					const color = colors.linesPoints;
+					const color = layerColor ?? colors.linesPoints;
 
 					const point = circleMarker(latlng, {
 						color,
@@ -139,7 +148,7 @@ async function updateLayers() {
 				style(feature) {
 					if (feature == null) return {};
 
-					const color = colors.linesPoints;
+					const color = layerColor ?? colors.linesPoints;
 
 					const styles = {
 						color,

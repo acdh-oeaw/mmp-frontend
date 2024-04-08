@@ -61,3 +61,9 @@ export const keywordColors: Record<KeywordType, string> = {
 	Region: "#43a047",
 	unclear: "#9e9e9e",
 };
+
+export const layerColors = {
+	borders: "#121212",
+	places: "#00ffcf",
+	roads: "#ff6347",
+};
