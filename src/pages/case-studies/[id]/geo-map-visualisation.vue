@@ -82,7 +82,7 @@ const isSideDisclosureVisible = computed(() => {
 });
 
 function onToggleSideDisclosure() {
-	router.push({
+	void router.push({
 		query: {
 			...createSearchFilterParams(searchFilters.value),
 			...createViewModeParams(viewMode.value),

@@ -34,7 +34,7 @@ export function useSelection(): UseSelectionResult {
 
 	function setSelection(searchFilters: Selection) {
 		const query = createSelectionParams(searchFilters);
-		router.push({ query });
+		void router.push({ query });
 	}
 
 	return {

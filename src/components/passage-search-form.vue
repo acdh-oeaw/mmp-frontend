@@ -40,7 +40,7 @@ function onSubmit() {
 		nextSearchFilters[filter].push(id);
 	});
 
-	router.push({
+	void router.push({
 		query: {
 			...createSearchFilterParams(nextSearchFilters),
 			...createSelectionParams(selection.value),

@@ -24,7 +24,7 @@ function onChangeSearchTerm(event: Event) {
 const router = useRouter();
 
 function onSubmit() {
-	router.push({
+	void router.push({
 		query: createSearchFilterParams({
 			...searchFilters.value,
 			searchTerm: searchTerm.value,

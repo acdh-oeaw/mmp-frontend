@@ -56,7 +56,7 @@ function onUnPinNodes() {
 }
 
 function onClearSelection() {
-	router.push({ query: createSearchFilterParams(searchFilters.value) });
+	void router.push({ query: createSearchFilterParams(searchFilters.value) });
 }
 
 //

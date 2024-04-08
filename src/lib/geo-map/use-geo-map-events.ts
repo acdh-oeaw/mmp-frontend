@@ -31,7 +31,7 @@ export function useGeoMapEvents() {
 			_selection.add(key);
 		}
 
-		router.push({
+		void router.push({
 			query: {
 				...createSearchFilterParams(searchFilters.value),
 				...createSelectionParams({ selection: Array.from(_selection) }),
@@ -51,7 +51,7 @@ export function useGeoMapEvents() {
 			_selection.add(key);
 		}
 
-		router.push({
+		void router.push({
 			query: {
 				...createSearchFilterParams(searchFilters.value),
 				...createSelectionParams({ selection: Array.from(_selection) }),
@@ -71,7 +71,7 @@ export function useGeoMapEvents() {
 			_selection.add(key);
 		}
 
-		router.push({
+		void router.push({
 			query: {
 				...createSearchFilterParams(searchFilters.value),
 				...createSelectionParams({ selection: Array.from(_selection) }),

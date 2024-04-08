@@ -63,7 +63,7 @@ const isSideDisclosureVisible = computed(() => {
 });
 
 function onToggleSideDisclosure() {
-	router.push({
+	void router.push({
 		query: {
 			...createSearchFilterParams(searchFilters.value),
 			...createViewModeParams(viewMode.value),
@@ -125,7 +125,7 @@ function onToggleSideDisclosure() {
 						>
 							<NetworkGraphToolbar :graph="filteredGraph" />
 
-							<div class="absolute right-4 bottom-4 rounded bg-white px-8 py-3 shadow-lg">
+							<div class="absolute bottom-4 right-4 rounded bg-white px-8 py-3 shadow-lg">
 								<NetworkGraphLegend
 									:keyword-type-filters="keywordTypeFilters"
 									:resource-kind-filters="resourceKindFilters"

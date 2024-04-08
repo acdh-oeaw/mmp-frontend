@@ -27,7 +27,7 @@ const isSidePanelVisible = computed(() => {
 });
 
 function onToggle() {
-	router.push({ query: createSearchFilterParams(searchFilters.value) });
+	void router.push({ query: createSearchFilterParams(searchFilters.value) });
 }
 </script>
 

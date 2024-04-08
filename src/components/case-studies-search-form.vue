@@ -30,7 +30,7 @@ function onSubmit() {
 		nextSearchFilters[filter].push(id);
 	});
 
-	router.push({ query: createSearchFilterParams(nextSearchFilters) });
+	void router.push({ query: createSearchFilterParams(nextSearchFilters) });
 }
 
 const onDebouncedSubmit = debounce(onSubmit);

@@ -40,7 +40,7 @@ export function useBrowseSearchFilters(): UseSearchFiltersResult {
 
 	function setSearchFilters(searchFilters: SearchFilters) {
 		const query = createSearchFilterParams(searchFilters);
-		router.push({ query });
+		void router.push({ query });
 	}
 
 	return {

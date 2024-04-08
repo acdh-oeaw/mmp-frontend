@@ -34,7 +34,7 @@ export function useViewMode(): UseViewModesResult {
 
 	function setViewModes(viewMode: ViewModes) {
 		const query = createViewModeParams(viewMode);
-		router.push({ query });
+		void router.push({ query });
 	}
 
 	return {
