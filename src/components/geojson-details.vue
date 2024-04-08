@@ -176,6 +176,18 @@ function onSetAreasVisibility(isVisible: boolean) {
 	}
 }
 
+function onSetConesVisibility(isVisible: boolean) {
+	if (context == null) return;
+
+	if (isVisible) {
+		context.visibility.featureGroups.value.add("coneOrigins");
+		context.visibility.featureGroups.value.add("cones");
+	} else {
+		context.visibility.featureGroups.value.delete("coneOrigins");
+		context.visibility.featureGroups.value.delete("cones");
+	}
+}
+
 //
 
 const context = inject(key);
@@ -398,22 +410,39 @@ const context = inject(key);
 						</TabPanel>
 
 						<TabPanel>
-							<div class="mt-8 flex justify-center gap-4">
+							<div class="mt-8 flex justify-center gap-2">
 								<button
-									class="flex items-center gap-1 rounded px-4 py-2 text-sm transition hover:bg-neutral-100"
+									class="flex items-center gap-1 rounded px-4 py-2 text-xs transition hover:bg-neutral-100"
 									@click="onSetAreasVisibility(false)"
 								>
 									<EyeSlashIcon class="h-5 w-5 shrink-0" />
 									<span>Hide all</span>
 								</button>
 								<button
-									class="flex items-center gap-1 rounded px-4 py-2 text-sm transition hover:bg-neutral-100"
+									class="flex items-center gap-1 rounded px-4 py-2 text-xs transition hover:bg-neutral-100"
 									@click="onSetAreasVisibility(true)"
 								>
 									<EyeIcon class="h-5 w-5 shrink-0" />
 									<span>Show all</span>
 								</button>
 							</div>
+							<div class="mt-2 flex justify-center gap-2">
+								<button
+									class="flex items-center gap-1 rounded px-4 py-2 text-xs transition hover:bg-neutral-100"
+									@click="onSetConesVisibility(false)"
+								>
+									<EyeSlashIcon class="h-5 w-5 shrink-0" />
+									<span>Hide perspective cones</span>
+								</button>
+								<button
+									class="flex items-center gap-1 rounded px-4 py-2 text-xs transition hover:bg-neutral-100"
+									@click="onSetConesVisibility(true)"
+								>
+									<EyeIcon class="h-5 w-5 shrink-0" />
+									<span>Show perspective cones</span>
+								</button>
+							</div>
+
 							<ul role="list" class="divide-y divide-neutral-200 py-4 text-sm">
 								<li
 									v-for="area of allAreas"
