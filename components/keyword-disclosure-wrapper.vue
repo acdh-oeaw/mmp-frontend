@@ -3,9 +3,8 @@ import { type Keyword, type KeywordNormalized } from "@/api";
 import { useKeywords } from "@/api";
 import Centered from "@/components/centered.vue";
 import ErrorMessage from "@/components/error-message.vue";
+import KeywordDisclosure from "@/components/keyword-disclosure.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
-
-import KeywordDisclosure from "./keyword-disclosure.vue";
 
 const props = defineProps<{
 	ids: Array<Keyword["id"]> | Array<KeywordNormalized["id"]>;

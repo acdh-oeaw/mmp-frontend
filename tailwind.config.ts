@@ -10,12 +10,12 @@ const negative = colors.red;
 
 const config: Config = {
 	content: [
-		"./src/app.vue",
-		"./src/error.vue",
-		"./src/components/**/*.@(css|ts|vue)",
-		"./src/content/**/*.md",
-		"./src/layouts/**/*.@(css|ts|vue)",
-		"./src/pages/**/*.@(css|ts|vue)",
+		"./app.vue",
+		"./error.vue",
+		"./components/**/*.@(css|ts|vue)",
+		"./content/**/*.md",
+		"./layouts/**/*.@(css|ts|vue)",
+		"./pages/**/*.@(css|ts|vue)",
 	],
 	plugins: [headlessui, typography],
 	theme: {

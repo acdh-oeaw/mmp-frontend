@@ -8,12 +8,9 @@ WORKDIR /app
 
 USER node
 
-COPY --chown=node:node package.json package-lock.json .npmrc ./
-COPY --chown=node:node nuxt.config.ts tsconfig.json tailwind.config.cjs ./
-COPY --chown=node:node scripts ./scripts
-COPY --chown=node:node config ./config
-COPY --chown=node:node public ./public
-COPY --chown=node:node src ./src
+COPY --chown=node:node .npmrc package.json package-lock.json ./
+
+COPY --chown=node:node ./ ./
 
 RUN npm install --ci --no-audit --no-fund
 

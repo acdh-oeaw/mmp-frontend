@@ -2,12 +2,11 @@ import { fileURLToPath } from "node:url";
 
 import { defineNuxtConfig } from "nuxt/config";
 
-import { manifestFileName, metadata, openGraphImageName } from "./src/config/metadata.config";
+import { manifestFileName, metadata, openGraphImageName } from "./config/metadata.config";
 
 export default defineNuxtConfig({
 	alias: {
-		"@": fileURLToPath(new URL("./src", import.meta.url)),
-		"~": fileURLToPath(new URL(".", import.meta.url)),
+		"@": fileURLToPath(new URL("./", import.meta.url)),
 	},
 	app: {
 		head: {
@@ -36,9 +35,6 @@ export default defineNuxtConfig({
 		"tailwindcss/tailwind.css",
 		"@/styles/index.css",
 	],
-	dir: {
-		public: "../public",
-	},
 	imports: {
 		autoImport: false,
 	},
@@ -58,14 +54,13 @@ export default defineNuxtConfig({
 		"/about": { static: true },
 		"/imprint": { static: true },
 	},
-	srcDir: "./src/",
 	typescript: {
 		shim: false,
 		strict: true,
 		tsConfig: {
 			compilerOptions: {
 				paths: {
-					"@/*": ["./src/*"],
+					"@/*": ["./*"],
 				},
 			},
 		},
