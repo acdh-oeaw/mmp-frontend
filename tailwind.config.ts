@@ -1,15 +1,14 @@
-/** @typedef {import('tailwindcss').Config} TailwindConfig */
+import type { Config } from 'tailwindcss'
 
-const colors = require("tailwindcss/colors");
-const headlessui = require("@headlessui/tailwindcss");
-const typography = require("@tailwindcss/typography");
+import colors from "tailwindcss/colors"
+import headlessui from "@headlessui/tailwindcss"
+import typography from "@tailwindcss/typography"
 
 const neutral = colors.slate;
 const primary = colors.slate;
 const negative = colors.red;
 
-/** @type {TailwindConfig} */
-const config = {
+const config: Config = {
 	content: ["./src/**/*.@(css|ts|vue)"],
 	plugins: [headlessui, typography],
 	theme: {
@@ -26,4 +25,4 @@ const config = {
 	},
 };
 
-module.exports = config;
+export default config;
