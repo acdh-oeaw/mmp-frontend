@@ -4,7 +4,7 @@ import SkipLink from "@/components/skip-link.vue";
 import { isNotNullable } from "@/lib/is-not-nullable";
 import { NuxtLayout, NuxtPage } from "#components";
 import { useHead } from "#imports";
-import { metadata } from "~/config/metadata.config";
+import { metadata } from "@/config/metadata.config";
 
 useHead({
 	titleTemplate(title) {

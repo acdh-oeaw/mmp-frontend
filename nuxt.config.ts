@@ -2,7 +2,7 @@ import { fileURLToPath } from "node:url";
 
 import { defineNuxtConfig } from "nuxt/config";
 
-import { manifestFileName, metadata, openGraphImageName } from "./config/metadata.config";
+import { manifestFileName, metadata, openGraphImageName } from "./src/config/metadata.config";
 
 export default defineNuxtConfig({
 	alias: {
@@ -66,7 +66,6 @@ export default defineNuxtConfig({
 			compilerOptions: {
 				paths: {
 					"@/*": ["./src/*"],
-					"~/*": ["./*"],
 				},
 			},
 		},

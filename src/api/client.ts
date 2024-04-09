@@ -52,7 +52,7 @@ import type {
 	StringLookupSearchParams,
 } from "@/api/types";
 import { createResourceKey } from "@/lib/search/resource-key";
-import { baseUrl } from "~/config/api.config";
+import { baseUrl } from "@/config/api.config";
 
 //
 

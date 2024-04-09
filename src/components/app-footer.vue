@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { NuxtLink } from "#components";
-import { metadata } from "~/config/metadata.config";
+import { metadata } from "@/config/metadata.config";
 </script>
 
 <template>

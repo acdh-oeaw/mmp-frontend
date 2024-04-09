@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import { type Passage, usePassageById } from "~/src/api";
-import { getAuthorLabel, getDateRangeLabel } from "~/src/lib/get-label";
+import { type Passage, usePassageById } from "@/api";
+import { getAuthorLabel, getDateRangeLabel } from "@/lib/get-label";
 
 const props = defineProps<{
 	id: Passage["id"];
