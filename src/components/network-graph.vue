@@ -1,6 +1,5 @@
 <script lang="ts" setup>
-import { assert } from "@stefanprobst/assert";
-import { groupByToMap } from "@stefanprobst/group-by";
+import { assert, groupByToMap } from "@acdh-oeaw/lib";
 import { type ForceCenter, type ForceLink, type ForceManyBody } from "d3";
 import { type ForceGraphInstance, type LinkObject, type NodeObject } from "force-graph";
 import { nextTick, onMounted, onUnmounted, provide, ref, watch } from "vue";
@@ -114,9 +113,8 @@ onMounted(async () => {
 		return "replace";
 	});
 	context.graph.nodeCanvasObject(function paintNode(node, ctx, globalScale) {
-		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 		const x = node.x!;
-		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+
 		const y = node.y!;
 		const label = node.label;
 		const color = node.color;
@@ -166,9 +164,8 @@ onMounted(async () => {
 		node.__pointerAreaPaint = dimensions;
 	});
 	context.graph.nodePointerAreaPaint(function getNodePaintArea(node, color, ctx) {
-		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 		const x = node.x!;
-		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+
 		const y = node.y!;
 
 		ctx.fillStyle = color;

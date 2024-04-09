@@ -31,14 +31,11 @@
 		"validate": "run-s format:check lint:check types:check test"
 	},
 	"dependencies": {
+		"@acdh-oeaw/lib": "^0.1.8",
 		"@fontsource/roboto-flex": "^4.5.5",
 		"@headlessui/vue": "^1.7.13",
 		"@heroicons/vue": "^2.0.17",
 		"@mdx-js/mdx": "^2.3.0",
-		"@stefanprobst/assert": "^1.0.3",
-		"@stefanprobst/group-by": "^1.1.0",
-		"@stefanprobst/key-by": "^1.0.1",
-		"@stefanprobst/pick": "^1.0.3",
 		"@stefanprobst/request": "^0.2.1",
 		"@zag-js/range-slider": "^0.6.0",
 		"@zag-js/slider": "^0.6.0",
@@ -62,7 +59,6 @@
 		"@stefanprobst/eslint-config": "^1.1.2",
 		"@stefanprobst/eslint-config-vue": "^1.0.4",
 		"@stefanprobst/favicons": "^2.2.2",
-		"@stefanprobst/log": "^1.0.3",
 		"@stefanprobst/prettier-config": "^3.0.1",
 		"@stefanprobst/stylelint-config": "^3.0.2",
 		"@tailwindcss/line-clamp": "^0.4.4",

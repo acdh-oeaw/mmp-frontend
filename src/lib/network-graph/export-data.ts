@@ -1,4 +1,4 @@
-import { pick } from "@stefanprobst/pick";
+import { pick } from "@acdh-oeaw/lib";
 
 import { createBlob } from "@/lib/create-blob";
 import { downloadFile } from "@/lib/download-file";

@@ -1,4 +1,4 @@
-import { assert } from "@stefanprobst/assert";
+import { assert } from "@acdh-oeaw/lib";
 
 import type { ResourceKind } from "@/api";
 import type { SearchFilters } from "@/lib/search/use-search-filters";

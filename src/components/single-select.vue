@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { keyByToMap } from "@acdh-oeaw/lib";
 import {
 	Listbox,
 	ListboxButton,
@@ -10,7 +11,6 @@ import {
 	CheckIcon as CheckMarkIcon,
 	ChevronUpDownIcon as SelectorIcon,
 } from "@heroicons/vue/20/solid";
-import { keyByToMap } from "@stefanprobst/key-by";
 import { computed } from "vue";
 
 interface Item {

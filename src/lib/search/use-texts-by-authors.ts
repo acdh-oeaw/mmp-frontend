@@ -1,5 +1,5 @@
-import { assert } from "@stefanprobst/assert";
-import { type ComputedRef, computed } from "vue";
+import { assert } from "@acdh-oeaw/lib";
+import { computed, type ComputedRef } from "vue";
 
 import { type Author, type GetPassages, type Text, usePassages } from "@/api";
 import { usePassagesSearchParams } from "@/lib/search/use-passages-search-params";

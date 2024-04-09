@@ -1,6 +1,5 @@
+import { assert, keyByToMap } from "@acdh-oeaw/lib";
 import { compile } from "@mdx-js/mdx";
-import { assert } from "@stefanprobst/assert";
-import { keyByToMap } from "@stefanprobst/key-by";
 import { HttpError } from "@stefanprobst/request";
 import { valueToEstree } from "estree-util-value-to-estree";
 import { defineEventHandler, H3Error } from "h3";

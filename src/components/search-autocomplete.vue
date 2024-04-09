@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { groupByToMap } from "@acdh-oeaw/lib";
 import {
 	Combobox,
 	ComboboxButton,
@@ -12,7 +13,6 @@ import {
 	ChevronUpDownIcon as SelectorIcon,
 	XMarkIcon,
 } from "@heroicons/vue/20/solid";
-import { groupByToMap } from "@stefanprobst/group-by";
 import { computed, ref, watch } from "vue";
 
 import LoadingIndicator from "@/components/loading-indicator.vue";
@@ -115,7 +115,6 @@ function onLoadItem(item: Item) {
 
 function getDisplayLabel(key: Item["key"]) {
 	if (cache.value.has(key)) {
-		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 		const item = cache.value.get(key)!;
 		return item.label;
 	}
@@ -137,7 +136,6 @@ function getKindLabel(value: Item) {
 
 function getColor(key: Item["key"]) {
 	if (cache.value.has(key)) {
-		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 		const item = cache.value.get(key)!;
 		return getResourceColor(item);
 	}
@@ -223,7 +221,7 @@ function getColor(key: Item["key"]) {
 			>
 				<li
 					v-if="searchTerm !== '' && props.items.length === 0"
-					class="relative cursor-default select-none py-2 px-4 text-neutral-700"
+					class="relative cursor-default select-none px-4 py-2 text-neutral-700"
 				>
 					{{ nothingFoundMessage }}
 				</li>
@@ -247,7 +245,7 @@ function getColor(key: Item["key"]) {
 							v-slot="{ selected }"
 							:key="item.key"
 							:value="item.key"
-							class="relative grid cursor-default select-none gap-1 py-2 pr-10 pl-4 ui-active:bg-neutral-100 ui-active:text-neutral-900"
+							class="relative grid cursor-default select-none gap-1 py-2 pl-4 pr-10 ui-active:bg-neutral-100 ui-active:text-neutral-900"
 						>
 							<span class="block truncate ui-selected:font-medium">{{ item.label }}</span>
 							<span class="block text-xs text-neutral-500">{{ getKindLabel(item) }}</span>

@@ -71,12 +71,4 @@ export default defineNuxtConfig({
 			},
 		},
 	},
-	vite: {
-		esbuild: {
-			define: {
-				/** Statically replace `process.env.NODE_ENV` in `@stefanprobst/assert`. */
-				"process.env.NODE_ENV": JSON.stringify(process.env["NODE_ENV"]),
-			},
-		},
-	},
 });

@@ -1,4 +1,4 @@
-import { assert } from "@stefanprobst/assert";
+import { assert } from "@acdh-oeaw/lib";
 
 interface Env {
 	VITE_APP_API_BASE_URL: string;
