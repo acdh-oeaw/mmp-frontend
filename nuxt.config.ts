@@ -42,7 +42,7 @@ export default defineNuxtConfig({
 	imports: {
 		autoImport: false,
 	},
-	modules: ["@nuxt/image-edge"],
+	modules: ["@nuxt/image"],
 	nitro: {
 		compressPublicAssets: true,
 	},
