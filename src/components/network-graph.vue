@@ -120,7 +120,7 @@ onMounted(async () => {
 		const color = node.color;
 
 		const fontSize = 14 / globalScale;
-		ctx.font = `${fontSize}px 'Roboto FlexVariable', ui-sans-serif, system-ui, sans-serif`;
+		ctx.font = `${fontSize}px 'Roboto Flex Variable', ui-sans-serif, system-ui, sans-serif`;
 
 		const textWidth = ctx.measureText(label).width;
 		const dimensions = [textWidth, fontSize].map((n) => {

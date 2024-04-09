@@ -233,7 +233,7 @@ provide(key, context);
 	color: hsl(0deg 0% 100%);
 	font-weight: 500;
 	font-size: 12px;
-	font-family: "Roboto FlexVariable", ui-sans-serif, system-ui, sans-serif;
+	font-family: "Roboto Flex Variable", ui-sans-serif, system-ui, sans-serif;
 	line-height: 1.25;
 	text-align: center;
 	opacity: 75%;

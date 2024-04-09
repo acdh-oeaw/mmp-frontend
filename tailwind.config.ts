@@ -9,7 +9,14 @@ const primary = colors.slate;
 const negative = colors.red;
 
 const config: Config = {
-	content: ["./src/**/*.@(css|ts|vue)"],
+	content: [
+		"./src/app.vue",
+		"./src/error.vue",
+		"./src/components/**/*.@(css|ts|vue)",
+		"./src/content/**/*.md",
+		"./src/layouts/**/*.@(css|ts|vue)",
+		"./src/pages/**/*.@(css|ts|vue)",
+	],
 	plugins: [headlessui, typography],
 	theme: {
 		extend: {
@@ -19,7 +26,7 @@ const config: Config = {
 				negative,
 			},
 			fontFamily: {
-				sans: ["Roboto FlexVariable", "ui-sans-serif", "system-ui", "sans-serif"],
+				sans: ["Roboto Flex Variable", "ui-sans-serif", "system-ui", "sans-serif"],
 			},
 		},
 	},

@@ -32,7 +32,7 @@ export default defineNuxtConfig({
 	},
 	components: false,
 	css: [
-		"@fontsource/roboto-flex/variable-full.css",
+		"@fontsource-variable/roboto-flex/standard.css",
 		"tailwindcss/tailwind.css",
 		"@/styles/index.css",
 	],

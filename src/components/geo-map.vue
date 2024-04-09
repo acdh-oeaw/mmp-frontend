@@ -899,7 +899,7 @@ provide(key, context);
 	color: hsl(0deg 0% 100%);
 	font-weight: 500;
 	font-size: 12px;
-	font-family: "Roboto FlexVariable", ui-sans-serif, system-ui, sans-serif;
+	font-family: "Roboto Flex Variable", ui-sans-serif, system-ui, sans-serif;
 	line-height: 1.25;
 	text-align: center;
 	opacity: 75%;
@@ -921,7 +921,7 @@ provide(key, context);
 	max-width: 256px;
 	max-height: 256px;
 	font-size: 12px;
-	font-family: "Roboto FlexVariable", ui-sans-serif, system-ui, sans-serif;
+	font-family: "Roboto Flex Variable", ui-sans-serif, system-ui, sans-serif;
 	white-space: unset;
 	overflow-wrap: unset;
 }
