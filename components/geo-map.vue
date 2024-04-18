@@ -892,8 +892,8 @@ provide(key, context);
 
 .geo-map-area-label {
 	position: absolute;
-	padding-block: 3px;
 	padding-inline: 8px;
+	padding-block: 3px;
 	border-radius: 4px;
 	background-color: var(--geo-map-label-bg-color, "hsl(0deg 0% 0%)");
 	color: hsl(0deg 0% 100%);
