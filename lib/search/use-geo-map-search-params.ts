@@ -25,13 +25,13 @@ export function useGeoMapSearchParams(
 							stelle__start_date_lookup: "gt",
 							stelle__end_date: end,
 							stelle__end_date_lookup: "lt",
-					  }
+						}
 					: {
 							stelle__text__not_before: start,
 							stelle__text__not_before_lookup: "gt",
 							stelle__text__not_after: end,
 							stelle__text__not_after_lookup: "lt",
-					  };
+						};
 
 			return dateFilters;
 		}

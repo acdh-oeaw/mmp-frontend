@@ -10,7 +10,7 @@ type MaybeRefDeep<T> = MaybeRef<
 	T extends Array<unknown> | Record<string, unknown>
 		? {
 				[K in keyof T]: MaybeRefDeep<T[K]>;
-		  }
+			}
 		: T
 >;
 

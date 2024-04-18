@@ -166,8 +166,8 @@ export default defineEventHandler(async (event) => {
 			error instanceof HttpError
 				? error.response.status
 				: error instanceof H3Error
-				? error.statusCode
-				: 500;
+					? error.statusCode
+					: 500;
 
 		throw createError({ statusCode });
 	}

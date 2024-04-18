@@ -83,8 +83,8 @@ export type Normalized<T, Keys extends keyof T, Id extends number | string = num
 				? Array<Id> | null
 				: Array<Id>
 			: null extends T[Key]
-			? Id | null
-			: Id
+				? Id | null
+				: Id
 		: T[Key];
 };
 
