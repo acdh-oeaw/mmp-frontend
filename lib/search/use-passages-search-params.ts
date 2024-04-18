@@ -21,13 +21,13 @@ export function usePassagesSearchParams(
 							start_date_lookup: "gt",
 							end_date: end,
 							end_date_lookup: "lt",
-					  }
+						}
 					: {
 							text__start_date: start,
 							text__start_date_lookup: "gt",
 							text__end_date: end,
 							text__end_date_lookup: "lt",
-					  };
+						};
 
 			return dateFilters;
 		}

@@ -50,8 +50,8 @@ const { selection } = useSelection();
 						v-for="[key, conn] in Array.from(graph.edges)
 							.filter(([key, edge]) => {
 								return (
-									selection.selection.includes('graph-' + edge.source as SelectionKey) ||
-									selection.selection.includes('graph-' + edge.target as SelectionKey)
+									selection.selection.includes(('graph-' + edge.source) as SelectionKey) ||
+									selection.selection.includes(('graph-' + edge.target) as SelectionKey)
 								);
 							})
 							.sort(([aKey, aValue], [bKey, bValue]) => {
