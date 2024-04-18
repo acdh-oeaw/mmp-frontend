@@ -1,10 +1,10 @@
 import {
-	type DehydratedState,
-	type VueQueryPluginOptions,
 	dehydrate,
+	type DehydratedState,
 	hydrate,
 	QueryClient,
 	VueQueryPlugin,
+	type VueQueryPluginOptions,
 } from "@tanstack/vue-query";
 
 import { defineNuxtPlugin, useState } from "#imports";

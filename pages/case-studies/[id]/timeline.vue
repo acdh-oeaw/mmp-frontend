@@ -113,7 +113,7 @@ watch(caseStudyQuery.data, (caseStudy) => {
 </script>
 
 <template>
-	<div class="relative mx-auto h-full w-full max-w-7xl px-8 py-4">
+	<div class="relative mx-auto size-full max-w-7xl px-8 py-4">
 		<h2 class="sr-only">Timeline</h2>
 
 		<template v-if="isLoading">
@@ -165,9 +165,9 @@ watch(caseStudyQuery.data, (caseStudy) => {
 										{{ getDateRangeLabel(event.start_date, event.end_date) }}
 									</span>
 								</div>
-								<div class="relative h-full min-h-[3rem] w-12">
+								<div class="relative h-full min-h-12 w-12">
 									<span
-										class="absolute left-2/4 top-2/4 h-12 w-12 -translate-x-2/4 -translate-y-2/4 rounded-full border-4 border-white p-2 text-white shadow"
+										class="absolute left-2/4 top-2/4 size-12 -translate-x-2/4 -translate-y-2/4 rounded-full border-4 border-white p-2 text-white shadow"
 										:class="getEventColor(event.type)"
 									>
 										<AuthorIcon v-if="event.type === 'autor'" />
@@ -176,7 +176,7 @@ watch(caseStudyQuery.data, (caseStudy) => {
 									</span>
 									<div
 										v-if="i + 1 < mergedTimelineEntries.length"
-										class="absolute inset-x-2/4 bottom-[-1.5rem] top-0 -z-10 border border-neutral-300"
+										class="absolute inset-x-2/4 -bottom-6 top-0 -z-10 border border-neutral-300"
 									/>
 								</div>
 								<NuxtLink
@@ -196,7 +196,7 @@ watch(caseStudyQuery.data, (caseStudy) => {
 											{{ event.title }}
 										</span>
 										<span>
-											<ChevronRightIcon class="ml-2 inline h-5 w-5" />
+											<ChevronRightIcon class="ml-2 inline size-5" />
 										</span>
 									</div>
 								</NuxtLink>
@@ -219,15 +219,15 @@ watch(caseStudyQuery.data, (caseStudy) => {
 								<div class="text-right">
 									<span>{{ getDateRangeLabel(event.start_date, event.end_date) }}</span>
 								</div>
-								<div class="relative h-full min-h-[3rem] w-12">
+								<div class="relative h-full min-h-12 w-12">
 									<span
-										class="absolute left-2/4 top-2/4 h-12 w-12 -translate-x-2/4 -translate-y-2/4 rounded-full border-4 border-white bg-green-500 p-2 text-white shadow"
+										class="absolute left-2/4 top-2/4 size-12 -translate-x-2/4 -translate-y-2/4 rounded-full border-4 border-white bg-green-500 p-2 text-white shadow"
 									>
 										<EventIcon />
 									</span>
 									<div
 										v-if="i + 1 < timelineEventsOnly.length"
-										class="absolute inset-x-2/4 bottom-[-1.5rem] top-0 -z-10 border border-neutral-300"
+										class="absolute inset-x-2/4 -bottom-6 top-0 -z-10 border border-neutral-300"
 									/>
 								</div>
 								<span>{{ event.ent_description || "No Description" }}</span>

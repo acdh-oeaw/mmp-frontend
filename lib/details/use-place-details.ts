@@ -1,8 +1,8 @@
-import { type ComputedRef, computed } from "vue";
+import { computed, type ComputedRef } from "vue";
 
 import { type Place, useAuthors, useTexts } from "@/api";
 import { hasUseCase } from "@/lib/search/has-usecase";
-import { type SearchFilters } from "@/lib/search/use-search-filters";
+import type { SearchFilters } from "@/lib/search/use-search-filters";
 
 export function usePlaceDetails(
 	id: ComputedRef<Place["id"]>,

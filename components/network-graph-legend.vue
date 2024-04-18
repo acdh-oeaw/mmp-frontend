@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { type KeywordType, type ResourceKind } from "@/api";
+import type { KeywordType, ResourceKind } from "@/api";
 import CheckBox from "@/components/checkbox.vue";
 import { keywordNodeColors, nodeColors } from "@/lib/network-graph/network-graph.config";
 import { keywordTypeLabels, kindLabels } from "@/lib/search/search.config";
@@ -36,7 +36,7 @@ function onToggleResourceKindFilter(filter: ResourceKind, isVisible: boolean) {
 					:value="key"
 					@change="(isVisible) => onToggleResourceKindFilter(key, isVisible)"
 				>
-					<span class="h-3 w-3 rounded" :style="{ background: nodeColors[key] }" />
+					<span class="size-3 rounded" :style="{ background: nodeColors[key] }" />
 					<span>{{ kindLabels[key].other }}</span>
 				</CheckBox>
 			</template>
@@ -49,7 +49,7 @@ function onToggleResourceKindFilter(filter: ResourceKind, isVisible: boolean) {
 				:value="key"
 				@change="(isVisible) => onToggleKeywordTypeFilter(key, isVisible)"
 			>
-				<span class="h-3 w-3 rounded" :style="{ background: keywordNodeColors[key] }" />
+				<span class="size-3 rounded" :style="{ background: keywordNodeColors[key] }" />
 				<span>{{ keywordTypeLabels[key].other }}</span>
 			</CheckBox>
 		</form>

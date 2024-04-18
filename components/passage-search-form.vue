@@ -14,8 +14,7 @@ import { debounce } from "@/lib/debounce";
 import { createSearchFilterKey } from "@/lib/search/create-search-filter-key";
 import { createResourceKey, splitResourceKey } from "@/lib/search/resource-key";
 import type { Item } from "@/lib/search/search.types";
-import type { SearchFilters } from "@/lib/search/use-search-filters";
-import { useSearchFilters } from "@/lib/search/use-search-filters";
+import type { SearchFilters, useSearchFilters } from "@/lib/search/use-search-filters";
 import { useSelection } from "@/lib/search/use-selection";
 import { useRouter } from "#imports";
 
@@ -59,16 +58,16 @@ watch(
 	searchFilters,
 	() => {
 		selectedKeys.value = [
-			...searchFilters.value["author"].map((id) => {
+			...searchFilters.value.author.map((id) => {
 				return createResourceKey({ kind: "autor", id });
 			}),
-			...searchFilters.value["keyword"].map((id) => {
+			...searchFilters.value.keyword.map((id) => {
 				return createResourceKey({ kind: "keyword", id });
 			}),
-			...searchFilters.value["passage"].map((id) => {
+			...searchFilters.value.passage.map((id) => {
 				return createResourceKey({ kind: "stelle", id });
 			}),
-			...searchFilters.value["place"].map((id) => {
+			...searchFilters.value.place.map((id) => {
 				return createResourceKey({ kind: "ort", id });
 			}),
 			...searchFilters.value["case-study"].map((id) => {
@@ -152,7 +151,7 @@ const items = computed(() => {
 
 		<button class="flex items-center gap-2 p-4" type="submit">
 			<span class="sr-only">Search</span>
-			<MagnifyingGlassIcon class="h-6 w-6" />
+			<MagnifyingGlassIcon class="size-6" />
 		</button>
 	</form>
 </template>

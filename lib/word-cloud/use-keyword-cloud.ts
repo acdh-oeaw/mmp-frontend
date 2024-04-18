@@ -1,7 +1,7 @@
-import { type ComputedRef, computed } from "vue";
+import { computed, type ComputedRef } from "vue";
 
 import { usePassageKeywords } from "@/api";
-import { type SearchFilters } from "@/lib/search/use-search-filters";
+import type { SearchFilters } from "@/lib/search/use-search-filters";
 import { useWordCloudSearchParams } from "@/lib/search/use-word-cloud-search-params";
 import { createTokenData } from "@/lib/word-cloud/create-token-data";
 
@@ -16,7 +16,6 @@ export function useKeywordCloud(searchFilters: ComputedRef<SearchFilters>) {
 			// @see https://github.com/acdh-oeaw/mmp/issues/175
 			Object.fromEntries(
 				cloudQuery.data.value?.token_dict.map((token) => {
-					// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 					return Object.entries(token)[0]!;
 				}) ?? [],
 			),

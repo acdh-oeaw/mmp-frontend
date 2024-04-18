@@ -1,4 +1,4 @@
-import { type ConeOriginGeojson } from "@/lib/geo-map/geo-map.types";
+import type { ConeOriginGeojson } from "@/lib/geo-map/geo-map.types";
 
 export function createConeOriginTooltipContent(feature: ConeOriginGeojson): string {
 	const label = feature.properties.name;

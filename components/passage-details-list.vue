@@ -28,7 +28,7 @@ const isEmpty = computed(() => {
 </script>
 
 <template>
-	<div class="relative h-full w-full">
+	<div class="relative size-full">
 		<template v-if="isLoading">
 			<Centered>
 				<LoadingIndicator>Loading details...</LoadingIndicator>

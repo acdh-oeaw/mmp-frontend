@@ -34,7 +34,7 @@ const isEmpty = computed(() => {
 </script>
 
 <template>
-	<div class="relative mx-auto h-full w-full max-w-7xl px-6 py-4">
+	<div class="relative mx-auto size-full max-w-7xl px-6 py-4">
 		<template v-if="isLoading">
 			<Centered>
 				<LoadingIndicator>Loading author...</LoadingIndicator>

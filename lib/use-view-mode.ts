@@ -1,20 +1,20 @@
-import { type ComputedRef, computed } from "vue";
+import { computed, type ComputedRef } from "vue";
 import type { LocationQuery } from "vue-router";
 
 import { useRoute, useRouter } from "#imports";
 
 type ViewMode = "fullscreen" | "normal";
 
-type ViewModes = {
+interface ViewModes {
 	"view-mode": ViewMode;
-};
+}
 
-type UseViewModesResult = {
+interface UseViewModesResult {
 	viewMode: ComputedRef<ViewModes>;
 	setViewModes: (viewMode: ViewModes) => void;
 	createViewModeParams: (viewMode: ViewModes) => LocationQuery;
 	defaultViewModes: ViewModes;
-};
+}
 
 export const defaultViewModes = Object.freeze({
 	"view-mode": "normal",

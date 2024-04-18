@@ -1,8 +1,8 @@
-import { type ComputedRef, computed } from "vue";
+import { computed, type ComputedRef } from "vue";
 
 import { type Keyword, usePassages } from "@/api";
 import { usePassagesSearchParams } from "@/lib/search/use-passages-search-params";
-import { type SearchFilters } from "@/lib/search/use-search-filters";
+import type { SearchFilters } from "@/lib/search/use-search-filters";
 
 export function useKeywordDetails(
 	id: ComputedRef<Keyword["id"]>,

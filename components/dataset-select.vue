@@ -24,7 +24,7 @@ const items = dataSets.map((key) => {
 
 const { searchFilters, setSearchFilters } = useSearchFilters();
 const selectedKey = computed<DataSet>(() => {
-	return searchFilters.value["dataset"];
+	return searchFilters.value.dataset;
 });
 
 function onChangeSelection(selectedKey: string) {

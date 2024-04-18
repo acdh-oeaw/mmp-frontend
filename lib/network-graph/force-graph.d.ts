@@ -1,8 +1,5 @@
-import { type KeywordType } from "@/api";
-import {
-	type NetworkGraphEdge,
-	type NetworkGraphNode,
-} from "@/lib/network-graph/network-graph.types";
+import type { KeywordType } from "@/api";
+import type { NetworkGraphEdge, NetworkGraphNode } from "@/lib/network-graph/network-graph.types";
 
 declare module "force-graph" {
 	interface NodeObject {

@@ -3,7 +3,7 @@ import { computed, type ComputedRef } from "vue";
 
 import { type Author, type GetPassages, type Text, usePassages } from "@/api";
 import { usePassagesSearchParams } from "@/lib/search/use-passages-search-params";
-import { type SearchFilters } from "@/lib/search/use-search-filters";
+import type { SearchFilters } from "@/lib/search/use-search-filters";
 
 type Passage = GetPassages.Response["results"][number];
 

@@ -5,7 +5,7 @@ import { valueToEstree } from "estree-util-value-to-estree";
 import { defineEventHandler, H3Error } from "h3";
 import type * as Hast from "hast";
 import type * as _Mdxast from "remark-mdx";
-import { type Transformer } from "unified";
+import type { Transformer } from "unified";
 import { SKIP, visit } from "unist-util-visit";
 import { z } from "zod";
 
@@ -65,7 +65,6 @@ function withReplacedIframes(): Transformer<Hast.Root> {
 			const url = new URL(hash, "https://n");
 
 			const visualisation = getVisualisationParams(url);
-			console.dir({ visualisation, url: url.href }, { depth: null });
 
 			parent.children[index] = {
 				type: "mdxJsxFlowElement",

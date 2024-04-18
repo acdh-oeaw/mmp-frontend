@@ -5,14 +5,14 @@ import type { Feature as FeatureWithOptionalId, GeoJsonProperties, Geometry } fr
 import type { Author, CaseStudy, Keyword, KeywordType, Passage, Place, Text } from "@/api/models";
 
 export namespace AutoComplete {
-	export type SearchParams = {
+	export interface SearchParams {
 		q?: string;
-	};
+	}
 
-	export type Response = {
+	export interface Response {
 		results: Array<{ id: string; text: string; selected_text: string }>;
 		pagination: { more: boolean };
-	};
+	}
 }
 
 export type AutoCompleteItem = {
@@ -34,20 +34,20 @@ export type AutoCompleteItem = {
 	  }
 );
 
-export type PaginatedResponse<T> = {
+export interface PaginatedResponse<T> {
 	count: number;
 	next: UrlString | null;
 	previous: UrlString | null;
 	results: Array<T>;
-};
+}
 
-export type LimitOffsetPaginationSearchParams = {
+export interface LimitOffsetPaginationSearchParams {
 	/** @default 50 */
 	limit?: number;
 	offset?: number;
-};
+}
 
-export type SortableSearchParams = {
+export interface SortableSearchParams {
 	/**
 	 * Comma-separated list of fields to sort results by. Prefix with minus to sort in descending order.
 	 *
@@ -57,21 +57,21 @@ export type SortableSearchParams = {
 	 * ```
 	 */
 	ordering?: string;
-};
+}
 
-export type PaginatedGeoJsonResponse<T extends Feature> = {
+export interface PaginatedGeoJsonResponse<T extends Feature> {
 	type: "FeatureCollection";
 	count: number;
 	next: string | null;
 	previous: string | null;
 	features: Array<T>;
-};
+}
 
-export type PageNumberPaginationSearchParams = {
+export interface PageNumberPaginationSearchParams {
 	/** @default 50 */
 	page_size?: number;
 	page?: number;
-};
+}
 
 /**
  * Foreign key relations are inlined depending on the `depth` config in Django serializers.
@@ -128,15 +128,15 @@ export type GraphNode = {
 	  }
 );
 
-export type GraphEdge = {
+export interface GraphEdge {
 	key: string;
 	source: GraphNode["key"];
 	target: GraphNode["key"];
 	// label: string
 	count: number;
-};
+}
 
-export type GraphData = {
+export interface GraphData {
 	nodes: Array<GraphNode>;
 	edges: Array<GraphEdge>;
-};
+}

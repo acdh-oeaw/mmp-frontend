@@ -1,4 +1,4 @@
-import { type LinesPointsGeojson } from "@/api";
+import type { LinesPointsGeojson } from "@/api";
 import { getPassageLabel } from "@/lib/get-label";
 
 export function createLinesPointsTooltipContent(feature: LinesPointsGeojson): string {

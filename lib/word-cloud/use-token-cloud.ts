@@ -1,7 +1,7 @@
-import { type ComputedRef, computed } from "vue";
+import { computed, type ComputedRef } from "vue";
 
 import { usePassageNlpData } from "@/api";
-import { type SearchFilters } from "@/lib/search/use-search-filters";
+import type { SearchFilters } from "@/lib/search/use-search-filters";
 import { useWordCloudSearchParams } from "@/lib/search/use-word-cloud-search-params";
 import { createTokenData } from "@/lib/word-cloud/create-token-data";
 

@@ -1,9 +1,9 @@
-import { type ComputedRef, computed } from "vue";
+import { computed, type ComputedRef } from "vue";
 
 import type { GetPassages } from "@/api";
 import { isNonEmptyArray } from "@/lib/is-nonempty-array";
 import { hasUseCase } from "@/lib/search/has-usecase";
-import { type SearchFilters } from "@/lib/search/use-search-filters";
+import type { SearchFilters } from "@/lib/search/use-search-filters";
 
 export function usePassagesSearchParams(
 	searchFilters: ComputedRef<SearchFilters>,
@@ -33,20 +33,20 @@ export function usePassagesSearchParams(
 		}
 
 		const searchParams: GetPassages.SearchParams = {
-			ids: isNonEmptyArray(searchFilters.value["passage"])
-				? searchFilters.value["passage"].join(",")
+			ids: isNonEmptyArray(searchFilters.value.passage)
+				? searchFilters.value.passage.join(",")
 				: undefined,
 			[searchFilters.value["query-mode"] === "intersection" ? "text__autor_and" : "text__autor"]:
-				searchFilters.value["author"],
+				searchFilters.value.author,
 			[searchFilters.value["query-mode"] === "intersection" ? "key_word_and" : "key_word"]:
-				searchFilters.value["keyword"],
+				searchFilters.value.keyword,
 			use_case: searchFilters.value["case-study"],
-			text__ort: searchFilters.value["place"],
+			text__ort: searchFilters.value.place,
 			text__art: searchFilters.value["text-genre"],
-			has_usecase: hasUseCase(searchFilters.value["dataset"]),
+			has_usecase: hasUseCase(searchFilters.value.dataset),
 			...getDateFilters(),
-			limit: searchFilters.value["limit"],
-			offset: searchFilters.value["offset"],
+			limit: searchFilters.value.limit,
+			offset: searchFilters.value.offset,
 			ordering:
 				searchFilters.value["date-filter"] === "content" ? "start_date" : "text__not_before",
 		};

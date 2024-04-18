@@ -2,7 +2,7 @@ import { pick } from "@acdh-oeaw/lib";
 
 import { createBlob } from "@/lib/create-blob";
 import { downloadFile } from "@/lib/download-file";
-import { type NetworkGraphData } from "@/lib/network-graph/network-graph.types";
+import type { NetworkGraphData } from "@/lib/network-graph/network-graph.types";
 
 export function saveAsImage(element: HTMLElement) {
 	const canvas = element.querySelector("canvas");

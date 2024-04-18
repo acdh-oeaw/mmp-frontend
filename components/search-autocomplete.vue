@@ -176,7 +176,7 @@ function getColor(key: Item["key"]) {
 							<span class="block truncate">{{ truncate(getDisplayLabel(selectedKey), 25) }}</span>
 							<button @click="onRemoveSelectedKey(selectedKey)">
 								<span class="sr-only">{{ getRemoveButtonDisplayLabel(selectedKey) }}</span>
-								<XMarkIcon aria-hidden="true" class="h-3 w-3" />
+								<XMarkIcon aria-hidden="true" class="size-3" />
 							</button>
 						</template>
 
@@ -190,7 +190,7 @@ function getColor(key: Item["key"]) {
 					</li>
 				</ul>
 
-				<div class="relative min-w-[12rem] flex-1">
+				<div class="relative min-w-48 flex-1">
 					<ComboboxInput
 						autocomplete="off"
 						class="w-full bg-transparent py-2 pl-3 pr-10 text-sm leading-5 text-neutral-900 focus-visible:outline-none"
@@ -200,12 +200,12 @@ function getColor(key: Item["key"]) {
 						@change="onChangeSearchTerm"
 					/>
 					<div class="absolute inset-y-0 right-6 flex items-center pr-2 text-neutral-400">
-						<LoadingIndicator v-if="props.status === 'fetching'" class="h-4 w-4" />
+						<LoadingIndicator v-if="props.status === 'fetching'" class="size-4" />
 					</div>
 					<ComboboxButton
 						class="absolute inset-y-0 right-0 flex items-center pr-2 text-neutral-400"
 					>
-						<SelectorIcon class="h-5 w-5" aria-hidden="true" />
+						<SelectorIcon class="size-5" aria-hidden="true" />
 					</ComboboxButton>
 				</div>
 			</div>
@@ -253,7 +253,7 @@ function getColor(key: Item["key"]) {
 								v-if="selected"
 								class="absolute inset-y-0 right-0 grid place-items-center pr-3 text-neutral-600"
 							>
-								<CheckMarkIcon aria-hidden="true" class="h-5 w-5" />
+								<CheckMarkIcon aria-hidden="true" class="size-5" />
 							</span>
 						</ComboboxOption>
 					</ul>

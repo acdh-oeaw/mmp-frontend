@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 
-import type { RequestOptions } from "@stefanprobst/request";
-import { createUrl, request } from "@stefanprobst/request";
+import type { createUrl, request, RequestOptions } from "@stefanprobst/request";
 import type { GeometryCollection, Point, Polygon } from "geojson";
 
 import type {
@@ -51,8 +50,8 @@ import type {
 	SortableSearchParams,
 	StringLookupSearchParams,
 } from "@/api/types";
-import { createResourceKey } from "@/lib/search/resource-key";
 import { baseUrl } from "@/config/api.config";
+import { createResourceKey } from "@/lib/search/resource-key";
 
 //
 
@@ -414,9 +413,9 @@ export function getAuthors(searchParams: GetAuthors.SearchParams): Promise<GetAu
 }
 
 export namespace GetAuthorById {
-	export type PathParams = {
+	export interface PathParams {
 		id: Author["id"];
-	};
+	}
 	export type Response = Omit<Author, "ort"> & {
 		/** Place associated with author (birth or activity). */
 		ort?: PlaceNormalized | null;
@@ -501,9 +500,9 @@ export function getKeywords(searchParams: GetKeywords.SearchParams): Promise<Get
 }
 
 export namespace GetKeywordById {
-	export type PathParams = {
+	export interface PathParams {
 		id: Keyword["id"];
-	};
+	}
 	export type Response = KeywordNormalized;
 }
 
@@ -592,9 +591,9 @@ export function getPlaces(searchParams: GetPlaces.SearchParams): Promise<GetPlac
 }
 
 export namespace GetPlaceById {
-	export type PathParams = {
+	export interface PathParams {
 		id: Place["id"];
-	};
+	}
 	export type Response = PlaceNormalized;
 }
 
@@ -729,9 +728,9 @@ export function getPassages(searchParams: GetPassages.SearchParams): Promise<Get
 }
 
 export namespace GetPassageById {
-	export type PathParams = {
+	export interface PathParams {
 		id: Passage["id"];
-	};
+	}
 	export type Response = Omit<Passage, "key_word" | "ort" | "use_case"> & {
 		/** Keywords asssociated with the passage. */
 		key_word: Array<
@@ -858,9 +857,9 @@ export function getTexts(searchParams: GetTexts.SearchParams): Promise<GetTexts.
 }
 
 export namespace GetTextById {
-	export type PathParams = {
+	export interface PathParams {
 		id: Text["id"];
-	};
+	}
 	export type Response = Omit<Text, "art" | "autor" | "ort"> & {
 		/** Authors. */
 		autor: Array<AuthorNormalized>;
@@ -939,9 +938,9 @@ export function getCaseStudies(
 }
 
 export namespace GetCaseStudyById {
-	export type PathParams = {
+	export interface PathParams {
 		id: CaseStudy["id"];
-	};
+	}
 	export type Response = Omit<CaseStudy, "knightlab_stoy_map"> & {
 		knightlab_stoy_map: Array<StoryNormalized>;
 	};
@@ -969,9 +968,9 @@ export function getGeojsonLayers(
 }
 
 export namespace GetGeojsonLayerById {
-	export type PathParams = {
+	export interface PathParams {
 		id: GeojsonLayer["id"];
-	};
+	}
 	export type Response = GeojsonLayerNormalized;
 }
 
@@ -1008,9 +1007,9 @@ export function getEvents(searchParams: GetEvents.SearchParams): Promise<GetEven
 }
 
 export namespace GetEventById {
-	export type PathParams = {
+	export interface PathParams {
 		id: Event["id"];
-	};
+	}
 	export type Response = EventNormalized;
 }
 
@@ -1034,9 +1033,9 @@ export function getModelingProcesses(
 }
 
 export namespace GetModelingProcessById {
-	export type PathParams = {
+	export interface PathParams {
 		id: ModelingProcess["id"];
-	};
+	}
 	export type Response = ModelingProcess;
 }
 
@@ -1074,9 +1073,9 @@ export function getTextTopicRelations(
 }
 
 export namespace GetTextTopicRelationById {
-	export type PathParams = {
+	export interface PathParams {
 		id: TextTopicRelation["id"];
-	};
+	}
 	export type Response = Omit<TextTopicRelation, "text" | "topic"> & {
 		text?: PassageNormalized | null;
 		topic?: TopicNormalized | null;
@@ -1101,9 +1100,9 @@ export function getTopics(searchParams: GetTopics.SearchParams): Promise<GetTopi
 }
 
 export namespace GetTopicById {
-	export type PathParams = {
+	export interface PathParams {
 		id: Topic["id"];
-	};
+	}
 	export type Response = Topic;
 }
 
@@ -1137,9 +1136,9 @@ export function getPlacesGeojson(
 }
 
 export namespace GetPlaceGeojsonById {
-	export type PathParams = {
+	export interface PathParams {
 		id: Place["id"];
-	};
+	}
 	export type Response = PlaceGeojson;
 }
 
@@ -1177,9 +1176,9 @@ export function getFuzzyPlacesGeojson(
 }
 
 export namespace GetFuzzyPlaceGeojsonById {
-	export type PathParams = {
+	export interface PathParams {
 		id: Place["id"];
-	};
+	}
 	export type Response = FuzzyPlaceGeojson;
 }
 
@@ -1191,7 +1190,7 @@ export function getFuzzyPlaceGeojsonById(
 	return request(url, options);
 }
 
-export type SpatialCoverageSearchParams = {
+export interface SpatialCoverageSearchParams {
 	id?: SpatialCoverage["id"];
 
 	/** Keywords (AND query). */
@@ -1247,7 +1246,7 @@ export type SpatialCoverageSearchParams = {
 	stelle__text__autor__end_date_year_lookup?: DateLookupSearchParams;
 
 	stelle__has_usecase?: boolean;
-};
+}
 
 export type ConeGeojson = Feature<Polygon, SpatialCoverageGeojsonProperties> & {
 	id: SpatialCoverage["id"];
@@ -1269,9 +1268,9 @@ export function getConesGeojson(
 }
 
 export namespace GetConeGeojsonById {
-	export type PathParams = {
+	export interface PathParams {
 		id: SpatialCoverage["id"];
-	};
+	}
 	export type Response = ConeGeojson;
 }
 
@@ -1304,9 +1303,9 @@ export function getSpatialCoveragesGeojson(
 }
 
 export namespace GetSpatialCoverageGeojsonById {
-	export type PathParams = {
+	export interface PathParams {
 		id: SpatialCoverage["id"];
-	};
+	}
 	export type Response = SpatialCoverageGeojson;
 }
 
@@ -1339,9 +1338,9 @@ export function getLinesPointsGeojson(
 }
 
 export namespace GetLinesPointsGeojsonById {
-	export type PathParams = {
+	export interface PathParams {
 		id: SpatialCoverage["id"];
-	};
+	}
 	export type Response = LinesPointsGeojson;
 }
 
@@ -1366,9 +1365,9 @@ export function getStories(searchParams: GetStories.SearchParams): Promise<GetSt
 }
 
 export namespace GetStoryById {
-	export type PathParams = {
+	export interface PathParams {
 		id: Story["id"];
-	};
+	}
 	export type Response = Story;
 }
 
@@ -1390,9 +1389,9 @@ export function getStorySlides(
 }
 
 export namespace GetStorySlideById {
-	export type PathParams = {
+	export interface PathParams {
 		id: Slide["id"];
-	};
+	}
 	export type Response = Slide;
 }
 
@@ -1419,9 +1418,9 @@ export function getSkosCollections(
 }
 
 export namespace GetSkosCollectionById {
-	export type PathParams = {
+	export interface PathParams {
 		id: SkosCollection["id"];
-	};
+	}
 	export type Response = SkosCollection;
 }
 
@@ -1449,9 +1448,9 @@ export function getSkosConcepts(
 }
 
 export namespace GetSkosConceptById {
-	export type PathParams = {
+	export interface PathParams {
 		id: SkosConcept["id"];
-	};
+	}
 	export type Response = SkosConcept;
 }
 
@@ -1476,9 +1475,9 @@ export function getSkosConceptSchemes(
 }
 
 export namespace GetSkosConceptSchemeById {
-	export type PathParams = {
+	export interface PathParams {
 		id: SkosConceptScheme["id"];
-	};
+	}
 	export type Response = SkosConceptScheme;
 }
 
@@ -1492,9 +1491,9 @@ export function getSkosConceptSchemeById(
 //
 
 export namespace GetCaseStudyTimetableById {
-	export type PathParams = {
+	export interface PathParams {
 		id: CaseStudy["id"];
-	};
+	}
 	export type Response = Array<
 		{
 			id: number;
@@ -1534,15 +1533,15 @@ export function getCaseStudyTimetableById(
 
 /** Keyword count by century. */
 export namespace GetKeywordByCenturyById {
-	export type PathParams = {
+	export interface PathParams {
 		id: Keyword["id"];
-	};
-	export type Response = {
+	}
+	export interface Response {
 		id: Keyword["id"];
 		title: Keyword["stichwort"];
 		/** Tuples of century and number of texts which include the keyword, e.g. [9, 123]. */
 		data: Array<[number, number]>;
-	};
+	}
 }
 
 export function getKeywordByCenturyById(
@@ -1597,9 +1596,9 @@ export namespace GetPassageKeywords {
 		GetPassages.SearchParams,
 		keyof LimitOffsetPaginationSearchParams | keyof SortableSearchParams
 	>;
-	export type Response = {
-		token_dict: Array<{ [token: string]: number }>;
-	};
+	export interface Response {
+		token_dict: Array<Record<string, number>>;
+	}
 }
 
 export function getPassageKeywords(
@@ -1614,12 +1613,12 @@ export namespace GetPassageNlpData {
 		GetPassages.SearchParams,
 		keyof LimitOffsetPaginationSearchParams | keyof SortableSearchParams
 	>;
-	export type Response = {
+	export interface Response {
 		token: Array<string>;
 		token_dict: Record<string, number>;
 		token_count: number;
 		unique_token_count: number;
-	};
+	}
 }
 
 export function getPassageNlpData(

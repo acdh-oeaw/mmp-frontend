@@ -1,6 +1,6 @@
 import type { Feature, Point } from "geojson";
-import { type GeoJSON, type Map as LeafletMap, type TileLayer } from "leaflet";
-import { type Ref } from "vue";
+import type { GeoJSON, Map as LeafletMap, TileLayer } from "leaflet";
+import type { Ref } from "vue";
 
 import type {
 	ConeGeojson,
@@ -24,18 +24,18 @@ export type SpatialCoverageCenterPoint = Feature<Point, SpatialCoverageGeojson["
 	id: SpatialCoverageGeojson["id"];
 };
 
-export type FeatureLayers = {
+export interface FeatureLayers {
 	areas: GeoJSON<SpatialCoverageGeojson["properties"]> | null;
 	areaLabels: GeoJSON<SpatialCoverageCenterPoint["properties"]> | null;
 	cones: GeoJSON<ConeGeojson["properties"]> | null;
 	coneOrigins: GeoJSON<ConeOriginGeojson["properties"]> | null;
 	linesPoints: GeoJSON<LinesPointsGeojson["properties"]> | null;
-};
+}
 
-export type HighlightFeatureLayers = {
+export interface HighlightFeatureLayers {
 	areas: GeoJSON<SpatialCoverageGeojson["properties"]> | null;
 	cones: GeoJSON<ConeGeojson["properties"]> | null;
-};
+}
 
 export interface GeoMapContext {
 	map: LeafletMap | null;

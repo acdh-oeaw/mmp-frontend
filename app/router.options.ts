@@ -1,4 +1,4 @@
-import { type RouterConfig } from "@nuxt/schema";
+import type { RouterConfig } from "@nuxt/schema";
 
 const options: RouterConfig = {
 	scrollBehavior(to, from, savedPosition) {

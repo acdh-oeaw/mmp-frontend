@@ -11,7 +11,7 @@ const label = "Search";
 const placeholder = "Search...";
 
 const { createSearchFilterParams, searchFilters } = useBrowseSearchFilters();
-const searchTerm = ref(searchFilters.value["searchTerm"]);
+const searchTerm = ref(searchFilters.value.searchTerm);
 
 function onChangeSearchTerm(event: Event) {
 	const element = event.currentTarget as HTMLInputElement;
@@ -58,7 +58,7 @@ function onSubmit() {
 
 		<button class="flex items-center gap-2 p-4" type="submit">
 			<span class="sr-only">Search</span>
-			<MagnifyingGlassIcon class="h-6 w-6" />
+			<MagnifyingGlassIcon class="size-6" />
 		</button>
 	</form>
 </template>

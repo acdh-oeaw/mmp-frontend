@@ -1,13 +1,12 @@
 <script lang="ts" setup>
-import { type Keyword, type KeywordNormalized } from "@/api";
-import { useKeywords } from "@/api";
+import type { Keyword, KeywordNormalized, useKeywords } from "@/api";
 import Centered from "@/components/centered.vue";
 import ErrorMessage from "@/components/error-message.vue";
 import KeywordDisclosure from "@/components/keyword-disclosure.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 
 const props = defineProps<{
-	ids: Array<Keyword["id"]> | Array<KeywordNormalized["id"]>;
+	ids: Array<Keyword["id"]>;
 	noHeader?: boolean;
 	label?: string;
 	newTab?: boolean;
@@ -19,6 +18,7 @@ const keywordsQuery = useKeywords({
 
 const { data, isLoading, isError, isFetching } = keywordsQuery;
 </script>
+
 <template>
 	<template v-if="isLoading">
 		<Centered>

@@ -1,22 +1,22 @@
-import { type ComputedRef, computed } from "vue";
+import { computed, type ComputedRef } from "vue";
 import type { LocationQuery } from "vue-router";
 
 import { getLimit, getOffset } from "@/lib/search/pagination";
 import { defaultLimit } from "@/lib/search/pagination.config";
 import { useRoute, useRouter } from "#imports";
 
-export type SearchFilters = {
+export interface SearchFilters {
 	searchTerm: string;
 	limit: number;
 	offset: number;
-};
+}
 
-type UseSearchFiltersResult = {
+interface UseSearchFiltersResult {
 	searchFilters: ComputedRef<SearchFilters>;
 	setSearchFilters: (searchFilters: SearchFilters) => void;
 	createSearchFilterParams: (searchFilters: SearchFilters) => LocationQuery;
 	defaultSearchFilters: SearchFilters;
-};
+}
 
 export const defaultSearchFilters = Object.freeze({
 	searchTerm: "",
@@ -30,9 +30,9 @@ export function useBrowseSearchFilters(): UseSearchFiltersResult {
 
 	const searchFilters = computed<SearchFilters>(() => {
 		const searchFilters: SearchFilters = {
-			searchTerm: getSearchTerm(route.query["q"]),
-			limit: getLimit(route.query["limit"]),
-			offset: getOffset(route.query["offset"]),
+			searchTerm: getSearchTerm(route.query.q),
+			limit: getLimit(route.query.limit),
+			offset: getOffset(route.query.offset),
 		};
 
 		return searchFilters;
@@ -60,16 +60,16 @@ function getSearchTerm(param: LocationQuery[string] | undefined) {
 function createSearchFilterParams(searchFilters: SearchFilters): LocationQuery {
 	const searchParams: LocationQuery = {};
 
-	if (searchFilters["searchTerm"] !== defaultSearchFilters["searchTerm"]) {
-		searchParams["q"] = searchFilters["searchTerm"].trim();
+	if (searchFilters.searchTerm !== defaultSearchFilters.searchTerm) {
+		searchParams.q = searchFilters.searchTerm.trim();
 	}
 
-	if (searchFilters["limit"] !== defaultSearchFilters["limit"]) {
-		searchParams["limit"] = String(searchFilters["limit"]);
+	if (searchFilters.limit !== defaultSearchFilters.limit) {
+		searchParams.limit = String(searchFilters.limit);
 	}
 
-	if (searchFilters["offset"] !== defaultSearchFilters["offset"]) {
-		searchParams["offset"] = String(searchFilters["offset"]);
+	if (searchFilters.offset !== defaultSearchFilters.offset) {
+		searchParams.offset = String(searchFilters.offset);
 	}
 
 	return searchParams;

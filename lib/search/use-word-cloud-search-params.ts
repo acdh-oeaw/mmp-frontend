@@ -1,9 +1,8 @@
-import { computed } from "vue";
-import { type ComputedRef } from "vue";
+import { computed, type ComputedRef } from "vue";
 
 import type { GetKeywordByAuthorGraph } from "@/api";
 import { usePassagesSearchParams } from "@/lib/search/use-passages-search-params";
-import { type SearchFilters } from "@/lib/search/use-search-filters";
+import type { SearchFilters } from "@/lib/search/use-search-filters";
 
 export function useWordCloudSearchParams(
 	searchFilters: ComputedRef<SearchFilters>,

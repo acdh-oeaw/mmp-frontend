@@ -62,7 +62,7 @@ const graphAuthors = [...graph.value.nodes]
 </script>
 
 <template>
-	<div class="relative mx-auto h-full w-full max-w-7xl px-6 py-4">
+	<div class="relative mx-auto size-full max-w-7xl px-6 py-4">
 		<template v-if="isLoading">
 			<Centered>
 				<LoadingIndicator>Loading author...</LoadingIndicator>
@@ -137,7 +137,7 @@ const graphAuthors = [...graph.value.nodes]
 					}"
 				>
 					<span>Find out more about {{ getAuthorLabel(author) }}</span>
-					<ChevronRightIcon class="h-5 w-5" />
+					<ChevronRightIcon class="size-5" />
 				</NuxtLink>
 				<div class="row-auto -ml-2 flex flex-col gap-4">
 					<div

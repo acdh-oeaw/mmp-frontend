@@ -8,7 +8,7 @@ import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import { getAuthorLabel, getDateRangeLabel, getPassageLabel } from "@/lib/get-label";
 import { usePassagesSearch } from "@/lib/search/use-passages-search";
-import { type SearchFilters } from "@/lib/search/use-search-filters";
+import type { SearchFilters } from "@/lib/search/use-search-filters";
 
 const props = defineProps<{
 	searchFilters: SearchFilters;
@@ -31,7 +31,7 @@ const columns = {
 </script>
 
 <template>
-	<div class="relative h-full w-full">
+	<div class="relative size-full">
 		<template v-if="isLoading">
 			<Centered>
 				<LoadingIndicator>Loading search results...</LoadingIndicator>

@@ -1,4 +1,4 @@
-import { type ConeGeojson, type SpatialCoverageGeojson } from "@/api";
+import type { ConeGeojson, SpatialCoverageGeojson } from "@/api";
 import { getPassageLabel } from "@/lib/get-label";
 
 export function createAreaTooltipContent(feature: ConeGeojson | SpatialCoverageGeojson): string {

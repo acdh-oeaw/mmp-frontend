@@ -1,17 +1,17 @@
 <script lang="ts" setup>
 import { assert, groupByToMap } from "@acdh-oeaw/lib";
-import { type ForceCenter, type ForceLink, type ForceManyBody } from "d3";
-import { type ForceGraphInstance, type LinkObject, type NodeObject } from "force-graph";
+import type { ForceCenter, ForceLink, ForceManyBody } from "d3";
+import type { ForceGraphInstance, LinkObject, NodeObject } from "force-graph";
 import { nextTick, onMounted, onUnmounted, provide, ref, watch } from "vue";
 
 import { debounce } from "@/lib/debounce";
 import { key } from "@/lib/network-graph/network-graph.context";
-import {
-	type NetworkGraphContext,
-	type NetworkGraphData,
-	type NetworkGraphNode,
+import type {
+	NetworkGraphContext,
+	NetworkGraphData,
+	NetworkGraphNode,
 } from "@/lib/network-graph/network-graph.types";
-import { type SelectionKey } from "@/lib/search/selection-key";
+import type { SelectionKey } from "@/lib/search/selection-key";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
 
 const props = defineProps<{

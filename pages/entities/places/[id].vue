@@ -28,7 +28,7 @@ watch(placeByIdQuery.data, (place) => {
 </script>
 
 <template>
-	<div class="relative mx-auto grid h-full w-full">
+	<div class="relative mx-auto grid size-full">
 		<h2 class="sr-only">Place</h2>
 
 		<div>

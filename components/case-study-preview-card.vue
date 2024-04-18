@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { type CaseStudy } from "@/api";
+import type { CaseStudy } from "@/api";
 import { NuxtLink } from "#components";
 
 const props = defineProps<{
@@ -20,7 +20,7 @@ const props = defineProps<{
 				<dd class="font-medium text-neutral-600">{{ props.caseStudy.principal_investigator }}</dd>
 			</div>
 		</dl>
-		<p class="leading-7 text-neutral-600 line-clamp-4">{{ props.caseStudy.description }}</p>
+		<p class="line-clamp-4 leading-7 text-neutral-600">{{ props.caseStudy.description }}</p>
 		<footer class="justify-self-end">
 			<NuxtLink
 				class="inline-flex rounded bg-neutral-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-neutral-700"

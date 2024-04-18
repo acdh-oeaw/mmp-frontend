@@ -39,7 +39,7 @@ router.beforeEach(() => {
 					@click="onToggleNavigationMenu"
 				>
 					<span class="sr-only">Toggle navigation menu</span>
-					<MenuIcon class="h-6 w-6" />
+					<MenuIcon class="size-6" />
 				</button>
 
 				<NuxtLink class="text-3xl font-bold transition hover:text-neutral-700 md:text-4xl" href="/">

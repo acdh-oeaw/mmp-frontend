@@ -10,7 +10,7 @@ export function createGraph(data: GraphData): NetworkGraphData {
 		graph.nodes.set(node.key, {
 			...node,
 			// TODO: helper fn
-			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+
 			label: node.label.split(", [")[0]!,
 			color: getNodeColor(node),
 			neighbors: new Set(),

@@ -28,7 +28,7 @@ watch(textByIdQuery.data, (text) => {
 </script>
 
 <template>
-	<div class="relative mx-auto grid h-full w-full">
+	<div class="relative mx-auto grid size-full">
 		<h2 class="sr-only">Text</h2>
 
 		<div>

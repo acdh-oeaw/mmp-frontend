@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { type Keyword, useKeywordById } from "@/api";
-import { type NuxtLinkProps } from "#app";
+import type { NuxtLinkProps } from "#app";
 import { NuxtLink } from "#components";
 
 const props = defineProps<{

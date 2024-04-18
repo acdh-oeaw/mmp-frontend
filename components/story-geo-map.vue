@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { computed } from "vue";
 
-import { type ResourceKey } from "@/api";
+import type { ResourceKey } from "@/api";
 import Centered from "@/components/centered.vue";
 import ErrorMessage from "@/components/error-message.vue";
 import GeoMap from "@/components/geo-map.vue";
@@ -10,7 +10,7 @@ import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import VisualisationContainer from "@/components/visualisation-container.vue";
 import { useGeoMap } from "@/lib/geo-map/use-geo-map";
 import { useGeoJsonLayers } from "@/lib/geo-map/use-geojson-layers";
-import { type SearchFilters } from "@/lib/search/use-search-filters";
+import type { SearchFilters } from "@/lib/search/use-search-filters";
 import { ClientOnly } from "#components";
 
 const props = defineProps<{
@@ -40,7 +40,7 @@ const highlightedKeys = new Set<ResourceKey>();
 </script>
 
 <template>
-	<div class="relative h-full w-full">
+	<div class="relative size-full">
 		<template v-if="isLoading">
 			<Centered>
 				<LoadingIndicator>Loading map...</LoadingIndicator>

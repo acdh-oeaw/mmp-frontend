@@ -1,12 +1,12 @@
 <script lang="ts" setup>
 import { schemeCategory10 } from "d3";
-import { type Chart, type SeriesOptionsType } from "highcharts";
+import type { Chart, SeriesOptionsType } from "highcharts";
 import * as Highcharts from "highcharts";
 import ChartAccessibility from "highcharts/modules/accessibility";
 import { nextTick, onMounted, onUnmounted, provide, ref, watch } from "vue";
 
 import { key } from "@/lib/charts/pie-chart.context";
-import { type PieChartContext, type Token } from "@/lib/charts/pie-chart.types";
+import type { PieChartContext, Token } from "@/lib/charts/pie-chart.types";
 import { debounce } from "@/lib/debounce";
 
 ChartAccessibility(Highcharts);

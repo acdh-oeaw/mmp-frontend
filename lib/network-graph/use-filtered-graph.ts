@@ -1,7 +1,7 @@
-import { type ComputedRef, type Ref, computed } from "vue";
+import { computed, type ComputedRef, type Ref } from "vue";
 
-import { type KeywordType, type ResourceKind } from "@/api";
-import { type NetworkGraphData } from "@/lib/network-graph/network-graph.types";
+import type { KeywordType, ResourceKind } from "@/api";
+import type { NetworkGraphData } from "@/lib/network-graph/network-graph.types";
 
 interface UseFilteredGraphParams {
 	graph: ComputedRef<NetworkGraphData>;

@@ -17,7 +17,6 @@ export function useSelectionByKind() {
 			const { kind, id } = splitSelectionKey(key);
 
 			if (grouped.has(kind)) {
-				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 				grouped.get(kind)!.add(id);
 			} else {
 				grouped.set(kind, new Set([id]));

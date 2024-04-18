@@ -14,7 +14,7 @@ import Toolbar from "@/components/toolbar.vue";
 import ToolbarIconButton from "@/components/toolbar-icon-button.vue";
 import { saveAsCsv, saveAsGexf, saveAsImage } from "@/lib/network-graph/export-data";
 import { key } from "@/lib/network-graph/network-graph.context";
-import { type NetworkGraphData } from "@/lib/network-graph/network-graph.types";
+import type { NetworkGraphData } from "@/lib/network-graph/network-graph.types";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
 import { useRouter } from "#imports";
 
@@ -83,32 +83,32 @@ function onSaveAsGexf() {
 	<Toolbar>
 		<div class="flex items-center gap-2">
 			<ToolbarIconButton label="Unpin nodes" @click="onUnPinNodes">
-				<LockOpenIcon class="h-5 w-5 shrink-0" />
+				<LockOpenIcon class="size-5 shrink-0" />
 			</ToolbarIconButton>
 			<ToolbarIconButton label="Clear selection" @click="onClearSelection">
-				<XMarkIcon class="h-5 w-5 shrink-0" />
+				<XMarkIcon class="size-5 shrink-0" />
 			</ToolbarIconButton>
 		</div>
 		<div class="flex items-center gap-2">
 			<ToolbarIconButton label="Save as image" @click="onSaveAsImage">
-				<FolderArrowDownIcon class="h-5 w-5 shrink-0" />
+				<FolderArrowDownIcon class="size-5 shrink-0" />
 			</ToolbarIconButton>
 			<ToolbarIconButton label="Save as csv" @click="onSaveAsCsv">
-				<FolderArrowDownIcon class="h-5 w-5 shrink-0" />
+				<FolderArrowDownIcon class="size-5 shrink-0" />
 			</ToolbarIconButton>
 			<ToolbarIconButton label="Save as gexf" @click="onSaveAsGexf">
-				<FolderArrowDownIcon class="h-5 w-5 shrink-0" />
+				<FolderArrowDownIcon class="size-5 shrink-0" />
 			</ToolbarIconButton>
 		</div>
 		<div class="flex items-center gap-2">
 			<ToolbarIconButton label="Zoom in" @click="onZoomIn">
-				<MagnifyingGlassPlusIcon class="h-5 w-5 shrink-0" />
+				<MagnifyingGlassPlusIcon class="size-5 shrink-0" />
 			</ToolbarIconButton>
 			<ToolbarIconButton label="Zoom out" @click="onZoomOut">
-				<MagnifyingGlassMinusIcon class="h-5 w-5 shrink-0" />
+				<MagnifyingGlassMinusIcon class="size-5 shrink-0" />
 			</ToolbarIconButton>
 			<ToolbarIconButton label="Zoom to fit" @click="onZoomToFit">
-				<ViewfinderCircleIcon class="h-5 w-5 shrink-0" />
+				<ViewfinderCircleIcon class="size-5 shrink-0" />
 			</ToolbarIconButton>
 		</div>
 		<div class="flex items-center gap-2">

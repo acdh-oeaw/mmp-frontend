@@ -38,27 +38,27 @@ const isEmpty = computed(() => {
 const previous = computed(() => {
 	if (placesQuery.data.value?.previous == null) return null;
 
-	const limit = searchFilters.value["limit"];
-	const offset = searchFilters.value["offset"];
+	const limit = searchFilters.value.limit;
+	const offset = searchFilters.value.offset;
 
 	return { query: createSearchFilterParams({ ...searchFilters.value, offset: offset - limit }) };
 });
 const next = computed(() => {
 	if (placesQuery.data.value?.next == null) return null;
 
-	const limit = searchFilters.value["limit"];
-	const offset = searchFilters.value["offset"];
+	const limit = searchFilters.value.limit;
+	const offset = searchFilters.value.offset;
 
 	return { query: createSearchFilterParams({ ...searchFilters.value, offset: offset + limit }) };
 });
 const page = computed(() => {
-	const limit = searchFilters.value["limit"];
-	const offset = searchFilters.value["offset"];
+	const limit = searchFilters.value.limit;
+	const offset = searchFilters.value.offset;
 
 	return Math.ceil(offset / limit) + 1;
 });
 const pages = computed(() => {
-	const limit = searchFilters.value["limit"];
+	const limit = searchFilters.value.limit;
 	const count = placesQuery.data.value?.count ?? 0;
 
 	return Math.ceil(count / limit);
@@ -76,7 +76,7 @@ const columns = {
 </script>
 
 <template>
-	<div class="relative mx-auto h-full w-full max-w-7xl px-8 py-4">
+	<div class="relative mx-auto size-full max-w-7xl px-8 py-4">
 		<h2 class="sr-only">Browse places</h2>
 
 		<template v-if="isLoading">

@@ -3,7 +3,7 @@ import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/vue";
 import { ChevronDownIcon } from "@heroicons/vue/20/solid";
 import { computed } from "vue";
 
-import { type Keyword } from "@/api";
+import type { Keyword } from "@/api";
 import Centered from "@/components/centered.vue";
 import ErrorMessage from "@/components/error-message.vue";
 import KeywordTag from "@/components/keyword-tag.vue";
@@ -31,7 +31,7 @@ const { data, isLoading, isError, isEmpty, isFetching } = useTextsByAuthors(sear
 </script>
 
 <template>
-	<div class="relative h-full w-full">
+	<div class="relative size-full">
 		<h2 class="sr-only">Texts by authors</h2>
 
 		<template v-if="isLoading">
@@ -85,7 +85,7 @@ const { data, isLoading, isError, isEmpty, isFetching } = useTextsByAuthors(sear
 											passages)
 										</span>
 										<ChevronDownIcon
-											class="h-5 w-5"
+											class="size-5"
 											:class="open ? 'rotate-180 transform transition' : ''"
 										/>
 									</DisclosureButton>

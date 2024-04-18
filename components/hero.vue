@@ -10,7 +10,7 @@ import { NuxtImg, NuxtLink } from "#components";
 		>
 			<NuxtImg
 				alt=""
-				class="absolute inset-0 h-full w-full object-cover opacity-75"
+				class="absolute inset-0 size-full object-cover opacity-75"
 				format="webp"
 				:height="1280"
 				loading="eager"

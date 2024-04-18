@@ -11,7 +11,7 @@ const dimensions = useElementDimensions(elementRef);
 <template>
 	<div
 		ref="elementRef"
-		class="relative isolate grid h-full w-full overflow-hidden rounded bg-neutral-50"
+		class="relative isolate grid size-full overflow-hidden rounded bg-neutral-50"
 		data-visualisation-container
 	>
 		<slot v-if="dimensions != null" :width="dimensions.width" :height="dimensions.height" />

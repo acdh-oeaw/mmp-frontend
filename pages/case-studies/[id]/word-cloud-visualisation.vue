@@ -44,7 +44,7 @@ watch(caseStudyQuery.data, (caseStudy) => {
 </script>
 
 <template>
-	<div class="relative mx-auto h-full w-full">
+	<div class="relative mx-auto size-full">
 		<h2 class="sr-only">Word-clouds visualisation</h2>
 
 		<template v-if="isLoading">

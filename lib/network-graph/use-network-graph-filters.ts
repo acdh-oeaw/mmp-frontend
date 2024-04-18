@@ -1,6 +1,6 @@
 import { ref } from "vue";
 
-import { type KeywordType, type ResourceKind } from "@/api";
+import type { KeywordType, ResourceKind } from "@/api";
 
 export function useNetworkGraphFilters() {
 	const resourceKindFilters = ref(

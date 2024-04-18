@@ -3,7 +3,7 @@ import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/vue";
 import { ChevronRightIcon, ChevronUpIcon } from "@heroicons/vue/24/outline";
 import { computed } from "vue";
 
-import { type Author } from "@/api";
+import type { Author } from "@/api";
 import Centered from "@/components/centered.vue";
 import ErrorMessage from "@/components/error-message.vue";
 import KeywordDisclosure from "@/components/keyword-disclosure.vue";
@@ -35,7 +35,7 @@ const { caseStudies, keywords, texts, isLoading, isFetching, isEmpty, isError } 
 </script>
 
 <template>
-	<div class="relative -ml-2 h-full w-full">
+	<div class="relative -ml-2 size-full">
 		<template v-if="isLoading">
 			<Centered>
 				<LoadingIndicator>Loading details...</LoadingIndicator>
@@ -79,7 +79,7 @@ const { caseStudies, keywords, texts, isLoading, isFetching, isEmpty, isError } 
 							<span>Case Studies</span>
 							<ChevronUpIcon
 								:class="open ? '' : 'rotate-180 transform'"
-								class="inline-block h-5 w-5"
+								class="inline-block size-5"
 							/>
 						</div>
 					</DisclosureButton>
@@ -95,7 +95,7 @@ const { caseStudies, keywords, texts, isLoading, isFetching, isEmpty, isError } 
 										<strong>
 											{{ caseStudy.title }}
 										</strong>
-										<ChevronRightIcon class="h-5 w-5 shrink-0" />
+										<ChevronRightIcon class="size-5 shrink-0" />
 									</NuxtLink>
 								</div>
 								<div class="grid gap-2 p-2">
@@ -122,7 +122,7 @@ const { caseStudies, keywords, texts, isLoading, isFetching, isEmpty, isError } 
 							<span>Texts</span>
 							<ChevronUpIcon
 								:class="open ? '' : 'rotate-180 transform'"
-								class="inline-block h-5 w-5"
+								class="inline-block size-5"
 							/>
 						</div>
 					</DisclosureButton>
@@ -144,7 +144,7 @@ const { caseStudies, keywords, texts, isLoading, isFetching, isEmpty, isError } 
 									<span class="line-clamp-3">
 										{{ text.title }}
 									</span>
-									<ChevronRightIcon class="h-5 w-5 shrink-0" />
+									<ChevronRightIcon class="size-5 shrink-0" />
 								</NuxtLink>
 							</article>
 						</li>

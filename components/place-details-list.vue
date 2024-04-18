@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { computed } from "vue";
 
-import { type Place } from "@/api";
+import type { Place } from "@/api";
 import Centered from "@/components/centered.vue";
 import ErrorMessage from "@/components/error-message.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
@@ -34,7 +34,7 @@ const { authors, texts, isLoading, isFetching, isEmpty, isError } = usePlaceDeta
 </script>
 
 <template>
-	<div class="relative h-full w-full">
+	<div class="relative size-full">
 		<template v-if="isLoading">
 			<Centered>
 				<LoadingIndicator>Loading details...</LoadingIndicator>

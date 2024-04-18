@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { computed } from "vue";
 
-import { type Keyword } from "@/api";
+import type { Keyword } from "@/api";
 import Centered from "@/components/centered.vue";
 import ErrorMessage from "@/components/error-message.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
@@ -30,7 +30,7 @@ const { passages, isLoading, isFetching, isEmpty, isError } = useKeywordDetails(
 </script>
 
 <template>
-	<div class="relative h-full w-full">
+	<div class="relative size-full">
 		<template v-if="isLoading">
 			<Centered>
 				<LoadingIndicator>Loading details...</LoadingIndicator>

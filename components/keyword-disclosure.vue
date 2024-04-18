@@ -3,7 +3,7 @@ import { Disclosure, DisclosureButton } from "@headlessui/vue";
 import { ChevronUpIcon } from "@heroicons/vue/24/outline";
 import { computed } from "vue";
 
-import { type GetPassageById, type Keyword, type KeywordNormalized } from "@/api";
+import type { GetPassageById, Keyword, KeywordNormalized } from "@/api";
 import KeywordTag from "@/components/keyword-tag.vue";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
 
@@ -41,7 +41,7 @@ const { createSearchFilterParams, searchFilters } = useSearchFilters();
 				<ChevronUpIcon
 					v-if="keywords.length > 15"
 					:class="open ? '' : 'rotate-180 transform'"
-					class="inline-block h-5 w-5"
+					class="inline-block size-5"
 				/>
 			</div>
 		</DisclosureButton>

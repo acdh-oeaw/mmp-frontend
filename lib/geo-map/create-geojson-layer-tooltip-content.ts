@@ -1,4 +1,4 @@
-import { type Feature } from "geojson";
+import type { Feature } from "geojson";
 
 export function createGeojsonLayerTooltipContent(feature: Feature): string {
 	if (feature.properties == null) return "";

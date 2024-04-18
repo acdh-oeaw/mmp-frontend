@@ -32,14 +32,14 @@ function onToggle() {
 						leave-to="-translate-x-full"
 					>
 						<aside
-							class="pointer-events-auto grid h-full w-full max-w-md grid-rows-[auto_1fr] overflow-y-auto rounded bg-white py-8 shadow-xl"
+							class="pointer-events-auto grid size-full max-w-md grid-rows-[auto_1fr] overflow-y-auto rounded bg-white py-8 shadow-xl"
 						>
 							<div class="flex justify-between">
 								<div class="px-8">
 									<button class="flex gap-1" @click="$router.go(-1)">
 										<ArrowLeftIcon
 											aria-hidden="true"
-											class="h-6 w-6 transition hover:text-neutral-700"
+											class="size-6 transition hover:text-neutral-700"
 										/>
 										<span class="sr-only">Go Back</span>
 									</button>
@@ -48,7 +48,7 @@ function onToggle() {
 									<button class="flex gap-1" @click="onToggle">
 										<XMarkIcon
 											aria-hidden="true"
-											class="h-6 w-6 transition hover:text-neutral-700"
+											class="size-6 transition hover:text-neutral-700"
 										/>
 										<span class="sr-only">Close</span>
 									</button>

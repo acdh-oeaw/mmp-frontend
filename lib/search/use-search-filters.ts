@@ -1,4 +1,4 @@
-import { type ComputedRef, computed } from "vue";
+import { computed, type ComputedRef } from "vue";
 import type { LocationQuery } from "vue-router";
 
 import type { Author, CaseStudy, Keyword, Passage, Place, SkosConcept } from "@/api";
@@ -19,7 +19,7 @@ export type DataSet = (typeof dataSets)[number];
 export const dateFilters = ["composition", "content"] as const;
 export type DateFilter = (typeof dateFilters)[number];
 
-export type SearchFilters = {
+export interface SearchFilters {
 	author: Array<Author["id"]>;
 	"case-study": Array<CaseStudy["id"]>;
 	keyword: Array<Keyword["id"]>;
@@ -32,14 +32,14 @@ export type SearchFilters = {
 	"text-genre": Array<SkosConcept["id"]>;
 	limit: number;
 	offset: number;
-};
+}
 
-type UseSearchFiltersResult = {
+interface UseSearchFiltersResult {
 	searchFilters: ComputedRef<SearchFilters>;
 	setSearchFilters: (searchFilters: SearchFilters) => void;
 	createSearchFilterParams: (searchFilters: SearchFilters) => LocationQuery;
 	defaultSearchFilters: SearchFilters;
-};
+}
 
 export const defaultSearchFilters = Object.freeze({
 	author: [],
@@ -62,25 +62,25 @@ export function useSearchFilters(): UseSearchFiltersResult {
 
 	const searchFilters = computed<SearchFilters>(() => {
 		const searchFilters: SearchFilters = {
-			author: getResourceIds(route.query["author"]),
+			author: getResourceIds(route.query.author),
 			/**
 			 * There's an asymmetry in search filter handling, because it is allowed
 			 * to set multiple "case-study" filters via search params, but the
 			 * separate `/case-studies/:id` routes *also* set "case-study" to the route param.
 			 */
 			"case-study": route.path.startsWith("/case-studies")
-				? [Number(route.params["id"])]
+				? [Number(route.params.id)]
 				: getResourceIds(route.query["case-study"]),
-			keyword: getResourceIds(route.query["keyword"]),
-			passage: getResourceIds(route.query["passage"]),
-			place: getResourceIds(route.query["place"]),
+			keyword: getResourceIds(route.query.keyword),
+			passage: getResourceIds(route.query.passage),
+			place: getResourceIds(route.query.place),
 			"date-range": getDateRange(route.query["date-range"]),
 			"date-filter": getDateFilter(route.query["date-filter"]),
-			dataset: getDataSet(route.query["dataset"]),
+			dataset: getDataSet(route.query.dataset),
 			"query-mode": getQueryMode(route.query["query-mode"]),
 			"text-genre": getResourceIds(route.query["text-genre"]),
-			limit: getLimit(route.query["limit"]),
-			offset: getOffset(route.query["offset"]),
+			limit: getLimit(route.query.limit),
+			offset: getOffset(route.query.offset),
 		};
 
 		return searchFilters;
@@ -115,7 +115,7 @@ function getDateRange(param: LocationQuery[string] | undefined) {
 			return a - z;
 		});
 	if (numbers.length === 0) return defaultSearchFilters["date-range"];
-	if (numbers.length === 1) return numbers[0] as number;
+	if (numbers.length === 1) return numbers[0]!;
 	if (numbers.length === 2) return numbers as [number, number];
 	return defaultSearchFilters["date-range"];
 }
@@ -126,9 +126,9 @@ function isDataSet(value: string): value is DataSet {
 
 function getDataSet(param: LocationQuery[string] | undefined) {
 	const value = Array.isArray(param) ? param[0] : param;
-	if (value == null) return defaultSearchFilters["dataset"];
+	if (value == null) return defaultSearchFilters.dataset;
 	if (isDataSet(value)) return value;
-	return defaultSearchFilters["dataset"];
+	return defaultSearchFilters.dataset;
 }
 
 function isQueryMode(value: string): value is QueryMode {
@@ -156,24 +156,24 @@ function getDateFilter(param: LocationQuery[string] | undefined) {
 function createSearchFilterParams(searchFilters: SearchFilters): LocationQuery {
 	const searchParams: LocationQuery = {};
 
-	if (searchFilters["author"].length > 0) {
-		searchParams["author"] = unique(searchFilters["author"]).map(String);
+	if (searchFilters.author.length > 0) {
+		searchParams.author = unique(searchFilters.author).map(String);
 	}
 
 	if (searchFilters["case-study"].length > 0) {
 		searchParams["case-study"] = unique(searchFilters["case-study"]).map(String);
 	}
 
-	if (searchFilters["keyword"].length > 0) {
-		searchParams["keyword"] = unique(searchFilters["keyword"]).map(String);
+	if (searchFilters.keyword.length > 0) {
+		searchParams.keyword = unique(searchFilters.keyword).map(String);
 	}
 
-	if (searchFilters["passage"].length > 0) {
-		searchParams["passage"] = unique(searchFilters["passage"]).map(String);
+	if (searchFilters.passage.length > 0) {
+		searchParams.passage = unique(searchFilters.passage).map(String);
 	}
 
-	if (searchFilters["place"].length > 0) {
-		searchParams["place"] = unique(searchFilters["place"]).map(String);
+	if (searchFilters.place.length > 0) {
+		searchParams.place = unique(searchFilters.place).map(String);
 	}
 
 	if (Array.isArray(searchFilters["date-range"])) {
@@ -191,8 +191,8 @@ function createSearchFilterParams(searchFilters: SearchFilters): LocationQuery {
 		searchParams["date-filter"] = searchFilters["date-filter"];
 	}
 
-	if (searchFilters["dataset"] !== defaultSearchFilters["dataset"]) {
-		searchParams["dataset"] = searchFilters["dataset"];
+	if (searchFilters.dataset !== defaultSearchFilters.dataset) {
+		searchParams.dataset = searchFilters.dataset;
 	}
 
 	if (searchFilters["query-mode"] !== defaultSearchFilters["query-mode"]) {
@@ -203,12 +203,12 @@ function createSearchFilterParams(searchFilters: SearchFilters): LocationQuery {
 		searchParams["text-genre"] = unique(searchFilters["text-genre"]).map(String);
 	}
 
-	if (searchFilters["limit"] !== defaultSearchFilters["limit"]) {
-		searchParams["limit"] = String(searchFilters["limit"]);
+	if (searchFilters.limit !== defaultSearchFilters.limit) {
+		searchParams.limit = String(searchFilters.limit);
 	}
 
-	if (searchFilters["offset"] !== defaultSearchFilters["offset"]) {
-		searchParams["offset"] = String(searchFilters["offset"]);
+	if (searchFilters.offset !== defaultSearchFilters.offset) {
+		searchParams.offset = String(searchFilters.offset);
 	}
 
 	return searchParams;

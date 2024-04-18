@@ -1,11 +1,8 @@
 import { computed, ref } from "vue";
 
-import { type LinesPointsGeojson, type SpatialCoverageGeojson } from "@/api";
-import {
-	type ConeOriginGeojson,
-	type SpatialCoverageCenterPoint,
-} from "@/lib/geo-map/geo-map.types";
-import { type SelectionKey, createSelectionKey } from "@/lib/search/selection-key";
+import type { LinesPointsGeojson, SpatialCoverageGeojson } from "@/api";
+import type { ConeOriginGeojson, SpatialCoverageCenterPoint } from "@/lib/geo-map/geo-map.types";
+import { createSelectionKey, type SelectionKey } from "@/lib/search/selection-key";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
 import { useSelection } from "@/lib/search/use-selection";
 import { useFullScreen } from "@/lib/use-full-screen";

@@ -38,7 +38,7 @@ watch(caseStudyQuery.data, (caseStudy) => {
 </script>
 
 <template>
-	<div class="relative mx-auto h-full w-full max-w-7xl px-8 py-4">
+	<div class="relative mx-auto size-full max-w-7xl px-8 py-4">
 		<h2 class="sr-only">Texts by authors</h2>
 
 		<template v-if="isLoading">
@@ -91,7 +91,7 @@ watch(caseStudyQuery.data, (caseStudy) => {
 											}}
 											passages)
 										</span>
-										<ChevronDownIcon class="h-5 w-5" />
+										<ChevronDownIcon class="size-5" />
 									</DisclosureButton>
 									<DisclosurePanel>
 										<ul role="list" class="grid gap-4 px-4 pb-2">

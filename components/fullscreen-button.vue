@@ -19,8 +19,8 @@ const isFullscreen = useFullScreen();
 		}"
 	>
 		<ToolbarIconButton label="Fullscreen">
-			<ArrowsPointingInIcon v-if="isFullscreen" class="h-5 w-5 shrink-0" />
-			<ArrowsPointingOutIcon v-else class="h-5 w-5 shrink-0" />
+			<ArrowsPointingInIcon v-if="isFullscreen" class="size-5 shrink-0" />
+			<ArrowsPointingOutIcon v-else class="size-5 shrink-0" />
 		</ToolbarIconButton>
 	</NuxtLink>
 </template>

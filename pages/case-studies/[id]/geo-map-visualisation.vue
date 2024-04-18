@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { type Map as LeafletMap } from "leaflet";
+import type { Map as LeafletMap } from "leaflet";
 import { computed, ref, watch } from "vue";
 
 import { useCaseStudyById } from "@/api";
@@ -13,7 +13,7 @@ import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import SideDisclosure from "@/components/side-disclosure.vue";
 import ViewMode from "@/components/view-mode.vue";
 import VisualisationContainer from "@/components/visualisation-container.vue";
-import { type GeoMapContext } from "@/lib/geo-map/geo-map.types";
+import type { GeoMapContext } from "@/lib/geo-map/geo-map.types";
 import { useGeoMap } from "@/lib/geo-map/use-geo-map";
 import { useGeoMapBaseLayer } from "@/lib/geo-map/use-geo-map-base-layer";
 import { useGeoMapEvents } from "@/lib/geo-map/use-geo-map-events";
@@ -100,7 +100,7 @@ watch(caseStudyQuery.data, (caseStudy) => {
 </script>
 
 <template>
-	<div class="relative mx-auto h-full w-full">
+	<div class="relative mx-auto size-full">
 		<h2 class="sr-only">Geo visualisation</h2>
 
 		<template v-if="isLoading">

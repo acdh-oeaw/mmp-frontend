@@ -6,7 +6,7 @@ import { nextTick, onMounted, onUnmounted, provide, ref, watch } from "vue";
 import { debounce } from "@/lib/debounce";
 import { colors, config, initialViewState } from "@/lib/geo-map/geo-map.config";
 import { key } from "@/lib/geo-map/place-map.context";
-import { type PlaceMapContext } from "@/lib/geo-map/place-map.types";
+import type { PlaceMapContext } from "@/lib/geo-map/place-map.types";
 
 const props = defineProps<{
 	height: number;

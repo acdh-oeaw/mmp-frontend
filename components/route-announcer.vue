@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { ref } from "vue";
-import { type RouteLocationNormalized } from "vue-router";
+import type { RouteLocationNormalized } from "vue-router";
 
 import { isNonEmptyString } from "@/lib/is-nonempty-string";
 import { trackPageView } from "@/lib/matomo-analytics";
@@ -14,8 +14,8 @@ const message = ref("");
  * TODO: Add page metadata with `definePageMeta`.
  */
 function onChangeMessaqge(to: RouteLocationNormalized) {
-	if (typeof to.meta["title"] === "string") {
-		message.value = to.meta["title"];
+	if (typeof to.meta.title === "string") {
+		message.value = to.meta.title;
 	} else {
 		/**
 		 * The `afterEach` callback runs *before* dom updates, so we need to wait a render

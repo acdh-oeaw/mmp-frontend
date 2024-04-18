@@ -6,7 +6,7 @@ import ErrorMessage from "@/components/error-message.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import { useNetworkGraph } from "@/lib/network-graph/use-network-graph";
-import { SelectionKey } from "@/lib/search/selection-key";
+import type { SelectionKey } from "@/lib/search/selection-key";
 import { useSearchFilters } from "@/lib/search/use-search-filters";
 import { useSelection } from "@/lib/search/use-selection";
 
@@ -16,7 +16,7 @@ const { selection } = useSelection();
 </script>
 
 <template>
-	<div class="relative h-full w-full">
+	<div class="relative size-full">
 		<h2 class="sr-only">Texts by authors</h2>
 
 		<template v-if="isLoading">
@@ -76,12 +76,12 @@ const { selection } = useSelection();
 						>
 							<div>
 								{{ graph.nodes.get(conn.source)?.label }}
-								<ChevronUpDownIcon class="inline h-5 w-5 rotate-90" />
+								<ChevronUpDownIcon class="inline size-5 rotate-90" />
 								{{ graph.nodes.get(conn.target)?.label }}
 							</div>
 							<div class="flex min-w-fit items-center justify-center pl-1">
 								{{ conn.count }}
-								<ChevronRightIcon class="inline h-5 w-5" />
+								<ChevronRightIcon class="inline size-5" />
 							</div>
 						</NuxtLink>
 						<NuxtLink
@@ -99,12 +99,12 @@ const { selection } = useSelection();
 						>
 							<div>
 								{{ graph.nodes.get(conn.source)?.label }}
-								<ChevronUpDownIcon class="inline h-5 w-5 rotate-90" />
+								<ChevronUpDownIcon class="inline size-5 rotate-90" />
 								{{ graph.nodes.get(conn.target)?.label }}
 							</div>
 							<div class="flex min-w-fit items-center justify-center pl-1">
 								{{ conn.count }}
-								<ChevronRightIcon class="inline h-5 w-5" />
+								<ChevronRightIcon class="inline size-5" />
 							</div>
 						</NuxtLink>
 					</li>

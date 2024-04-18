@@ -1,22 +1,17 @@
 <script lang="ts" setup>
 import "leaflet/dist/leaflet.css";
 
-import {
-	type CircleMarker,
-	type LatLngBoundsLiteral,
-	type Map as LeafletMap,
-	type Marker,
-	type PathOptions,
-	type Polygon,
+import type {
+	CircleMarker,
+	LatLngBoundsLiteral,
+	Map as LeafletMap,
+	Marker,
+	PathOptions,
+	Polygon,
 } from "leaflet";
 import { nextTick, onMounted, onUnmounted, provide, ref, watch } from "vue";
 
-import {
-	type ConeGeojson,
-	type GeojsonLayer,
-	type LinesPointsGeojson,
-	type SpatialCoverageGeojson,
-} from "@/api";
+import type { ConeGeojson, GeojsonLayer, LinesPointsGeojson, SpatialCoverageGeojson } from "@/api";
 import { debounce } from "@/lib/debounce";
 import { createAreaTooltipContent } from "@/lib/geo-map/create-area-tooltip-content";
 import { createConeOriginTooltipContent } from "@/lib/geo-map/create-cone-origin-tooltip-content";
@@ -31,13 +26,13 @@ import {
 	layerColors,
 } from "@/lib/geo-map/geo-map.config";
 import { key } from "@/lib/geo-map/geo-map.context";
-import {
-	type ConeOriginGeojson,
-	type FeatureLayers,
-	type GeoMapContext,
-	type SpatialCoverageCenterPoint,
+import type {
+	ConeOriginGeojson,
+	FeatureLayers,
+	GeoMapContext,
+	SpatialCoverageCenterPoint,
 } from "@/lib/geo-map/geo-map.types";
-import { type BaseLayer } from "@/lib/geo-map/use-geo-map-base-layer";
+import type { BaseLayer } from "@/lib/geo-map/use-geo-map-base-layer";
 import { createSelectionKey, type SelectionKey } from "@/lib/search/selection-key";
 
 const props = defineProps<{

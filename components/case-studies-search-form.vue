@@ -5,8 +5,10 @@ import { computed, ref, watch } from "vue";
 import { type GetAutoComplete, useAutoComplete } from "@/api";
 import SearchAutocomplete from "@/components/search-autocomplete.vue";
 import SearchAutocompleteLoadingItem from "@/components/search-autocomplete-loading-item.vue";
-import type { SearchFilters } from "@/lib/case-studies/use-case-studies-search-filters";
-import { useCaseStudiesSearchFilters } from "@/lib/case-studies/use-case-studies-search-filters";
+import type {
+	SearchFilters,
+	useCaseStudiesSearchFilters,
+} from "@/lib/case-studies/use-case-studies-search-filters";
 import { debounce } from "@/lib/debounce";
 import { createSearchFilterKey } from "@/lib/search/create-case-studies-search-filter-key";
 import { createResourceKey, splitResourceKey } from "@/lib/search/resource-key";
@@ -44,10 +46,10 @@ watch(
 	searchFilters,
 	() => {
 		selectedKeys.value = [
-			...searchFilters.value["author"].map((id) => {
+			...searchFilters.value.author.map((id) => {
 				return createResourceKey({ kind: "autor", id });
 			}),
-			...searchFilters.value["keyword"].map((id) => {
+			...searchFilters.value.keyword.map((id) => {
 				return createResourceKey({ kind: "keyword", id });
 			}),
 		];
@@ -120,7 +122,7 @@ const items = computed(() => {
 
 		<button class="flex items-center gap-2 p-4" type="submit">
 			<span class="sr-only">Search</span>
-			<MagnifyingGlassIcon class="h-6 w-6" />
+			<MagnifyingGlassIcon class="size-6" />
 		</button>
 	</form>
 </template>

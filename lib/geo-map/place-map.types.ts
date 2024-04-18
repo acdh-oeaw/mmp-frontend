@@ -1,4 +1,4 @@
-import { type CircleMarker, type Map as LeafletMap, type TileLayer } from "leaflet";
+import type { CircleMarker, Map as LeafletMap, TileLayer } from "leaflet";
 
 export interface PlaceMapContext {
 	map: LeafletMap | null;

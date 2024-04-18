@@ -22,7 +22,7 @@ import KeywordTag from "@/components/keyword-tag.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import { key } from "@/lib/geo-map/geo-map.context";
-import { type ConeOriginGeojson } from "@/lib/geo-map/geo-map.types";
+import type { ConeOriginGeojson } from "@/lib/geo-map/geo-map.types";
 import { useGeoMap } from "@/lib/geo-map/use-geo-map";
 import { getPassageLabel, getPlaceLabel } from "@/lib/get-label";
 import { isNotNullable } from "@/lib/is-not-nullable";
@@ -194,7 +194,7 @@ const context = inject(key);
 </script>
 
 <template>
-	<div class="relative mx-auto h-full w-full max-w-7xl px-6 py-4">
+	<div class="relative mx-auto size-full max-w-7xl px-6 py-4">
 		<template v-if="isLoading">
 			<Centered>
 				<LoadingIndicator>Loading geojson data...</LoadingIndicator>
@@ -268,7 +268,7 @@ const context = inject(key);
 													},
 												}"
 											>
-												<XMarkIcon class="h-4 w-4 shrink-0" />
+												<XMarkIcon class="size-4 shrink-0" />
 												<span class="sr-only">Deselect</span>
 											</NuxtLink>
 											<h3 class="pr-8 text-lg font-medium">
@@ -299,7 +299,7 @@ const context = inject(key);
 																	>
 																		<span class="text-left">{{ getPassageLabel(passage) }}</span>
 																		<ChevronDownIcon
-																			class="h-4 w-4 shrink-0 transition"
+																			class="size-4 shrink-0 transition"
 																			:class="open && 'rotate-180'"
 																		/>
 																	</DisclosureButton>
@@ -340,7 +340,7 @@ const context = inject(key);
 													},
 												}"
 											>
-												<XMarkIcon class="h-4 w-4 shrink-0" />
+												<XMarkIcon class="size-4 shrink-0" />
 												<span class="sr-only">Deselect</span>
 											</NuxtLink>
 											<h3 class="pr-8 text-lg font-medium">
@@ -376,7 +376,7 @@ const context = inject(key);
 													},
 												}"
 											>
-												<XMarkIcon class="h-4 w-4 shrink-0" />
+												<XMarkIcon class="size-4 shrink-0" />
 												<span class="sr-only">Deselect</span>
 											</NuxtLink>
 											<h3 class="pr-8 text-lg font-medium">
@@ -415,14 +415,14 @@ const context = inject(key);
 									class="flex items-center gap-1 rounded px-4 py-2 text-xs transition hover:bg-neutral-100"
 									@click="onSetAreasVisibility(false)"
 								>
-									<EyeSlashIcon class="h-5 w-5 shrink-0" />
+									<EyeSlashIcon class="size-5 shrink-0" />
 									<span>Hide all</span>
 								</button>
 								<button
 									class="flex items-center gap-1 rounded px-4 py-2 text-xs transition hover:bg-neutral-100"
 									@click="onSetAreasVisibility(true)"
 								>
-									<EyeIcon class="h-5 w-5 shrink-0" />
+									<EyeIcon class="size-5 shrink-0" />
 									<span>Show all</span>
 								</button>
 							</div>
@@ -431,14 +431,14 @@ const context = inject(key);
 									class="flex items-center gap-1 rounded px-4 py-2 text-xs transition hover:bg-neutral-100"
 									@click="onSetConesVisibility(false)"
 								>
-									<EyeSlashIcon class="h-5 w-5 shrink-0" />
+									<EyeSlashIcon class="size-5 shrink-0" />
 									<span>Hide perspective cones</span>
 								</button>
 								<button
 									class="flex items-center gap-1 rounded px-4 py-2 text-xs transition hover:bg-neutral-100"
 									@click="onSetConesVisibility(true)"
 								>
-									<EyeIcon class="h-5 w-5 shrink-0" />
+									<EyeIcon class="size-5 shrink-0" />
 									<span>Show perspective cones</span>
 								</button>
 							</div>
@@ -464,9 +464,9 @@ const context = inject(key);
 									<button @click="onToggleAreaVisibility(area.id)">
 										<EyeSlashIcon
 											v-if="context?.disabled.areas.value.has(area.id)"
-											class="h-5 w-5 shrink-0"
+											class="size-5 shrink-0"
 										/>
-										<EyeIcon v-else class="h-5 w-5 shrink-0" />
+										<EyeIcon v-else class="size-5 shrink-0" />
 										<span class="sr-only">Toggle visibility</span>
 									</button>
 								</li>

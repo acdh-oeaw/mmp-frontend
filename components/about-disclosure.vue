@@ -14,7 +14,7 @@ const props = defineProps<{
 			<h2 class="my-6 text-blue-900">
 				{{ props.title }}
 			</h2>
-			<ChevronDownIcon class="h-5 w-5 transition" :class="open && 'rotate-180'" />
+			<ChevronDownIcon class="size-5 transition" :class="open && 'rotate-180'" />
 		</DisclosureButton>
 		<DisclosurePanel>
 			<slot />

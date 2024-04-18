@@ -2,7 +2,7 @@ import type { FeatureCollection, GeometryCollection, Point, Polygon } from "geoj
 
 import type { Normalized } from "@/api/types";
 
-export type CaseStudy = {
+export interface CaseStudy {
 	id: number;
 
 	/** Title. */
@@ -32,18 +32,18 @@ export type CaseStudy = {
 	 * @default true
 	 */
 	show_labels: boolean;
-};
+}
 
 export type CaseStudyNormalized = Normalized<CaseStudy, "knightlab_stoy_map" | "layer">;
 
-export type GeojsonLayer = {
+export interface GeojsonLayer {
 	id: number;
 
 	title: string;
 	attribution: string;
 	description?: string | null;
 	data: FeatureCollection;
-};
+}
 
 export type GeojsonLayerNormalized = GeojsonLayer;
 
@@ -243,11 +243,11 @@ export type Passage = Omit<
 // export type PassageNormalized = Normalized<Passage, 'key_word' | 'ort' | 'use_case'>;
 export type PassageNormalized = Normalized<Passage, "key_word" | "use_case">;
 
-type Lemmata = {
+interface Lemmata {
 	orig_text: string;
 	tokens: Array<string>;
 	processed_text: Array<{ token: string; pos: string; lemma: string }>;
-};
+}
 
 export type Text = Omit<
 	{
@@ -304,7 +304,7 @@ export type Text = Omit<
 
 export type TextNormalized = Normalized<Text, "art" | "autor" | "ort">;
 
-export type Event = {
+export interface Event {
 	id: number;
 
 	/** Label. */
@@ -321,12 +321,12 @@ export type Event = {
 
 	/** Associated usecases. */
 	use_case: Array<CaseStudy>;
-};
+}
 
 export type EventNormalized = Normalized<Event, "use_case">;
 
 /** Spatial Coverage of a Keyword bound to a specifc source document. */
-export type SpatialCoverage = {
+export interface SpatialCoverage {
 	id: number;
 
 	/** Passages associated with coverage. */
@@ -343,11 +343,11 @@ export type SpatialCoverage = {
 
 	/** Comment. */
 	kommentar?: string | null;
-};
+}
 
 export type SpatialCoverageNormalized = Normalized<SpatialCoverage, "key_word" | "stelle">;
 
-export type PlaceGeojsonProperty = {
+export interface PlaceGeojsonProperty {
 	id: Place["id"];
 	name: Place["name"];
 	name_antik: Place["name_antik"];
@@ -357,9 +357,9 @@ export type PlaceGeojsonProperty = {
 		id: SkosConcept["id"];
 		label: SkosConcept["pref_label"];
 	} | null;
-};
+}
 
-export type SpatialCoverageGeojsonProperties = {
+export interface SpatialCoverageGeojsonProperties {
 	/** Keyword associated with coverage. */
 	key_word?: KeywordNormalized | null;
 	/** Uncertainty of location on a scale from 1 (very secure) to 10 (very insecure). */
@@ -380,7 +380,7 @@ export type SpatialCoverageGeojsonProperties = {
 	 * Removed from data model.
 	 */
 	// places: Array<PlaceGeojsonProperty>;
-};
+}
 
 /**
  * @see https://github.com/acdh-oeaw/acdh-django-vocabs
@@ -446,7 +446,7 @@ export type SkosConceptNormalized = Normalized<
 /**
  * @see https://github.com/acdh-oeaw/acdh-django-vocabs
  */
-export type SkosConceptScheme = {
+export interface SkosConceptScheme {
 	/** NOTE: Omitted from payloads because of `HyperlinkedModelSerializer`. */
 	id: number;
 	url: string;
@@ -490,14 +490,14 @@ export type SkosConceptScheme = {
 	date_issued?: IsoDateTimeString | null;
 	created_by?: User | null;
 	curator: User;
-};
+}
 
 export type SkosConceptSchemeNormalized = Normalized<SkosConceptScheme, "created_by" | "curator">;
 
 /**
  * @see https://github.com/acdh-oeaw/acdh-django-vocabs
  */
-export type SkosCollection = {
+export interface SkosCollection {
 	/** NOTE: Omitted from payloads because of `HyperlinkedModelSerializer`. */
 	id: number;
 	url: string;
@@ -521,11 +521,11 @@ export type SkosCollection = {
 	date_created: IsoDateTimeString;
 	date_modified: IsoDateTimeString;
 	created_by?: User | null;
-};
+}
 
 export type SkosCollectionNormalized = Normalized<SkosCollection, "created_by" | "scheme">;
 
-type User = {
+interface User {
 	id: number;
 
 	username: string;
@@ -534,9 +534,9 @@ type User = {
 	 *
 	 * @see https://docs.djangoproject.com/en/4.1/ref/contrib/auth/#user-model
 	 */
-};
+}
 
-export type ModelingProcess = {
+export interface ModelingProcess {
 	id: number;
 
 	created_at: IsoDateTimeString;
@@ -545,43 +545,43 @@ export type ModelingProcess = {
 	/** @default 'gensim.models.LdaModel' */
 	modeling_type: string;
 	param: Record<string, unknown>;
-};
+}
 
-export type Topic = {
+export interface Topic {
 	id: number;
 
 	created_at: IsoDateTimeString;
-	word: Array<{ [word: string]: number }>;
+	word: Array<Record<string, number>>;
 	title: string;
 	weight?: number | null;
 	process: ModelingProcess;
 	topic_index?: number | null;
-};
+}
 
 export type TopicNormalized = Normalized<Topic, "process">;
 
-export type TextTopicRelation = {
+export interface TextTopicRelation {
 	id: number;
 
 	text?: (PassageNormalized & { lemmata: Lemmata }) | null;
 	topic?: TopicNormalized | null;
 	weight?: number | null;
-};
+}
 
 export type TextTopicRelationNormalized = Normalized<TextTopicRelation, "text" | "topic">;
 
-export type StopWord = {
+export interface StopWord {
 	id: number;
 
 	word: string;
-};
+}
 
 export type StopWordNormalized = StopWord;
 
 /**
  * @see https://github.com/acdh-oeaw/django-story-map
  */
-export type Story = {
+export interface Story {
 	id: number;
 
 	title: string;
@@ -599,11 +599,11 @@ export type Story = {
 	zoomify_height?: number | null;
 	zoomify_width?: number | null;
 	zoomify_attribution?: string | null;
-};
+}
 
 export type StoryNormalized = Story;
 
-export type Slide = {
+export interface Slide {
 	id: number;
 
 	story: Story;
@@ -625,6 +625,6 @@ export type Slide = {
 	media_caption?: string | null;
 	media_credit?: string | null;
 	media_url?: string | null;
-};
+}
 
 export type SlideNormalized = Normalized<Slide, "story">;

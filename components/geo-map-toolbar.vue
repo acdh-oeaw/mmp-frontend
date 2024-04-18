@@ -2,7 +2,7 @@
 import { MagnifyingGlassMinusIcon, MagnifyingGlassPlusIcon } from "@heroicons/vue/24/outline";
 import { computed, inject } from "vue";
 
-import { type GeojsonLayer } from "@/api";
+import type { GeojsonLayer } from "@/api";
 import FullscreenButton from "@/components/fullscreen-button.vue";
 import MultiSelect from "@/components/multi-select.vue";
 import SingleSelect from "@/components/single-select.vue";
@@ -10,7 +10,7 @@ import Toolbar from "@/components/toolbar.vue";
 import ToolbarIconButton from "@/components/toolbar-icon-button.vue";
 import { initialViewState } from "@/lib/geo-map/geo-map.config";
 import { key } from "@/lib/geo-map/geo-map.context";
-import { type BaseLayer } from "@/lib/geo-map/use-geo-map-base-layer";
+import type { BaseLayer } from "@/lib/geo-map/use-geo-map-base-layer";
 import { isNonEmptyString } from "@/lib/is-nonempty-string";
 
 interface Item {
@@ -116,10 +116,10 @@ function _onFitWorld() {
 		</div>
 		<div class="flex items-center gap-2">
 			<ToolbarIconButton label="Zoom in" @click="onZoomIn">
-				<MagnifyingGlassPlusIcon class="h-5 w-5 shrink-0" />
+				<MagnifyingGlassPlusIcon class="size-5 shrink-0" />
 			</ToolbarIconButton>
 			<ToolbarIconButton label="Zoom out" @click="onZoomOut">
-				<MagnifyingGlassMinusIcon class="h-5 w-5 shrink-0" />
+				<MagnifyingGlassMinusIcon class="size-5 shrink-0" />
 			</ToolbarIconButton>
 		</div>
 		<div class="flex items-center gap-2">

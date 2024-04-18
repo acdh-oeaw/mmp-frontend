@@ -2,7 +2,7 @@ import type { FitEnum } from "sharp";
 
 type Locale = "en";
 
-type Metadata = {
+interface Metadata {
 	locale: Locale;
 	title: string;
 	shortTitle: string;
@@ -24,7 +24,7 @@ type Metadata = {
 		shortName: string;
 		website: string;
 	};
-};
+}
 
 export const metadata: Metadata = {
 	locale: "en",

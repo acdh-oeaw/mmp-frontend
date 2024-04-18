@@ -1,15 +1,7 @@
-import { type LocationQuery } from "vue-router";
+import type { LocationQuery } from "vue-router";
 
-import {
-	type LinesPointsGeojson,
-	type Resource,
-	type ResourceKind,
-	type SpatialCoverageGeojson,
-} from "@/api";
-import {
-	type ConeOriginGeojson,
-	type SpatialCoverageCenterPoint,
-} from "@/lib/geo-map/geo-map.types";
+import type { LinesPointsGeojson, Resource, ResourceKind, SpatialCoverageGeojson } from "@/api";
+import type { ConeOriginGeojson, SpatialCoverageCenterPoint } from "@/lib/geo-map/geo-map.types";
 import { isNonEmptyString } from "@/lib/is-nonempty-string";
 import { resourceKinds } from "@/lib/search/resource-key";
 import { unique } from "@/lib/unique";
@@ -30,7 +22,10 @@ const selectionKinds = [
 ] as const;
 export type SelectionKind = (typeof selectionKinds)[number];
 export type SelectionKey = `${SelectionKind}_${SelectionResource["id"]}`;
-export type SelectionIdentifier = { kind: SelectionKind; id: SelectionResource["id"] };
+export interface SelectionIdentifier {
+	kind: SelectionKind;
+	id: SelectionResource["id"];
+}
 
 export function createSelectionKey(params: SelectionIdentifier): SelectionKey {
 	return [params.kind, params.id].join("_") as SelectionKey;

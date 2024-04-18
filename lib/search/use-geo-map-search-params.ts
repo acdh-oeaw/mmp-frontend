@@ -1,8 +1,8 @@
-import { type ComputedRef, computed } from "vue";
+import { computed, type ComputedRef } from "vue";
 
 import type { GetConesGeojson, GetLinesPointsGeojson, GetSpatialCoveragesGeojson } from "@/api";
 import { hasUseCase } from "@/lib/search/has-usecase";
-import { type SearchFilters } from "@/lib/search/use-search-filters";
+import type { SearchFilters } from "@/lib/search/use-search-filters";
 
 type SearchParams =
 	| GetConesGeojson.SearchParams
@@ -37,18 +37,18 @@ export function useGeoMapSearchParams(
 		}
 
 		const searchParams: SearchParams = {
-			stelle: searchFilters.value["passage"],
+			stelle: searchFilters.value.passage,
 			[searchFilters.value["query-mode"] === "intersection"
 				? "stelle__text__autor_and"
-				: "stelle__text__autor"]: searchFilters.value["author"],
+				: "stelle__text__autor"]: searchFilters.value.author,
 			// FIXME: on other screens we filter passages by keyword, but (i) spatial coverages
 			// can be related to multiple passages, and (ii) spatial coverages have a separate
 			// keyword field - which is why we are querying `key_word`, not `stelle__hey_word`.
 			[searchFilters.value["query-mode"] === "intersection" ? "key_word_and" : "key_word"]:
-				searchFilters.value["keyword"],
+				searchFilters.value.keyword,
 			stelle__use_case: searchFilters.value["case-study"],
-			stelle__text__ort: searchFilters.value["place"],
-			stelle__has_usecase: hasUseCase(searchFilters.value["dataset"]),
+			stelle__text__ort: searchFilters.value.place,
+			stelle__has_usecase: hasUseCase(searchFilters.value.dataset),
 			...getDateFilters(),
 			// page: searchFilters.value['limit'] + 1,
 			// page_size: searchFilters.value['limit'] * searchFilters.value['offset'],

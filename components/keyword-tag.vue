@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { type Keyword } from "@/api";
+import type { Keyword } from "@/api";
 import { keywordColors } from "@/lib/search/search.config";
 
 const props = defineProps<{

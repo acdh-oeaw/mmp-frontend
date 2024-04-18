@@ -1,20 +1,20 @@
-import { type ComputedRef, computed } from "vue";
-import { type LocationQuery } from "vue-router";
+import { computed, type ComputedRef } from "vue";
+import type { LocationQuery } from "vue-router";
 
-import { type SelectionKey, getSelectionKeys } from "@/lib/search/selection-key";
+import { getSelectionKeys, type SelectionKey } from "@/lib/search/selection-key";
 import { unique } from "@/lib/unique";
 import { useRoute, useRouter } from "#imports";
 
-export type Selection = {
+export interface Selection {
 	selection: Array<SelectionKey>;
-};
+}
 
-type UseSelectionResult = {
+interface UseSelectionResult {
 	selection: ComputedRef<Selection>;
 	setSelection: (searchFilters: Selection) => void;
 	createSelectionParams: (searchFilters: Selection) => LocationQuery;
 	defaultSelection: Selection;
-};
+}
 
 export const defaultSelection = Object.freeze({
 	selection: [],
@@ -26,7 +26,7 @@ export function useSelection(): UseSelectionResult {
 
 	const selection = computed<Selection>(() => {
 		const searchFilters: Selection = {
-			selection: getSelectionKeys(route.query["selection"]),
+			selection: getSelectionKeys(route.query.selection),
 		};
 
 		return searchFilters;
@@ -50,8 +50,8 @@ export function useSelection(): UseSelectionResult {
 function createSelectionParams(searchFilters: Selection): LocationQuery {
 	const searchParams: LocationQuery = {};
 
-	if (searchFilters["selection"].length > 0) {
-		searchParams["selection"] = unique(searchFilters["selection"]).map(String);
+	if (searchFilters.selection.length > 0) {
+		searchParams.selection = unique(searchFilters.selection).map(String);
 	}
 
 	return searchParams;

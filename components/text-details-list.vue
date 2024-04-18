@@ -3,7 +3,7 @@ import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/vue";
 import { ChevronRightIcon, ChevronUpIcon } from "@heroicons/vue/24/outline";
 import { computed } from "vue";
 
-import { type Place } from "@/api";
+import type { Place } from "@/api";
 import Centered from "@/components/centered.vue";
 import ErrorMessage from "@/components/error-message.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
@@ -35,7 +35,7 @@ const { passages, caseStudies, isLoading, isFetching, isEmpty, isError } = useTe
 </script>
 
 <template>
-	<div class="relative h-full w-full">
+	<div class="relative size-full">
 		<template v-if="isLoading">
 			<Centered>
 				<LoadingIndicator>Loading details...</LoadingIndicator>
@@ -72,7 +72,7 @@ const { passages, caseStudies, isLoading, isFetching, isEmpty, isError } = useTe
 								<span>Passages</span>
 								<ChevronUpIcon
 									:class="open ? '' : 'rotate-180 transform'"
-									class="inline-block h-5 w-5"
+									class="inline-block size-5"
 								/>
 							</div>
 						</DisclosureButton>
@@ -94,7 +94,7 @@ const { passages, caseStudies, isLoading, isFetching, isEmpty, isError } = useTe
 											<strong>
 												{{ getPassageLabel(passage) }}
 											</strong>
-											<ChevronRightIcon class="h-5 w-5 shrink-0" />
+											<ChevronRightIcon class="size-5 shrink-0" />
 										</NuxtLink>
 									</div>
 								</article>
@@ -113,7 +113,7 @@ const { passages, caseStudies, isLoading, isFetching, isEmpty, isError } = useTe
 								<span>Case Studies</span>
 								<ChevronUpIcon
 									:class="open ? '' : 'rotate-180 transform'"
-									class="inline-block h-5 w-5"
+									class="inline-block size-5"
 								/>
 							</div>
 						</DisclosureButton>
@@ -129,7 +129,7 @@ const { passages, caseStudies, isLoading, isFetching, isEmpty, isError } = useTe
 											<strong>
 												{{ caseStudy.title }}
 											</strong>
-											<ChevronRightIcon class="h-5 w-5 shrink-0" />
+											<ChevronRightIcon class="size-5 shrink-0" />
 										</NuxtLink>
 									</div>
 									<div class="grid gap-2 p-2">

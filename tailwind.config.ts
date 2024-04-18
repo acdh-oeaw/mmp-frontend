@@ -1,8 +1,7 @@
-import type { Config } from "tailwindcss";
-
-import colors from "tailwindcss/colors";
 import headlessui from "@headlessui/tailwindcss";
 import typography from "@tailwindcss/typography";
+import type { Config } from "tailwindcss";
+import colors from "tailwindcss/colors";
 
 const neutral = colors.slate;
 const primary = colors.slate;

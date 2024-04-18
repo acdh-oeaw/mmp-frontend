@@ -1,15 +1,15 @@
 <script lang="ts" setup>
 import "leaflet/dist/leaflet.css";
 
-import { type Marker, type Polygon } from "leaflet";
+import type { Marker, Polygon } from "leaflet";
 import { nextTick, onMounted, onUnmounted, provide, ref, watch } from "vue";
 
-import { type SpatialCoverageGeojson } from "@/api";
+import type { SpatialCoverageGeojson } from "@/api";
 import { debounce } from "@/lib/debounce";
 import { key } from "@/lib/geo-map/area-map.context";
-import { type AreaMapContext } from "@/lib/geo-map/area-map.types";
+import type { AreaMapContext } from "@/lib/geo-map/area-map.types";
 import { config, initialViewState, keywordColors } from "@/lib/geo-map/geo-map.config";
-import { type SpatialCoverageCenterPoint } from "@/lib/geo-map/geo-map.types";
+import type { SpatialCoverageCenterPoint } from "@/lib/geo-map/geo-map.types";
 
 const props = defineProps<{
 	areas: Array<SpatialCoverageGeojson>;

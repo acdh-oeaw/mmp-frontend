@@ -1,6 +1,6 @@
-import { type ComputedRef, computed } from "vue";
+import { computed, type ComputedRef } from "vue";
 
-import { type SearchFilters } from "@/lib/search/use-search-filters";
+import type { SearchFilters } from "@/lib/search/use-search-filters";
 import { useKeywordCloud } from "@/lib/word-cloud/use-keyword-cloud";
 import { useTokenCloud } from "@/lib/word-cloud/use-token-cloud";
 

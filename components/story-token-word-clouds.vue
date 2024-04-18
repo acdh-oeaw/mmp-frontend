@@ -7,7 +7,7 @@ import LoadingIndicator from "@/components/loading-indicator.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import TokenWordClouds from "@/components/token-word-clouds.vue";
 import VisualisationContainer from "@/components/visualisation-container.vue";
-import { type SearchFilters } from "@/lib/search/use-search-filters";
+import type { SearchFilters } from "@/lib/search/use-search-filters";
 import { useWordClouds } from "@/lib/word-cloud/use-word-clouds";
 import { ClientOnly } from "#components";
 
@@ -23,7 +23,7 @@ const { clouds, isEmpty, isError, isFetching, isLoading } = useWordClouds(search
 </script>
 
 <template>
-	<div class="relative h-full w-full">
+	<div class="relative size-full">
 		<template v-if="isLoading">
 			<Centered>
 				<LoadingIndicator>Loading word clouds...</LoadingIndicator>

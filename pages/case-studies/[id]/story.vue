@@ -55,7 +55,7 @@ watch(caseStudyQuery.data, (caseStudy) => {
 </script>
 
 <template>
-	<div class="relative mx-auto h-full w-full max-w-7xl px-8 py-4">
+	<div class="relative mx-auto size-full max-w-7xl px-8 py-4">
 		<h2 class="sr-only">Story</h2>
 
 		<template v-if="isLoading">

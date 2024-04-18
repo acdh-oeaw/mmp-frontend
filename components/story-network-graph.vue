@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { computed } from "vue";
 
-import { type ResourceKey } from "@/api";
+import type { ResourceKey } from "@/api";
 import Centered from "@/components/centered.vue";
 import ErrorMessage from "@/components/error-message.vue";
 import LoadingIndicator from "@/components/loading-indicator.vue";
@@ -9,7 +9,7 @@ import NetworkGraph from "@/components/network-graph.vue";
 import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import VisualisationContainer from "@/components/visualisation-container.vue";
 import { useNetworkGraph } from "@/lib/network-graph/use-network-graph";
-import { type SearchFilters } from "@/lib/search/use-search-filters";
+import type { SearchFilters } from "@/lib/search/use-search-filters";
 import { ClientOnly } from "#components";
 
 const props = defineProps<{
@@ -27,7 +27,7 @@ const highlightedKeys = new Set<ResourceKey>();
 </script>
 
 <template>
-	<div class="relative h-full w-full">
+	<div class="relative size-full">
 		<template v-if="isLoading">
 			<Centered>
 				<LoadingIndicator>Loading network graph...</LoadingIndicator>

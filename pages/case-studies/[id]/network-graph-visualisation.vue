@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { type ForceGraphInstance } from "force-graph";
+import type { ForceGraphInstance } from "force-graph";
 import { computed, ref, watch } from "vue";
 
 import { useCaseStudyById } from "@/api";
@@ -14,7 +14,7 @@ import NothingFoundMessage from "@/components/nothing-found-message.vue";
 import SideDisclosure from "@/components/side-disclosure.vue";
 import ViewMode from "@/components/view-mode.vue";
 import VisualisationContainer from "@/components/visualisation-container.vue";
-import { type NetworkGraphContext } from "@/lib/network-graph/network-graph.types";
+import type { NetworkGraphContext } from "@/lib/network-graph/network-graph.types";
 import { useFilteredGraph } from "@/lib/network-graph/use-filtered-graph";
 import { useNetworkGraph } from "@/lib/network-graph/use-network-graph";
 import { useNetworkGraphEvents } from "@/lib/network-graph/use-network-graph-events";
@@ -83,7 +83,7 @@ watch(caseStudyQuery.data, (caseStudy) => {
 </script>
 
 <template>
-	<div class="relative mx-auto h-full w-full">
+	<div class="relative mx-auto size-full">
 		<h2 class="sr-only">Network-graph visualisation</h2>
 
 		<template v-if="isLoading">

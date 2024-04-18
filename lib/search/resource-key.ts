@@ -1,6 +1,6 @@
 import type { LocationQuery } from "vue-router";
 
-import { type Resource, type ResourceKey, type ResourceKind } from "@/api";
+import type { Resource, ResourceKey, ResourceKind } from "@/api";
 import { isNonEmptyString } from "@/lib/is-nonempty-string";
 import { unique } from "@/lib/unique";
 
@@ -13,7 +13,10 @@ export const resourceKinds: Array<ResourceKind> = [
 	"usecase",
 ];
 
-export type ResourceIdentifier = { kind: ResourceKind; id: Resource["id"] };
+export interface ResourceIdentifier {
+	kind: ResourceKind;
+	id: Resource["id"];
+}
 
 export function createResourceKey(params: ResourceIdentifier): ResourceKey {
 	return [params.kind, params.id].join("_") as ResourceKey;

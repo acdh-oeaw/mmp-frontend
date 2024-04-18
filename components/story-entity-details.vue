@@ -4,7 +4,7 @@ import AuthorDetails from "@/components/author-details.vue";
 import PassageDetails from "@/components/passage-details.vue";
 import PlaceDetails from "@/components/place-details.vue";
 // import TextDetails from "@/components/text-details.vue";
-import { type SearchFilters } from "@/lib/search/use-search-filters";
+import type { SearchFilters } from "@/lib/search/use-search-filters";
 
 const props = defineProps<{
 	searchFilters: SearchFilters;
@@ -12,7 +12,7 @@ const props = defineProps<{
 </script>
 
 <template>
-	<div class="relative h-full w-full">
+	<div class="relative size-full">
 		<AuthorDetails
 			v-if="'author' in props.searchFilters"
 			:ids="new Set(props.searchFilters.author)"

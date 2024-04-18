@@ -6,7 +6,7 @@ import { ref } from "vue";
 import FullscreenButton from "@/components/fullscreen-button.vue";
 import Toolbar from "@/components/toolbar.vue";
 import ToolbarIconButton from "@/components/toolbar-icon-button.vue";
-import { type Token } from "@/lib/word-cloud/word-cloud.types";
+import type { Token } from "@/lib/word-cloud/word-cloud.types";
 
 const props = defineProps<{
 	type: "pie-chart" | "word-cloud";
@@ -36,21 +36,21 @@ function onCloseDialog() {
 	<Toolbar>
 		<div class="flex items-center gap-2">
 			<ToolbarIconButton v-if="clouds" label="View all words" @click="isDialogOpen = true">
-				<ListBulletIcon class="h-5 w-5 shrink-0" />
+				<ListBulletIcon class="size-5 shrink-0" />
 			</ToolbarIconButton>
 			<ToolbarIconButton
 				v-if="props.type === 'pie-chart'"
 				label="Display word cloud"
 				@click="onSetWordCloud"
 			>
-				<CloudIcon class="h-5 w-5 shrink-0" />
+				<CloudIcon class="size-5 shrink-0" />
 			</ToolbarIconButton>
 			<ToolbarIconButton
 				v-else-if="props.type === 'word-cloud'"
 				label="Display pie chart"
 				@click="onSetPieChart"
 			>
-				<ChartPieIcon class="h-5 w-5 shrink-0" />
+				<ChartPieIcon class="size-5 shrink-0" />
 			</ToolbarIconButton>
 		</div>
 		<div class="flex items-center gap-2">
@@ -82,7 +82,7 @@ function onCloseDialog() {
 						leave-to="opacity-0 scale-95"
 					>
 						<DialogPanel
-							class="grid h-full w-full max-w-md gap-4 overflow-hidden rounded bg-white py-8 shadow-xl md:h-2/3"
+							class="grid size-full max-w-md gap-4 overflow-hidden rounded bg-white py-8 shadow-xl md:h-2/3"
 						>
 							<div class="flex items-center justify-between px-8">
 								<DialogTitle class="text-lg font-medium">List of keywords</DialogTitle>
@@ -90,7 +90,7 @@ function onCloseDialog() {
 								<button class="flex gap-1" @click="onCloseDialog">
 									<XMarkIcon
 										aria-hidden="true"
-										class="h-5 w-5 shrink-0 transition hover:text-neutral-700"
+										class="size-5 shrink-0 transition hover:text-neutral-700"
 									/>
 									<span class="sr-only">Close</span>
 								</button>

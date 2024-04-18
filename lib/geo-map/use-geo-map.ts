@@ -1,5 +1,4 @@
-import { type ComputedRef } from "vue";
-import { computed } from "vue";
+import type { computed, ComputedRef } from "vue";
 
 import {
 	type ConeGeojson,
@@ -8,12 +7,9 @@ import {
 	useLinesPointsGeojson,
 	useSpatialCoveragesGeojson,
 } from "@/api";
-import {
-	type ConeOriginGeojson,
-	type SpatialCoverageCenterPoint,
-} from "@/lib/geo-map/geo-map.types";
+import type { ConeOriginGeojson, SpatialCoverageCenterPoint } from "@/lib/geo-map/geo-map.types";
 import { useGeoMapSearchParams } from "@/lib/search/use-geo-map-search-params";
-import { type SearchFilters } from "@/lib/search/use-search-filters";
+import type { SearchFilters } from "@/lib/search/use-search-filters";
 
 export function useGeoMap(searchFilters: ComputedRef<SearchFilters>) {
 	const searchParams = useGeoMapSearchParams(searchFilters);
@@ -73,7 +69,7 @@ export function useGeoMap(searchFilters: ComputedRef<SearchFilters>) {
 						type: "Feature",
 						geometry: {
 							type: "Point",
-							// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+
 							coordinates: [place.lng!, place.lat!],
 						},
 						properties: {
