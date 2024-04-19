@@ -15,7 +15,9 @@ const config: Config = {
 		"./components/**/*.@(css|ts|vue)",
 		"./content/**/*.md",
 		"./layouts/**/*.@(css|ts|vue)",
+		"./lib/**/*.@(css|ts|vue)",
 		"./pages/**/*.@(css|ts|vue)",
+		"./styles/**/*.css",
 	],
 	plugins: [headlessui, typography],
 	theme: {
