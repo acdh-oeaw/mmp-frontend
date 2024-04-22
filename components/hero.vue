@@ -4,9 +4,9 @@ import { NuxtImg, NuxtLink } from "#components";
 </script>
 
 <template>
-	<section class="h-full max-h-[min(100%,1280px)]">
+	<section class="h-full max-h-[min(100%,1280px)] flex items-center">
 		<div
-			class="relative grid h-full place-items-center border-b bg-neutral-900 px-8 py-32 text-white"
+			class="relative grid h-full place-items-center border-b bg-neutral-900 text-white w-full p-8"
 		>
 			<NuxtImg
 				alt=""
@@ -20,7 +20,7 @@ import { NuxtImg, NuxtLink } from "#components";
 
 			<div class="relative grid justify-items-center gap-12 text-center">
 				<div class="grid gap-4">
-					<h1 class="text-4xl font-extrabold uppercase sm:text-5xl lg:text-6xl xl:text-7xl">
+					<h1 class="text-4xl font-extrabold uppercase sm:text-5xl lg:text-5xl xl:text-7xl">
 						Mapping Medieval Peoples
 					</h1>
 					<h2 class="text-xl font-extrabold sm:text-2xl lg:text-3xl xl:text-4xl">
@@ -41,7 +41,7 @@ import { NuxtImg, NuxtLink } from "#components";
 							1px 1px 0 rgb(0 0 0);
 					"
 				>
-					<p class="font-bold">
+					<p class="font-bold text-justify md:text-center">
 						<i>Mapping Medieval Peoples</i>
 						(MMP) examines medieval perceptions of peoples and space and the intellectual frameworks
 						in which they came into being through reconstructing the mental maps of medieval
@@ -55,7 +55,7 @@ import { NuxtImg, NuxtLink } from "#components";
 					</p>
 				</div>
 
-				<div class="grid gap-6 sm:grid-cols-3">
+				<div class="w-full max-w-3xl grid gap-6 sm:grid-cols-3">
 					<div class="grid gap-1">
 						<NuxtLink
 							class="inline-flex items-center justify-center rounded border bg-neutral-100 px-12 py-4 text-sm font-medium uppercase text-neutral-900 shadow-md transition hover:bg-white"
