@@ -4,7 +4,9 @@ Web frontend for the [MMP project](https://github.com/acdh-oeaw/mmp). Deployed a
 <https://mmp.acdh.oeaw.ac.at>.
 
 ## How to run
-Prerequisites: [Node.js v20](https://nodejs.org/en/download) and [npm v10](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
+
+Prerequisites: [Node.js v20](https://nodejs.org/en/download) and
+[npm v10](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
 
 Set required environment variables in `.env`:
 
@@ -27,10 +29,14 @@ Run a development server on [http://localhost:3000](http://localhost:3000):
 ```bash
 npm run dev
 ```
+
 Build for production:
+
 ```bash
 npm run build
 ```
 
 ## How to deploy
-Commits pushed to the `main` branch will automatically be deployed to the ACDH-CH cluster via GitHub Actions.
+
+Commits pushed to the `main` branch will automatically be deployed to the ACDH-CH cluster via GitHub
+Actions.
