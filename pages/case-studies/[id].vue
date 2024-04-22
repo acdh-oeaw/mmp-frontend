@@ -70,7 +70,7 @@ watch(caseStudyQuery.data, (caseStudy) => {
 			>
 				<li v-for="(link, key) of links" :key="key">
 					<NuxtLink
-						class="flex justify-center rounded-t p-2 text-center transition hover:bg-neutral-100 aria-[current]:bg-neutral-200"
+						class="flex justify-center rounded lg:rounded-b-0 p-2 text-center transition hover:bg-neutral-100 aria-[current]:bg-neutral-200"
 						:href="{ path: link.path, query }"
 					>
 						{{ link.label }}
