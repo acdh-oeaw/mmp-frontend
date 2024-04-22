@@ -1,32 +1,4 @@
-import type { FitEnum } from "sharp";
-
-type Locale = "en";
-
-type Metadata = {
-	locale: Locale;
-	title: string;
-	shortTitle: string;
-	description: string;
-	logo: {
-		path: string;
-		fit: keyof FitEnum;
-		maskable: boolean;
-	};
-	image: {
-		path: string;
-		fit: keyof FitEnum;
-	};
-	twitter: {
-		handle: string;
-	};
-	creator: {
-		name: string;
-		shortName: string;
-		website: string;
-	};
-};
-
-export const metadata: Metadata = {
+export const metadata = {
 	locale: "en",
 	title: "Mapping Medieval Peoples",
 	shortTitle: "MMP",
@@ -39,9 +11,6 @@ export const metadata: Metadata = {
 	image: {
 		path: "./public/assets/images/logo.svg",
 		fit: "contain",
-	},
-	twitter: {
-		handle: "",
 	},
 	creator: {
 		name: "Austrian Centre for Digital Humanities and Cultural Heritage",

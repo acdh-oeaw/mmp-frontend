@@ -1,13 +1,17 @@
 import { createUrl, createUrlSearchParams } from "@acdh-oeaw/lib";
 
-import { env } from "@/config/env.config";
 import { metadata } from "@/config/metadata.config";
+import { useRuntimeConfig } from "#imports";
 
-const redmineId = env.VITE_APP_REDMINE_ID;
 const locale = metadata.locale;
 
-export const url = createUrl({
-	baseUrl: "https://imprint.acdh.oeaw.ac.at",
-	pathname: `/${redmineId}`,
-	searchParams: createUrlSearchParams({ locale }),
-});
+export function createImprintUrl(): URL {
+	const env = useRuntimeConfig();
+	const redmineId = env.public.NUXT_PUBLIC_REDMINE_ID;
+
+	return createUrl({
+		baseUrl: "https://imprint.acdh.oeaw.ac.at",
+		pathname: `/${redmineId}`,
+		searchParams: createUrlSearchParams({ locale }),
+	});
+}

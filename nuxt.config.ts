@@ -54,6 +54,17 @@ export default defineNuxtConfig({
 		"/about": { static: true },
 		"/imprint": { static: true },
 	},
+	runtimeConfig: {
+		NODE_ENV: process.env.NODE_ENV,
+		public: {
+			NUXT_PUBLIC_API_BASE_URL: process.env.NUXT_PUBLIC_API_BASE_URL,
+			NUXT_PUBLIC_APP_BASE_URL: process.env.NUXT_PUBLIC_APP_BASE_URL,
+			NUXT_PUBLIC_BOTS: process.env.NUXT_PUBLIC_BOTS,
+			NUXT_PUBLIC_MATOMO_BASE_URL: process.env.NUXT_PUBLIC_MATOMO_BASE_URL,
+			NUXT_PUBLIC_MATOMO_ID: process.env.NUXT_PUBLIC_MATOMO_ID,
+			NUXT_PUBLIC_REDMINE_ID: process.env.NUXT_PUBLIC_REDMINE_ID,
+		},
+	},
 	typescript: {
 		shim: false,
 		strict: true,
