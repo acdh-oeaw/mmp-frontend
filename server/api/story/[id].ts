@@ -54,12 +54,12 @@ function withReplacedIframes(): Transformer<Hast.Root> {
 			if (index == null || parent == null) return;
 
 			const iframeAttributes = keyByToMap(element.attributes, (attribute) => {
-				assert(attribute.type === "mdxJsxAttribute");
+				assert(attribute.type === "mdxJsxAttribute", "Element has no MDX/JSX attribute!");
 				return attribute.name;
 			});
 
 			const src = iframeAttributes.get("src")?.value;
-			assert(typeof src === "string");
+			assert(typeof src === "string", "IFrame source is not a string!");
 			/** The GitHub pages deployment, which is referenced in iframes, uses hash router. */
 			const hash = new URL(src).hash.slice(1);
 			const url = new URL(hash, "https://n");
@@ -120,7 +120,7 @@ function withNoStyleAttributes(): Transformer<Hast.Root> {
 			if (element.type !== "mdxJsxFlowElement" && element.type !== "mdxJsxTextElement") return;
 
 			const index = element.attributes.findIndex((attribute) => {
-				assert(attribute.type === "mdxJsxAttribute");
+				assert(attribute.type === "mdxJsxAttribute", "Element has no MDX/JSX attribute!");
 				return attribute.name === "style";
 			});
 
