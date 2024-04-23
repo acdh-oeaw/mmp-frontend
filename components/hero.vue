@@ -4,7 +4,7 @@ import { NuxtImg, NuxtLink } from "#components";
 </script>
 
 <template>
-	<section class="h-full max-h-[min(100%,1280px)] flex items-center">
+	<section class="h-full flex items-center">
 		<div
 			class="relative grid h-full place-items-center border-b bg-neutral-900 text-white w-full p-8"
 		>
@@ -112,6 +112,14 @@ import { NuxtImg, NuxtLink } from "#components";
 								class="inline-block h-16 px-4"
 							/>
 							<span class="sr-only">Imafo Logo</span>
+						</a>
+						<a href="https://www.oeaw.ac.at/" target="_blank">
+							<NuxtImg
+								alt="Imafo Logo"
+								src="/assets/images/logo-oeaw.svg"
+								class="inline-block h-16 px-4 text-white"
+							/>
+							<span class="sr-only">Oeaw Logo</span>
 						</a>
 					</p>
 				</div>
