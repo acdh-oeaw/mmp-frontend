@@ -351,7 +351,7 @@ useHead({
 					</AboutDisclosure>
 					<!-- prettier-ignore -->
 					<AboutDisclosure title="Our resources">
-						<h2>Select Bibliography </h2>
+						<h2>Select Bibliography</h2>
 						<p>
 							Many of our texts are taken from the
 							<i>Digital Monumenta Germaniae historica</i>:
@@ -488,6 +488,19 @@ useHead({
 							William of Malmesbury, <i>Gesta regum Anglorum: The Deeds of the English Kings</i>, ed. and
 							trans. by R. A. B. Mynors, completed by R. M. Thompson and M. Winterbottom (Oxford:
 							Oxford University Press, 1998)
+						</p>
+						<h2>Map layer sources</h2>
+						<p>
+							Digital Atlas of Roman Empire &#169; 2020 Johan Åhlfeldt: <a class="font-semibold underline" href="https://imperium.ahlfeldt.se/">imperium.ahlfeldt.se</a>
+						</p>
+						<p>
+							Roman Roads Network &#169; DARMC Scholarly Data Series 2013-5
+						</p>
+						<p>
+							Kingdom layer	&#169; Erik Goosmann
+						</p>
+						<p>
+							Mappa Mundi Cartography: <a class="font-semibold underline" href="https://www.mappamundi-cartography.com/">mappamundi-cartography.com</a>
 						</p>
 					</AboutDisclosure>
 					<AboutDisclosure title="Contact">
