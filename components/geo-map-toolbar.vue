@@ -12,6 +12,7 @@ import { initialViewState } from "@/lib/geo-map/geo-map.config";
 import { key } from "@/lib/geo-map/geo-map.context";
 import { type BaseLayer } from "@/lib/geo-map/use-geo-map-base-layer";
 import { isNonEmptyString } from "@/lib/is-nonempty-string";
+import { useRoute } from "vue-router";
 
 interface Item {
 	key: string;
@@ -31,7 +32,10 @@ const emit = defineEmits<{
 
 const context = inject(key);
 
-//
+// Deselects all case study Layers by default
+if (context && String(useRoute().name).includes("case-studies")) {
+	context.visibility.layers.value = new Set();
+}
 
 const layersLabel = "Layers";
 
