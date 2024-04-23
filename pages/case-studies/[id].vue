@@ -68,9 +68,9 @@ watch(caseStudyQuery.data, (caseStudy) => {
 				:class="hasStory ? 'lg:grid-cols-6' : 'lg:grid-cols-5'"
 				role="list"
 			>
-				<li v-for="(link, key) of links" :key="key">
+				<li v-for="(link, key) of links" class="h-full flex items-center lg:items-end" :key="key">
 					<NuxtLink
-						class="flex justify-center rounded lg:rounded-b-0 p-2 text-center transition hover:bg-neutral-100 aria-[current]:bg-neutral-200"
+						class="flex w-full justify-center rounded lg:rounded-b-none p-2 text-center transition hover:bg-neutral-100 aria-[current]:bg-neutral-200"
 						:href="{ path: link.path, query }"
 					>
 						{{ link.label }}

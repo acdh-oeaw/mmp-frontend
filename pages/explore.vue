@@ -43,9 +43,9 @@ const links = {
 				class="mx-auto grid max-w-7xl grid-cols-2 items-center gap-x-8 gap-y-2 px-8 pt-4 text-sm font-medium md:grid-cols-4"
 				role="list"
 			>
-				<li v-for="(link, key) of links" :key="key">
+				<li v-for="(link, key) of links" class="h-full flex items-center lg:items-end" :key="key">
 					<NuxtLink
-						class="flex justify-center rounded-t p-2 text-center transition hover:bg-neutral-100 aria-[current]:bg-neutral-200"
+						class="flex justify-center rounded md:rounded-b-none w-full p-2 text-center transition hover:bg-neutral-100 aria-[current]:bg-neutral-200"
 						:href="{ path: link.path, query }"
 					>
 						{{ link.label }}
