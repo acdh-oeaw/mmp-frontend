@@ -26,6 +26,12 @@ export default defineNuxtConfig({
 				{ property: "og:description", content: metadata.description },
 				{ property: "og:image", content: "/" + openGraphImageName },
 				{ property: "og:locale", content: metadata.locale },
+				process.env.NUXT_PUBLIC_GOOGLE_SITE_VERIFICATION
+					? {
+							name: "google-site-verification",
+							content: process.env.NUXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+						}
+					: {},
 			],
 		},
 	},
