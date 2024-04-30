@@ -2,7 +2,7 @@ import { join } from "node:path";
 
 import { defaultContentType, defineEventHandler } from "#imports";
 import { getCaseStudies } from "@/api";
-import { createUrl } from "@acdh-oeaw/lib";
+import { createUrl, isNonEmptyString } from "@acdh-oeaw/lib";
 import fg from "fast-glob";
 import { z } from "zod";
 
@@ -42,16 +42,21 @@ async function createSitemap() {
 	for (const caseStudy of caseStudies.results) {
 		const url = createUrl({ baseUrl, pathname: `/case-studies/${caseStudy.id}/` });
 
-		entries.push({ url: String(createUrl({ baseUrl: url, pathname: "timeline" })) });
-		entries.push({ url: String(createUrl({ baseUrl: url, pathname: "story" })) });
-		entries.push({
-			url: String(createUrl({ baseUrl: url, pathname: "network-graph-visualisation" })),
+		const segments = [
+			"timeline",
+			"network-graph-visualisation",
+			"geo-map-visualisation",
+			"word-cloud-visualisation",
+			"texts-by-authors",
+		];
+
+		if (isNonEmptyString(caseStudy.story_map)) {
+			segments.push("story");
+		}
+
+		segments.forEach((pathname) => {
+			entries.push({ url: String(createUrl({ baseUrl: url, pathname })) });
 		});
-		entries.push({ url: String(createUrl({ baseUrl: url, pathname: "geo-map-visualisation" })) });
-		entries.push({
-			url: String(createUrl({ baseUrl: url, pathname: "word-cloud-visualisation" })),
-		});
-		entries.push({ url: String(createUrl({ baseUrl: url, pathname: "texts-by-authors" })) });
 	}
 
 	const sitemap = [
