@@ -47,6 +47,9 @@ export default defineNuxtConfig({
 	modules: ["@nuxt/image"],
 	nitro: {
 		compressPublicAssets: true,
+		prerender: {
+			routes: ["/sitemap.xml"],
+		},
 	},
 	postcss: {
 		plugins: {
