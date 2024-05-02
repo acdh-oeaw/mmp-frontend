@@ -26,9 +26,6 @@ import { NuxtImg, NuxtLink } from "#components";
 					<h2 class="text-xl font-extrabold sm:text-2xl lg:text-3xl xl:text-4xl">
 						Visualising Semantic Landscapes in Early Medieval Europe
 					</h2>
-					<h2 class="text-base font-extrabold sm:text-lg lg:text-xl xl:text-2xl">
-						({{ 250 }} CE - {{ 1250 }} CE)
-					</h2>
 				</div>
 
 				<div
