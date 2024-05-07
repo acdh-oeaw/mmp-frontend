@@ -250,6 +250,7 @@ useHead({
 									<a
 										href="https://www.oeaw.ac.at/imafo/forschung/historische-identitaetsforschung/mitarbeiterinnen/veronika-wieser/"
 										class="underline"
+										target="_blank"
 									>
 										Veronika Wieser (Imafo / AAS)
 									</a>
@@ -258,6 +259,7 @@ useHead({
 									<a
 										href="https://www.oeaw.ac.at/imafo/forschung/historische-identitaetsforschung/mitarbeiterinnen/walter-pohl"
 										class="underline"
+										target="_blank"
 									>
 										Walter Pohl (Imafo / AAS)
 									</a>
@@ -268,7 +270,8 @@ useHead({
 								<li>Nicola Edelmann</li>
 								<li>
 									<a
-										href="https://ifg.univie.ac.at/ueber-uns/mitarbeiterinnen/gastprofessorinnen/clemens-gantner/"
+										target="_blank"
+										href="https://geschichtsforschung.univie.ac.at/ueber-uns/personen/wissenschaftliche-angehoerige-ig/gantner-clemens/"
 										class="underline"
 									>
 										Clemens Gantner (University of Vienna)
@@ -276,6 +279,7 @@ useHead({
 								</li>
 								<li>
 									<a
+										target="_blank"
 										href="https://www.oeaw.ac.at/imafo/forschung/historische-identitaetsforschung/mitarbeiterinnen/laura-gazzoli"
 										class="underline"
 									>
@@ -286,6 +290,7 @@ useHead({
 									<a
 										href="https://www.oeaw.ac.at/imafo/forschung/historische-identitaetsforschung/mitarbeiterinnen/thomas-gobbitt"
 										class="underline"
+										target="_blank"
 									>
 										Thomas Gobbitt (Imafo / AAS)
 									</a>
@@ -294,6 +299,7 @@ useHead({
 									<a
 										href="https://www.oeaw.ac.at/imafo/forschung/historische-identitaetsforschung/mitarbeiterinnen/salvatore-liccardo"
 										class="underline"
+										target="_blank"
 									>
 										Salvatore Liccardo (HistoGenes / University of Vienna)
 									</a>
@@ -302,17 +308,18 @@ useHead({
 									<a
 										href="https://www.oeaw.ac.at/imafo/forschung/historische-identitaetsforschung/mitarbeiterinnen/patrick-marschner/"
 										class="underline"
+										target="_blank"
 									>
 										Patrick Marschner (Imafo / AAS)
 									</a>
 								</li>
 								<li>
-									<a href="https://www.ucc.ie/en/locus/people/" class="underline">
+									<a href="https://www.ucc.ie/en/locus/people/" class="underline" target="_blank">
 										Diarmuid Ó Riain (University College Cork)
 									</a>
 								</li>
 								<li>
-									<a href="http://www.zonafranca.info/Contact/" class="underline">
+									<a href="http://www.zonafranca.info/Contact/" class="underline" target="_blank">
 										Katharina Winckler (University of Trento)
 									</a>
 								</li>
