@@ -311,7 +311,11 @@ useHead({
 										Diarmuid Ó Riain (University College Cork)
 									</a>
 								</li>
-								<li>Katharina Winckler (University of Trento)</li>
+								<li>
+									<a href="http://www.zonafranca.info/Contact/" class="underline">
+										Katharina Winckler (University of Trento)
+									</a>
+								</li>
 							</ul>
 							<span>Project Team ACDH - CH</span>
 							<ul class="m-0 p-0">
