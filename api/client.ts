@@ -707,7 +707,7 @@ export namespace GetPassages {
 			text__autor__end_date_year_lookup?: DateLookupSearchParams;
 		};
 	export type Response = PaginatedResponse<
-		Omit<Passage, "key_word" | "ort" | "use_case"> & {
+		Omit<Passage, "key_word" | "ort"> & {
 			/** Keywords asssociated with the passage. */
 			key_word: Array<
 				Omit<Keyword, "related_keyword"> & {
@@ -734,13 +734,6 @@ export namespace GetPassages {
 					kategorie?: SkosConceptNormalized | null;
 				}
 			>;
-			/** Associated usecases. */
-			use_case: Array<
-				Omit<CaseStudy, "knightlab_stoy_map"> & {
-					/** Knightlab Story Maps. */
-					knightlab_stoy_map: Array<StoryNormalized>;
-				}
-			>;
 		}
 	>;
 }
@@ -754,7 +747,7 @@ export namespace GetPassageById {
 	export interface PathParams {
 		id: Passage["id"];
 	}
-	export type Response = Omit<Passage, "key_word" | "ort" | "use_case"> & {
+	export type Response = Omit<Passage, "key_word" | "ort"> & {
 		/** Keywords asssociated with the passage. */
 		key_word: Array<
 			Omit<Keyword, "related_keyword"> & {
@@ -779,13 +772,6 @@ export namespace GetPassageById {
 				 * @see '/vocabs-ac/specific-concept-ac/kategorie'
 				 */
 				kategorie?: SkosConceptNormalized | null;
-			}
-		>;
-		/** Associated usecases. */
-		use_case: Array<
-			Omit<CaseStudy, "knightlab_stoy_map"> & {
-				/** Knightlab Story Maps. */
-				knightlab_stoy_map: Array<StoryNormalized>;
 			}
 		>;
 	};

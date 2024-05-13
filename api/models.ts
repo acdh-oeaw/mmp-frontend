@@ -219,8 +219,6 @@ export type Passage = Omit<
 		 * Removed from data model.
 		 */
 		// ort: Array<Place>;
-		/** Associated usecases. */
-		use_case: Array<CaseStudy>;
 
 		/** Start date or earliest possible date (year). */
 		start_date?: number | null;
@@ -240,8 +238,8 @@ export type Passage = Omit<
 	"legacy_id" | "legacy_pk" | "lemmata" | "orig_data_csv"
 >;
 
-// export type PassageNormalized = Normalized<Passage, 'key_word' | 'ort' | 'use_case'>;
-export type PassageNormalized = Normalized<Passage, "key_word" | "use_case">;
+// export type PassageNormalized = Normalized<Passage, 'key_word' | 'ort'>;
+export type PassageNormalized = Normalized<Passage, "key_word">;
 
 type Lemmata = {
 	orig_text: string;
