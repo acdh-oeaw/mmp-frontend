@@ -1,0 +1,14 @@
+pre-commit:
+  piped: true
+  jobs:
+    - name: lint-code
+      glob: "*.{js,cjs,mjs,jsx,ts,cts,mts,tsx,vue}"
+      run: pnpm exec oxlint --fix -- {staged_files}
+      stage_fixed: true
+    - name: lint-styles
+      glob: "*.{css,vue}"
+      run: pnpm exec stylelint --fix --ignore-path .gitignore -- {staged_files}
+      stage_fixed: true
+    - name: format
+      run: pnpm exec oxfmt --write --no-error-on-unmatched-pattern -- {staged_files}
+      stage_fixed: true

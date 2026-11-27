@@ -2,12 +2,12 @@ import { assert, keyByToMap } from "@acdh-oeaw/lib";
 import { compile } from "@mdx-js/mdx";
 import { HttpError } from "@stefanprobst/request";
 import { valueToEstree } from "estree-util-value-to-estree";
-import { defineEventHandler, H3Error } from "h3";
+import { createError, defineEventHandler, H3Error } from "h3";
 import type * as Hast from "hast";
 import type * as _Mdxast from "remark-mdx";
 import { type Transformer } from "unified";
 import { SKIP, visit } from "unist-util-visit";
-import { z } from "zod";
+import { integer, object, pipe, safeParse, string, toNumber } from "valibot";
 
 import { getCaseStudyById } from "@/api";
 import { isNonEmptyString } from "@/lib/is-nonempty-string";
@@ -131,17 +131,17 @@ function withNoStyleAttributes(): Transformer<Hast.Root> {
 	};
 }
 
-const schema = z.object({ id: z.coerce.number().int() });
+const schema = object({ id: pipe(string(), toNumber(), integer()) });
 
 export default defineEventHandler(async (event) => {
-	const params = schema.safeParse(event.context.params);
+	const params = safeParse(schema, event.context.params);
 
 	if (!params.success) {
 		throw createError({ statusCode: 400 });
 	}
 
 	try {
-		const story = await getCaseStudyById({ id: params.data.id });
+		const story = await getCaseStudyById({ id: params.output.id });
 		/** @see https://github.com/mdx-js/mdx/discussions/2260 */
 		const html = story.story_map?.replace(/&nbsp;/g, "");
 

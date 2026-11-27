@@ -26,7 +26,7 @@ const { createSelectionParams } = useSelection();
 const { createSearchFilterParams, searchFilters } = useBrowseSearchFilters();
 const searchParams = useAuthorsBrowseSearchParams(searchFilters);
 const authorsQuery = useAuthors(searchParams);
-const isLoading = authorsQuery.isInitialLoading;
+const isLoading = authorsQuery.isLoading;
 const isFetching = authorsQuery.isFetching;
 const isError = authorsQuery.isError;
 const authors = computed(() => {

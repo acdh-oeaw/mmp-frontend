@@ -1,5 +1,6 @@
 import { fileURLToPath } from "node:url";
 
+import tailwindcss from "@tailwindcss/vite";
 import { defineNuxtConfig } from "nuxt/config";
 
 import { manifestFileName, metadata, openGraphImageName } from "./config/metadata.config";
@@ -36,11 +37,7 @@ export default defineNuxtConfig({
 		},
 	},
 	components: false,
-	css: [
-		"@fontsource-variable/roboto-flex/standard.css",
-		"tailwindcss/tailwind.css",
-		"@/styles/index.css",
-	],
+	css: ["@fontsource-variable/roboto-flex/standard.css", "@/styles/index.css"],
 	imports: {
 		autoImport: false,
 	},
@@ -51,18 +48,12 @@ export default defineNuxtConfig({
 			routes: ["/sitemap.xml"],
 		},
 	},
-	postcss: {
-		plugins: {
-			"tailwindcss/nesting": "postcss-nesting",
-			tailwindcss: {},
-			autoprefixer: {},
-		},
-	},
 	routeRules: {
 		"/": { static: true },
 		"/about": { static: true },
 		"/imprint": { static: true },
 	},
+	srcDir: ".",
 	runtimeConfig: {
 		NODE_ENV: process.env.NODE_ENV,
 		public: {
@@ -85,4 +76,5 @@ export default defineNuxtConfig({
 			},
 		},
 	},
+	vite: { plugins: [tailwindcss()] },
 });

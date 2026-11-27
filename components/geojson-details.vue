@@ -86,36 +86,42 @@ const collectionsQueriesConfig = computed(() => {
 const collectionsQueries = useQueries({ queries: collectionsQueriesConfig });
 
 const isLoading = computed(() => {
-	return [...areasQueries, ...pointsQueries, ...collectionsQueries].some((query) => {
-		return query.isInitialLoading;
-	});
+	return [...areasQueries.value, ...pointsQueries.value, ...collectionsQueries.value].some(
+		(query) => {
+			return query.isLoading;
+		},
+	);
 });
 const isFetching = computed(() => {
-	return [...areasQueries, ...pointsQueries, ...collectionsQueries].some((query) => {
-		return query.isFetching;
-	});
+	return [...areasQueries.value, ...pointsQueries.value, ...collectionsQueries.value].some(
+		(query) => {
+			return query.isFetching;
+		},
+	);
 });
 const isError = computed(() => {
-	return [...areasQueries, ...pointsQueries, ...collectionsQueries].some((query) => {
-		return query.isError;
-	});
+	return [...areasQueries.value, ...pointsQueries.value, ...collectionsQueries.value].some(
+		(query) => {
+			return query.isError;
+		},
+	);
 });
 const areasSetup = computed(() => {
-	return areasQueries
+	return areasQueries.value
 		.map((query) => {
 			return query.data;
 		})
 		.filter(isNotNullable);
 });
 const pointsSetup = computed(() => {
-	return pointsQueries
+	return pointsQueries.value
 		.map((query) => {
 			return query.data;
 		})
 		.filter(isNotNullable);
 });
 const collectionsSetup = computed(() => {
-	return collectionsQueries
+	return collectionsQueries.value
 		.map((query) => {
 			return query.data;
 		})

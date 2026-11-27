@@ -31,7 +31,7 @@ export function useTextDetails(
 
 	const isLoading = computed(() => {
 		return [passagesQuery, caseStudiesQuery].some((query) => {
-			return query.isInitialLoading.value;
+			return query.isLoading.value;
 		});
 	});
 	const isFetching = computed(() => {

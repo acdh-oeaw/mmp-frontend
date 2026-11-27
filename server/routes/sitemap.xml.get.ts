@@ -4,12 +4,11 @@ import { defaultContentType, defineEventHandler } from "#imports";
 import { getCaseStudies } from "@/api";
 import { createUrl, isNonEmptyString } from "@acdh-oeaw/lib";
 import fg from "fast-glob";
-import { z } from "zod";
+import { parse, pipe, string, url } from "valibot";
 
-const baseUrl = z.string().url().parse(process.env.NUXT_PUBLIC_APP_BASE_URL);
+const baseUrl = parse(pipe(string(), url()), process.env.NUXT_PUBLIC_APP_BASE_URL);
 
 async function createSitemap() {
-	// eslint-disable-next-line import/no-named-as-default-member
 	const paths = fg.globSync("./**/*.vue", { cwd: join(process.cwd(), "pages") });
 
 	const routes: Array<string> = [];

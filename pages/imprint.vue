@@ -15,7 +15,7 @@ useHead({
 });
 
 const imprintQuery = useImprint();
-const isLoading = imprintQuery.isInitialLoading;
+const isLoading = imprintQuery.isLoading;
 const isError = imprintQuery.isError;
 const imprint = imprintQuery.data;
 
@@ -46,7 +46,6 @@ await imprintQuery.suspense();
 			</template>
 
 			<template v-else>
-				<!-- eslint-disable-next-line vue/no-v-html -->
 				<div class="prose-sm" v-html="imprint" />
 			</template>
 		</div>

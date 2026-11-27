@@ -9,14 +9,13 @@ export function useKeywordCloud(searchFilters: ComputedRef<SearchFilters>) {
 	const searchParams = useWordCloudSearchParams(searchFilters);
 	const cloudQuery = usePassageKeywords(searchParams);
 	const isFetching = cloudQuery.isFetching;
-	const isLoading = cloudQuery.isLoading;
+	const isLoading = cloudQuery.isPending;
 	const isError = cloudQuery.isError;
 	const cloud = computed(() => {
 		return createTokenData(
 			// @see https://github.com/acdh-oeaw/mmp/issues/175
 			Object.fromEntries(
 				cloudQuery.data.value?.token_dict.map((token) => {
-					// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 					return Object.entries(token)[0]!;
 				}) ?? [],
 			),

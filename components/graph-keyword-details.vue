@@ -73,40 +73,40 @@ const {
 
 const isLoading = computed(() => {
 	return (
-		[...keywordsQueries, ...centuryKeywordsQueries].some((query) => {
-			return query.isInitialLoading;
+		[...keywordsQueries.value, ...centuryKeywordsQueries.value].some((query) => {
+			return query.isLoading;
 		}) ||
-		textKeywordsQuery.isInitialLoading.value ||
+		textKeywordsQuery.isLoading.value ||
 		isGeojsonLoading.value
 	);
 });
 const isFetching = computed(() => {
 	return (
-		[...keywordsQueries, ...centuryKeywordsQueries].some((query) => {
+		[...keywordsQueries.value, ...centuryKeywordsQueries.value].some((query) => {
 			return query.isFetching;
 		}) ||
-		textKeywordsQuery.isInitialLoading.value ||
+		textKeywordsQuery.isLoading.value ||
 		isGeojsonFetching.value
 	);
 });
 const isError = computed(() => {
 	return (
-		[...keywordsQueries, ...centuryKeywordsQueries].some((query) => {
+		[...keywordsQueries.value, ...centuryKeywordsQueries.value].some((query) => {
 			return query.isError;
 		}) ||
-		textKeywordsQuery.isInitialLoading.value ||
+		textKeywordsQuery.isLoading.value ||
 		isGeojsonError.value
 	);
 });
 const keywords = computed(() => {
-	return keywordsQueries
+	return keywordsQueries.value
 		.map((query) => {
 			return query.data;
 		})
 		.filter(isNotNullable);
 });
 const centuryKeywords = computed(() => {
-	return centuryKeywordsQueries
+	return centuryKeywordsQueries.value
 		.map((query) => {
 			return query.data;
 		})

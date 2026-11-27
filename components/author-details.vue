@@ -24,7 +24,7 @@ const id = computed(() => {
 const route = useRoute();
 const { createSelectionParams } = useSelection();
 const authorQuery = useAuthorById({ id });
-const isLoading = authorQuery.isInitialLoading;
+const isLoading = authorQuery.isLoading;
 const isFetching = authorQuery.isFetching;
 const isError = authorQuery.isError;
 const author = authorQuery.data;

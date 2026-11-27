@@ -22,7 +22,7 @@ export function useGeoMap(searchFilters: ComputedRef<SearchFilters>) {
 	const linesPointsQuery = useLinesPointsGeojson(searchParams);
 	const isLoading = computed(() => {
 		return [areasQuery, conesQuery, linesPointsQuery].some((query) => {
-			return query.isInitialLoading.value;
+			return query.isLoading.value;
 		});
 	});
 	const isFetching = computed(() => {
@@ -73,7 +73,6 @@ export function useGeoMap(searchFilters: ComputedRef<SearchFilters>) {
 						type: "Feature",
 						geometry: {
 							type: "Point",
-							// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 							coordinates: [place.lng!, place.lat!],
 						},
 						properties: {

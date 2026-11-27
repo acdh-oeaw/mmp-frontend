@@ -20,7 +20,7 @@ const id = computed(() => {
 });
 
 const passageQuery = usePassageById({ id });
-const isLoading = passageQuery.isInitialLoading;
+const isLoading = passageQuery.isLoading;
 const isFetching = passageQuery.isFetching;
 const isError = passageQuery.isError;
 const passage = passageQuery.data;

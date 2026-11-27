@@ -25,7 +25,7 @@ const { createSelectionParams } = useSelection();
 const { createSearchFilterParams, searchFilters } = useBrowseSearchFilters();
 const searchParams = usePlacesBrowseSearchParams(searchFilters);
 const placesQuery = usePlaces(searchParams);
-const isLoading = placesQuery.isInitialLoading;
+const isLoading = placesQuery.isLoading;
 const isFetching = placesQuery.isFetching;
 const isError = placesQuery.isError;
 const places = computed(() => {

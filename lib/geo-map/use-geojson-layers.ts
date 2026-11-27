@@ -20,24 +20,24 @@ export function useGeoJsonLayers(searchFilters: ComputedRef<SearchFilters>) {
 	});
 	const caseStudiesQueries = useQueries({ queries: caseStudiesQueriesConfig });
 	const isLoading = computed(() => {
-		return caseStudiesQueries.some((query) => {
-			return query.isInitialLoading;
+		return caseStudiesQueries.value.some((query) => {
+			return query.isLoading;
 		});
 	});
 	const isFetching = computed(() => {
-		return caseStudiesQueries.some((query) => {
+		return caseStudiesQueries.value.some((query) => {
 			return query.isFetching;
 		});
 	});
 	const isError = computed(() => {
-		return caseStudiesQueries.some((query) => {
+		return caseStudiesQueries.value.some((query) => {
 			return query.isError;
 		});
 	});
 	const layers = computed(() => {
 		const layers = new Map<GeojsonLayer["id"], GeojsonLayer>();
 
-		caseStudiesQueries.forEach((query) => {
+		caseStudiesQueries.value.forEach((query) => {
 			query.data?.layer.forEach((layer) => {
 				layers.set(layer.id, layer);
 			});

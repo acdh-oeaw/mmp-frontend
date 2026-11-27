@@ -13,7 +13,7 @@ import { useCaseStudiesSearchParams } from "@/lib/case-studies/use-case-studies-
 const { searchFilters } = useCaseStudiesSearchFilters();
 const searchParams = useCaseStudiesSearchParams(searchFilters);
 const caseStudiesQuery = useCaseStudies(searchParams);
-const isLoading = caseStudiesQuery.isInitialLoading;
+const isLoading = caseStudiesQuery.isLoading;
 const isFetching = caseStudiesQuery.isFetching;
 const isError = caseStudiesQuery.isError;
 const caseStudies = computed(() => {

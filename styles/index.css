@@ -1,3 +1,17 @@
+@import "tailwindcss" source(none);
+
+@config "../tailwind.config.ts";
+
+@layer base {
+	*,
+	::before,
+	::after,
+	::backdrop,
+	::file-selector-button {
+		border-color: var(--color-gray-200, currentColor);
+	}
+}
+
 *,
 *::before,
 *::after {
@@ -16,7 +30,7 @@ body,
 }
 
 :root {
-	background-color: theme(colors.neutral.50);
-	color: theme(colors.neutral.900);
-	font-family: theme(fontFamily.sans);
+	background-color: theme("colors.neutral.50");
+	color: theme("colors.neutral.900");
+	font-family: theme("fontFamily.sans");
 }

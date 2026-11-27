@@ -3,6 +3,7 @@ import {
 	type VueQueryPluginOptions,
 	dehydrate,
 	hydrate,
+	keepPreviousData,
 	QueryClient,
 	VueQueryPlugin,
 } from "@tanstack/vue-query";
@@ -10,7 +11,7 @@ import {
 import { defineNuxtPlugin, useState } from "#imports";
 
 /**
- * @see https://tanstack.com/query/v4/docs/vue/guides/ssr
+ * @see https://tanstack.com/query/latest/docs/framework/vue/guides/ssr
  */
 export default defineNuxtPlugin((nuxtApp) => {
 	const vueQueryState = useState<DehydratedState | null>("vue-query");
@@ -19,8 +20,8 @@ export default defineNuxtPlugin((nuxtApp) => {
 		defaultOptions: {
 			queries: {
 				/** Unused queries will be garbage-collected after 45 minutes. */
-				cacheTime: 45 * 60 * 1000,
-				keepPreviousData: true,
+				gcTime: 45 * 60 * 1000,
+				placeholderData: keepPreviousData,
 				refetchOnMount: false,
 				refetchOnReconnect: false,
 				refetchOnWindowFocus: false,
@@ -34,15 +35,15 @@ export default defineNuxtPlugin((nuxtApp) => {
 
 	nuxtApp.vueApp.use(VueQueryPlugin, options);
 
-	if (process.server) {
+	if (import.meta.server) {
 		nuxtApp.hooks.hook("app:rendered", () => {
 			vueQueryState.value = dehydrate(queryClient);
 		});
 	}
 
-	if (process.client) {
+	if (import.meta.client) {
 		nuxtApp.hooks.hook("app:created", () => {
-			hydrate(queryClient, vueQueryState.value);
+			if (vueQueryState.value != null) hydrate(queryClient, vueQueryState.value);
 		});
 	}
 });

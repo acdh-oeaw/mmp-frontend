@@ -7,7 +7,7 @@ import { type SearchFilters } from "@/lib/search/use-search-filters";
 export function usePassagesSearch(searchFilters: ComputedRef<SearchFilters>) {
 	const searchParams = usePassagesSearchParams(searchFilters);
 	const passagesQuery = usePassages(searchParams);
-	const isLoading = passagesQuery.isInitialLoading;
+	const isLoading = passagesQuery.isLoading;
 	const isFetching = passagesQuery.isFetching;
 	const isError = passagesQuery.isError;
 	const passages = computed(() => {

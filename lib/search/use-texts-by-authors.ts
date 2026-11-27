@@ -15,7 +15,7 @@ export function useTextsByAuthors(searchFilters: ComputedRef<SearchFilters>) {
 	});
 	const searchParams = usePassagesSearchParams(_searchFilters);
 	const passagesQuery = usePassages(searchParams);
-	const isLoading = passagesQuery.isInitialLoading;
+	const isLoading = passagesQuery.isLoading;
 	const isError = passagesQuery.isError;
 	const isFetching = passagesQuery.isFetching;
 	const data = computed(() => {

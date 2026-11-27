@@ -1,0 +1,9 @@
+engineStrict: true
+shamefullyHoist: true
+shellEmulator: true
+allowBuilds:
+  esbuild: true
+  fsevents: true
+  sharp: true
+  lefthook: false
+  vue-demi: true

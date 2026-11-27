@@ -84,7 +84,7 @@ const context: GeoMapContext = {
 		featureGroups: ref(
 			new Set<keyof FeatureLayers>(["areas", "areaLabels", "cones", "coneOrigins", "linesPoints"]),
 		),
-		layers: ref(new Set<GeojsonLayer["id"]>([...props.layers.keys()])),
+		layers: ref(new Set<GeojsonLayer["id"]>(props.layers.keys())),
 	},
 
 	overlays: {
