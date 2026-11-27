@@ -72,7 +72,7 @@ function getDisplayLabel(selectedKey: Item["key"]) {
 			</ListboxLabel>
 
 			<ListboxButton
-				class="relative w-full min-w-[12rem] cursor-default rounded-md border border-neutral-200 bg-white py-2 pl-3 pr-10 text-left text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/75 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-300"
+				class="relative w-full min-w-[12rem] cursor-default rounded-md border border-neutral-200 bg-white py-2 pl-3 pr-10 text-left text-sm focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-white/75 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-300"
 			>
 				<slot name="selection" :selected-keys="selectedKeys">
 					<span v-if="selectedKeys.length > 0" class="flex flex-wrap gap-2">
@@ -96,7 +96,7 @@ function getDisplayLabel(selectedKey: Item["key"]) {
 			leave-to-class="opacity-0"
 		>
 			<ListboxOptions
-				class="absolute z-50 mt-1 max-h-80 w-full overflow-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black/5 transition focus-visible:outline-none"
+				class="absolute z-50 mt-1 max-h-80 w-full overflow-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black/5 transition focus-visible:outline-hidden"
 			>
 				<ListboxOption
 					v-for="item of items"

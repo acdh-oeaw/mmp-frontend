@@ -1,5 +1,5 @@
 import { assert } from "@acdh-oeaw/lib";
-import { useQuery, useQueryClient, type UseQueryOptions } from "@tanstack/vue-query";
+import { useQuery, useQueryClient } from "@tanstack/vue-query";
 import type { Ref } from "vue";
 
 import * as api from "@/api/client";
@@ -15,24 +15,11 @@ type MaybeRefDeep<T> = MaybeRef<
 >;
 
 interface Options {
-	isEnabled?: UseQueryOptions["enabled"];
-	keepPreviousData?: UseQueryOptions["keepPreviousData"];
+	isEnabled?: MaybeRef<boolean>;
 }
 
 function getQueryOptions(options?: Options) {
-	const queryOptions: Pick<UseQueryOptions, "enabled" | "keepPreviousData"> = {};
-
-	if (options == null) return queryOptions;
-
-	if (options.isEnabled != null) {
-		queryOptions.enabled = options.isEnabled;
-	}
-
-	if (options.keepPreviousData != null) {
-		queryOptions.keepPreviousData = options.keepPreviousData;
-	}
-
-	return queryOptions;
+	return options?.isEnabled === undefined ? {} : { enabled: options.isEnabled };
 }
 
 const resources = [
@@ -99,18 +86,16 @@ export function useAuthors(
 	const queryClient = useQueryClient();
 	return useQuery({
 		queryKey: createKey("author", "list", searchParams),
-		queryFn: ({ queryKey: [, , searchParams] }) => {
-			// @ts-expect-error Upstream type error.
-			return api.getAuthors(searchParams);
-		},
-		...getQueryOptions(options),
-		onSuccess(data) {
+		queryFn: async ({ queryKey: [, , searchParams] }) => {
+			const data = await api.getAuthors(searchParams);
 			data.results.forEach((author) => {
 				const params = { id: author.id };
 				const queryKey = createKey("author", "by-id", params);
 				queryClient.setQueryData(queryKey, author);
 			});
+			return data;
 		},
+		...getQueryOptions(options),
 	});
 }
 
@@ -121,7 +106,6 @@ export function useAuthorById(
 	return useQuery({
 		queryKey: createKey("author", "by-id", params),
 		queryFn: ({ queryKey: [, , params] }) => {
-			// @ts-expect-error Upstream type error.
 			return api.getAuthorById(assertParams(params, ["id"]));
 		},
 		...getQueryOptions(options),
@@ -135,18 +119,16 @@ export function useKeywords(
 	const queryClient = useQueryClient();
 	return useQuery({
 		queryKey: createKey("keyword", "list", searchParams),
-		queryFn: ({ queryKey: [, , searchParams] }) => {
-			// @ts-expect-error Upstream type error.
-			return api.getKeywords(searchParams);
-		},
-		...getQueryOptions(options),
-		onSuccess(data) {
+		queryFn: async ({ queryKey: [, , searchParams] }) => {
+			const data = await api.getKeywords(searchParams);
 			data.results.forEach((keyword) => {
 				const params = { id: keyword.id };
 				const queryKey = createKey("keyword", "by-id", params);
 				queryClient.setQueryData(queryKey, keyword);
 			});
+			return data;
 		},
+		...getQueryOptions(options),
 	});
 }
 
@@ -157,7 +139,6 @@ export function useKeywordById(
 	return useQuery({
 		queryKey: createKey("keyword", "by-id", params),
 		queryFn: ({ queryKey: [, , params] }) => {
-			// @ts-expect-error Upstream type error.
 			return api.getKeywordById(assertParams(params, ["id"]));
 		},
 		...getQueryOptions(options),
@@ -171,7 +152,6 @@ export function useKeywordByCenturyById(
 	return useQuery({
 		queryKey: createKey("keyword", "by-id", params, "century"),
 		queryFn: ({ queryKey: [, , params] }) => {
-			// @ts-expect-error Upstream type error.
 			return api.getKeywordByCenturyById(assertParams(params, ["id"]));
 		},
 		...getQueryOptions(options),
@@ -185,7 +165,6 @@ export function useKeywordGraph(
 	return useQuery({
 		queryKey: createKey("keyword", "list", searchParams, "graph"),
 		queryFn: ({ queryKey: [, , searchParams] }) => {
-			// @ts-expect-error Upstream type error.
 			return api.getKeywordGraph(searchParams);
 		},
 		...getQueryOptions(options),
@@ -199,7 +178,6 @@ export function useKeywordByAuthorGraph(
 	return useQuery({
 		queryKey: createKey("keyword", "list", searchParams, "author-graph"),
 		queryFn: ({ queryKey: [, , searchParams] }) => {
-			// @ts-expect-error Upstream type error.
 			return api.getKeywordByAuthorGraph(searchParams);
 		},
 		...getQueryOptions(options),
@@ -213,18 +191,16 @@ export function usePassages(
 	const queryClient = useQueryClient();
 	return useQuery({
 		queryKey: createKey("passage", "list", searchParams),
-		queryFn: ({ queryKey: [, , searchParams] }) => {
-			// @ts-expect-error Upstream type error.
-			return api.getPassages(searchParams);
-		},
-		...getQueryOptions(options),
-		onSuccess(data) {
+		queryFn: async ({ queryKey: [, , searchParams] }) => {
+			const data = await api.getPassages(searchParams);
 			data.results.forEach((passage) => {
 				const params = { id: passage.id };
 				const queryKey = createKey("passage", "by-id", params);
 				queryClient.setQueryData(queryKey, passage);
 			});
+			return data;
 		},
+		...getQueryOptions(options),
 	});
 }
 
@@ -235,7 +211,6 @@ export function usePassageById(
 	return useQuery({
 		queryKey: createKey("passage", "by-id", params),
 		queryFn: ({ queryKey: [, , params] }) => {
-			// @ts-expect-error Upstream type error.
 			return api.getPassageById(assertParams(params, ["id"]));
 		},
 		...getQueryOptions(options),
@@ -249,7 +224,6 @@ export function usePassageKeywords(
 	return useQuery({
 		queryKey: createKey("passage", "list", searchParams, "keywords"),
 		queryFn: ({ queryKey: [, , searchParams] }) => {
-			// @ts-expect-error Upstream type error.
 			return api.getPassageKeywords(searchParams);
 		},
 		...getQueryOptions(options),
@@ -263,7 +237,6 @@ export function usePassageNlpData(
 	return useQuery({
 		queryKey: createKey("passage", "list", searchParams, "nlp-data"),
 		queryFn: ({ queryKey: [, , searchParams] }) => {
-			// @ts-expect-error Upstream type error.
 			return api.getPassageNlpData(searchParams);
 		},
 		...getQueryOptions(options),
@@ -277,18 +250,16 @@ export function usePlaces(
 	const queryClient = useQueryClient();
 	return useQuery({
 		queryKey: createKey("place", "list", searchParams),
-		queryFn: ({ queryKey: [, , searchParams] }) => {
-			// @ts-expect-error Upstream type error.
-			return api.getPlaces(searchParams);
-		},
-		...getQueryOptions(options),
-		onSuccess(data) {
+		queryFn: async ({ queryKey: [, , searchParams] }) => {
+			const data = await api.getPlaces(searchParams);
 			data.results.forEach((place) => {
 				const params = { id: place.id };
 				const queryKey = createKey("place", "by-id", params);
 				queryClient.setQueryData(queryKey, place);
 			});
+			return data;
 		},
+		...getQueryOptions(options),
 	});
 }
 
@@ -299,7 +270,6 @@ export function usePlaceById(
 	return useQuery({
 		queryKey: createKey("place", "by-id", params),
 		queryFn: ({ queryKey: [, , params] }) => {
-			// @ts-expect-error Upstream type error.
 			return api.getPlaceById(assertParams(params, ["id"]));
 		},
 		...getQueryOptions(options),
@@ -313,18 +283,16 @@ export function useTexts(
 	const queryClient = useQueryClient();
 	return useQuery({
 		queryKey: createKey("text", "list", searchParams),
-		queryFn: ({ queryKey: [, , searchParams] }) => {
-			// @ts-expect-error Upstream type error.
-			return api.getTexts(searchParams);
-		},
-		...getQueryOptions(options),
-		onSuccess(data) {
+		queryFn: async ({ queryKey: [, , searchParams] }) => {
+			const data = await api.getTexts(searchParams);
 			data.results.forEach((text) => {
 				const params = { id: text.id };
 				const queryKey = createKey("text", "by-id", params);
 				queryClient.setQueryData(queryKey, text);
 			});
+			return data;
 		},
+		...getQueryOptions(options),
 	});
 }
 
@@ -335,7 +303,6 @@ export function useTextById(
 	return useQuery({
 		queryKey: createKey("text", "by-id", params),
 		queryFn: ({ queryKey: [, , params] }) => {
-			// @ts-expect-error Upstream type error.
 			return api.getTextById(assertParams(params, ["id"]));
 		},
 		...getQueryOptions(options),
@@ -349,18 +316,16 @@ export function useCaseStudies(
 	const queryClient = useQueryClient();
 	return useQuery({
 		queryKey: createKey("case-study", "list", searchParams),
-		queryFn: ({ queryKey: [, , searchParams] }) => {
-			// @ts-expect-error Upstream type error.
-			return api.getCaseStudies(searchParams);
-		},
-		...getQueryOptions(options),
-		onSuccess(data) {
+		queryFn: async ({ queryKey: [, , searchParams] }) => {
+			const data = await api.getCaseStudies(searchParams);
 			data.results.forEach((caseStudy) => {
 				const params = { id: caseStudy.id };
 				const queryKey = createKey("case-study", "by-id", params);
 				queryClient.setQueryData(queryKey, caseStudy);
 			});
+			return data;
 		},
+		...getQueryOptions(options),
 	});
 }
 
@@ -371,7 +336,6 @@ export function useCaseStudyById(
 	return useQuery({
 		queryKey: createKey("case-study", "by-id", params),
 		queryFn: ({ queryKey: [, , params] }) => {
-			// @ts-expect-error Upstream type error.
 			return api.getCaseStudyById(assertParams(params, ["id"]));
 		},
 		...getQueryOptions(options),
@@ -385,7 +349,6 @@ export function useCaseStudyTimeTableById(
 	return useQuery({
 		queryKey: createKey("case-study", "by-id", params, "timetable"),
 		queryFn: ({ queryKey: [, , params] }) => {
-			// @ts-expect-error Upstream type error.
 			return api.getCaseStudyTimetableById(assertParams(params, ["id"]));
 		},
 		...getQueryOptions(options),
@@ -399,18 +362,16 @@ export function useGeojsonLayers(
 	const queryClient = useQueryClient();
 	return useQuery({
 		queryKey: createKey("geojson-layer", "list", searchParams),
-		queryFn: ({ queryKey: [, , searchParams] }) => {
-			// @ts-expect-error Upstream type error.
-			return api.getGeojsonLayers(searchParams);
-		},
-		...getQueryOptions(options),
-		onSuccess(data) {
+		queryFn: async ({ queryKey: [, , searchParams] }) => {
+			const data = await api.getGeojsonLayers(searchParams);
 			data.results.forEach((layer) => {
 				const params = { id: layer.id };
 				const queryKey = createKey("geojson-layer", "by-id", params);
 				queryClient.setQueryData(queryKey, layer);
 			});
+			return data;
 		},
+		...getQueryOptions(options),
 	});
 }
 
@@ -421,7 +382,6 @@ export function useGeojsonLayerById(
 	return useQuery({
 		queryKey: createKey("geojson-layer", "by-id", params),
 		queryFn: ({ queryKey: [, , params] }) => {
-			// @ts-expect-error Upstream type error.
 			return api.getGeojsonLayerById(assertParams(params, ["id"]));
 		},
 		...getQueryOptions(options),
@@ -435,18 +395,16 @@ export function useEvents(
 	const queryClient = useQueryClient();
 	return useQuery({
 		queryKey: createKey("event", "list", searchParams),
-		queryFn: ({ queryKey: [, , searchParams] }) => {
-			// @ts-expect-error Upstream type error.
-			return api.getEvents(searchParams);
-		},
-		...getQueryOptions(options),
-		onSuccess(data) {
+		queryFn: async ({ queryKey: [, , searchParams] }) => {
+			const data = await api.getEvents(searchParams);
 			data.results.forEach((event) => {
 				const params = { id: event.id };
 				const queryKey = createKey("event", "by-id", params);
 				queryClient.setQueryData(queryKey, event);
 			});
+			return data;
 		},
+		...getQueryOptions(options),
 	});
 }
 
@@ -457,7 +415,6 @@ export function useEventById(
 	return useQuery({
 		queryKey: createKey("event", "by-id", params),
 		queryFn: ({ queryKey: [, , params] }) => {
-			// @ts-expect-error Upstream type error.
 			return api.getEventById(assertParams(params, ["id"]));
 		},
 		...getQueryOptions(options),
@@ -471,18 +428,16 @@ export function useModelingProcesses(
 	const queryClient = useQueryClient();
 	return useQuery({
 		queryKey: createKey("modeling-process", "list", searchParams),
-		queryFn: ({ queryKey: [, , searchParams] }) => {
-			// @ts-expect-error Upstream type error.
-			return api.getModelingProcesses(searchParams);
-		},
-		...getQueryOptions(options),
-		onSuccess(data) {
+		queryFn: async ({ queryKey: [, , searchParams] }) => {
+			const data = await api.getModelingProcesses(searchParams);
 			data.results.forEach((process) => {
 				const params = { id: process.id };
 				const queryKey = createKey("modeling-process", "by-id", params);
 				queryClient.setQueryData(queryKey, process);
 			});
+			return data;
 		},
+		...getQueryOptions(options),
 	});
 }
 
@@ -493,7 +448,6 @@ export function useModelingProcessById(
 	return useQuery({
 		queryKey: createKey("modeling-process", "by-id", params),
 		queryFn: ({ queryKey: [, , params] }) => {
-			// @ts-expect-error Upstream type error.
 			return api.getModelingProcessById(assertParams(params, ["id"]));
 		},
 		...getQueryOptions(options),
@@ -507,7 +461,6 @@ export function useStopWords(
 	return useQuery({
 		queryKey: createKey("stop-word", "list", searchParams),
 		queryFn: ({ queryKey: [, , searchParams] }) => {
-			// @ts-expect-error Upstream type error.
 			return api.getStopWords(searchParams);
 		},
 		...getQueryOptions(options),
@@ -521,18 +474,16 @@ export function useTextTopicRelations(
 	const queryClient = useQueryClient();
 	return useQuery({
 		queryKey: createKey("text-topic-relation", "list", searchParams),
-		queryFn: ({ queryKey: [, , searchParams] }) => {
-			// @ts-expect-error Upstream type error.
-			return api.getTextTopicRelations(searchParams);
-		},
-		...getQueryOptions(options),
-		onSuccess(data) {
+		queryFn: async ({ queryKey: [, , searchParams] }) => {
+			const data = await api.getTextTopicRelations(searchParams);
 			data.results.forEach((relation) => {
 				const params = { id: relation.id };
 				const queryKey = createKey("text-topic-relation", "by-id", params);
 				queryClient.setQueryData(queryKey, relation);
 			});
+			return data;
 		},
+		...getQueryOptions(options),
 	});
 }
 
@@ -543,7 +494,6 @@ export function useTextTopicRelationById(
 	return useQuery({
 		queryKey: createKey("text-topic-relation", "by-id", params),
 		queryFn: ({ queryKey: [, , params] }) => {
-			// @ts-expect-error Upstream type error.
 			return api.getTextTopicRelationById(assertParams(params, ["id"]));
 		},
 		...getQueryOptions(options),
@@ -557,18 +507,16 @@ export function useTopics(
 	const queryClient = useQueryClient();
 	return useQuery({
 		queryKey: createKey("topic", "list", searchParams),
-		queryFn: ({ queryKey: [, , searchParams] }) => {
-			// @ts-expect-error Upstream type error.
-			return api.getTopics(searchParams);
-		},
-		...getQueryOptions(options),
-		onSuccess(data) {
+		queryFn: async ({ queryKey: [, , searchParams] }) => {
+			const data = await api.getTopics(searchParams);
 			data.results.forEach((topic) => {
 				const params = { id: topic.id };
 				const queryKey = createKey("topic", "by-id", params);
 				queryClient.setQueryData(queryKey, topic);
 			});
+			return data;
 		},
+		...getQueryOptions(options),
 	});
 }
 
@@ -579,7 +527,6 @@ export function useTopicById(
 	return useQuery({
 		queryKey: createKey("topic", "by-id", params),
 		queryFn: ({ queryKey: [, , params] }) => {
-			// @ts-expect-error Upstream type error.
 			return api.getTopicById(assertParams(params, ["id"]));
 		},
 		...getQueryOptions(options),
@@ -593,18 +540,16 @@ export function usePlacesGeojson(
 	const queryClient = useQueryClient();
 	return useQuery({
 		queryKey: createKey("geojson-place", "list", searchParams),
-		queryFn: ({ queryKey: [, , searchParams] }) => {
-			// @ts-expect-error Upstream type error.
-			return api.getPlacesGeojson(searchParams);
-		},
-		...getQueryOptions(options),
-		onSuccess(data) {
+		queryFn: async ({ queryKey: [, , searchParams] }) => {
+			const data = await api.getPlacesGeojson(searchParams);
 			data.features.forEach((feature) => {
 				const params = { id: feature.id };
 				const queryKey = createKey("geojson-place", "by-id", params);
 				queryClient.setQueryData(queryKey, feature);
 			});
+			return data;
 		},
+		...getQueryOptions(options),
 	});
 }
 
@@ -615,7 +560,6 @@ export function usePlaceGeojsonById(
 	return useQuery({
 		queryKey: createKey("geojson-place", "by-id", params),
 		queryFn: ({ queryKey: [, , params] }) => {
-			// @ts-expect-error Upstream type error.
 			return api.getPlaceGeojsonById(assertParams(params, ["id"]));
 		},
 		...getQueryOptions(options),
@@ -629,18 +573,16 @@ export function useFuzzyPlacesGeojson(
 	const queryClient = useQueryClient();
 	return useQuery({
 		queryKey: createKey("geojson-fuzzy-place", "list", searchParams),
-		queryFn: ({ queryKey: [, , searchParams] }) => {
-			// @ts-expect-error Upstream type error.
-			return api.getFuzzyPlacesGeojson(searchParams);
-		},
-		...getQueryOptions(options),
-		onSuccess(data) {
+		queryFn: async ({ queryKey: [, , searchParams] }) => {
+			const data = await api.getFuzzyPlacesGeojson(searchParams);
 			data.features.forEach((feature) => {
 				const params = { id: feature.id };
 				const queryKey = createKey("geojson-fuzzy-place", "by-id", params);
 				queryClient.setQueryData(queryKey, feature);
 			});
+			return data;
 		},
+		...getQueryOptions(options),
 	});
 }
 
@@ -651,7 +593,6 @@ export function useFuzzyPlaceGeojsonById(
 	return useQuery({
 		queryKey: createKey("geojson-fuzzy-place", "by-id", params),
 		queryFn: ({ queryKey: [, , params] }) => {
-			// @ts-expect-error Upstream type error.
 			return api.getFuzzyPlaceGeojsonById(assertParams(params, ["id"]));
 		},
 		...getQueryOptions(options),
@@ -665,18 +606,16 @@ export function useConesGeojson(
 	const queryClient = useQueryClient();
 	return useQuery({
 		queryKey: createKey("geojson-cone", "list", searchParams),
-		queryFn: ({ queryKey: [, , searchParams] }) => {
-			// @ts-expect-error Upstream type error.
-			return api.getConesGeojson(searchParams);
-		},
-		...getQueryOptions(options),
-		onSuccess(data) {
+		queryFn: async ({ queryKey: [, , searchParams] }) => {
+			const data = await api.getConesGeojson(searchParams);
 			data.features.forEach((feature) => {
 				const params = { id: feature.id };
 				const queryKey = createKey("geojson-cone", "by-id", params);
 				queryClient.setQueryData(queryKey, feature);
 			});
+			return data;
 		},
+		...getQueryOptions(options),
 	});
 }
 
@@ -687,7 +626,6 @@ export function useConeGeojsonById(
 	return useQuery({
 		queryKey: createKey("geojson-cone", "by-id", params),
 		queryFn: ({ queryKey: [, , params] }) => {
-			// @ts-expect-error Upstream type error.
 			return api.getConeGeojsonById(assertParams(params, ["id"]));
 		},
 		...getQueryOptions(options),
@@ -701,18 +639,16 @@ export function useSpatialCoveragesGeojson(
 	const queryClient = useQueryClient();
 	return useQuery({
 		queryKey: createKey("geojson-spatial-coverage", "list", searchParams),
-		queryFn: ({ queryKey: [, , searchParams] }) => {
-			// @ts-expect-error Upstream type error.
-			return api.getSpatialCoveragesGeojson(searchParams);
-		},
-		...getQueryOptions(options),
-		onSuccess(data) {
+		queryFn: async ({ queryKey: [, , searchParams] }) => {
+			const data = await api.getSpatialCoveragesGeojson(searchParams);
 			data.features.forEach((feature) => {
 				const params = { id: feature.id };
 				const queryKey = createKey("geojson-spatial-coverage", "by-id", params);
 				queryClient.setQueryData(queryKey, feature);
 			});
+			return data;
 		},
+		...getQueryOptions(options),
 	});
 }
 
@@ -723,7 +659,6 @@ export function useSpatialCoverageGeojsonById(
 	return useQuery({
 		queryKey: createKey("geojson-spatial-coverage", "by-id", params),
 		queryFn: ({ queryKey: [, , params] }) => {
-			// @ts-expect-error Upstream type error.
 			return api.getSpatialCoverageGeojsonById(assertParams(params, ["id"]));
 		},
 		...getQueryOptions(options),
@@ -737,18 +672,16 @@ export function useLinesPointsGeojson(
 	const queryClient = useQueryClient();
 	return useQuery({
 		queryKey: createKey("geojson-lines-points", "list", searchParams),
-		queryFn: ({ queryKey: [, , searchParams] }) => {
-			// @ts-expect-error Upstream type error.
-			return api.getLinesPointsGeojson(searchParams);
-		},
-		...getQueryOptions(options),
-		onSuccess(data) {
+		queryFn: async ({ queryKey: [, , searchParams] }) => {
+			const data = await api.getLinesPointsGeojson(searchParams);
 			data.features.forEach((feature) => {
 				const params = { id: feature.id };
 				const queryKey = createKey("geojson-lines-points", "by-id", params);
 				queryClient.setQueryData(queryKey, feature);
 			});
+			return data;
 		},
+		...getQueryOptions(options),
 	});
 }
 
@@ -759,7 +692,6 @@ export function useLinesPointsGeojsonById(
 	return useQuery({
 		queryKey: createKey("geojson-lines-points", "by-id", params),
 		queryFn: ({ queryKey: [, , params] }) => {
-			// @ts-expect-error Upstream type error.
 			return api.getLinesPointsGeojsonById(assertParams(params, ["id"]));
 		},
 		...getQueryOptions(options),
@@ -773,18 +705,16 @@ export function useStories(
 	const queryClient = useQueryClient();
 	return useQuery({
 		queryKey: createKey("story", "list", searchParams),
-		queryFn: ({ queryKey: [, , searchParams] }) => {
-			// @ts-expect-error Upstream type error.
-			return api.getStories(searchParams);
-		},
-		...getQueryOptions(options),
-		onSuccess(data) {
+		queryFn: async ({ queryKey: [, , searchParams] }) => {
+			const data = await api.getStories(searchParams);
 			data.results.forEach((story) => {
 				const params = { id: story.id };
 				const queryKey = createKey("story", "by-id", params);
 				queryClient.setQueryData(queryKey, story);
 			});
+			return data;
 		},
+		...getQueryOptions(options),
 	});
 }
 
@@ -795,7 +725,6 @@ export function useStoryById(
 	return useQuery({
 		queryKey: createKey("story", "by-id", params),
 		queryFn: ({ queryKey: [, , params] }) => {
-			// @ts-expect-error Upstream type error.
 			return api.getStoryById(assertParams(params, ["id"]));
 		},
 		...getQueryOptions(options),
@@ -809,18 +738,16 @@ export function useStorySlides(
 	const queryClient = useQueryClient();
 	return useQuery({
 		queryKey: createKey("story-slide", "list", searchParams),
-		queryFn: ({ queryKey: [, , searchParams] }) => {
-			// @ts-expect-error Upstream type error.
-			return api.getStorySlides(searchParams);
-		},
-		...getQueryOptions(options),
-		onSuccess(data) {
+		queryFn: async ({ queryKey: [, , searchParams] }) => {
+			const data = await api.getStorySlides(searchParams);
 			data.results.forEach((slide) => {
 				const params = { id: slide.id };
 				const queryKey = createKey("story-slide", "by-id", params);
 				queryClient.setQueryData(queryKey, slide);
 			});
+			return data;
 		},
+		...getQueryOptions(options),
 	});
 }
 
@@ -831,7 +758,6 @@ export function useStorySlideById(
 	return useQuery({
 		queryKey: createKey("story-slide", "by-id", params),
 		queryFn: ({ queryKey: [, , params] }) => {
-			// @ts-expect-error Upstream type error.
 			return api.getStorySlideById(assertParams(params, ["id"]));
 		},
 		...getQueryOptions(options),
@@ -845,18 +771,16 @@ export function useSkosCollections(
 	const queryClient = useQueryClient();
 	return useQuery({
 		queryKey: createKey("skos-collection", "list", searchParams),
-		queryFn: ({ queryKey: [, , searchParams] }) => {
-			// @ts-expect-error Upstream type error.
-			return api.getSkosCollections(searchParams);
-		},
-		...getQueryOptions(options),
-		onSuccess(data) {
+		queryFn: async ({ queryKey: [, , searchParams] }) => {
+			const data = await api.getSkosCollections(searchParams);
 			data.results.forEach((collection) => {
 				const params = { id: collection.id };
 				const queryKey = createKey("skos-collection", "by-id", params);
 				queryClient.setQueryData(queryKey, collection);
 			});
+			return data;
 		},
+		...getQueryOptions(options),
 	});
 }
 
@@ -867,7 +791,6 @@ export function useSkosCollectionById(
 	return useQuery({
 		queryKey: createKey("skos-collection", "by-id", params),
 		queryFn: ({ queryKey: [, , params] }) => {
-			// @ts-expect-error Upstream type error.
 			return api.getSkosCollectionById(assertParams(params, ["id"]));
 		},
 		...getQueryOptions(options),
@@ -881,18 +804,16 @@ export function useSkosConcepts(
 	const queryClient = useQueryClient();
 	return useQuery({
 		queryKey: createKey("skos-concept", "list", searchParams),
-		queryFn: ({ queryKey: [, , searchParams] }) => {
-			// @ts-expect-error Upstream type error.
-			return api.getSkosConcepts(searchParams);
-		},
-		...getQueryOptions(options),
-		onSuccess(data) {
+		queryFn: async ({ queryKey: [, , searchParams] }) => {
+			const data = await api.getSkosConcepts(searchParams);
 			data.results.forEach((concept) => {
 				const params = { id: concept.id };
 				const queryKey = createKey("skos-concept", "by-id", params);
 				queryClient.setQueryData(queryKey, concept);
 			});
+			return data;
 		},
+		...getQueryOptions(options),
 	});
 }
 
@@ -903,7 +824,6 @@ export function useSkosConceptById(
 	return useQuery({
 		queryKey: createKey("skos-concept", "by-id", params),
 		queryFn: ({ queryKey: [, , params] }) => {
-			// @ts-expect-error Upstream type error.
 			return api.getSkosConceptById(assertParams(params, ["id"]));
 		},
 		...getQueryOptions(options),
@@ -917,18 +837,16 @@ export function useSkosConceptSchemes(
 	const queryClient = useQueryClient();
 	return useQuery({
 		queryKey: createKey("skos-concept-scheme", "list", searchParams),
-		queryFn: ({ queryKey: [, , searchParams] }) => {
-			// @ts-expect-error Upstream type error.
-			return api.getSkosConceptSchemes(searchParams);
-		},
-		...getQueryOptions(options),
-		onSuccess(data) {
+		queryFn: async ({ queryKey: [, , searchParams] }) => {
+			const data = await api.getSkosConceptSchemes(searchParams);
 			data.results.forEach((scheme) => {
 				const params = { id: scheme.id };
 				const queryKey = createKey("skos-concept-scheme", "by-id", params);
 				queryClient.setQueryData(queryKey, scheme);
 			});
+			return data;
 		},
+		...getQueryOptions(options),
 	});
 }
 
@@ -939,7 +857,6 @@ export function useSkosConceptSchemeById(
 	return useQuery({
 		queryKey: createKey("skos-concept-scheme", "by-id", params),
 		queryFn: ({ queryKey: [, , params] }) => {
-			// @ts-expect-error Upstream type error.
 			return api.getSkosConceptSchemeById(assertParams(params, ["id"]));
 		},
 		...getQueryOptions(options),
@@ -953,7 +870,6 @@ export function useAuthorsAutoComplete(
 	return useQuery({
 		queryKey: createKey("autocomplete-author", "list", searchParams),
 		queryFn: ({ queryKey: [, , searchParams] }) => {
-			// @ts-expect-error Upstream type error.
 			return api.getAuthorsAutoComplete(searchParams);
 		},
 		...getQueryOptions(options),
@@ -967,7 +883,6 @@ export function useKeywordsAutoComplete(
 	return useQuery({
 		queryKey: createKey("autocomplete-keyword", "list", searchParams),
 		queryFn: ({ queryKey: [, , searchParams] }) => {
-			// @ts-expect-error Upstream type error.
 			return api.getKeywordsAutoComplete(searchParams);
 		},
 		...getQueryOptions(options),
@@ -981,7 +896,6 @@ export function useRegionKeywordsAutoComplete(
 	return useQuery({
 		queryKey: createKey("autocomplete-keyword-region", "list", searchParams),
 		queryFn: ({ queryKey: [, , searchParams] }) => {
-			// @ts-expect-error Upstream type error.
 			return api.getRegionKeywordsAutoComplete(searchParams);
 		},
 		...getQueryOptions(options),
@@ -995,7 +909,6 @@ export function useEthnonymKeywordsAutoComplete(
 	return useQuery({
 		queryKey: createKey("autocomplete-keyword-ethnonym", "list", searchParams),
 		queryFn: ({ queryKey: [, , searchParams] }) => {
-			// @ts-expect-error Upstream type error.
 			return api.getEthnonymKeywordsAutoComplete(searchParams);
 		},
 		...getQueryOptions(options),
@@ -1009,7 +922,6 @@ export function useKeywordKeywordsAutoComplete(
 	return useQuery({
 		queryKey: createKey("autocomplete-keyword-keyword", "list", searchParams),
 		queryFn: ({ queryKey: [, , searchParams] }) => {
-			// @ts-expect-error Upstream type error.
 			return api.getKeywordKeywordsAutoComplete(searchParams);
 		},
 		...getQueryOptions(options),
@@ -1023,7 +935,6 @@ export function useNameKeywordsAutoComplete(
 	return useQuery({
 		queryKey: createKey("autocomplete-keyword-name", "list", searchParams),
 		queryFn: ({ queryKey: [, , searchParams] }) => {
-			// @ts-expect-error Upstream type error.
 			return api.getNameKeywordsAutoComplete(searchParams);
 		},
 		...getQueryOptions(options),
@@ -1037,7 +948,6 @@ export function usePlacesAutoComplete(
 	return useQuery({
 		queryKey: createKey("autocomplete-place", "list", searchParams),
 		queryFn: ({ queryKey: [, , searchParams] }) => {
-			// @ts-expect-error Upstream type error.
 			return api.getPlacesAutoComplete(searchParams);
 		},
 		...getQueryOptions(options),
@@ -1051,7 +961,6 @@ export function usePassagesAutoComplete(
 	return useQuery({
 		queryKey: createKey("autocomplete-passage", "list", searchParams),
 		queryFn: ({ queryKey: [, , searchParams] }) => {
-			// @ts-expect-error Upstream type error.
 			return api.getPassagesAutoComplete(searchParams);
 		},
 		...getQueryOptions(options),
@@ -1065,7 +974,6 @@ export function useTextsAutoComplete(
 	return useQuery({
 		queryKey: createKey("autocomplete-text", "list", searchParams),
 		queryFn: ({ queryKey: [, , searchParams] }) => {
-			// @ts-expect-error Upstream type error.
 			return api.getTextsAutoComplete(searchParams);
 		},
 		...getQueryOptions(options),
@@ -1079,7 +987,6 @@ export function useCaseStudiesAutoComplete(
 	return useQuery({
 		queryKey: createKey("autocomplete-case-study", "list", searchParams),
 		queryFn: ({ queryKey: [, , searchParams] }) => {
-			// @ts-expect-error Upstream type error.
 			return api.getCaseStudiesAutoComplete(searchParams);
 		},
 		...getQueryOptions(options),
@@ -1093,7 +1000,6 @@ export function useTextGenreTypesAutoComplete(
 	return useQuery({
 		queryKey: createKey("autocomplete-text-genre-type", "list", searchParams),
 		queryFn: ({ queryKey: [, , searchParams] }) => {
-			// @ts-expect-error Upstream type error.
 			return api.getTextGenreTypesAutoComplete(searchParams);
 		},
 		...getQueryOptions(options),
@@ -1107,7 +1013,6 @@ export function usePlaceTypesAutoComplete(
 	return useQuery({
 		queryKey: createKey("autocomplete-place-type", "list", searchParams),
 		queryFn: ({ queryKey: [, , searchParams] }) => {
-			// @ts-expect-error Upstream type error.
 			return api.getPlaceTypesAutoComplete(searchParams);
 		},
 		...getQueryOptions(options),
@@ -1121,7 +1026,6 @@ export function usePlaceCategoriesAutoComplete(
 	return useQuery({
 		queryKey: createKey("autocomplete-place-category", "list", searchParams),
 		queryFn: ({ queryKey: [, , searchParams] }) => {
-			// @ts-expect-error Upstream type error.
 			return api.getPlaceCategoriesAutoComplete(searchParams);
 		},
 		...getQueryOptions(options),
@@ -1135,7 +1039,6 @@ export function useAutoComplete(
 	return useQuery({
 		queryKey: createKey("autocomplete", "list", searchParams),
 		queryFn: ({ queryKey: [, , searchParams] }) => {
-			// @ts-expect-error Upstream type error.
 			return api.getAutoComplete(searchParams);
 		},
 		...getQueryOptions(options),

@@ -5,7 +5,7 @@ import { type CaseStudy, useCaseStudyTimeTableById } from "@/api";
 export function useCaseStudyTimeline(id: ComputedRef<CaseStudy["id"]>) {
 	const caseStudyTimelineQuery = useCaseStudyTimeTableById({ id });
 	const isFetching = caseStudyTimelineQuery.isFetching;
-	const isLoading = caseStudyTimelineQuery.isInitialLoading;
+	const isLoading = caseStudyTimelineQuery.isLoading;
 	const isError = caseStudyTimelineQuery.isError;
 	const caseStudyTimeline = computed(() => {
 		return caseStudyTimelineQuery.data.value ?? [];

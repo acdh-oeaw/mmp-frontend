@@ -27,7 +27,7 @@ const { createSearchFilterParams, searchFilters } = useBrowseSearchFilters();
 const searchParams = usePassagesBrowseSearchParams(searchFilters);
 const passagesQuery = usePassages(searchParams);
 const { createSelectionParams } = useSelection();
-const isLoading = passagesQuery.isInitialLoading;
+const isLoading = passagesQuery.isLoading;
 const isFetching = passagesQuery.isFetching;
 const isError = passagesQuery.isError;
 const passages = computed(() => {

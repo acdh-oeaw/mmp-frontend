@@ -32,7 +32,7 @@ export function usePlaceDetails(
 
 	const isLoading = computed(() => {
 		return [authorsQuery, textsQuery].some((query) => {
-			return query.isInitialLoading.value;
+			return query.isLoading.value;
 		});
 	});
 	const isFetching = computed(() => {

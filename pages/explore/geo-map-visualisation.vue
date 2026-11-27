@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { type Map as LeafletMap } from "leaflet";
+import type { Map as LeafletMap } from "leaflet";
 import { computed, ref } from "vue";
 
 import Centered from "@/components/centered.vue";

@@ -38,7 +38,7 @@ export function useAuthorDetails(
 
 	const isLoading = computed(() => {
 		return [caseStudiesQuery, keywordsQuery, textsQuery].some((query) => {
-			return query.isInitialLoading.value;
+			return query.isLoading.value;
 		});
 	});
 	const isFetching = computed(() => {

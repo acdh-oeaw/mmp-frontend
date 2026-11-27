@@ -159,7 +159,7 @@ function getColor(key: Item["key"]) {
 			</ComboboxLabel>
 
 			<div
-				class="relative flex w-full cursor-default flex-wrap items-center overflow-hidden rounded-md text-left text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/75 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-300"
+				class="relative flex w-full cursor-default flex-wrap items-center overflow-hidden rounded-md text-left text-sm focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-white/75 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-300"
 			>
 				<ul
 					v-if="selectedKeys.length > 0"
@@ -193,7 +193,7 @@ function getColor(key: Item["key"]) {
 				<div class="relative min-w-[12rem] flex-1">
 					<ComboboxInput
 						autocomplete="off"
-						class="w-full bg-transparent py-2 pl-3 pr-10 text-sm leading-5 text-neutral-900 focus-visible:outline-none"
+						class="w-full bg-transparent py-2 pl-3 pr-10 text-sm leading-5 text-neutral-900 focus-visible:outline-hidden"
 						:placeholder="placeholder"
 						type="search"
 						:value="props.searchTerm"
@@ -217,7 +217,7 @@ function getColor(key: Item["key"]) {
 			leave-to-class="opacity-0"
 		>
 			<ComboboxOptions
-				class="absolute z-50 mt-1 max-h-80 w-full overflow-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black/5 transition focus-visible:outline-none"
+				class="absolute z-50 mt-1 max-h-80 w-full overflow-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black/5 transition focus-visible:outline-hidden"
 			>
 				<li
 					v-if="searchTerm !== '' && props.items.length === 0"

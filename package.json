@@ -3,89 +3,74 @@
 	"private": true,
 	"license": "MIT",
 	"type": "module",
-	"engines": {
-		"node": "20.x",
-		"npm": "10.x"
-	},
-	"packageManager": "npm@10.5.0",
 	"scripts": {
 		"analyze": "nuxt analyze",
 		"build": "nuxt build --dotenv ./.env.local",
 		"dev": "nuxt dev --dotenv ./.env.local",
-		"format:check": "prettier . \"!./content/**\" --cache --check --ignore-path ./.gitignore",
-		"format:fix": "npm run format:check -- --write",
+		"format:check": "oxfmt --check",
+		"format:fix": "oxfmt --write",
 		"lint:check": "run-p --continue-on-error \"lint:*:check\"",
 		"lint:fix": "run-p --continue-on-error \"lint:*:fix\"",
-		"lint:code:check": "eslint . --cache --ext .js,.ts,.vue --ignore-path ./.gitignore",
-		"lint:code:fix": "npm run lint:code:check -- --fix",
+		"lint:code:check": "oxlint",
+		"lint:code:fix": "pnpm run lint:code:check --fix",
 		"lint:styles:check": "stylelint \"./**/*.@(css|vue)\" --cache --ignore-path ./.gitignore",
-		"lint:styles:fix": "npm run lint:styles:check -- --fix",
+		"lint:styles:fix": "pnpm run lint:styles:check --fix",
 		"postinstall": "nuxt prepare",
-		"preinstall": "npx only-allow npm",
 		"prepare": "run-s setup",
-		"setup": "is-ci || simple-git-hooks",
+		"setup": "is-in-ci || lefthook install",
 		"start": "nuxt preview --dotenv ./.env.local",
 		"test": "exit 0",
+		"test:e2e": "playwright test",
 		"types:check": "nuxt typecheck",
 		"validate": "run-s format:check lint:check types:check test"
 	},
 	"dependencies": {
-		"@acdh-oeaw/lib": "^0.1.8",
-		"@fontsource-variable/roboto-flex": "^5.0.14",
-		"@headlessui/vue": "^1.7.19",
-		"@heroicons/vue": "^2.1.3",
-		"@mdx-js/mdx": "^3.0.1",
+		"@acdh-oeaw/lib": "^0.1.12",
+		"@fontsource-variable/roboto-flex": "^5.3.0",
+		"@headlessui/vue": "^1.7.23",
+		"@heroicons/vue": "^2.2.0",
+		"@mdx-js/mdx": "^3.1.1",
 		"@stefanprobst/request": "^0.2.1",
-		"@zag-js/range-slider": "^0.6.0",
-		"@zag-js/slider": "^0.6.0",
-		"@zag-js/vue": "^0.6.0",
-		"d3": "^7.9.0",
-		"estree-util-value-to-estree": "^3.1.1",
-		"fast-glob": "^3.3.2",
-		"force-graph": "^1.43.5",
-		"graphology": "^0.25.4",
-		"graphology-gexf": "^0.10.3",
+		"@zag-js/slider": "^1.49.0",
+		"@zag-js/vue": "^1.49.0",
+		"d3": "^7.9.2",
+		"estree-util-value-to-estree": "^3.5.0",
+		"fast-glob": "^3.3.3",
+		"force-graph": "^1.52.0",
+		"graphology": "^0.26.0",
+		"graphology-gexf": "^0.13.2",
 		"highcharts": "^10.3.3",
 		"leaflet": "^1.9.4",
-		"nuxt": "^3.11.2",
-		"unist-util-visit": "^5.0.0",
-		"vue": "^3.4.21",
+		"nuxt": "^4.7.0",
+		"unist-util-visit": "^5.2.0",
+		"valibot": "^1.5.0",
+		"vue": "^3.5.46",
 		"vue-jsx-runtime": "^0.1.0",
-		"vue-router": "^4.3.0",
-		"zod": "^3.22.4"
+		"vue-router": "^5.5.3"
 	},
 	"devDependencies": {
-		"@acdh-oeaw/eslint-config": "^1.0.7",
-		"@acdh-oeaw/eslint-config-nuxt": "^1.0.13",
-		"@acdh-oeaw/eslint-config-vue": "^1.0.12",
-		"@acdh-oeaw/prettier-config": "^2.0.0",
-		"@acdh-oeaw/stylelint-config": "^2.0.1",
-		"@acdh-oeaw/tsconfig": "^1.0.2",
-		"@headlessui/tailwindcss": "^0.2.0",
-		"@nuxt/image": "^1.5.0",
-		"@tailwindcss/typography": "^0.5.12",
-		"@tanstack/eslint-plugin-query": "^4.38.0",
-		"@tanstack/vue-query": "^4.37.1",
+		"@acdh-oeaw/stylelint-config": "^4.0.0",
+		"@acdh-oeaw/tsconfig": "^1.5.1",
+		"@headlessui/tailwindcss": "^0.2.2",
+		"@nuxt/image": "^2.2.1",
+		"@playwright/test": "^1.65.1",
+		"@tailwindcss/typography": "^0.5.20",
+		"@tailwindcss/vite": "^4.3.5",
+		"@tanstack/vue-query": "^5.108.4",
 		"@types/d3": "^7.4.3",
-		"@types/geojson": "^7946.0.14",
-		"@types/leaflet": "^1.9.9",
-		"@typescript-eslint/eslint-plugin": "^7.8.0",
-		"autoprefixer": "^10.4.19",
-		"eslint": "^8.57.0",
-		"eslint-plugin-tailwindcss": "^3.15.1",
-		"graphology-types": "^0.24.7",
-		"is-ci": "^3.0.1",
-		"lint-staged": "^15.2.2",
-		"npm-run-all2": "^6.1.2",
-		"postcss": "^8.4.38",
-		"postcss-html": "^1.6.0",
-		"postcss-nesting": "^11.3.0",
-		"prettier": "^3.2.5",
-		"simple-git-hooks": "^2.11.1",
-		"stylelint": "^16.3.1",
-		"tailwindcss": "^3.4.3",
-		"typescript": "^5.4.4",
-		"vue-tsc": "^2.0.11"
+		"@types/geojson": "^7946.0.16",
+		"@types/leaflet": "^1.9.23",
+		"@types/node": "^26.0.0",
+		"graphology-types": "^0.24.8",
+		"is-in-ci": "^2.0.0",
+		"lefthook": "^2.2.4",
+		"npm-run-all2": "^9.1.0",
+		"oxfmt": "^0.80.0",
+		"oxlint": "^1.95.0",
+		"stylelint": "^18.1.0",
+		"tailwindcss": "^4.3.5",
+		"typescript": "^6.0.3",
+		"vue-tsc": "^3.3.14"
 	},
 	"browserslist": {
 		"development": [
@@ -99,36 +84,19 @@
 			"not op_mini all"
 		]
 	},
-	"eslintConfig": {
-		"extends": [
-			"@acdh-oeaw/eslint-config",
-			"@acdh-oeaw/eslint-config-vue",
-			"@acdh-oeaw/eslint-config-nuxt",
-			"plugin:@tanstack/eslint-plugin-query/recommended",
-			"plugin:eslint-plugin-tailwindcss/recommended"
-		]
-	},
-	"lint-staged": {
-		"*.vue": [
-			"eslint --cache --fix",
-			"stylelint --cache --fix",
-			"prettier --cache --write"
-		],
-		"*.@(js|ts)": [
-			"eslint --cache --fix",
-			"prettier --cache --write"
-		],
-		"*.css": [
-			"stylelint --cache --fix",
-			"prettier --cache --write"
-		],
-		"*.!(css|js|ts|vue),!./content/**": "prettier --cache --ignore-unknown --write"
-	},
-	"prettier": "@acdh-oeaw/prettier-config",
-	"simple-git-hooks": {
-		"pre-commit": "npx lint-staged"
-	},
 	"stylelint": {
 		"extends": "@acdh-oeaw/stylelint-config"
+	},
+	"devEngines": {
+		"packageManager": {
+			"name": "pnpm",
+			"version": "12.24.0",
+			"onFail": "download"
+		},
+		"runtime": {
+			"name": "node",
+			"version": "26.13.1",
+			"onFail": "error"
+		}
 	}
 }

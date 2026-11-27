@@ -1,13 +1,13 @@
 <script lang="ts" setup>
 import "leaflet/dist/leaflet.css";
 
-import {
-	type CircleMarker,
-	type LatLngBoundsLiteral,
-	type Map as LeafletMap,
-	type Marker,
-	type PathOptions,
-	type Polygon,
+import type {
+	CircleMarker,
+	LatLngBoundsLiteral,
+	Map as LeafletMap,
+	Marker,
+	PathOptions,
+	Polygon,
 } from "leaflet";
 import { nextTick, onMounted, onUnmounted, provide, ref, watch } from "vue";
 
@@ -84,7 +84,7 @@ const context: GeoMapContext = {
 		featureGroups: ref(
 			new Set<keyof FeatureLayers>(["areas", "areaLabels", "cones", "coneOrigins", "linesPoints"]),
 		),
-		layers: ref(new Set<GeojsonLayer["id"]>([...props.layers.keys()])),
+		layers: ref(new Set<GeojsonLayer["id"]>(props.layers.keys())),
 	},
 
 	overlays: {

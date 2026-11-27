@@ -9,7 +9,7 @@ export function useTokenCloud(searchFilters: ComputedRef<SearchFilters>) {
 	const searchParams = useWordCloudSearchParams(searchFilters);
 	const cloudQuery = usePassageNlpData(searchParams);
 	const isFetching = cloudQuery.isFetching;
-	const isLoading = cloudQuery.isLoading;
+	const isLoading = cloudQuery.isPending;
 	const isError = cloudQuery.isError;
 	const cloud = computed(() => {
 		return createTokenData(cloudQuery.data.value?.token_dict ?? {});

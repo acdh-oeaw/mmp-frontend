@@ -33,7 +33,7 @@ const authorQuery = useAuthorById({ id });
 const graphQuery = useNetworkGraph(searchFilters);
 
 const isLoading = computed(() => {
-	return authorQuery.isInitialLoading.value || graphQuery.isLoading.value;
+	return authorQuery.isLoading.value || graphQuery.isLoading.value;
 });
 const isFetching = computed(() => {
 	return authorQuery.isFetching.value || graphQuery.isFetching.value;

@@ -22,7 +22,7 @@ export function useKeywordDetails(
 
 	const isLoading = computed(() => {
 		return [passagesQuery].some((query) => {
-			return query.isInitialLoading.value;
+			return query.isLoading.value;
 		});
 	});
 	const isFetching = computed(() => {

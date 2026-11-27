@@ -1,6 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-namespace */
+/* oxlint-disable typescript/no-namespace */
 
 import { createUrl, request, type RequestOptions } from "@stefanprobst/request";
 import type { GeometryCollection, Point, Polygon } from "geojson";

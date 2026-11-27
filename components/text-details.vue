@@ -26,7 +26,7 @@ const route = useRoute();
 const { createSelectionParams } = useSelection();
 
 const textQuery = useTextById({ id });
-const isLoading = textQuery.isInitialLoading;
+const isLoading = textQuery.isLoading;
 const isFetching = textQuery.isFetching;
 const isError = textQuery.isError;
 const text = textQuery.data;

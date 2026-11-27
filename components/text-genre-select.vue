@@ -24,7 +24,6 @@ const items = computed(() => {
 const { searchFilters, setSearchFilters } = useSearchFilters();
 const selectedKey = computed(() => {
 	if (searchFilters.value["text-genre"].length === 0) return all;
-	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 	return String(searchFilters.value["text-genre"][0]!);
 });
 

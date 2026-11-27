@@ -10,7 +10,7 @@ export function useNetworkGraph(searchFilters: ComputedRef<SearchFilters>) {
 	const graphQuery = useKeywordByAuthorGraph(searchParams);
 	const isError = graphQuery.isError;
 	const isFetching = graphQuery.isFetching;
-	const isLoading = graphQuery.isInitialLoading;
+	const isLoading = graphQuery.isLoading;
 	const graph = computed(() => {
 		return createGraph(graphQuery.data.value ?? { edges: [], nodes: [] });
 	});

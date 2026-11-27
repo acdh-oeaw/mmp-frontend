@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import "leaflet/dist/leaflet.css";
 
-import { type Marker, type Polygon } from "leaflet";
+import type { Marker, Polygon } from "leaflet";
 import { nextTick, onMounted, onUnmounted, provide, ref, watch } from "vue";
 
 import { type SpatialCoverageGeojson } from "@/api";

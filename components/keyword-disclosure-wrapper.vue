@@ -17,7 +17,7 @@ const keywordsQuery = useKeywords({
 	ids: String(props.ids),
 });
 
-const { data, isLoading, isError, isFetching } = keywordsQuery;
+const { data, isPending: isLoading, isError, isFetching } = keywordsQuery;
 </script>
 <template>
 	<template v-if="isLoading">

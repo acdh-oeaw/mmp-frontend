@@ -86,7 +86,7 @@ const isFetching = computed(() => {
 	return autoCompleteQuery.isFetching.value;
 });
 const isLoading = computed(() => {
-	return autoCompleteQuery.isInitialLoading.value;
+	return autoCompleteQuery.isLoading.value;
 });
 const items = computed(() => {
 	return autoCompleteQuery.data.value?.results ?? [];

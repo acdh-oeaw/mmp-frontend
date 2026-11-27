@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { assert, groupByToMap } from "@acdh-oeaw/lib";
 import { type ForceCenter, type ForceLink, type ForceManyBody } from "d3";
-import { type ForceGraphInstance, type LinkObject, type NodeObject } from "force-graph";
+import type { ForceGraphInstance, LinkObject, NodeObject } from "force-graph";
 import { nextTick, onMounted, onUnmounted, provide, ref, watch } from "vue";
 
 import { debounce } from "@/lib/debounce";

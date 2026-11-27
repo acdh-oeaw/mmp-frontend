@@ -5,10 +5,10 @@ Web frontend for the [MMP project](https://github.com/acdh-oeaw/mmp). Deployed a
 
 ## How to run
 
-Prerequisites: [Node.js v20](https://nodejs.org/en/download) and
-[npm v10](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
+Use the [Node.js](https://nodejs.org/en/download) and [pnpm](https://pnpm.io/installation) versions
+pinned in `package.json` under `devEngines`.
 
-Set required environment variables in `.env`:
+Set required environment variables in `.env.local`:
 
 ```bash
 # Unix
@@ -21,19 +21,19 @@ copy .env.local.example .env.local
 Install dependencies:
 
 ```bash
-npm i
+pnpm install --frozen-lockfile
 ```
 
 Run a development server on [http://localhost:3000](http://localhost:3000):
 
 ```bash
-npm run dev
+pnpm run dev
 ```
 
 Build for production:
 
 ```bash
-npm run build
+pnpm run build
 ```
 
 ## How to deploy

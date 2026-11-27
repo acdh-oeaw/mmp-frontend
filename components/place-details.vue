@@ -21,7 +21,7 @@ const id = computed(() => {
 });
 
 const placeQuery = usePlaceById({ id });
-const isLoading = placeQuery.isInitialLoading;
+const isLoading = placeQuery.isLoading;
 const isFetching = placeQuery.isFetching;
 const isError = placeQuery.isError;
 const place = placeQuery.data;

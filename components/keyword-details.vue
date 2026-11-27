@@ -18,7 +18,7 @@ const id = computed(() => {
 });
 
 const keywordQuery = useKeywordById({ id });
-const isLoading = keywordQuery.isInitialLoading;
+const isLoading = keywordQuery.isLoading;
 const isFetching = keywordQuery.isFetching;
 const isError = keywordQuery.isError;
 const keyword = keywordQuery.data;
