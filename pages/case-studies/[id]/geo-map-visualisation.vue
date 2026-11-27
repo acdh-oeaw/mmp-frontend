@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { type Map as LeafletMap } from "leaflet";
+import type { Map as LeafletMap } from "leaflet";
 import { computed, ref, watch } from "vue";
 
 import { useCaseStudyById } from "@/api";

@@ -1,4 +1,4 @@
-import { type ForceGraphInstance } from "force-graph";
+import type { ForceGraphInstance } from "force-graph";
 
 import type { GraphEdge, GraphNode } from "@/api";
 

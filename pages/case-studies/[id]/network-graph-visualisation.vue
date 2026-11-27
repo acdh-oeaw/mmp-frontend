@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { type ForceGraphInstance } from "force-graph";
+import type { ForceGraphInstance } from "force-graph";
 import { computed, ref, watch } from "vue";
 
 import { useCaseStudyById } from "@/api";

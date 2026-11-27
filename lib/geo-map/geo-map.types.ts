@@ -1,5 +1,5 @@
 import type { Feature, Point } from "geojson";
-import { type GeoJSON, type Map as LeafletMap, type TileLayer } from "leaflet";
+import type { GeoJSON, Map as LeafletMap, TileLayer } from "leaflet";
 import { type Ref } from "vue";
 
 import type {

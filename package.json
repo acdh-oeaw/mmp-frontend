@@ -20,6 +20,7 @@
 		"setup": "is-in-ci || lefthook install",
 		"start": "nuxt preview --dotenv ./.env.local",
 		"test": "exit 0",
+		"test:e2e": "playwright test",
 		"types:check": "nuxt typecheck",
 		"validate": "run-s format:check lint:check types:check test"
 	},
@@ -52,6 +53,7 @@
 		"@acdh-oeaw/tsconfig": "^1.5.1",
 		"@headlessui/tailwindcss": "^0.2.2",
 		"@nuxt/image": "^2.2.1",
+		"@playwright/test": "^1.65.1",
 		"@tailwindcss/typography": "^0.5.20",
 		"@tailwindcss/vite": "^4.3.5",
 		"@tanstack/vue-query": "^5.108.4",
